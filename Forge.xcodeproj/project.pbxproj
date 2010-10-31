@@ -1,0 +1,400 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		049E88290A8FB6EE0072DD07 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 049E88280A8FB6EE0072DD07 /* Foundation.framework */; };
+		04E0A9730A8ECFDB006A9717 /* testfile.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 04E0A9720A8ECFDB006A9717 /* testfile.hc */; };
+		3D0E9CF50AFCFDE3004CE917 /* testfile6.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */; };
+		3D473B7A0AD46C0B00B35697 /* testfile3.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3D473B790AD46C0B00B35697 /* testfile3.hc */; };
+		3D4E23AB0D99301000CDC3BC /* testfile7.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3D4E23A80D992FE000CDC3BC /* testfile7.hc */; };
+		3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7298310A7BC89C0065F0AC /* CToken.cpp */; };
+		3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7298570A7BC9990065F0AC /* CParser.cpp */; };
+		3D729D910A7C44260065F0AC /* GetFileContents.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D729D8F0A7C44260065F0AC /* GetFileContents.c */; };
+		3D8301170D02F2880090C96B /* VelocityProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D8301150D02F2880090C96B /* VelocityProgram.cpp */; };
+		3D8301300D02F3920090C96B /* DummyLoaderFunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */; };
+		3D8301330D02F3D60090C96B /* UKDumpHex.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D8301320D02F3D60090C96B /* UKDumpHex.c */; };
+		3D897FBA0BFC7FB9009FF852 /* CCodeBlockNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D897FB80BFC7FB9009FF852 /* CCodeBlockNode.cpp */; };
+		3DAE6D110BF297A100946F2F /* CodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */; };
+		3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D280BF2992200946F2F /* CCommandNode.cpp */; };
+		3DAE6D420BF3ADDA00946F2F /* CValueNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D400BF3ADDA00946F2F /* CValueNode.cpp */; };
+		3DAE6D4A0BF3B58A00946F2F /* CNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D480BF3B58A00946F2F /* CNode.cpp */; };
+		3DAE6D5A0BF3B67500946F2F /* CFunctionDefinitionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D580BF3B67500946F2F /* CFunctionDefinitionNode.cpp */; };
+		3DAE6D740BF3B90500946F2F /* CParseTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D720BF3B90500946F2F /* CParseTree.cpp */; };
+		3DB55B170AC89AE40073C115 /* testfile2.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DB55B160AC89AE40073C115 /* testfile2.hc */; };
+		3DB565560AF8F46500F04130 /* testfile5.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DB565550AF8F46500F04130 /* testfile5.hc */; };
+		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
+		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
+		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		553622E010657E120099C4D0 /* vcy_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */; };
+		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
+		55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD37CE0ED62B1E00828862 /* CppBlock.cpp */; };
+		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76F690486A84900D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				04E0A9730A8ECFDB006A9717 /* testfile.hc in CopyFiles */,
+				3DB55B170AC89AE40073C115 /* testfile2.hc in CopyFiles */,
+				3D473B7A0AD46C0B00B35697 /* testfile3.hc in CopyFiles */,
+				3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */,
+				3DB565560AF8F46500F04130 /* testfile5.hc in CopyFiles */,
+				3D0E9CF50AFCFDE3004CE917 /* testfile6.hc in CopyFiles */,
+				3D4E23AB0D99301000CDC3BC /* testfile7.hc in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		049E88280A8FB6EE0072DD07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		04E0A9720A8ECFDB006A9717 /* testfile.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile.hc; sourceTree = "<group>"; };
+		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile6.hc; sourceTree = "<group>"; };
+		3D1F6C410A81496B00BF477D /* USAGE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAGE.txt; sourceTree = "<group>"; };
+		3D1F6C4A0A814AEC00BF477D /* HYPERTALK.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HYPERTALK.txt; sourceTree = "<group>"; };
+		3D228BF80A91B0440013C2DF /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
+		3D473B790AD46C0B00B35697 /* testfile3.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile3.hc; sourceTree = "<group>"; };
+		3D4E23A80D992FE000CDC3BC /* testfile7.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile7.hc; sourceTree = "<group>"; };
+		3D7298310A7BC89C0065F0AC /* CToken.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CToken.cpp; sourceTree = "<group>"; };
+		3D7298320A7BC89C0065F0AC /* CToken.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CToken.h; sourceTree = "<group>"; };
+		3D7298560A7BC9990065F0AC /* CParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CParser.h; sourceTree = "<group>"; };
+		3D7298570A7BC9990065F0AC /* CParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CParser.cpp; sourceTree = "<group>"; };
+		3D729D8F0A7C44260065F0AC /* GetFileContents.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = GetFileContents.c; path = ../UliKit/GetFileContents.c; sourceTree = SOURCE_ROOT; };
+		3D729D900A7C44260065F0AC /* GetFileContents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GetFileContents.h; path = ../UliKit/GetFileContents.h; sourceTree = SOURCE_ROOT; };
+		3D8301150D02F2880090C96B /* VelocityProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VelocityProgram.cpp; path = ../VelocityLoader/VelocityProgram.cpp; sourceTree = SOURCE_ROOT; };
+		3D8301160D02F2880090C96B /* VelocityProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VelocityProgram.h; path = ../VelocityLoader/VelocityProgram.h; sourceTree = SOURCE_ROOT; };
+		3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DummyLoaderFunctions.c; sourceTree = "<group>"; };
+		3D8301310D02F3D60090C96B /* UKDumpHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKDumpHex.h; path = ../UliKit/UKDumpHex.h; sourceTree = SOURCE_ROOT; };
+		3D8301320D02F3D60090C96B /* UKDumpHex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = UKDumpHex.c; path = ../UliKit/UKDumpHex.c; sourceTree = SOURCE_ROOT; };
+		3D894ED80B2386B900D4F1D2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		3D897FB70BFC7FB9009FF852 /* CCodeBlockNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CCodeBlockNode.h; sourceTree = "<group>"; };
+		3D897FB80BFC7FB9009FF852 /* CCodeBlockNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CCodeBlockNode.cpp; sourceTree = "<group>"; };
+		3D9B7DA90ABC1E7700767710 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		3DAE6D0D0BF297A100946F2F /* CodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CodeBlock.h; path = ../VelocityCompiler/CodeBlock.h; sourceTree = SOURCE_ROOT; };
+		3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CodeBlock.cpp; path = ../VelocityCompiler/CodeBlock.cpp; sourceTree = SOURCE_ROOT; };
+		3DAE6D0F0BF297A100946F2F /* InstructionOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InstructionOpcodes.h; path = ../VelocityCompiler/InstructionOpcodes.h; sourceTree = SOURCE_ROOT; };
+		3DAE6D270BF2992200946F2F /* CCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCommandNode.h; sourceTree = "<group>"; };
+		3DAE6D280BF2992200946F2F /* CCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCommandNode.cpp; sourceTree = "<group>"; };
+		3DAE6D3F0BF3ADDA00946F2F /* CValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CValueNode.h; sourceTree = "<group>"; };
+		3DAE6D400BF3ADDA00946F2F /* CValueNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CValueNode.cpp; sourceTree = "<group>"; };
+		3DAE6D470BF3B58A00946F2F /* CNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CNode.h; sourceTree = "<group>"; };
+		3DAE6D480BF3B58A00946F2F /* CNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CNode.cpp; sourceTree = "<group>"; };
+		3DAE6D570BF3B67500946F2F /* CFunctionDefinitionNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFunctionDefinitionNode.h; sourceTree = "<group>"; };
+		3DAE6D580BF3B67500946F2F /* CFunctionDefinitionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CFunctionDefinitionNode.cpp; sourceTree = "<group>"; };
+		3DAE6D710BF3B90500946F2F /* CParseTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CParseTree.h; sourceTree = "<group>"; };
+		3DAE6D720BF3B90500946F2F /* CParseTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CParseTree.cpp; sourceTree = "<group>"; };
+		3DB55B160AC89AE40073C115 /* testfile2.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile2.hc; sourceTree = "<group>"; };
+		3DB565550AF8F46500F04130 /* testfile5.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile5.hc; sourceTree = "<group>"; };
+		3DC0F1640BF5D4F700C641C2 /* CFunctionCallNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFunctionCallNode.h; sourceTree = "<group>"; };
+		3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CFunctionCallNode.cpp; sourceTree = "<group>"; };
+		3DC0F1AA0BF6543200C641C2 /* TVariantConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVariantConstants.h; sourceTree = "<group>"; };
+		3DC80A9B0BFF8D8B002CA7FF /* CWhileLoopNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CWhileLoopNode.h; sourceTree = "<group>"; };
+		3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWhileLoopNode.cpp; sourceTree = "<group>"; };
+		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
+		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
+		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF32CaseTables.h; sourceTree = "<group>"; };
+		552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vcy_lib.c; sourceTree = "<group>"; };
+		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
+		55B24F5E0C189906001C7796 /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariableEntry.cpp; sourceTree = "<group>"; };
+		55BD37CD0ED62B1E00828862 /* CppBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CppBlock.h; sourceTree = "<group>"; };
+		55BD37CE0ED62B1E00828862 /* CppBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CppBlock.cpp; sourceTree = "<group>"; };
+		55C3E6FE116BCADE0086F433 /* vcy_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcy_lib.h; sourceTree = "<group>"; };
+		8DD76F6C0486A84900D96B5E /* HyperC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HyperC; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76F660486A84900D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				049E88290A8FB6EE0072DD07 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		049E87FB0A8FB6830072DD07 /* Linked Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				3D894ED80B2386B900D4F1D2 /* Cocoa.framework */,
+				3D9B7DA90ABC1E7700767710 /* Carbon.framework */,
+				049E88280A8FB6EE0072DD07 /* Foundation.framework */,
+				3DF446040A9A644900516045 /* AddressBook.framework */,
+			);
+			name = "Linked Libraries";
+			sourceTree = "<group>";
+		};
+		08FB7794FE84155DC02AAC07 /* HyperC */ = {
+			isa = PBXGroup;
+			children = (
+				3D228BF80A91B0440013C2DF /* TODO.txt */,
+				3D1F6C410A81496B00BF477D /* USAGE.txt */,
+				3D1F6C4A0A814AEC00BF477D /* HYPERTALK.txt */,
+				04E0A9720A8ECFDB006A9717 /* testfile.hc */,
+				3DB55B160AC89AE40073C115 /* testfile2.hc */,
+				3D473B790AD46C0B00B35697 /* testfile3.hc */,
+				3DCEC4450AD9998400092ABF /* testfile4.hc */,
+				3DB565550AF8F46500F04130 /* testfile5.hc */,
+				3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */,
+				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
+				55C3E6FE116BCADE0086F433 /* vcy_lib.h */,
+				552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = HyperC;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7796FE84155DC02AAC07 /* main.cpp */,
+				55B24F5D0C189906001C7796 /* CVariableEntry.h */,
+				55B24F5E0C189906001C7796 /* CVariableEntry.cpp */,
+				3DC0F1AA0BF6543200C641C2 /* TVariantConstants.h */,
+				55256831127CD571000D8325 /* UTF32CaseTables.h */,
+				3D7298320A7BC89C0065F0AC /* CToken.h */,
+				3D7298310A7BC89C0065F0AC /* CToken.cpp */,
+				3D7298560A7BC9990065F0AC /* CParser.h */,
+				3D7298570A7BC9990065F0AC /* CParser.cpp */,
+				3D729D900A7C44260065F0AC /* GetFileContents.h */,
+				3D729D8F0A7C44260065F0AC /* GetFileContents.c */,
+				3DAE6D2F0BF29A8A00946F2F /* Parse Tree */,
+				55BD37CD0ED62B1E00828862 /* CppBlock.h */,
+				55BD37CE0ED62B1E00828862 /* CppBlock.cpp */,
+				3DAE6D150BF297A200946F2F /* VelocityCompiler */,
+				3D8301180D02F28E0090C96B /* VelocityLoader */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76F6C0486A84900D96B5E /* HyperC */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D8301180D02F28E0090C96B /* VelocityLoader */ = {
+			isa = PBXGroup;
+			children = (
+				3D8301160D02F2880090C96B /* VelocityProgram.h */,
+				3D8301150D02F2880090C96B /* VelocityProgram.cpp */,
+				3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */,
+				3D8301310D02F3D60090C96B /* UKDumpHex.h */,
+				3D8301320D02F3D60090C96B /* UKDumpHex.c */,
+			);
+			name = VelocityLoader;
+			sourceTree = "<group>";
+		};
+		3DAE6D150BF297A200946F2F /* VelocityCompiler */ = {
+			isa = PBXGroup;
+			children = (
+				3DAE6D0D0BF297A100946F2F /* CodeBlock.h */,
+				3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */,
+				3DAE6D0F0BF297A100946F2F /* InstructionOpcodes.h */,
+			);
+			name = VelocityCompiler;
+			sourceTree = "<group>";
+		};
+		3DAE6D2F0BF29A8A00946F2F /* Parse Tree */ = {
+			isa = PBXGroup;
+			children = (
+				3DAE6D710BF3B90500946F2F /* CParseTree.h */,
+				3DAE6D720BF3B90500946F2F /* CParseTree.cpp */,
+				3DAE6D470BF3B58A00946F2F /* CNode.h */,
+				3DAE6D480BF3B58A00946F2F /* CNode.cpp */,
+				3DAE6D3F0BF3ADDA00946F2F /* CValueNode.h */,
+				3DAE6D400BF3ADDA00946F2F /* CValueNode.cpp */,
+				3DAE6D270BF2992200946F2F /* CCommandNode.h */,
+				3DAE6D280BF2992200946F2F /* CCommandNode.cpp */,
+				3DC0F1640BF5D4F700C641C2 /* CFunctionCallNode.h */,
+				3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */,
+				3DC80ACD0BFFBFE5002CA7FF /* Code Blocks */,
+			);
+			name = "Parse Tree";
+			sourceTree = "<group>";
+		};
+		3DC80ACD0BFFBFE5002CA7FF /* Code Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				3D897FB70BFC7FB9009FF852 /* CCodeBlockNode.h */,
+				3D897FB80BFC7FB9009FF852 /* CCodeBlockNode.cpp */,
+				3DAE6D570BF3B67500946F2F /* CFunctionDefinitionNode.h */,
+				3DAE6D580BF3B67500946F2F /* CFunctionDefinitionNode.cpp */,
+				3DC80A9B0BFF8D8B002CA7FF /* CWhileLoopNode.h */,
+				3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */,
+			);
+			name = "Code Blocks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76F620486A84900D96B5E /* Forge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "Forge" */;
+			buildPhases = (
+				8DD76F640486A84900D96B5E /* Sources */,
+				8DD76F660486A84900D96B5E /* Frameworks */,
+				8DD76F690486A84900D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Forge;
+			productInstallPath = "$(HOME)/bin";
+			productName = HyperC;
+			productReference = 8DD76F6C0486A84900D96B5E /* HyperC */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "Forge" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* HyperC */;
+			projectDirPath = "";
+			projectRoot = ..;
+			targets = (
+				8DD76F620486A84900D96B5E /* Forge */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76F640486A84900D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DD76F650486A84900D96B5E /* main.cpp in Sources */,
+				3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */,
+				3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */,
+				3D729D910A7C44260065F0AC /* GetFileContents.c in Sources */,
+				3DAE6D110BF297A100946F2F /* CodeBlock.cpp in Sources */,
+				3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */,
+				3DAE6D420BF3ADDA00946F2F /* CValueNode.cpp in Sources */,
+				3DAE6D4A0BF3B58A00946F2F /* CNode.cpp in Sources */,
+				3DAE6D5A0BF3B67500946F2F /* CFunctionDefinitionNode.cpp in Sources */,
+				3DAE6D740BF3B90500946F2F /* CParseTree.cpp in Sources */,
+				3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */,
+				3D897FBA0BFC7FB9009FF852 /* CCodeBlockNode.cpp in Sources */,
+				3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */,
+				55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */,
+				3D8301170D02F2880090C96B /* VelocityProgram.cpp in Sources */,
+				3D8301300D02F3920090C96B /* DummyLoaderFunctions.c in Sources */,
+				3D8301330D02F3D60090C96B /* UKDumpHex.c in Sources */,
+				55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */,
+				553622E010657E120099C4D0 /* vcy_lib.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923208733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				OTHER_CFLAGS = "-DDONT_ADJUST_LINE_NUMBERS";
+				PRODUCT_NAME = HyperC;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		1DEB923308733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PRODUCT_NAME = HyperCompiler;
+				STRIP_INSTALLED_PRODUCT = YES;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "Forge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923208733DC60010E9CD /* Debug */,
+				1DEB923308733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "Forge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

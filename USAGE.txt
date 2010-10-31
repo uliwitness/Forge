@@ -1,0 +1,56 @@
+HYPER-C
+
+HyperC is a HyperTalk-to-C compiler. It generates (admittedly not very pretty)
+C++ code that is equivalent to a HyperTalk script entered. Optionally, it will
+run the code through the GCC compiler and generate a command-line executable
+from it.
+
+To use this, make sure the HyperC_StdLib.h and HyperC_StdLib.cpp files are in
+the same folder as the HyperC program. Then call it from the command line with:
+
+	/Path/To/HyperC -C sourcecode.hc
+
+(Where sourcecode.hc would be the name of the file containing the HyperTalk
+script you want to compile) This will generate a hyperc_out.c and hyperc_out.h
+file pair with the C source code for your script. To immediately compile the
+code into an application, just write:
+
+	/Path/To/HyperC sourcecode.hc
+
+Which will generate a command line executable named hyperc_out. If you want to
+use Objective C objects (e.g. Cocoa) in your application, you have to also
+have the frameworkheaders.hhc file in HyperC's directory.
+
+If you want to use other frameworks besides the standard Cocoa one, make sure
+you include them explicitly by specifying the
+
+	-framework AddressBook
+
+option (where AddressBook would be replaced with the name of the framework you
+want to use). You may also have to check whether the frameworkheaders.hhc file
+has been built for this framework, otherwise you may need to rebuild it using
+the headerimport.php script.
+
+HyperC also forwards some GCC Flags to the compiler, e.g.:
+
+	-bundle_loader blah
+	-bundle
+	-dylib
+	-lBlah
+
+and of course -framework. If you're building a dylib or bundle, you will also
+have to make sure HyperC uses the appropriate template to generate the desired
+main entry point and maybe include customised versions of certain commands. You
+can do that via the -template option. Templates have to be stored in the
+hyperc_templates folder next to the HyperC application. Just specify the name
+of one of the folders that contains the desired template. The default template
+is the "tool" template, which you could explicitly specify by passing the
+
+	-template tool
+	
+option. If you want to create a SuperCard bundle XCMD as the BundleBridge XCMD
+calls them, use the option
+
+	-template bundlebridge
+	
+you get the idea.
