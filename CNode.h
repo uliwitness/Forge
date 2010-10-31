@@ -30,6 +30,8 @@ namespace Carlson
 //	Classes:
 // -----------------------------------------------------------------------------
 
+class CCodeBlock;
+
 // Abstract root class for things in a parse tree:
 //	These are stupid, and can simply be debug-printed or turned into code, and
 //	that is it.
@@ -39,7 +41,9 @@ class CNode
 public:
 	CNode() {};
 	virtual ~CNode() {};
-		
+	
+	virtual void	GenerateCode( CCodeBlock* inCodeBlock )						{};
+	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel ) = 0;
 };
 

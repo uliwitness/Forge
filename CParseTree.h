@@ -40,6 +40,7 @@ public:
 	
 	std::map<std::string,CVariableEntry>&	GetGlobals()	{ return mGlobals; };
 	
+	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 
 protected:
