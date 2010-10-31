@@ -15,6 +15,7 @@
 
 #include "CNode.h"
 #include <math.h>
+#include <stdexcept>
 
 
 namespace Carlson
@@ -34,12 +35,7 @@ public:
 	virtual size_t	GetLineNum()		{ return 0; };
 	
 	virtual void	Simplify()			{};
-	virtual void	FillOutParamEntry( ParamEntry& par ) CNODE_PURE_VIRTUAL;
-	virtual void	GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs ) CNODE_PURE_VIRTUAL;
-	virtual void	GenerateCode( CodeBlock& codeBlock );
-	virtual void	GenerateCpp( CppBlock& codeBlock );
 	
-	virtual bool	GenerateCodeAndProvideEBPRelativeOffset( ESPRelativeOffset &outOffset )	{ return false; };
 	virtual bool	IsConstant()		{ return false; };
 	
 	virtual CValueNode*	Copy()			{ return NULL; };
@@ -55,10 +51,6 @@ class CIntValueNode : public CValueNode
 {
 public:
 	CIntValueNode( int n ) : CValueNode(), mIntValue(n) {};
-	
-	virtual void			FillOutParamEntry( ParamEntry& par )	{ par = kUInt32Param; };
-	virtual void			GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs );
-	virtual void			GenerateCpp( CppBlock& codeBlock );
 	
 	virtual bool			IsConstant()	{ return true; };
 
@@ -85,10 +77,6 @@ class CFloatValueNode : public CValueNode
 public:
 	CFloatValueNode( float n ) : CValueNode(), mFloatValue(n) {};
 
-	virtual void				FillOutParamEntry( ParamEntry& par )	{ par = kFloatParam; };
-	virtual void				GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs );
-	virtual void				GenerateCpp( CppBlock& codeBlock );
-	
 	virtual bool				IsConstant()		{ return true; };
 
 	virtual CFloatValueNode*	Copy()		{ return new CFloatValueNode( mFloatValue ); };
@@ -113,10 +101,6 @@ class CBoolValueNode : public CValueNode
 {
 public:
 	CBoolValueNode( bool n ) : CValueNode(), mBoolValue(n) {};
-
-	virtual void				FillOutParamEntry( ParamEntry& par )	{ par = kUInt32Param; };
-	virtual void				GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs );
-	virtual void				GenerateCpp( CppBlock& codeBlock );
 	
 	virtual bool				IsConstant()		{ return true; };
 
@@ -141,10 +125,6 @@ class CStringValueNode : public CValueNode
 {
 public:
 	CStringValueNode( const std::string& n ) : CValueNode(), mStringValue(n) {};
-
-	virtual void				FillOutParamEntry( ParamEntry& par )	{ par = kPointerParam; };
-	virtual void				GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs );
-	virtual void				GenerateCpp( CppBlock& codeBlock );
 	
 	virtual bool				IsConstant()		{ return true; };
 
@@ -170,13 +150,8 @@ class CLocalVariableRefValueNode : public CValueNode
 public:
 	CLocalVariableRefValueNode( const std::string& inVarName ) : CValueNode(), mVarName(inVarName) {};
 	
-	virtual void				FillOutParamEntry( ParamEntry& par )	{ par = kPointerParam; };
 	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mVarName ); };
 	
-	virtual void				GenerateCpp( CppBlock& codeBlock );
-	virtual void				GenerateCodeWithReturnOffset( CodeBlock& codeBlock, ESPRelativeOffset resultOffs );
-	virtual bool				GenerateCodeAndProvideEBPRelativeOffset( CodeBlock& codeBlock, EBPRelativeOffset &outOffset );
-
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
 		INDENT_PREPARE(indentLevel);

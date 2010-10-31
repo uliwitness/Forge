@@ -12,6 +12,8 @@
 #include "CNode.h"
 #include "CVariableEntry.h"
 #include <deque>
+#include <map>
+#include <string>
 
 
 namespace Carlson
@@ -37,10 +39,6 @@ public:
 	virtual void		AddNode( CNode* inNode )			{ mNodes.push_back( inNode ); mProgressDelegate->ParseTreeAddedNode( this, inNode, ++mNumNodes ); };
 	
 	std::map<std::string,CVariableEntry>&	GetGlobals()	{ return mGlobals; };
-	
-	virtual void		GenerateCode( CodeBlock& codeBlock );
-
-	virtual void		GenerateCpp( CppBlock& codeBlock );
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 

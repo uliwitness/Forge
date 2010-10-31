@@ -51,9 +51,8 @@ public:
 									bool dontDispose = false );
 	
 	virtual std::map<std::string,CVariableEntry>&		GetLocals()		{ return mLocals; };
-	
-	virtual void	GenerateCode( CodeBlock& codeBlock );
-	virtual void	GenerateCpp( CppBlock& codeBlock );
+
+	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
 protected:
 	std::vector<CFunctionParamVarEntry*>	mParams;

@@ -24,28 +24,6 @@ CParseTree::~CParseTree()
 }
 
 
-void	CParseTree::GenerateCode( CodeBlock& codeBlock )
-{
-	std::deque<CNode*>::iterator itty;
-	
-	for( itty = mNodes.begin(); itty != mNodes.end(); itty++ )
-	{
-		(*itty)->GenerateCode( codeBlock );
-	}
-}
-
-
-void	CParseTree::GenerateCpp( CppBlock& codeBlock )
-{
-	std::deque<CNode*>::iterator itty;
-	
-	for( itty = mNodes.begin(); itty != mNodes.end(); itty++ )
-	{
-		(*itty)->GenerateCpp( codeBlock );
-	}
-}
-
-
 void	CParseTree::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);

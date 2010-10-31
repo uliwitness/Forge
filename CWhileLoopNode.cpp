@@ -13,18 +13,5 @@ namespace Carlson
 {
 
 
-void	CWhileLoopNode::GenerateCpp( CppBlock& codeBlock )
-{
-	codeBlock.generate_while_loop_start();
-	
-	mCondition->GenerateCpp( codeBlock );
-	
-	codeBlock.generate_while_loop_middle();
-	
-	CCodeBlockNodeBase::GenerateCpp( codeBlock );
-	
-	codeBlock.generate_while_loop_end();
-}
-
 
 } /*Carlson*/

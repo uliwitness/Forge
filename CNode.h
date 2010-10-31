@@ -13,8 +13,7 @@
 //	Headers:
 // -----------------------------------------------------------------------------
 
-#include "CodeBlock.h"
-#include "CppBlock.h"
+#include <ostream>
 
 
 #if 1
@@ -40,11 +39,7 @@ class CNode
 public:
 	CNode() {};
 	virtual ~CNode() {};
-	
-	virtual void	GenerateCode( CodeBlock& codeBlock ) CNODE_PURE_VIRTUAL;
-
-	virtual void	GenerateCpp( CppBlock& codeBlock ) CNODE_PURE_VIRTUAL;
-	
+		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel ) = 0;
 };
 

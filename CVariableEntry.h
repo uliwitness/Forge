@@ -7,11 +7,53 @@
  *
  */
 
-#include "TVariantConstants.h"
 #include <string>
 
 namespace Carlson
 {
+
+
+/* -----------------------------------------------------------------------------
+	Constants & Data types:
+   -------------------------------------------------------------------------- */
+
+// Types of data a variant may contain:
+typedef enum TVariantType
+{
+	TVariantTypeEmptyString,			// Special, light-weight type for initialising variables.
+	TVariantTypeString,					// char* in mStringValue.
+	TVariantTypeInt,					// Integer in mIntValue.
+	TVariantTypeBool,					// Boolean in mBoolValue.
+	TVariantTypeFloat,					// Decimal (fractional) number in mFloatValue.
+	TVariantTypeList,					// An array of CVariants.
+	TVariantTypeNotSet,					// An empty string that can be queried whether it has been set and returns FALSE. Used to find out whether a parameter or array item exists.
+	TVariantTypeNativeObject,			// A reference to a native object (CNativeObjectWrapper).
+	TVariantTypeChunk,					// A chunk expression that can be assigned to.
+	TVariantTypeReference,				// A reference to another value, i.e. a poor man's pointer.
+	TVariantTypeFile,					// A file where mString is the path.
+	TVariantType_INVALID = 0xDEADBEEF	// Value set as type before a variant is freed
+} TVariantType;
+
+
+// The four kinds of "put" commands we currently support:
+typedef enum TPutOperationType
+{
+	TPutOperationTypeAssign,		// put x into y
+	TPutOperationTypeAppend,		// put x after y
+	TPutOperationTypePrepend,		// put x before y
+	TPutOperationTypePrint			// put x
+} TPutOperationType;
+
+
+// The chunk types we currently support:
+typedef enum TChunkType
+{
+	TChunkTypeInvalid = 0,
+	TChunkTypeCharacter,
+	TChunkTypeItem,
+	TChunkTypeLine,
+	TChunkTypeWord
+} TChunkType;
 
 class CVariableEntry
 {

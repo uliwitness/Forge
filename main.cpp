@@ -6,29 +6,28 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
-#include "CodeBlock.h"
 #include "CParseTree.h"
-#include "VelocityProgram.h"
+
 
 using namespace Carlson;
 
 
-class PrintfProgressDelegate : public CodeBlockProgressDelegate, public ParseTreeProgressDelegate
+class PrintfProgressDelegate : /*public CodeBlockProgressDelegate,*/ public ParseTreeProgressDelegate
 {
 public:
-	virtual void	CodeBlockPreparing( CodeBlock* blk )															{ printf( "\tPreparing...\n" ); };
-	virtual void	CodeBlockAddingFunction( CodeBlock* blk, const std::string& methodName )						{ printf( "\tAdding function \"%s\".\n", methodName.c_str() ); };
-	virtual void	CodeBlockAddedData( CodeBlock* blk )															{ printf( "\t%d bytes of data.\n", blk->data_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
-	virtual void	CodeBlockAddedCode( CodeBlock* blk )															{ printf( "\t%d bytes of code.\n", blk->code_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
-	virtual void	CodeBlockUpdateSymbolUseCount( CodeBlock* blk, const std::string& methodName, int32_t numUses )	{ printf( "\tSymbol \"%s\" used %d times so far.\n", methodName.c_str(), numUses ); };
-	virtual void	CodeBlockAddingSymbol( CodeBlock* blk, const std::string& symbolName, bool isExternal )			{ printf( "\tAdding %s symbol \"%s\" to symbol table.\n", (isExternal ? "external" : "internal"), symbolName.c_str() ); };
-	virtual void	CodeBlockFinished( CodeBlock* blk )																{ printf( "\tFinished.\n\t\t%d bytes of code.\n\t\t%d bytes of data.\n", blk->code_size(), blk->data_size() ); };
-
-	virtual void	CodeBlockAddedStringData( CodeBlock* blk, const std::string& str )								{ printf( "\tAdded string \"%s\".\n", str.c_str() ); };
-	virtual void	CodeBlockAddedIntData( CodeBlock* blk, int n )													{ printf( "\tAdded int %d.\n", n ); };
-	virtual void	CodeBlockAddedFloatData( CodeBlock* blk, float n )												{ printf( "\tAdded int %f.\n", n ); };
-	virtual void	CodeBlockAddedBoolData( CodeBlock* blk, bool n )												{ printf( "\tAdded bool %s.\n", (n ? "true" : "false") ); };
-	virtual void	CodeBlockUsedLocalVariable( CodeBlock* blk, const std::string& str, int32_t numUses )			{ printf( "\tLocal variable \"%s\" used %d times so far.\n", str.c_str(), numUses ); };
+//	virtual void	CodeBlockPreparing( CodeBlock* blk )															{ printf( "\tPreparing...\n" ); };
+//	virtual void	CodeBlockAddingFunction( CodeBlock* blk, const std::string& methodName )						{ printf( "\tAdding function \"%s\".\n", methodName.c_str() ); };
+//	virtual void	CodeBlockAddedData( CodeBlock* blk )															{ printf( "\t%d bytes of data.\n", blk->data_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
+//	virtual void	CodeBlockAddedCode( CodeBlock* blk )															{ printf( "\t%d bytes of code.\n", blk->code_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
+//	virtual void	CodeBlockUpdateSymbolUseCount( CodeBlock* blk, const std::string& methodName, int32_t numUses )	{ printf( "\tSymbol \"%s\" used %d times so far.\n", methodName.c_str(), numUses ); };
+//	virtual void	CodeBlockAddingSymbol( CodeBlock* blk, const std::string& symbolName, bool isExternal )			{ printf( "\tAdding %s symbol \"%s\" to symbol table.\n", (isExternal ? "external" : "internal"), symbolName.c_str() ); };
+//	virtual void	CodeBlockFinished( CodeBlock* blk )																{ printf( "\tFinished.\n\t\t%d bytes of code.\n\t\t%d bytes of data.\n", blk->code_size(), blk->data_size() ); };
+//
+//	virtual void	CodeBlockAddedStringData( CodeBlock* blk, const std::string& str )								{ printf( "\tAdded string \"%s\".\n", str.c_str() ); };
+//	virtual void	CodeBlockAddedIntData( CodeBlock* blk, int n )													{ printf( "\tAdded int %d.\n", n ); };
+//	virtual void	CodeBlockAddedFloatData( CodeBlock* blk, float n )												{ printf( "\tAdded int %f.\n", n ); };
+//	virtual void	CodeBlockAddedBoolData( CodeBlock* blk, bool n )												{ printf( "\tAdded bool %s.\n", (n ? "true" : "false") ); };
+//	virtual void	CodeBlockUsedLocalVariable( CodeBlock* blk, const std::string& str, int32_t numUses )			{ printf( "\tLocal variable \"%s\" used %d times so far.\n", str.c_str(), numUses ); };
 	
 	virtual void	ParseTreeBegunParsing( CParseTree* tree )														{ printf( "\tCreated tree...\n" ); };
 	virtual void	ParseTreeAddedNode( CParseTree* tree, CNode* inNode, size_t inNumNodes )						{ printf( "\t%u tree nodes parsed.\n", (unsigned)inNumNodes ); };
@@ -118,33 +117,6 @@ int main( int argc, char * const argv[] )
 		parser.Parse( filename, tokens, parseTree );
 		
 		parseTree.DebugPrint( std::cout, 1 );
-		
-		std::cout << "Compiling file \"" << filename << "\"..." << std::endl;
-		
-		#if 1
-		CodeBlock				codeBlock( &progressDelegate );
-		
-		parseTree.GenerateCode( codeBlock );
-		
-		codeBlock.finish();
-		
-		std::cout << "Writing code file \"" << destFilename.c_str() << "\"..." << std::endl;
-		FILE*		aFile = fopen( destFilename.c_str(), "w" );
-		if( !aFile )
-			throw std::runtime_error( "Couldn't open destination file." );
-		codeBlock.write( aFile );
-		fclose( aFile );
-		
-		std::cout << "Disassembly of code file \"" << destFilename.c_str() << "\":" << std::endl;
-		VelocityProgram		program;
-		program.LoadFromFile( destFilename.c_str() );
-		#else
-		CppBlock				cppBlock( &progressDelegate );
-		
-		parseTree.GenerateCpp( cppBlock );
-		
-		cppBlock.dump();
-		#endif
 	}
 	catch( std::exception& err )
 	{

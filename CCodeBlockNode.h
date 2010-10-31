@@ -11,6 +11,7 @@
 
 #include "CValueNode.h"
 #include "CParser.h"
+#include <vector>
 
 
 namespace Carlson
@@ -39,12 +40,11 @@ public:
 
 	virtual std::map<std::string,CVariableEntry>&		GetLocals() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetGlobals()	{ return *mGlobals; };
-	
-	virtual void	GenerateCode( CodeBlock& codeBlock );
-
-	virtual void	GenerateCpp( CppBlock& codeBlock );
-	
+		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
+	
+protected:
+	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
 	
 protected:
 	size_t									mLineNum;

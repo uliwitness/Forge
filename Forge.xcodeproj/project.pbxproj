@@ -15,11 +15,7 @@
 		3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7298310A7BC89C0065F0AC /* CToken.cpp */; };
 		3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7298570A7BC9990065F0AC /* CParser.cpp */; };
 		3D729D910A7C44260065F0AC /* GetFileContents.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D729D8F0A7C44260065F0AC /* GetFileContents.c */; };
-		3D8301170D02F2880090C96B /* VelocityProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D8301150D02F2880090C96B /* VelocityProgram.cpp */; };
-		3D8301300D02F3920090C96B /* DummyLoaderFunctions.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */; };
-		3D8301330D02F3D60090C96B /* UKDumpHex.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D8301320D02F3D60090C96B /* UKDumpHex.c */; };
 		3D897FBA0BFC7FB9009FF852 /* CCodeBlockNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D897FB80BFC7FB9009FF852 /* CCodeBlockNode.cpp */; };
-		3DAE6D110BF297A100946F2F /* CodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */; };
 		3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D280BF2992200946F2F /* CCommandNode.cpp */; };
 		3DAE6D420BF3ADDA00946F2F /* CValueNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D400BF3ADDA00946F2F /* CValueNode.cpp */; };
 		3DAE6D4A0BF3B58A00946F2F /* CNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DAE6D480BF3B58A00946F2F /* CNode.cpp */; };
@@ -31,7 +27,6 @@
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
 		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
-		55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD37CE0ED62B1E00828862 /* CppBlock.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -70,18 +65,10 @@
 		3D7298570A7BC9990065F0AC /* CParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CParser.cpp; sourceTree = "<group>"; };
 		3D729D8F0A7C44260065F0AC /* GetFileContents.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = GetFileContents.c; path = ../UliKit/GetFileContents.c; sourceTree = SOURCE_ROOT; };
 		3D729D900A7C44260065F0AC /* GetFileContents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GetFileContents.h; path = ../UliKit/GetFileContents.h; sourceTree = SOURCE_ROOT; };
-		3D8301150D02F2880090C96B /* VelocityProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VelocityProgram.cpp; path = ../VelocityLoader/VelocityProgram.cpp; sourceTree = SOURCE_ROOT; };
-		3D8301160D02F2880090C96B /* VelocityProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VelocityProgram.h; path = ../VelocityLoader/VelocityProgram.h; sourceTree = SOURCE_ROOT; };
-		3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DummyLoaderFunctions.c; sourceTree = "<group>"; };
-		3D8301310D02F3D60090C96B /* UKDumpHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKDumpHex.h; path = ../UliKit/UKDumpHex.h; sourceTree = SOURCE_ROOT; };
-		3D8301320D02F3D60090C96B /* UKDumpHex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = UKDumpHex.c; path = ../UliKit/UKDumpHex.c; sourceTree = SOURCE_ROOT; };
 		3D894ED80B2386B900D4F1D2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		3D897FB70BFC7FB9009FF852 /* CCodeBlockNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CCodeBlockNode.h; sourceTree = "<group>"; };
 		3D897FB80BFC7FB9009FF852 /* CCodeBlockNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CCodeBlockNode.cpp; sourceTree = "<group>"; };
 		3D9B7DA90ABC1E7700767710 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		3DAE6D0D0BF297A100946F2F /* CodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CodeBlock.h; path = ../VelocityCompiler/CodeBlock.h; sourceTree = SOURCE_ROOT; };
-		3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CodeBlock.cpp; path = ../VelocityCompiler/CodeBlock.cpp; sourceTree = SOURCE_ROOT; };
-		3DAE6D0F0BF297A100946F2F /* InstructionOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InstructionOpcodes.h; path = ../VelocityCompiler/InstructionOpcodes.h; sourceTree = SOURCE_ROOT; };
 		3DAE6D270BF2992200946F2F /* CCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCommandNode.h; sourceTree = "<group>"; };
 		3DAE6D280BF2992200946F2F /* CCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCommandNode.cpp; sourceTree = "<group>"; };
 		3DAE6D3F0BF3ADDA00946F2F /* CValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CValueNode.h; sourceTree = "<group>"; };
@@ -96,7 +83,6 @@
 		3DB565550AF8F46500F04130 /* testfile5.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile5.hc; sourceTree = "<group>"; };
 		3DC0F1640BF5D4F700C641C2 /* CFunctionCallNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFunctionCallNode.h; sourceTree = "<group>"; };
 		3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CFunctionCallNode.cpp; sourceTree = "<group>"; };
-		3DC0F1AA0BF6543200C641C2 /* TVariantConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVariantConstants.h; sourceTree = "<group>"; };
 		3DC80A9B0BFF8D8B002CA7FF /* CWhileLoopNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CWhileLoopNode.h; sourceTree = "<group>"; };
 		3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWhileLoopNode.cpp; sourceTree = "<group>"; };
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
@@ -104,8 +90,6 @@
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF32CaseTables.h; sourceTree = "<group>"; };
 		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
 		55B24F5E0C189906001C7796 /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariableEntry.cpp; sourceTree = "<group>"; };
-		55BD37CD0ED62B1E00828862 /* CppBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CppBlock.h; sourceTree = "<group>"; };
-		55BD37CE0ED62B1E00828862 /* CppBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CppBlock.cpp; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* HyperC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HyperC; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -158,7 +142,6 @@
 				08FB7796FE84155DC02AAC07 /* main.cpp */,
 				55B24F5D0C189906001C7796 /* CVariableEntry.h */,
 				55B24F5E0C189906001C7796 /* CVariableEntry.cpp */,
-				3DC0F1AA0BF6543200C641C2 /* TVariantConstants.h */,
 				55256831127CD571000D8325 /* UTF32CaseTables.h */,
 				3D7298320A7BC89C0065F0AC /* CToken.h */,
 				3D7298310A7BC89C0065F0AC /* CToken.cpp */,
@@ -167,10 +150,6 @@
 				3D729D900A7C44260065F0AC /* GetFileContents.h */,
 				3D729D8F0A7C44260065F0AC /* GetFileContents.c */,
 				3DAE6D2F0BF29A8A00946F2F /* Parse Tree */,
-				55BD37CD0ED62B1E00828862 /* CppBlock.h */,
-				55BD37CE0ED62B1E00828862 /* CppBlock.cpp */,
-				3DAE6D150BF297A200946F2F /* VelocityCompiler */,
-				3D8301180D02F28E0090C96B /* VelocityLoader */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -181,28 +160,6 @@
 				8DD76F6C0486A84900D96B5E /* HyperC */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		3D8301180D02F28E0090C96B /* VelocityLoader */ = {
-			isa = PBXGroup;
-			children = (
-				3D8301160D02F2880090C96B /* VelocityProgram.h */,
-				3D8301150D02F2880090C96B /* VelocityProgram.cpp */,
-				3D83012F0D02F3920090C96B /* DummyLoaderFunctions.c */,
-				3D8301310D02F3D60090C96B /* UKDumpHex.h */,
-				3D8301320D02F3D60090C96B /* UKDumpHex.c */,
-			);
-			name = VelocityLoader;
-			sourceTree = "<group>";
-		};
-		3DAE6D150BF297A200946F2F /* VelocityCompiler */ = {
-			isa = PBXGroup;
-			children = (
-				3DAE6D0D0BF297A100946F2F /* CodeBlock.h */,
-				3DAE6D0E0BF297A100946F2F /* CodeBlock.cpp */,
-				3DAE6D0F0BF297A100946F2F /* InstructionOpcodes.h */,
-			);
-			name = VelocityCompiler;
 			sourceTree = "<group>";
 		};
 		3DAE6D2F0BF29A8A00946F2F /* Parse Tree */ = {
@@ -283,7 +240,6 @@
 				3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */,
 				3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */,
 				3D729D910A7C44260065F0AC /* GetFileContents.c in Sources */,
-				3DAE6D110BF297A100946F2F /* CodeBlock.cpp in Sources */,
 				3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */,
 				3DAE6D420BF3ADDA00946F2F /* CValueNode.cpp in Sources */,
 				3DAE6D4A0BF3B58A00946F2F /* CNode.cpp in Sources */,
@@ -293,10 +249,6 @@
 				3D897FBA0BFC7FB9009FF852 /* CCodeBlockNode.cpp in Sources */,
 				3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */,
 				55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */,
-				3D8301170D02F2880090C96B /* VelocityProgram.cpp in Sources */,
-				3D8301300D02F3920090C96B /* DummyLoaderFunctions.c in Sources */,
-				3D8301330D02F3D60090C96B /* UKDumpHex.c in Sources */,
-				55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

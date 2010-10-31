@@ -21,8 +21,6 @@ public:
 
 	virtual void	SetCondition( CValueNode* inCond )	{ if( mCondition ) delete mCondition; mCondition = inCond; };	// inCond is now owned by the CWhileLoopNode.
 	
-	virtual void	GenerateCpp( CppBlock& cppBlock );
-	
 protected:
 	CValueNode*		mCondition;
 };

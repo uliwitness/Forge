@@ -14,6 +14,8 @@
 // -----------------------------------------------------------------------------
 
 #include "CNode.h"
+#include <string>
+#include <vector>
 
 
 // -----------------------------------------------------------------------------
@@ -39,10 +41,6 @@ public:
 	virtual CValueNode*	GetParamAtIndex( size_t idx )						{ return mParams[idx]; };
 	virtual void		SetParamAtIndex( size_t idx, CValueNode* val )		{ mParams[idx] = val; };
 	virtual void		AddParam( CValueNode* val )							{ mParams.push_back( val ); };
-	
-	virtual void		GenerateCode( CodeBlock& codeBlock );
-
-	virtual void		GenerateCpp( CppBlock& codeBlock );
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 	

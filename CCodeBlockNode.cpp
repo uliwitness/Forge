@@ -13,34 +13,21 @@
 namespace Carlson
 {
 
-void	CCodeBlockNodeBase::GenerateCode( CodeBlock& codeBlock )
-{
-	std::vector<CNode*>::iterator	itty;
-	
-	for( itty = mCommands.begin(); itty != mCommands.end(); itty++ )
-	{
-		(*itty)->GenerateCode( codeBlock );
-	}
-}
-
-
-void	CCodeBlockNodeBase::GenerateCpp( CppBlock& codeBlock )
-{
-	std::vector<CNode*>::iterator	itty;
-	
-	for( itty = mCommands.begin(); itty != mCommands.end(); itty++ )
-	{
-		(*itty)->GenerateCpp( codeBlock );
-	}
-}
-
-
 void	CCodeBlockNodeBase::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Code Block" << std::endl
-				<< indentChars << "{" << std::endl
+	destStream << indentChars << "Code Block" << std::endl;
+	
+	DebugPrintInner( destStream, indentLevel );
+}
+
+
+void	CCodeBlockNodeBase::DebugPrintInner( std::ostream& destStream, size_t indentLevel )
+{
+	INDENT_PREPARE(indentLevel);
+	
+	destStream << indentChars << "{" << std::endl
 				<< indentChars << "\tcommands" << std::endl
 				<< indentChars << "\t{" << std::endl;
 	
@@ -55,6 +42,7 @@ void	CCodeBlockNodeBase::DebugPrint( std::ostream& destStream, size_t indentLeve
 	
 	destStream << indentChars << "}" << std::endl;
 }
+
 
 CCodeBlockNodeBase::~CCodeBlockNodeBase()
 {

@@ -41,40 +41,14 @@ void	CFunctionDefinitionNode::AddLocalVar( const std::string& inName,
 		(*mGlobals)[inName] = newEntry;
 }
 
-void	CFunctionDefinitionNode::GenerateCode( CodeBlock& codeBlock )
+
+void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
-	codeBlock.export_method( mName );
+	INDENT_PREPARE(indentLevel);
 	
-	LocalVarEntryMap		varSlots;
+	destStream << indentChars << "Function " << mName << std::endl;
 	
-	std::map<std::string,CVariableEntry>::iterator	localsItty;
-	for( localsItty = mLocals.begin(); localsItty != mLocals.end(); localsItty++ )
-	{
-		varSlots[ localsItty->first ] = LocalVarEntry( 4 );
-	}
-	
-	codeBlock.push_back_function_prolog( varSlots );
-	
-	CCodeBlockNodeBase::GenerateCode( codeBlock );
-	
-	codeBlock.push_back_function_epilog();
+	DebugPrintInner( destStream, indentLevel );
 }
-
-
-void	CFunctionDefinitionNode::GenerateCpp( CppBlock& codeBlock )
-{
-	codeBlock.generate_function_definition_start( mName );
-	
-	std::map<std::string,CVariableEntry>::iterator	localsItty;
-	for( localsItty = mLocals.begin(); localsItty != mLocals.end(); localsItty++ )
-	{
-		codeBlock.declare_local_var( localsItty->first );
-	}
-	
-	CCodeBlockNodeBase::GenerateCpp( codeBlock );
-	
-	codeBlock.generate_function_definition_end( mName );
-}
-
 
 } /* namespace Carlson */
