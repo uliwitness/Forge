@@ -39,17 +39,12 @@ void	CParseTree::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Parse Tree" << std::endl
-				<< indentChars << "{" << std::endl;
-	
 	std::deque<CNode*>::iterator itty;
 	
 	for( itty = mNodes.begin(); itty != mNodes.end(); itty++ )
 	{
-		(*itty)->DebugPrint( destStream, indentLevel +1 );
+		(*itty)->DebugPrint( destStream, indentLevel );
 	}
-	
-	destStream << indentChars << "}" << std::endl;
 }
 
 

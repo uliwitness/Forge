@@ -29,7 +29,7 @@ namespace Carlson
 class CValueNode : public CNode
 {
 public:
-	CValueNode() {};
+	explicit CValueNode( CParseTree* inTree ) : CNode(inTree) {};
 	virtual ~CValueNode() {};
 	
 	virtual size_t	GetLineNum()		{ return 0; };
@@ -50,11 +50,11 @@ public:
 class CIntValueNode : public CValueNode
 {
 public:
-	CIntValueNode( int n ) : CValueNode(), mIntValue(n) {};
+	CIntValueNode( CParseTree* inTree, int n ) : CValueNode(inTree), mIntValue(n) {};
 	
 	virtual bool			IsConstant()	{ return true; };
 
-	virtual CIntValueNode*	Copy()			{ return new CIntValueNode( mIntValue ); };
+	virtual CIntValueNode*	Copy()			{ return new CIntValueNode( mParseTree, mIntValue ); };
 
 	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -75,11 +75,11 @@ protected:
 class CFloatValueNode : public CValueNode
 {
 public:
-	CFloatValueNode( float n ) : CValueNode(), mFloatValue(n) {};
+	CFloatValueNode( CParseTree* inTree, float n ) : CValueNode(inTree), mFloatValue(n) {};
 
 	virtual bool				IsConstant()		{ return true; };
 
-	virtual CFloatValueNode*	Copy()		{ return new CFloatValueNode( mFloatValue ); };
+	virtual CFloatValueNode*	Copy()		{ return new CFloatValueNode( mParseTree, mFloatValue ); };
 
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -100,11 +100,11 @@ protected:
 class CBoolValueNode : public CValueNode
 {
 public:
-	CBoolValueNode( bool n ) : CValueNode(), mBoolValue(n) {};
+	CBoolValueNode( CParseTree* inTree, bool n ) : CValueNode(inTree), mBoolValue(n) {};
 	
 	virtual bool				IsConstant()		{ return true; };
 
-	virtual CBoolValueNode*		Copy()		{ return new CBoolValueNode( mBoolValue ); };
+	virtual CBoolValueNode*		Copy()		{ return new CBoolValueNode( mParseTree, mBoolValue ); };
 
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -124,11 +124,11 @@ protected:
 class CStringValueNode : public CValueNode
 {
 public:
-	CStringValueNode( const std::string& n ) : CValueNode(), mStringValue(n) {};
+	CStringValueNode( CParseTree* inTree, const std::string& n ) : CValueNode(inTree), mStringValue(n) {};
 	
 	virtual bool				IsConstant()		{ return true; };
 
-	virtual CStringValueNode*	Copy()									{ return new CStringValueNode( mStringValue ); };
+	virtual CStringValueNode*	Copy()									{ return new CStringValueNode( mParseTree, mStringValue ); };
 
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -148,9 +148,9 @@ protected:
 class CLocalVariableRefValueNode : public CValueNode
 {
 public:
-	CLocalVariableRefValueNode( const std::string& inVarName ) : CValueNode(), mVarName(inVarName) {};
+	CLocalVariableRefValueNode( CParseTree* inTree, const std::string& inVarName ) : CValueNode(inTree), mVarName(inVarName) {};
 	
-	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mVarName ); };
+	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mParseTree, mVarName ); };
 	
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{

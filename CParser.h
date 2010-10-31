@@ -187,7 +187,7 @@ namespace Carlson
 														const char* typesStr,
 														std::stringstream& theCode, std::string &outTrampolineName );
 		
-		CValueNode*	CollapseExpressionStack( std::deque<CValueNode*> &terms, std::deque<const char*> &operators );
+		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<const char*> &operators );
 		
 		bool		GetUsesObjCCall()									{ return mUsesObjCCall; };
 		std::string	GetFirstHandlerName()								{ return mFirstHandlerName; };

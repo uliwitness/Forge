@@ -8,6 +8,7 @@
  */
 
 #include "CFunctionCallNode.h"
+#include "CParseTree.h"
 
 
 namespace Carlson
@@ -18,22 +19,23 @@ void	CFunctionCallNode::DebugPrint( std::ostream& destStream, size_t indentLevel
 	INDENT_PREPARE(indentLevel);
 	
 	destStream << indentChars << "Function Call \"" << mSymbolName << "\"" << std::endl
-				<< indentChars << "{" << std::endl
-				<< indentChars << "\tparams" << std::endl
-				<< indentChars << "\t{" << std::endl;
+				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 	{
-		(*itty)->DebugPrint( destStream, indentLevel +2 );
+		(*itty)->DebugPrint( destStream, indentLevel +1 );
 	}
-	
-	destStream << indentChars << "\t}" << std::endl;
 	
 	destStream << indentChars << "}" << std::endl;
 }
 
 
+void	CFunctionCallNode::AddParam( CValueNode* val )
+{
+	mParams.push_back( val );
+	mParseTree->NodeWasAdded(val);
+}
 
 } // namespace Carlson

@@ -22,14 +22,14 @@ class CValueNode;
 class CFunctionCallNode : public CValueNode
 {
 public:
-	CFunctionCallNode( const std::string& inSymbolName, size_t inLineNum ) : CValueNode(), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
+	CFunctionCallNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum ) : CValueNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
 	virtual ~CFunctionCallNode() {};
 	
 	virtual void		GetSymbolName( std::string& outSymbolName )		{ outSymbolName = mSymbolName; };
 	virtual size_t		GetParamCount()									{ return mParams.size(); };
 	virtual CValueNode*	GetParamAtIndex( size_t idx )					{ return mParams[idx]; };
 	virtual void		SetParamAtIndex( size_t idx, CValueNode* val )	{ mParams[idx] = val; };
-	virtual void		AddParam( CValueNode* val )						{ mParams.push_back( val ); };
+	virtual void		AddParam( CValueNode* val );
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 

@@ -21,10 +21,10 @@ namespace Carlson
 
 class CParseTree;
 
-class ParseTreeProgressDelegate
+class CParseTreeProgressDelegate
 {
 public:
-	virtual ~ParseTreeProgressDelegate()	{};
+	virtual ~CParseTreeProgressDelegate()	{};
 	
 	virtual void	ParseTreeAddedNode( CParseTree* tree, CNode* inNode, size_t inNumNodes )	{};
 };
@@ -33,10 +33,11 @@ public:
 class CParseTree
 {
 public:
-	CParseTree( ParseTreeProgressDelegate* progDele ) : mProgressDelegate(progDele), mNumNodes(0)			{};
+	CParseTree( CParseTreeProgressDelegate* progDele ) : mProgressDelegate(progDele), mNumNodes(0)			{};
 	virtual ~CParseTree();
 	
 	virtual void		AddNode( CNode* inNode )			{ mNodes.push_back( inNode ); mProgressDelegate->ParseTreeAddedNode( this, inNode, ++mNumNodes ); };
+	void				NodeWasAdded( CNode* inNode )		{ mProgressDelegate->ParseTreeAddedNode( this, inNode, ++mNumNodes ); };
 	
 	std::map<std::string,CVariableEntry>&	GetGlobals()	{ return mGlobals; };
 	
@@ -45,7 +46,7 @@ public:
 
 protected:
 	std::deque<CNode*>						mNodes;	// The tree owns any nodes you add and will delete them when it goes out of scope.
-	ParseTreeProgressDelegate*				mProgressDelegate;
+	CParseTreeProgressDelegate*				mProgressDelegate;
 	std::map<std::string,CVariableEntry>	mGlobals;
 	size_t									mNumNodes;
 };

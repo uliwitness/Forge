@@ -16,7 +16,7 @@ extern "C" {
 using namespace Carlson;
 
 
-class PrintfProgressDelegate : public CCodeBlockProgressDelegate, public ParseTreeProgressDelegate
+class PrintfProgressDelegate : public CCodeBlockProgressDelegate, public CParseTreeProgressDelegate
 {
 public:
 	virtual void	CodeBlockPreparing( CCodeBlock* blk )																{ printf( "\tPreparing...\n" ); };
@@ -34,7 +34,7 @@ public:
 	virtual void	CodeBlockUsedLocalVariable( CCodeBlock* blk, const std::string& str, int32_t numUses )				{ printf( "\tLocal variable \"%s\" used %d times so far.\n", str.c_str(), numUses ); };
 	
 	virtual void	ParseTreeBegunParsing( CParseTree* tree )															{ printf( "\tCreated tree...\n" ); };
-	virtual void	ParseTreeAddedNode( CParseTree* tree, CNode* inNode, size_t inNumNodes )							{ printf( "\t%u tree nodes parsed.\n", (unsigned)inNumNodes ); };
+	virtual void	ParseTreeAddedNode( CParseTree* tree, CNode* inNode, size_t inNumNodes )							{ printf( "\t%lu tree nodes parsed.\n", inNumNodes ); };
 	virtual void	ParseTreeFinishedParsing( CParseTree* tree )														{ printf( "\tTearing down tree...\n" ); };
 };
 

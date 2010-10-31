@@ -31,7 +31,7 @@ class CValueNode;
 class CCommandNode : public CNode
 {
 public:
-	CCommandNode( const std::string& inSymbolName, size_t inLineNum ) : CNode(), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
+	CCommandNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum ) : CNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
 	virtual ~CCommandNode() {};
 	
 	virtual void		GetSymbolName( std::string& outSymbolName )			{ outSymbolName = mSymbolName; };
@@ -40,7 +40,7 @@ public:
 	virtual size_t		GetParamCount()										{ return mParams.size(); };
 	virtual CValueNode*	GetParamAtIndex( size_t idx )						{ return mParams[idx]; };
 	virtual void		SetParamAtIndex( size_t idx, CValueNode* val )		{ mParams[idx] = val; };
-	virtual void		AddParam( CValueNode* val )							{ mParams.push_back( val ); };
+	virtual void		AddParam( CValueNode* val );
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 	

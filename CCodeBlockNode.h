@@ -27,11 +27,11 @@ class CCommandNode;
 class CCodeBlockNodeBase : public CNode
 {
 public:
-	CCodeBlockNodeBase( size_t inLineNum, std::map<std::string,CVariableEntry>* inGlobals )
-		: CNode(), mLineNum( inLineNum ), mGlobals(inGlobals) {};
+	CCodeBlockNodeBase( CParseTree* inTree, size_t inLineNum, std::map<std::string,CVariableEntry>* inGlobals )
+		: CNode(inTree), mLineNum( inLineNum ), mGlobals(inGlobals) {};
 	virtual ~CCodeBlockNodeBase();
 	
-	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); };	// Function node now owns this command and will delete it!
+	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); mParseTree->NodeWasAdded( inCmd ); };	// Function node now owns this command and will delete it!
 	
 	virtual void	AddLocalVar( const std::string& inName, const std::string& inUserName,
 									TVariantType theType, bool initWithName = false,
@@ -58,8 +58,8 @@ protected:
 class CCodeBlockNode : public CCodeBlockNodeBase
 {
 public:
-	CCodeBlockNode( size_t inLineNum, CCodeBlockNodeBase* owningBlock )
-		: CCodeBlockNodeBase( inLineNum, NULL ), mOwningBlock(NULL)
+	CCodeBlockNode( CParseTree* inTree, size_t inLineNum, CCodeBlockNodeBase* owningBlock )
+		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mOwningBlock(NULL)
 	{
 		mOwningBlock = owningBlock;
 		mGlobals = &owningBlock->GetGlobals();

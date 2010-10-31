@@ -27,18 +27,14 @@ void	CCodeBlockNodeBase::DebugPrintInner( std::ostream& destStream, size_t inden
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "{" << std::endl
-				<< indentChars << "\tcommands" << std::endl
-				<< indentChars << "\t{" << std::endl;
+	destStream << indentChars << "{" << std::endl;
 	
 	std::vector<CNode*>::iterator itty;
 	
 	for( itty = mCommands.begin(); itty != mCommands.end(); itty++ )
 	{
-		(*itty)->DebugPrint( destStream, indentLevel +2 );
+		(*itty)->DebugPrint( destStream, indentLevel +1 );
 	}
-	
-	destStream << indentChars << "\t}" << std::endl;
 	
 	destStream << indentChars << "}" << std::endl;
 }

@@ -36,8 +36,8 @@ public:
 class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
-	CFunctionDefinitionNode( const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
-		: CCodeBlockNodeBase( inLineNum, NULL ), mName( inName ), mLineNum( inLineNum )
+	CFunctionDefinitionNode( CParseTree* inTree, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
+		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum )
 	{
 		
 	};
