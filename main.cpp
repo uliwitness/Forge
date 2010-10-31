@@ -36,9 +36,6 @@ public:
 };
 
 
-extern "C" void	test_vcy_lib();
-
-
 using namespace Carlson;
 
 int main( int argc, char * const argv[] )
@@ -53,8 +50,6 @@ int main( int argc, char * const argv[] )
 		std::cerr << "error: This pre-release version has run out. Please get a new one from http://www.zathras.de/." << std::endl;
 		return 99;
 	}
-	
-	test_vcy_lib();
 	
 	int		fnameIdx = 0, outputFNameIdx = 0;
 	for( int x = 1; x < argc; )

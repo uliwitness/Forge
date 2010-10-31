@@ -30,7 +30,6 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
-		553622E010657E120099C4D0 /* vcy_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */; };
 		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
 		55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BD37CE0ED62B1E00828862 /* CppBlock.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
@@ -103,12 +102,10 @@
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF32CaseTables.h; sourceTree = "<group>"; };
-		552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vcy_lib.c; sourceTree = "<group>"; };
 		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
 		55B24F5E0C189906001C7796 /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariableEntry.cpp; sourceTree = "<group>"; };
 		55BD37CD0ED62B1E00828862 /* CppBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CppBlock.h; sourceTree = "<group>"; };
 		55BD37CE0ED62B1E00828862 /* CppBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CppBlock.cpp; sourceTree = "<group>"; };
-		55C3E6FE116BCADE0086F433 /* vcy_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vcy_lib.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* HyperC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HyperC; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -148,8 +145,6 @@
 				3DB565550AF8F46500F04130 /* testfile5.hc */,
 				3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */,
 				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
-				55C3E6FE116BCADE0086F433 /* vcy_lib.h */,
-				552A4C1C0EF5734F006EA4B6 /* vcy_lib.c */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -302,7 +297,6 @@
 				3D8301300D02F3920090C96B /* DummyLoaderFunctions.c in Sources */,
 				3D8301330D02F3D60090C96B /* UKDumpHex.c in Sources */,
 				55BD37CF0ED62B1E00828862 /* CppBlock.cpp in Sources */,
-				553622E010657E120099C4D0 /* vcy_lib.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
