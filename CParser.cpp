@@ -309,7 +309,6 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 	}
 	
 	CFunctionDefinitionNode*		currFunctionNode = new CFunctionDefinitionNode( &parseTree, handlerName, fcnLineNum, parseTree.GetGlobals() );
-	currFunctionNode->AddParam( new CFunctionParamVarEntry( "paramList") );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
@@ -322,9 +321,8 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 		std::string	realVarName( tokenItty->GetIdentifierText() );
 		std::string	varName("var_");
 		varName.append( realVarName );
-		CCommandNode*		theVarCopyCommand = new CCommandNode( &parseTree, "vcy_list_getref", tokenItty->mLineNum );
+		CCommandNode*		theVarCopyCommand = new CCommandNode( &parseTree, "GetParamReference", tokenItty->mLineNum );
 		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, varName) );
-		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, "paramList") );
 		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, currParamIdx++ ) );
 		currFunctionNode->AddCommand( theVarCopyCommand );
 		
@@ -348,7 +346,7 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 	ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens );
 	
 	CCommandNode*		theReturnCommand = new CCommandNode( &parseTree, "return", tokenItty->mLineNum );
-	theReturnCommand->AddParam( new CFunctionCallNode( &parseTree, "vcy_alloc_empty", tokenItty->mLineNum ) );
+	theReturnCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
 	currFunctionNode->AddCommand( theReturnCommand );
 }
 
@@ -366,7 +364,7 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, handlerName, currLineNum );
 	currFunctionCall->AddParam( paramList );
 
-	CCommandNode*			theVarAssignCommand = new CCommandNode( &parseTree, "vcy_alloc_value", currLineNum );
+	CCommandNode*			theVarAssignCommand = new CCommandNode( &parseTree, "=", currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, "theResult") );
 	theVarAssignCommand->AddParam( currFunctionCall );
 	currFunction->AddCommand( theVarAssignCommand );
@@ -377,7 +375,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	// Put:
-	CCommandNode*			thePutCommand = new CCommandNode( &parseTree, "vcy_print", tokenItty->mLineNum );
+	CCommandNode*			thePutCommand = new CCommandNode( &parseTree, "Print", tokenItty->mLineNum );
 	try {
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -388,7 +386,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "vcy_put" );			// Change command to "put".
+			thePutCommand->SetSymbolName( "Put" );			// Change command to "put".
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
@@ -397,7 +395,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else if( tokenItty->IsIdentifier( EAfterIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "vcy_append" );		// Change command to "append".
+			thePutCommand->SetSymbolName( "Append" );		// Change command to "append".
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
@@ -406,7 +404,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else if( tokenItty->IsIdentifier( EBeforeIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "vcy_prepend" );		// Change command to "prepend".
+			thePutCommand->SetSymbolName( "Prepend" );		// Change command to "prepend".
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
@@ -432,7 +430,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 {
 	CValueNode*			propRef = NULL;
 	CValueNode*			whatExpr = NULL;
-	CCommandNode*		thePutCommand = new CCommandNode( &parseTree, "vcy_put", tokenItty->mLineNum );
+	CCommandNode*		thePutCommand = new CCommandNode( &parseTree, "Put", tokenItty->mLineNum );
 	try
 	{
 		// Set:
@@ -540,7 +538,7 @@ void	CParser::ParseGlobalStatement( bool isPublic, CParseTree& parseTree, CCodeB
 void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	thePutCommand = new CCommandNode( &parseTree, "vcy_put", tokenItty->mLineNum );
+	CCommandNode*	thePutCommand = new CCommandNode( &parseTree, "Put", tokenItty->mLineNum );
 	
 	// We map "get" to "put <what> into it":
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "get".
@@ -576,7 +574,7 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "vcy_add_to", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "AddTo", tokenItty->mLineNum );
 	
 	// Add:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -606,7 +604,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "vcy_sub_from", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "SubtractFrom", tokenItty->mLineNum );
 	
 	// Add:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -636,7 +634,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "vcy_mul_with", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "MultiplyWith", tokenItty->mLineNum );
 	
 	// Add:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -666,7 +664,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "vcy_div_by", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "DivideBy", tokenItty->mLineNum );
 	
 	// Add:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );

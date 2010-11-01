@@ -17,22 +17,6 @@ namespace Carlson
 
 class CCommandNode;
 
-class CFunctionParamVarEntry
-{
-public:
-	CFunctionParamVarEntry( const std::string& inName ) : mName(inName)	{};
-	
-	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel )
-	{
-		INDENT_PREPARE(indentLevel);
-		
-		destStream << indentChars << "param( " << mName << " )" << std::endl;
-	}
-public:
-	std::string					mName;
-};
-
-
 class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
@@ -42,9 +26,7 @@ public:
 		
 	};
 	virtual ~CFunctionDefinitionNode();
-	
-	virtual void	AddParam( CFunctionParamVarEntry* inParam )		{ mParams.push_back( inParam ); };	// Function node now owns this param and will delete it!
-	
+		
 	virtual void	AddLocalVar( const std::string& inName, const std::string& inUserName,
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
@@ -55,7 +37,6 @@ public:
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
 protected:
-	std::vector<CFunctionParamVarEntry*>	mParams;
 	std::string								mName;
 	size_t									mLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;

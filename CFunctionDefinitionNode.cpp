@@ -16,13 +16,7 @@ namespace Carlson
 
 CFunctionDefinitionNode::~CFunctionDefinitionNode()
 {
-	std::vector<CFunctionParamVarEntry*>::iterator itty;
 	
-	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
-	{
-		delete *itty;
-		*itty = NULL;
-	}
 }
 
 
