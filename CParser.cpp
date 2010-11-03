@@ -636,7 +636,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 {
 	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "MultiplyWith", tokenItty->mLineNum );
 	
-	// Add:
+	// Multiply:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
@@ -666,7 +666,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 {
 	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "DivideBy", tokenItty->mLineNum );
 	
-	// Add:
+	// Divide:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
@@ -733,7 +733,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	std::string		tempCounterName = CVariableEntry::GetNewTempName();
 	std::string		tempMaxCountName = CVariableEntry::GetNewTempName();
 	
-	CCommandNode*			theVarAssignCommand = new CCommandNode( &parseTree, "vcy_alloc_list_chunks", currLineNum );
+	CCommandNode*			theVarAssignCommand = new CCommandNode( &parseTree, "GetChunkArray", currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 	theVarAssignCommand->AddParam( theExpressionNode );
 	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant) );
@@ -746,7 +746,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	currFunction->AddCommand( theVarAssignCommand );
 
 	// tempMaxCountName = GetElementCount( tempName );
-	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode(&parseTree, "vcy_list_count",currLineNum);
+	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode(&parseTree, "GetNumListItems",currLineNum);
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 	theVarAssignCommand = new CCommandNode( &parseTree, "=", currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, tempMaxCountName) );
@@ -766,7 +766,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	currFunction->AddCommand( whileLoop );
 	
 	// counterVarName = GetConstElementAtIndex( tempName, tempCounterName );
-	currFunctionCall = new CFunctionCallNode(&parseTree, "vcy_list_get_const",currLineNum);
+	currFunctionCall = new CFunctionCallNode(&parseTree, "GetConstElementAtIndex",currLineNum);
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, tempCounterName) );
 	theVarAssignCommand = new CCommandNode( &parseTree, "=", currLineNum );
@@ -816,7 +816,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// Condition:
 		conditionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	funcNode = new CFunctionCallNode( &parseTree, "vcy_get_bool", conditionLineNum );
+		CFunctionCallNode*	funcNode = new CFunctionCallNode( &parseTree, "GetAsBool", conditionLineNum );
 		funcNode->AddParam( conditionNode );
 		conditionNode = funcNode;
 
@@ -890,7 +890,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// tempName = GetAsInt(startNum);
 		CCommandNode*	theAssignCommand = new CCommandNode( &parseTree, "=", conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "vcy_get_int", conditionLineNum );
+		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( startNumExpr );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 		theAssignCommand->AddParam( theFuncCall );
@@ -898,7 +898,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// while( tempName <= GetAsInt(endNum) )
 		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, compareOp, conditionLineNum );
-		theFuncCall = new CFunctionCallNode( &parseTree, "vcy_get_int", conditionLineNum );
+		theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( endNumExpr );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 		theComparison->AddParam( theFuncCall );
@@ -960,7 +960,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// while( tempName < GetAsInt(countExpression) )
 		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, "<", conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "vcy_get_int", conditionLineNum );
+		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( countExpression );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, tempName) );
 		theComparison->AddParam( theFuncCall );
@@ -1084,11 +1084,9 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	// container:
 	size_t				containerLineNum = tokenItty->mLineNum;
 	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
-	CFunctionCallNode*	getAsIntFCall = new CFunctionCallNode( &parseTree, "vcy_get_int", containerLineNum );
-	getAsIntFCall->AddParam( theIndex );
-	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, "vcy_list_get", containerLineNum );
+	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, "GetItemOfListWithKey", containerLineNum );
 	fcall->AddParam( theTarget );
-	fcall->AddParam( getAsIntFCall );
+	fcall->AddParam( theIndex );
 	
 	return fcall;	// TODO: delete stuff on exceptions before this.
 }
@@ -1116,7 +1114,8 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		varName.assign( "theResult" );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
 	}
-	else if( tokenItty->IsIdentifier( EItemDelimiterIdentifier ) || tokenItty->IsIdentifier( EItemDelIdentifier ) || tokenItty->IsIdentifier( EItemDelimIdentifier ) )
+	else if( tokenItty->IsIdentifier( EItemDelimiterIdentifier ) || tokenItty->IsIdentifier( EItemDelIdentifier )
+			|| tokenItty->IsIdentifier( EItemDelimIdentifier ) )
 	{
 		varName.assign( "gItemDel" );
 		realVarName.assign( "itemDelimiter" );
@@ -1170,7 +1169,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		CValueNode*	theContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	theFCall = new CFunctionCallNode( &parseTree, "vcy_clear_var", tokenItty->mLineNum );
+		CFunctionCallNode*	theFCall = new CFunctionCallNode( &parseTree, "Delete", tokenItty->mLineNum );
 		theFCall->AddParam( theContainer );
 		currFunction->AddCommand( theFCall );
 	}
@@ -1181,7 +1180,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "exit".
 		if( tokenItty->IsIdentifier(ERepeatIdentifier) )
 		{
-			CCommandNode*	theExitRepeatCommand = new CCommandNode( &parseTree, "exit_repeat", tokenItty->mLineNum );
+			CCommandNode*	theExitRepeatCommand = new CCommandNode( &parseTree, "ExitRepeat", tokenItty->mLineNum );
 			currFunction->AddCommand( theExitRepeatCommand );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 		}
@@ -1205,7 +1204,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "next".
 		if( tokenItty->IsIdentifier(ERepeatIdentifier) )
 		{
-			CCommandNode*	theNextRepeatCommand = new CCommandNode( &parseTree, "next_repeat", tokenItty->mLineNum );
+			CCommandNode*	theNextRepeatCommand = new CCommandNode( &parseTree, "NextRepeat", tokenItty->mLineNum );
 			currFunction->AddCommand( theNextRepeatCommand );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 		}
@@ -1236,7 +1235,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	else if( tokenItty->IsIdentifier(EGlobalIdentifier) )
 	{
 		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: We can't do SuperCard globals yet, only private globals.";
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: We can't do globals yet, only private globals.";
 		throw std::runtime_error( errMsg.str() );
 		//ParseGlobalStatement( false, currFunction, tokenItty, tokens );
 	}
@@ -1312,49 +1311,38 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 
 // Parse a list of expressions separated by commas as a list value for passing to
 //	a handler as a parameter list:
-CValueNode*	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
+void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	std::string			paramListTemp( CVariableEntry::GetNewTempName() );
-	currFunction->AddLocalVar( paramListTemp, paramListTemp, TVariantTypeList );
-	
-	CCommandNode*	resetListCall = new CCommandNode( &parseTree, "vcy_make_list", tokenItty->mLineNum );
-	resetListCall->AddParam( new CLocalVariableRefValueNode(&parseTree, paramListTemp) );
-	currFunction->AddCommand( resetListCall );	// Clears this temp in case we're called repeatedly in a loop. It doesn't follow any references that might have ended up in this temp by now.
+	int		paramCount = 0;
 	
 	while( !tokenItty->IsIdentifier( identifierToEndOn ) )
 	{
 		// prepare the function call that will add the value to the list:
-		CCommandNode*	appendToListCall = new CCommandNode( &parseTree, "vcy_append", tokenItty->mLineNum );
-		appendToListCall->AddParam( new CLocalVariableRefValueNode(&parseTree, paramListTemp) );
+		CCommandNode*	appendToListCall = NULL;
 		
 		// If this is an @ here, create a reference value for a variable
 		//	with the following identifier as its name, and push *that* instead
 		//	of a copy of the value.
 		if( tokenItty->IsIdentifier( EAtSignOperator ) )
 		{
-			std::string			paramReferenceTemp( CVariableEntry::GetNewTempName() );
-			currFunction->AddLocalVar( paramReferenceTemp, paramReferenceTemp, TVariantTypeEmptyString );
-			
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
-			CValueNode*	referencedContainer = ParseContainer( true, true, parseTree, currFunction, tokenItty, tokens );
-			
-			CFunctionCallNode*	setUpReferenceCall = new CFunctionCallNode( &parseTree, "vcy_make_ref", tokenItty->mLineNum );
-			setUpReferenceCall->AddParam( new CLocalVariableRefValueNode(&parseTree, paramReferenceTemp) );
-			setUpReferenceCall->AddParam( referencedContainer );
+			appendToListCall = new CCommandNode( &parseTree, "PushValue", tokenItty->mLineNum );
+			appendToListCall->AddParam( new CLocalVariableRefValueNode( &parseTree, tokenItty->GetIdentifierText() ) );
 			currFunction->AddCommand( setUpReferenceCall );
-			
-			appendToListCall->AddParam( new CLocalVariableRefValueNode(&parseTree, paramReferenceTemp) );
 		}
 		else
 		{
+			appendToListCall = new CCommandNode( &parseTree, "PushValue", tokenItty->mLineNum );
 			CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 			appendToListCall->AddParam( paramExpression );
 		}
 		
 		currFunction->AddCommand( appendToListCall );	// Now that we have all params calculated, add that function call to our current function body.
+		
+		paramCount++;
 		
 		if( !tokenItty->IsIdentifier( ECommaOperator ) )
 		{
@@ -1368,7 +1356,9 @@ CValueNode*	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	
-	return new CLocalVariableRefValueNode(&parseTree, paramListTemp);
+	CCommandNode	*	paramCountCall = new CCommandNode( &parseTree, "PushValue", tokenItty->mLineNum );
+	paramCountCall->AddParam( new CIntValueNode( &parseTree, paramCount ) );
+	currFunction->AddCommand( paramCountCall );
 }
 
 
