@@ -9,6 +9,7 @@
 
 #include "CFunctionDefinitionNode.h"
 #include "CParser.h"
+#include "CCodeBlock.h"
 
 
 namespace Carlson
@@ -30,9 +31,33 @@ void	CFunctionDefinitionNode::AddLocalVar( const std::string& inName,
 {
 	CVariableEntry	newEntry( inUserName, theType, initWithName,
 								isParam, isGlobal, dontDispose );
-	mLocals[inName] = newEntry;
+	std::map<std::string,CVariableEntry>::iterator	foundVariable = mLocals.find( inName );
+	if( foundVariable == mLocals.end() )
+		mLocals[inName] = newEntry;
 	if( isGlobal )
-		(*mGlobals)[inName] = newEntry;
+	{
+		foundVariable = (*mGlobals).find( inName );
+		if( foundVariable == (*mGlobals).end() )
+			(*mGlobals)[inName] = newEntry;
+	}
+}
+
+
+size_t	CFunctionDefinitionNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
+{
+	std::map<std::string,CVariableEntry>::iterator	foundVariable = mLocals.find( inName );
+	if( foundVariable != mLocals.end() )
+	{
+		size_t	bpRelOffs = foundVariable->second.mBPRelativeOffset;
+		if( bpRelOffs == SIZE_MAX )
+		{
+			foundVariable->second.mBPRelativeOffset = mLocalVariableCount++;
+			bpRelOffs = foundVariable->second.mBPRelativeOffset;
+		}
+		return bpRelOffs;
+	}
+	else
+		return SIZE_MAX;
 }
 
 
@@ -43,6 +68,17 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 	destStream << indentChars << "Function " << mName << std::endl;
 	
 	DebugPrintInner( destStream, indentLevel );
+}
+
+
+
+void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
+{
+	inCodeBlock->GenerateFunctionPrologForName( mName );
+	
+	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
+	
+	inCodeBlock->GenerateFunctionEpilogForName( mName );
 }
 
 } /* namespace Carlson */

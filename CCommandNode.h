@@ -44,6 +44,8 @@ public:
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
+	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	
 protected:
 	std::string					mSymbolName;
 	std::vector<CValueNode*>	mParams;

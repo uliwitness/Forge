@@ -21,6 +21,7 @@
 namespace Carlson
 {
 
+class CCodeBlockNodeBase;
 
 // -----------------------------------------------------------------------------
 //	Classes:
@@ -33,6 +34,8 @@ public:
 	virtual ~CValueNode() {};
 	
 	virtual size_t	GetLineNum()		{ return 0; };
+
+	virtual void	GenerateCode( CCodeBlock* inCodeBlock )		{};	// Generate the actual bytecode so it leaves the result on the stack.
 	
 	virtual void	Simplify()			{};
 	
@@ -52,6 +55,8 @@ class CIntValueNode : public CValueNode
 public:
 	CIntValueNode( CParseTree* inTree, int n ) : CValueNode(inTree), mIntValue(n) {};
 	
+	virtual void			GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+
 	virtual bool			IsConstant()	{ return true; };
 
 	virtual CIntValueNode*	Copy()			{ return new CIntValueNode( mParseTree, mIntValue ); };
@@ -66,7 +71,7 @@ public:
 	virtual int				GetAsInt()		{ return mIntValue; };
 	virtual float			GetAsFloat()	{ return mIntValue; };
 	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%d", mIntValue); return std::string( numStr ); };
-
+	
 protected:
 	int		mIntValue;
 };
@@ -76,6 +81,8 @@ class CFloatValueNode : public CValueNode
 {
 public:
 	CFloatValueNode( CParseTree* inTree, float n ) : CValueNode(inTree), mFloatValue(n) {};
+	
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 
 	virtual bool				IsConstant()		{ return true; };
 
@@ -102,6 +109,8 @@ class CBoolValueNode : public CValueNode
 public:
 	CBoolValueNode( CParseTree* inTree, bool n ) : CValueNode(inTree), mBoolValue(n) {};
 	
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+	
 	virtual bool				IsConstant()		{ return true; };
 
 	virtual CBoolValueNode*		Copy()		{ return new CBoolValueNode( mParseTree, mBoolValue ); };
@@ -126,6 +135,8 @@ class CStringValueNode : public CValueNode
 public:
 	CStringValueNode( CParseTree* inTree, const std::string& n ) : CValueNode(inTree), mStringValue(n) {};
 	
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+	
 	virtual bool				IsConstant()		{ return true; };
 
 	virtual CStringValueNode*	Copy()									{ return new CStringValueNode( mParseTree, mStringValue ); };
@@ -148,9 +159,11 @@ protected:
 class CLocalVariableRefValueNode : public CValueNode
 {
 public:
-	CLocalVariableRefValueNode( CParseTree* inTree, const std::string& inVarName ) : CValueNode(inTree), mVarName(inVarName) {};
+	CLocalVariableRefValueNode( CParseTree* inTree, CCodeBlockNodeBase *inCodeBlockNode, const std::string& inVarName, const std::string& inRealVarName );
 	
-	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mParseTree, mVarName ); };
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+	
+	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mParseTree, mCodeBlockNode, mVarName, mRealVarName ); };
 	
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -158,9 +171,13 @@ public:
 		
 		destStream << indentChars << "localVar( " << mVarName.c_str() << " )" << std::endl;
 	};
+	
+	size_t						GetBPRelativeOffset();
 
 protected:
-	std::string			mVarName;
+	std::string				mVarName;
+	std::string				mRealVarName;
+	CCodeBlockNodeBase *	mCodeBlockNode;
 };
 
 }

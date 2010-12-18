@@ -26,6 +26,8 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */; };
+		558A8DC212BD2BBC00F514F4 /* CAssignCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8DC012BD2BBC00F514F4 /* CAssignCommandNode.cpp */; };
 		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
 		55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */; };
 		55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BE9127DD30B00CF0F16 /* LEOValue.c */; };
@@ -97,6 +99,11 @@
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF32CaseTables.h; sourceTree = "<group>"; };
+		558A8D1512BD10C800F514F4 /* testfile8.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile8.hc; sourceTree = "<group>"; };
+		558A8D8312BD208600F514F4 /* CPushValueCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPushValueCommandNode.h; sourceTree = "<group>"; };
+		558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPushValueCommandNode.cpp; sourceTree = "<group>"; };
+		558A8DC012BD2BBC00F514F4 /* CAssignCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAssignCommandNode.cpp; sourceTree = "<group>"; };
+		558A8DC112BD2BBC00F514F4 /* CAssignCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAssignCommandNode.h; sourceTree = "<group>"; };
 		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
 		55B24F5E0C189906001C7796 /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariableEntry.cpp; sourceTree = "<group>"; };
 		55C72BDC127DCEF400CF0F16 /* CCodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCodeBlock.h; sourceTree = "<group>"; };
@@ -156,6 +163,7 @@
 				3DB565550AF8F46500F04130 /* testfile5.hc */,
 				3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */,
 				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
+				558A8D1512BD10C800F514F4 /* testfile8.hc */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -201,10 +209,9 @@
 				3DAE6D480BF3B58A00946F2F /* CNode.cpp */,
 				3DAE6D3F0BF3ADDA00946F2F /* CValueNode.h */,
 				3DAE6D400BF3ADDA00946F2F /* CValueNode.cpp */,
-				3DAE6D270BF2992200946F2F /* CCommandNode.h */,
-				3DAE6D280BF2992200946F2F /* CCommandNode.cpp */,
 				3DC0F1640BF5D4F700C641C2 /* CFunctionCallNode.h */,
 				3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */,
+				558A8D8012BD205800F514F4 /* Commands */,
 				3DC80ACD0BFFBFE5002CA7FF /* Code Blocks */,
 			);
 			name = "Parse Tree";
@@ -221,6 +228,19 @@
 				3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */,
 			);
 			name = "Code Blocks";
+			sourceTree = "<group>";
+		};
+		558A8D8012BD205800F514F4 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				3DAE6D270BF2992200946F2F /* CCommandNode.h */,
+				3DAE6D280BF2992200946F2F /* CCommandNode.cpp */,
+				558A8D8312BD208600F514F4 /* CPushValueCommandNode.h */,
+				558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */,
+				558A8DC112BD2BBC00F514F4 /* CAssignCommandNode.h */,
+				558A8DC012BD2BBC00F514F4 /* CAssignCommandNode.cpp */,
+			);
+			name = Commands;
 			sourceTree = "<group>";
 		};
 		55C72BFE127DD31600CF0F16 /* Leonie */ = {
@@ -311,6 +331,8 @@
 				55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */,
 				55C72BFD127DD30B00CF0F16 /* LEOContextGroup.c in Sources */,
 				55C72C3B127DD79B00CF0F16 /* LEOInstructionsGeneric.c in Sources */,
+				558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */,
+				558A8DC212BD2BBC00F514F4 /* CAssignCommandNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,11 +343,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_CFLAGS = "-DDONT_ADJUST_LINE_NUMBERS";
 				PRODUCT_NAME = HyperC;
@@ -341,9 +364,10 @@
 					i386,
 				);
 				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = HyperCompiler;
 				STRIP_INSTALLED_PRODUCT = YES;

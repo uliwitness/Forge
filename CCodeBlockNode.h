@@ -36,12 +36,17 @@ public:
 	virtual void	AddLocalVar( const std::string& inName, const std::string& inUserName,
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
-									bool dontDispose = false ) = 0;
-
+									bool dontDispose = false ) = 0;	// It's OK to call this several times with the same variable. Subsequent calls will be ignored.
+	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName ) = 0;
+	
+	// Sub-blocks retrieve and modify these three as needed: // TODO: This isn't really very OO.
+	virtual size_t&										GetLocalVariableCount() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetLocals() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetGlobals()	{ return *mGlobals; };
 		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
+
+	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 protected:
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
@@ -64,6 +69,7 @@ public:
 		mOwningBlock = owningBlock;
 		mGlobals = &owningBlock->GetGlobals();
 		mLocals = &owningBlock->GetLocals();
+		mLocalVariableCount = &owningBlock->GetLocalVariableCount();
 	};
 	virtual ~CCodeBlockNode()	{};
 
@@ -71,11 +77,15 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false );
+	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName );
 
-	virtual std::map<std::string,CVariableEntry>&		GetLocals()	{ return *mLocals; };
+	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
+	virtual size_t&										GetLocalVariableCount()	{ return *mLocalVariableCount; };
+	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return *mLocals; };
 	
 protected:
 	std::map<std::string,CVariableEntry>*	mLocals;
+	size_t*									mLocalVariableCount;
 	CCodeBlockNodeBase*						mOwningBlock;
 };
 

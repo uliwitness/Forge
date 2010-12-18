@@ -31,15 +31,22 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false );
+	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName );
 	
-	virtual std::map<std::string,CVariableEntry>&		GetLocals()		{ return mLocals; };
-
+	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
+	virtual size_t&										GetLocalVariableCount()	{ return mLocalVariableCount; };
+	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return mLocals; };
+	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
+	
+	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
+
 	
 protected:
 	std::string								mName;
 	size_t									mLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
+	size_t									mLocalVariableCount;
 };
 
 

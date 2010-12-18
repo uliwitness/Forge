@@ -152,9 +152,9 @@ namespace Carlson
 		void	ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		CValueNode*	ParseParamList( TIdentifierSubtype identifierToEndOn,
-										CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		void	ParseParamList( TIdentifierSubtype identifierToEndOn,
+								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseNativeFunctionCallStartingAtParams( std::string& methodName, CObjCMethodEntry& methodInfo,

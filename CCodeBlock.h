@@ -11,6 +11,8 @@
 
 
 struct LEOScript;
+struct LEOHandler;
+struct LEOContextGroup;
 
 namespace Carlson
 {
@@ -41,15 +43,27 @@ public:
 class CCodeBlock
 {
 public:
-	CCodeBlock( LEOScript* inScript, CCodeBlockProgressDelegate * progressDelegate );
+	CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript, CCodeBlockProgressDelegate * progressDelegate );
 	virtual ~CCodeBlock();
 	
-	size_t		code_size()		{ return 0; };
-	size_t		data_size()		{ return 0; };
+	size_t		GetCodeSize()		{ return 0; };
+	size_t		GetDataSize()		{ return 0; };
+	
+	void		GenerateFunctionPrologForName( const std::string& inName );
+	void		GenerateFunctionEpilogForName( const std::string& inName );
+	
+	void		GeneratePushIntInstruction( int inNumber );
+	void		GeneratePushFloatInstruction( float inNumber );
+	void		GeneratePushBoolInstruction( bool inBoolean );
+	void		GeneratePushStringInstruction( const std::string& inString );
+	void		GeneratePushVariableInstruction( size_t bpRelativeOffset );
+	void		GeneratePopIntoVariableInstruction( size_t bpRelativeOffset );
 	
 protected:
 	CCodeBlockProgressDelegate	*	mProgressDelegate;
 	LEOScript*						mScript;
+	LEOContextGroup*				mGroup;
+	LEOHandler*						mCurrentHandler;
 };
 
 }

@@ -10,6 +10,7 @@
 #include "CCodeBlock.h"
 extern "C" {
 #include "LEOScript.h"
+#include "LEOContextGroup.h"
 }
 
 
@@ -21,11 +22,11 @@ class PrintfProgressDelegate : public CCodeBlockProgressDelegate, public CParseT
 public:
 	virtual void	CodeBlockPreparing( CCodeBlock* blk )																{ printf( "\tPreparing...\n" ); };
 	virtual void	CodeBlockAddingFunction( CCodeBlock* blk, const std::string& methodName )							{ printf( "\tAdding function \"%s\".\n", methodName.c_str() ); };
-	virtual void	CodeBlockAddedData( CCodeBlock* blk )																{ printf( "\t%lu bytes of data.\n", blk->data_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
-	virtual void	CodeBlockAddedCode( CCodeBlock* blk )																{ printf( "\t%lu bytes of code.\n", blk->code_size() ); };	// This gets called a lot, and may even be caused by the other callbacks.
+	virtual void	CodeBlockAddedData( CCodeBlock* blk )																{ printf( "\t%lu bytes of data.\n", blk->GetDataSize() ); };	// This gets called a lot, and may even be caused by the other callbacks.
+	virtual void	CodeBlockAddedCode( CCodeBlock* blk )																{ printf( "\t%lu bytes of code.\n", blk->GetCodeSize() ); };	// This gets called a lot, and may even be caused by the other callbacks.
 	virtual void	CodeBlockUpdateSymbolUseCount( CCodeBlock* blk, const std::string& methodName, int32_t numUses )	{ printf( "\tSymbol \"%s\" used %d times so far.\n", methodName.c_str(), numUses ); };
 	virtual void	CodeBlockAddingSymbol( CCodeBlock* blk, const std::string& symbolName, bool isExternal )			{ printf( "\tAdding %s symbol \"%s\" to symbol table.\n", (isExternal ? "external" : "internal"), symbolName.c_str() ); };
-	virtual void	CodeBlockFinished( CCodeBlock* blk )																{ printf( "\tFinished.\n\t\t%lu bytes of code.\n\t\t%lu bytes of data.\n", blk->code_size(), blk->data_size() ); };
+	virtual void	CodeBlockFinished( CCodeBlock* blk )																{ printf( "\tFinished.\n\t\t%lu bytes of code.\n\t\t%lu bytes of data.\n", blk->GetCodeSize(), blk->GetDataSize() ); };
 
 	virtual void	CodeBlockAddedStringData( CCodeBlock* blk, const std::string& str )									{ printf( "\tAdded string \"%s\".\n", str.c_str() ); };
 	virtual void	CodeBlockAddedIntData( CCodeBlock* blk, int n )														{ printf( "\tAdded int %d.\n", n ); };
@@ -43,17 +44,6 @@ using namespace Carlson;
 
 int main( int argc, char * const argv[] )
 {
-	time_t					theDate;
-	struct tm*				dateParts;
-	theDate = time( NULL );
-	dateParts = localtime( &theDate );
-	
-	if( dateParts->tm_year > 112 )	// Valid till end of 2012 (-1900).
-	{
-		std::cerr << "error: This pre-release version has run out. Please get a new one from http://www.zathras.de/." << std::endl;
-		return 99;
-	}
-	
 	int		fnameIdx = 0, outputFNameIdx = 0;
 	for( int x = 1; x < argc; )
 	{
@@ -115,11 +105,18 @@ int main( int argc, char * const argv[] )
 		parseTree.DebugPrint( std::cout, 1 );
 		#endif
 		
-		LEOScript	*	script = LEOScriptCreateForOwner( 0, 0 );
-		CCodeBlock		block( script, &progressDelegate );
-		LEOScriptRelease( script );
+		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0 );
+		LEOContextGroup	*	group = LEOContextGroupCreate();
+		CCodeBlock		block( group, script, &progressDelegate );
 		
 		parseTree.GenerateCode( &block );
+		
+		#if 1
+		LEODebugPrintScript( group, script );
+		#endif
+		
+		LEOScriptRelease( script );
+		LEOContextGroupRelease( group );
 	}
 	catch( std::exception& err )
 	{
