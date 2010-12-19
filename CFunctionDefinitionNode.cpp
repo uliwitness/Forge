@@ -65,7 +65,7 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Function " << mName << std::endl;
+	destStream << indentChars << (mIsCommand ? "Command " : "Function ") << mName << std::endl;
 	
 	DebugPrintInner( destStream, indentLevel );
 }
@@ -74,11 +74,11 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 
 void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateFunctionPrologForName( mName, GetLocalVariableCount() );
+	inCodeBlock->GenerateFunctionPrologForName( mIsCommand, mName, GetLocalVariableCount() );
 	
 	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
 	
-	inCodeBlock->GenerateFunctionEpilogForName( mName, GetLocalVariableCount() );
+	inCodeBlock->GenerateFunctionEpilogForName( mIsCommand, mName, GetLocalVariableCount() );
 }
 
 } /* namespace Carlson */

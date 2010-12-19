@@ -267,17 +267,17 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "function" 
-		ParseFunctionDefinition( "fun_", tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( false, tokenItty, tokens, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EOnIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "on" 
-		ParseFunctionDefinition( "", tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EToIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to" 
-		ParseFunctionDefinition( "", tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
 	}
 	else
 	{
@@ -293,9 +293,9 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 }
 
 
-void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
-	std::string								handlerName( prefix );
+	std::string								handlerName( tokenItty->GetIdentifierText() );
 	std::string								userHandlerName( tokenItty->GetIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
@@ -303,16 +303,16 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 	
 	fcnLineNum = tokenItty->mLineNum;
 	
-	handlerName.append( userHandlerName );
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 
 	if( mFirstHandlerName.length() == 0 )
 	{
 		mFirstHandlerName = handlerName;
-		mFirstHandlerIsFunction = (prefix.compare("fun_") == 0);
+		mFirstHandlerIsFunction = !isCommand;
 	}
 	
-	CFunctionDefinitionNode*		currFunctionNode = new CFunctionDefinitionNode( &parseTree, handlerName, fcnLineNum, parseTree.GetGlobals() );
+	CFunctionDefinitionNode*		currFunctionNode = NULL;
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, fcnLineNum, parseTree.GetGlobals() );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
@@ -360,9 +360,9 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	handlerName.append( tokenItty->GetIdentifierText() );
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 
-	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, handlerName, currLineNum );
+	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, true, handlerName, currLineNum );
 	ParseParamList( ENewlineOperator, parseTree, currFunction, tokenItty, tokens, currFunctionCall );
-
+	
 	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "theResult", "the result") );
 	theVarAssignCommand->AddParam( currFunctionCall );
@@ -754,7 +754,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	currFunction->AddCommand( theVarAssignCommand );
 
 	// tempMaxCountName = GetElementCount( tempName );
-	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode(&parseTree, "GetNumListItems",currLineNum);
+	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( false, &parseTree, "GetNumListItems",currLineNum);
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 	theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
@@ -762,19 +762,19 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	currFunction->AddCommand( theVarAssignCommand );
 	
 	// while( tempCounterName < tempMaxCountName )
-	currFunctionCall = new CFunctionCallNode(&parseTree, "<", currLineNum);
+	currFunctionCall = new CFunctionCallNode( false, &parseTree, "<", currLineNum );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
 	
 	CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, currLineNum, currFunction );
-	currFunctionCall = new CFunctionCallNode(&parseTree, "<", currLineNum);
+	currFunctionCall = new CFunctionCallNode( false, &parseTree, "<", currLineNum );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
 	whileLoop->SetCondition( currFunctionCall );
 	currFunction->AddCommand( whileLoop );
 	
 	// counterVarName = GetConstElementAtIndex( tempName, tempCounterName );
-	currFunctionCall = new CFunctionCallNode(&parseTree, "GetConstElementAtIndex",currLineNum);
+	currFunctionCall = new CFunctionCallNode( false, &parseTree, "GetConstElementAtIndex", currLineNum );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
 	theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
@@ -824,13 +824,13 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// Condition:
 		conditionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	funcNode = new CFunctionCallNode( &parseTree, "GetAsBool", conditionLineNum );
+		CFunctionCallNode*	funcNode = new CFunctionCallNode(  false, &parseTree, "GetAsBool", conditionLineNum );
 		funcNode->AddParam( conditionNode );
 		conditionNode = funcNode;
 
 		if( doUntil )
 		{
-			funcNode = new CFunctionCallNode( &parseTree, "!", conditionLineNum );
+			funcNode = new CFunctionCallNode(  false, &parseTree, "!", conditionLineNum );
 			funcNode->AddParam( conditionNode );
 			conditionNode = funcNode;
 		}
@@ -898,15 +898,15 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// tempName = GetAsInt(startNum);
 		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
+		CFunctionCallNode*	theFuncCall = new CFunctionCallNode(  false, &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( startNumExpr );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		theAssignCommand->AddParam( theFuncCall );
 		currFunction->AddCommand( theAssignCommand );
 		
 		// while( tempName <= GetAsInt(endNum) )
-		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, compareOp, conditionLineNum );
-		theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
+		CFunctionCallNode*	theComparison = new CFunctionCallNode( false, &parseTree, compareOp, conditionLineNum );
+		theFuncCall = new CFunctionCallNode(  false, &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( endNumExpr );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		theComparison->AddParam( theFuncCall );
@@ -967,8 +967,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		currFunction->AddCommand( theAssignCommand );
 		
 		// while( tempName < GetAsInt(countExpression) )
-		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, "<", conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, "GetAsInt", conditionLineNum );
+		CFunctionCallNode*	theComparison = new CFunctionCallNode( false, &parseTree, "<", conditionLineNum );
+		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( false, &parseTree, "GetAsInt", conditionLineNum );
 		theFuncCall->AddParam( countExpression );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		theComparison->AddParam( theFuncCall );
@@ -1005,7 +1005,7 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 	
 	// Condition:
 	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, "vcy_get_bool", conditionLineNum );
+	CFunctionCallNode*	fcall = new CFunctionCallNode( false, &parseTree, "GetAsBool", conditionLineNum );
 	fcall->AddParam( condition );
 	ifNode->SetCondition( condition );
 	
@@ -1092,7 +1092,7 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	// container:
 	size_t				containerLineNum = tokenItty->mLineNum;
 	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
-	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, "GetItemOfListWithKey", containerLineNum );
+	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, true, "GetItemOfListWithKey", containerLineNum );
 	fcall->AddParam( theTarget );
 	fcall->AddParam( theIndex );
 	
@@ -1177,7 +1177,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		CValueNode*	theContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	theFCall = new CFunctionCallNode( &parseTree, "Delete", tokenItty->mLineNum );
+		CFunctionCallNode*	theFCall = new CFunctionCallNode( &parseTree, true, "Delete", tokenItty->mLineNum );
 		theFCall->AddParam( theContainer );
 		currFunction->AddCommand( theFCall );
 	}
@@ -1406,7 +1406,7 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 		operandA = terms.back();
 		terms.pop_back();
 		
-		CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, opName, operandA->GetLineNum() );
+		CFunctionCallNode*	currOperation = new CFunctionCallNode( false, &parseTree, opName, operandA->GetLineNum() );
 		currOperation->AddParam( operandA );
 		currOperation->AddParam( operandB );
 		
@@ -1659,7 +1659,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
 	// Now output code:
-	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, std::string("vcy_make_chunk"), lineNum );
+	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, true, std::string("MakeChunk"), lineNum );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );
 	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj );
@@ -1709,7 +1709,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
-	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, std::string("vcy_make_chunk_const"), lineNum );
+	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, true, std::string("MakeChunkConst"), lineNum );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );
 	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj );
@@ -2209,11 +2209,10 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		case EIdentifierToken:	// Function call?
 			if( tokenItty->mSubType == ELastIdentifier_Sentinel )	// Any user-defined identifier.
 			{
-				std::string	handlerName( "fun_" );
+				std::string	handlerName( tokenItty->GetIdentifierText() );
 				std::string	realHandlerName( tokenItty->GetOriginalIdentifierText() );
 				size_t		callLineNum = tokenItty->mLineNum;
 				
-				handlerName.append( tokenItty->GetIdentifierText() );
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				
 				if( tokenItty->IsIdentifier(EOpenBracketOperator) )	// Yes! Function call!
@@ -2223,7 +2222,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::map<std::string,CObjCMethodEntry>::iterator funcItty = sCFunctionTable.find( realHandlerName );
 					if( funcItty == sCFunctionTable.end() )	// No native function of that name? Call function handler:
 					{
-						CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, handlerName, callLineNum );
+						CFunctionCallNode*	fcall = new CFunctionCallNode( false, &parseTree, handlerName, callLineNum );
 						theTerm = fcall;
 						ParseParamList( ECloseBracketOperator, parseTree, currFunction, tokenItty, tokens, fcall );
 						
@@ -2308,7 +2307,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
 				
 				// Now that we know whether it's a function or a handler, store a pointer to it:
-				theTerm = new CFunctionCallNode( &parseTree, "vcy_fcn_addr", tokenItty->mLineNum );
+				theTerm = new CFunctionCallNode( false, &parseTree, "vcy_fcn_addr", tokenItty->mLineNum );
 				break;
 			}
 			else if( tokenItty->mSubType == ENumberIdentifier || tokenItty->mSubType == ENumIdentifier )		// The identifier "number", i.e. the actual word.
@@ -2347,7 +2346,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 				
 				// VALUE:
-				CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, "vcy_chunk_count", tokenItty->mLineNum );
+				CFunctionCallNode*	fcall = new CFunctionCallNode( false, &parseTree, "vcy_chunk_count", tokenItty->mLineNum );
 				CValueNode*			valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 				
 				fcall->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
@@ -2378,7 +2377,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( tokenItty->IsIdentifier( EParamCountIdentifier ) )
 				{
 					CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-					CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, "vcy_list_count", tokenItty->mLineNum );
+					CFunctionCallNode*			countFunction = new CFunctionCallNode( false, &parseTree, "vcy_list_count", tokenItty->mLineNum );
 					countFunction->AddParam( paramsNode );
 					theTerm = countFunction;
 					
@@ -2392,7 +2391,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					CreateVariable( paramListTemp, paramListTemp, false, currFunction );
 					std::string			lengthQualifier( tokenItty->GetIdentifierText() );
 					
-					CFunctionCallNode*	makeListCall = new CFunctionCallNode( &parseTree, "vcy_list_assign_items", tokenItty->mLineNum );
+					CFunctionCallNode*	makeListCall = new CFunctionCallNode( &parseTree, true, "vcy_list_assign_items", tokenItty->mLineNum );
 					makeListCall->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, paramListTemp, paramListTemp ) );
 					makeListCall->AddParam( new CIntValueNode(&parseTree, 1) );
 					makeListCall->AddParam( new CStringValueNode( &parseTree, lengthQualifier ) );
@@ -2401,7 +2400,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream	funName;
 					funName << "fun_" << tokenItty->GetIdentifierText();
 					
-					CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, funName.str(), tokenItty->mLineNum );
+					CFunctionCallNode*	theFuncCall = new CFunctionCallNode( false, &parseTree, funName.str(), tokenItty->mLineNum );
 					theFuncCall->AddParam( makeListCall );
 					
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip function name identifier.
@@ -2441,7 +2440,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				
 				CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, "vcy_list_count", lineNum );
+				CFunctionCallNode*			countFunction = new CFunctionCallNode( false, &parseTree, "vcy_list_count", lineNum );
 				countFunction->AddParam( paramsNode );
 				theTerm = countFunction;
 				break;
@@ -2463,7 +2462,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
 				
 				CLocalVariableRefValueNode*	paramListVar = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			fcall = new CFunctionCallNode( &parseTree, "vcy_list_get", lineNum );
+				CFunctionCallNode*			fcall = new CFunctionCallNode( false, &parseTree, "vcy_list_get", lineNum );
 				
 				fcall->AddParam( paramListVar );
 				fcall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens ) );
@@ -2488,7 +2487,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "parameter".
 				
 				CLocalVariableRefValueNode*	paramListVar = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			fcall = new CFunctionCallNode( &parseTree, "vcy_list_get", lineNum );
+				CFunctionCallNode*			fcall = new CFunctionCallNode( false, &parseTree, "vcy_list_get", lineNum );
 				
 				fcall->AddParam( paramListVar );
 				fcall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens ) );
@@ -2550,7 +2549,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					size_t	lineNum = tokenItty->mLineNum;
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip operator token.
 					
-					CFunctionCallNode*	opFCall = new CFunctionCallNode( &parseTree, operatorCommandName, lineNum );
+					CFunctionCallNode*	opFCall = new CFunctionCallNode( false, &parseTree, operatorCommandName, lineNum );
 					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
 					theTerm = opFCall;
 					break;

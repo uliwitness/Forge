@@ -17,9 +17,9 @@ extern "C" {
 
 #define RUN_CODE			1
 #define DEBUGGER_ON			0
-#define PRINT_INSTRUCTIONS	0
+#define PRINT_INSTRUCTIONS	1
 #define PRINT_TOKENS		0
-#define PRINT_TREE			0
+#define PRINT_TREE			1
 
 
 using namespace Carlson;
@@ -116,6 +116,8 @@ int main( int argc, char * const argv[] )
 		
 		LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
 		LEORunInContext( theHandler->instructions, &ctx );
+		if( ctx.errMsg[0] != 0 )
+			printf("ERROR: %s\n", ctx.errMsg );
 		
 		LEOCleanUpContext( &ctx );
 		#endif

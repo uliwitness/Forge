@@ -20,8 +20,8 @@ class CCommandNode;
 class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
-	CFunctionDefinitionNode( CParseTree* inTree, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
-		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mLocalVariableCount(0)
+	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
+		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mLocalVariableCount(0), mIsCommand(isCommand)
 	{
 		
 	};
@@ -44,6 +44,7 @@ public:
 	
 protected:
 	std::string								mName;
+	bool									mIsCommand;
 	size_t									mLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
 	size_t									mLocalVariableCount;

@@ -35,11 +35,14 @@ CCodeBlock::~CCodeBlock()
 }
 
 
-void	CCodeBlock::GenerateFunctionPrologForName( const std::string& inName, size_t inNumVariables )
+void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, size_t inNumVariables )
 {
 	// Create the handler:
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
-	mCurrentHandler = LEOScriptAddCommandHandlerWithID( mScript, handlerID );
+	if( isCommand )
+		mCurrentHandler = LEOScriptAddCommandHandlerWithID( mScript, handlerID );
+	else
+		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
 	// Allocate stack space for our local variables:
 	size_t	stringIndex = LEOScriptAddString( mScript, "" );
@@ -48,7 +51,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( const std::string& inName, size_
 }
 
 
-void	CCodeBlock::GenerateFunctionEpilogForName( const std::string& inName, size_t inNumVariables )
+void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, size_t inNumVariables )
 {
 	// Get rid of stack space allocated for our local variables:
 	for( size_t x = 0; x < inNumVariables; x++ )
@@ -61,10 +64,10 @@ void	CCodeBlock::GenerateFunctionEpilogForName( const std::string& inName, size_
 }
 
 
-void	CCodeBlock::GenerateFunctionCallInstruction( const std::string& inName )
+void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, const std::string& inName )
 {
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
-	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, 0, handlerID );
+	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, isCommand ? 0 : 1, handlerID );
 }
 
 

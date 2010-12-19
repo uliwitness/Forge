@@ -114,7 +114,7 @@ namespace Carlson
 		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
-		void	ParseFunctionDefinition( const std::string& prefix, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
+		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
 		void	ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
