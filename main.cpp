@@ -24,32 +24,6 @@ extern "C" {
 
 using namespace Carlson;
 
-
-class PrintfProgressDelegate : public CCodeBlockProgressDelegate, public CParseTreeProgressDelegate
-{
-public:
-	virtual void	CodeBlockPreparing( CCodeBlock* blk )																{ printf( "\tPreparing...\n" ); };
-	virtual void	CodeBlockAddingFunction( CCodeBlock* blk, const std::string& methodName )							{ printf( "\tAdding function \"%s\".\n", methodName.c_str() ); };
-	virtual void	CodeBlockAddedData( CCodeBlock* blk )																{ printf( "\t%lu bytes of data.\n", blk->GetDataSize() ); };	// This gets called a lot, and may even be caused by the other callbacks.
-	virtual void	CodeBlockAddedCode( CCodeBlock* blk )																{ printf( "\t%lu bytes of code.\n", blk->GetCodeSize() ); };	// This gets called a lot, and may even be caused by the other callbacks.
-	virtual void	CodeBlockUpdateSymbolUseCount( CCodeBlock* blk, const std::string& methodName, int32_t numUses )	{ printf( "\tSymbol \"%s\" used %d times so far.\n", methodName.c_str(), numUses ); };
-	virtual void	CodeBlockAddingSymbol( CCodeBlock* blk, const std::string& symbolName, bool isExternal )			{ printf( "\tAdding %s symbol \"%s\" to symbol table.\n", (isExternal ? "external" : "internal"), symbolName.c_str() ); };
-	virtual void	CodeBlockFinished( CCodeBlock* blk )																{ printf( "\tFinished.\n\t\t%lu bytes of code.\n\t\t%lu bytes of data.\n", blk->GetCodeSize(), blk->GetDataSize() ); };
-
-	virtual void	CodeBlockAddedStringData( CCodeBlock* blk, const std::string& str )									{ printf( "\tAdded string \"%s\".\n", str.c_str() ); };
-	virtual void	CodeBlockAddedIntData( CCodeBlock* blk, int n )														{ printf( "\tAdded int %d.\n", n ); };
-	virtual void	CodeBlockAddedFloatData( CCodeBlock* blk, float n )													{ printf( "\tAdded int %f.\n", n ); };
-	virtual void	CodeBlockAddedBoolData( CCodeBlock* blk, bool n )													{ printf( "\tAdded bool %s.\n", (n ? "true" : "false") ); };
-	virtual void	CodeBlockUsedLocalVariable( CCodeBlock* blk, const std::string& str, int32_t numUses )				{ printf( "\tLocal variable \"%s\" used %d times so far.\n", str.c_str(), numUses ); };
-	
-	virtual void	ParseTreeBegunParsing( CParseTree* tree )															{ printf( "\tCreated tree...\n" ); };
-	virtual void	ParseTreeAddedNode( CParseTree* tree, CNode* inNode, size_t inNumNodes )							{ printf( "\t%lu tree nodes parsed.\n", inNumNodes ); };
-	virtual void	ParseTreeFinishedParsing( CParseTree* tree )														{ printf( "\tTearing down tree...\n" ); };
-};
-
-
-using namespace Carlson;
-
 int main( int argc, char * const argv[] )
 {
 	int		fnameIdx = 0, outputFNameIdx = 0;
@@ -96,17 +70,16 @@ int main( int argc, char * const argv[] )
 		
 	try
 	{
-		PrintfProgressDelegate	progressDelegate;
-		CParseTree				parseTree( &progressDelegate );
+		CParseTree				parseTree;
 		
-		std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
+		//std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
 		tokens = CToken::TokenListFromText( code, strlen(code) );
 		#if PRINT_TOKENS
 		for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
 			std::cout << "Token: " << currToken->GetDescription() << std::endl;
 		#endif
 		
-		std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
+		//std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree );
 		
 		#if PRINT_TREE
@@ -115,7 +88,7 @@ int main( int argc, char * const argv[] )
 		
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0 );
 		LEOContextGroup	*	group = LEOContextGroupCreate();
-		CCodeBlock			block( group, script, &progressDelegate );
+		CCodeBlock			block( group, script );
 		
 		parseTree.Simplify();
 		parseTree.GenerateCode( &block );
@@ -125,7 +98,7 @@ int main( int argc, char * const argv[] )
 		#endif
 		
 		#if RUN_CODE
-		printf( "\nRun the code:\n" );
+		//printf( "\nRun the code:\n" );
 		LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, "startUp" );
 		LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
 		
@@ -152,7 +125,7 @@ int main( int argc, char * const argv[] )
 		return 3;
 	}
 	
-	std::cout << "Finished successfully." << std::endl;
+	//std::cout << "Finished successfully." << std::endl;
 	
     return 0;
 }

@@ -17,10 +17,10 @@ extern "C" {
 namespace Carlson
 {
 
-CCodeBlock::CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript, CCodeBlockProgressDelegate * progressDelegate )
-	: mGroup(inGroup), mProgressDelegate(progressDelegate), mCurrentHandler(NULL)
+CCodeBlock::CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript )
+	: mGroup(NULL), mCurrentHandler(NULL), mScript(NULL)
 {
-	mScript = LEOScriptRetain(inScript);
+	mScript = LEOScriptRetain( inScript );
 	mGroup = LEOContextGroupRetain( inGroup );
 }
 
@@ -37,8 +37,6 @@ CCodeBlock::~CCodeBlock()
 
 void	CCodeBlock::GenerateFunctionPrologForName( const std::string& inName, size_t inNumVariables )
 {
-	mProgressDelegate->CodeBlockAddingFunction( this, inName );
-	
 	// Create the handler:
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
 	mCurrentHandler = LEOScriptAddCommandHandlerWithID( mScript, handlerID );
