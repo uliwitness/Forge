@@ -110,7 +110,11 @@ int main( int argc, char * const argv[] )
 		LEODebuggerAddBreakpoint( theHandler->instructions );	// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
 		#endif
 		
-		LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well.
+		LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
+			// params would go here...
+		LEOPushIntegerOnStack( &ctx, 0 );	// Parameter count.
+		
+		LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
 		LEORunInContext( theHandler->instructions, &ctx );
 		
 		LEOCleanUpContext( &ctx );
