@@ -130,7 +130,7 @@
 		55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOContextGroup.c; path = ../Leonie/common/LEOContextGroup.c; sourceTree = SOURCE_ROOT; };
 		55C72BF6127DD30B00CF0F16 /* LEOHandlerID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOHandlerID.h; path = ../Leonie/common/LEOHandlerID.h; sourceTree = SOURCE_ROOT; };
 		55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructionsGeneric.c; path = ../Leonie/generic/LEOInstructionsGeneric.c; sourceTree = SOURCE_ROOT; };
-		8DD76F6C0486A84900D96B5E /* HyperC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = HyperC; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76F6C0486A84900D96B5E /* Forge */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Forge; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,7 +201,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76F6C0486A84900D96B5E /* HyperC */,
+				8DD76F6C0486A84900D96B5E /* Forge */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -294,7 +294,7 @@
 			name = Forge;
 			productInstallPath = "$(HOME)/bin";
 			productName = HyperC;
-			productReference = 8DD76F6C0486A84900D96B5E /* HyperC */;
+			productReference = 8DD76F6C0486A84900D96B5E /* Forge */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -363,7 +363,7 @@
 				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_CFLAGS = "-DDONT_ADJUST_LINE_NUMBERS";
-				PRODUCT_NAME = HyperC;
+				PRODUCT_NAME = Forge;
 				ZERO_LINK = NO;
 			};
 			name = Debug;
@@ -381,7 +381,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
-				PRODUCT_NAME = HyperCompiler;
+				PRODUCT_NAME = Forge;
 				STRIP_INSTALLED_PRODUCT = YES;
 				ZERO_LINK = NO;
 			};
