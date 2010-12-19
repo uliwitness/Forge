@@ -8,6 +8,8 @@
  */
 
 #include <string>
+#include "CVariableEntry.h"
+#include <map>
 
 
 struct LEOScript;
@@ -25,8 +27,8 @@ public:
 	CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript );
 	virtual ~CCodeBlock();
 	
-	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, size_t inNumVariables );
-	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, size_t inNumVariables );
+	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );
+	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );
 	void		GenerateFunctionCallInstruction( bool isCommand, const std::string& inName );
 	
 	void		GeneratePushIntInstruction( int inNumber );
@@ -42,6 +44,7 @@ public:
 	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );
 
 	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
+	void		GenerateReturnInstruction();
 	
 protected:
 	LEOScript*						mScript;

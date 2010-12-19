@@ -35,7 +35,7 @@ CCodeBlock::~CCodeBlock()
 }
 
 
-void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, size_t inNumVariables )
+void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals )
 {
 	// Create the handler:
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
@@ -45,20 +45,27 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
 	// Allocate stack space for our local variables:
-	size_t	stringIndex = LEOScriptAddString( mScript, "" );
-	for( size_t x = 0; x < inNumVariables; x++ )
+	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
+	std::map<std::string,CVariableEntry>::const_iterator		itty;
+	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
+	{
+		size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
 		LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, stringIndex );
+	}
 }
 
 
-void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, size_t inNumVariables )
+void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals )
 {
 	// Get rid of stack space allocated for our local variables:
-	for( size_t x = 0; x < inNumVariables; x++ )
+	std::map<std::string,CVariableEntry>::const_iterator		itty;
+	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
 		LEOHandlerAddInstruction( mCurrentHandler, POP_VALUE_INSTR, BACK_OF_STACK, 0 );
 	
-	// Make sure we return, even if there's no return statement at the end of the handler:
-	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, 0, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
+	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
+	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, emptyStringIndex );
+	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
 	
 	mCurrentHandler = NULL;	// Be paranoid. Don't want to accidentally add stuff to a finished handler.
 }
@@ -67,7 +74,7 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, const std::string& inName )
 {
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
-	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, isCommand ? 0 : 1, handlerID );
+	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, (isCommand ? 0 : 1), handlerID );
 }
 
 
@@ -129,6 +136,12 @@ void	CCodeBlock::GeneratePrintVariableInstruction( int16_t bpRelativeOffset )
 void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, PARAMETER_INSTR, (*(uint16_t*)&bpRelativeOffset), paramNum +1 );
+}
+
+
+void	CCodeBlock::GenerateReturnInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );
 }
 
 }

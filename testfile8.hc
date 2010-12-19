@@ -1,4 +1,4 @@
-on startUp p1,p2
+on startUp p1--,p2
 	put p1
 	put p2
 	doSomething "Haha! Have at you!"

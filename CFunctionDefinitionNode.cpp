@@ -74,11 +74,11 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 
 void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateFunctionPrologForName( mIsCommand, mName, GetLocalVariableCount() );
+	inCodeBlock->GenerateFunctionPrologForName( mIsCommand, mName, mLocals );
 	
 	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
 	
-	inCodeBlock->GenerateFunctionEpilogForName( mIsCommand, mName, GetLocalVariableCount() );
+	inCodeBlock->GenerateFunctionEpilogForName( mIsCommand, mName, mLocals );
 }
 
 } /* namespace Carlson */
