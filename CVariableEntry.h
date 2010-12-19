@@ -64,16 +64,16 @@ public:
 	bool			mDontDispose;		// Don't dispose this variable at the end of its handler (currently only used for result).
 	std::string		mRealName;			// Real name as the user sees it. User-defined variables internally get a prefix "var_" to avoid collisions with built-in system vars.
 	TVariantType	mVariableType;		// Type for this variable.
-	size_t			mBPRelativeOffset;	// Backpointer-relative offset of this variable, so we can find it.
+	long			mBPRelativeOffset;	// Backpointer-relative offset of this variable, so we can find it.
 	static int		mTempCounterSeed;
 	
 public:
 	CVariableEntry( const std::string& realName, TVariantType theType, bool initWithName = false, bool isParam = false, bool isGlobal = false, bool dontDispose = false )
-		: mInitWithName( initWithName ), mIsParameter( isParam ), mIsGlobal( isGlobal ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(SIZE_MAX) {};
+		: mInitWithName( initWithName ), mIsParameter( isParam ), mIsGlobal( isGlobal ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(LONG_MAX) {};
 	CVariableEntry( const std::string& realName, const std::string& initCode, bool dontDispose = false, bool initDirectly = false )
-		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(SIZE_MAX) {};
+		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(LONG_MAX) {};
 	CVariableEntry()
-		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mDontDispose( false ), mRealName(), mBPRelativeOffset(SIZE_MAX) {};
+		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mDontDispose( false ), mRealName(), mBPRelativeOffset(LONG_MAX) {};
 
 	static const std::string GetNewTempName();
 };

@@ -161,6 +161,7 @@ class CLocalVariableRefValueNode : public CValueNode
 public:
 	CLocalVariableRefValueNode( CParseTree* inTree, CCodeBlockNodeBase *inCodeBlockNode, const std::string& inVarName, const std::string& inRealVarName );
 	
+	virtual void				Simplify();
 	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 	
 	virtual CLocalVariableRefValueNode*	Copy()							{ return new CLocalVariableRefValueNode( mParseTree, mCodeBlockNode, mVarName, mRealVarName ); };
@@ -172,7 +173,7 @@ public:
 		destStream << indentChars << "localVar( " << mVarName.c_str() << " )" << std::endl;
 	};
 	
-	size_t						GetBPRelativeOffset();
+	long					GetBPRelativeOffset();
 
 protected:
 	std::string				mVarName;

@@ -40,6 +40,17 @@ void	CCodeBlockNodeBase::DebugPrintInner( std::ostream& destStream, size_t inden
 }
 
 
+void	CCodeBlockNodeBase::Simplify()
+{
+	std::vector<CNode*>::iterator itty;
+	
+	for( itty = mCommands.begin(); itty != mCommands.end(); itty++ )
+	{
+		(*itty)->Simplify();
+	}
+}
+
+
 void	CCodeBlockNodeBase::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CNode*>::iterator itty;
@@ -82,21 +93,22 @@ void	CCodeBlockNode::AddLocalVar( const std::string& inName, const std::string& 
 }
 
 
-size_t	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
+long	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
 {
 	std::map<std::string,CVariableEntry>::iterator	foundVariable = (*mLocals).find( inName );
 	if( foundVariable != (*mLocals).end() )
 	{
-		size_t	bpRelOffs = foundVariable->second.mBPRelativeOffset;
-		if( bpRelOffs == SIZE_MAX )
+		long	bpRelOffs = foundVariable->second.mBPRelativeOffset;
+		if( bpRelOffs == LONG_MAX )
 		{
-			foundVariable->second.mBPRelativeOffset = (*mLocalVariableCount)++;
-			bpRelOffs = foundVariable->second.mBPRelativeOffset;
+			bpRelOffs = (*mLocalVariableCount)++;
+			bpRelOffs = -bpRelOffs;
+			foundVariable->second.mBPRelativeOffset = bpRelOffs;
 		}
 		return bpRelOffs;
 	}
 	else
-		return SIZE_MAX;
+		return LONG_MAX;
 }
 
 

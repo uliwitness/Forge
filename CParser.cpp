@@ -22,6 +22,8 @@
 #include "CIfNode.h"
 #include "CPushValueCommandNode.h"
 #include "CAssignCommandNode.h"
+#include "CGetParamCommandNode.h"
+#include "CPrintCommandNode.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -270,12 +272,12 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	else if( tokenItty->IsIdentifier( EOnIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "on" 
-		ParseFunctionDefinition( "hdl_", tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( "", tokenItty, tokens, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EToIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to" 
-		ParseFunctionDefinition( "hdl_", tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( "", tokenItty, tokens, parseTree );
 	}
 	else
 	{
@@ -323,7 +325,7 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 		std::string	realVarName( tokenItty->GetIdentifierText() );
 		std::string	varName("var_");
 		varName.append( realVarName );
-		CCommandNode*		theVarCopyCommand = new CCommandNode( &parseTree, "GetParameter", tokenItty->mLineNum );
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
 		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, varName, realVarName) );
 		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, currParamIdx++ ) );
 		currFunctionNode->AddCommand( theVarCopyCommand );
@@ -352,14 +354,14 @@ void	CParser::ParseFunctionDefinition( const std::string& prefix, std::deque<CTo
 void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	std::string	handlerName( "hdl_" );
+	std::string	handlerName;
 	size_t		currLineNum = tokenItty->mLineNum;
 	
 	handlerName.append( tokenItty->GetIdentifierText() );
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 
-	ParseParamList( ENewlineOperator, parseTree, currFunction, tokenItty, tokens );
 	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, handlerName, currLineNum );
+	ParseParamList( ENewlineOperator, parseTree, currFunction, tokenItty, tokens, currFunctionCall );
 
 	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "theResult", "the result") );
@@ -372,18 +374,20 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	// Put:
-	CCommandNode*			thePutCommand = new CCommandNode( &parseTree, "Print", tokenItty->mLineNum );
+	CCommandNode*			thePutCommand = NULL;
+	size_t					startLine = tokenItty->mLineNum;
+	
 	try {
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// What:
 		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-		thePutCommand->AddParam( whatExpression );
 		
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "Put" );			// Change command to "put".
+			thePutCommand = new CCommandNode( &parseTree, "Put", startLine );
+			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
@@ -392,7 +396,8 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else if( tokenItty->IsIdentifier( EAfterIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "Append" );		// Change command to "append".
+			thePutCommand = new CCommandNode( &parseTree, "Append", startLine );
+			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
@@ -401,12 +406,18 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else if( tokenItty->IsIdentifier( EBeforeIdentifier ) )
 		{
-			thePutCommand->SetSymbolName( "Prepend" );		// Change command to "prepend".
+			thePutCommand = new CCommandNode( &parseTree, "Prepend", startLine );
+			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 			thePutCommand->AddParam( destContainer );
+		}
+		else
+		{
+			thePutCommand = new CPrintCommandNode( &parseTree, startLine );
+			thePutCommand->AddParam( whatExpression );
 		}
 		
 		currFunction->AddCommand( thePutCommand );
@@ -1310,36 +1321,13 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 //	a handler as a parameter list:
 void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								CFunctionCallNode* inFCallToAddTo )
 {
-	int		paramCount = 0;
-	
 	while( !tokenItty->IsIdentifier( identifierToEndOn ) )
 	{
-		// prepare the function call that will add the value to the list:
-		CCommandNode*	appendToListCall = NULL;
-		
-		// If this is an @ here, create a reference value for a variable
-		//	with the following identifier as its name, and push *that* instead
-		//	of a copy of the value.
-		if( tokenItty->IsIdentifier( EAtSignOperator ) )
-		{
-			CToken::GoNextToken( mFileName, tokenItty, tokens );
-			
-			appendToListCall = new CPushValueCommandNode( &parseTree, tokenItty->mLineNum );
-			appendToListCall->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, tokenItty->GetIdentifierText(), tokenItty->GetIdentifierText() ) );	// TODO: Make case-insensitive.
-			currFunction->AddCommand( appendToListCall );
-		}
-		else
-		{
-			appendToListCall = new CPushValueCommandNode( &parseTree, tokenItty->mLineNum );
-			CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-			appendToListCall->AddParam( paramExpression );
-		}
-		
-		currFunction->AddCommand( appendToListCall );	// Now that we have all params calculated, add that function call to our current function body.
-		
-		paramCount++;
+		CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		inFCallToAddTo->AddParam( paramExpression );
 		
 		if( !tokenItty->IsIdentifier( ECommaOperator ) )
 		{
@@ -1352,10 +1340,6 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
-	
-	CCommandNode	*	paramCountCall = new CPushValueCommandNode( &parseTree, tokenItty->mLineNum );
-	paramCountCall->AddParam( new CIntValueNode( &parseTree, paramCount ) );
-	currFunction->AddCommand( paramCountCall );
 }
 
 
@@ -2239,7 +2223,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, handlerName, callLineNum );
 						theTerm = fcall;
-						ParseParamList( ECloseBracketOperator, parseTree, currFunction, tokenItty, tokens );
+						ParseParamList( ECloseBracketOperator, parseTree, currFunction, tokenItty, tokens, fcall );
 						
 						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
 					}

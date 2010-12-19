@@ -49,15 +49,20 @@ public:
 	size_t		GetCodeSize()		{ return 0; };
 	size_t		GetDataSize()		{ return 0; };
 	
-	void		GenerateFunctionPrologForName( const std::string& inName );
-	void		GenerateFunctionEpilogForName( const std::string& inName );
+	void		GenerateFunctionPrologForName( const std::string& inName, size_t inNumVariables );
+	void		GenerateFunctionEpilogForName( const std::string& inName, size_t inNumVariables );
+	void		GenerateFunctionCallInstruction( const std::string& inName );
 	
 	void		GeneratePushIntInstruction( int inNumber );
 	void		GeneratePushFloatInstruction( float inNumber );
 	void		GeneratePushBoolInstruction( bool inBoolean );
 	void		GeneratePushStringInstruction( const std::string& inString );
-	void		GeneratePushVariableInstruction( size_t bpRelativeOffset );
-	void		GeneratePopIntoVariableInstruction( size_t bpRelativeOffset );
+	void		GeneratePushVariableInstruction( int16_t bpRelativeOffset );
+	void		GeneratePopValueInstruction();
+	void		GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset );
+	void		GeneratePrintValueInstruction();
+	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );
+	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
 	
 protected:
 	CCodeBlockProgressDelegate	*	mProgressDelegate;

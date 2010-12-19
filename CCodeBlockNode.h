@@ -37,7 +37,7 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false ) = 0;	// It's OK to call this several times with the same variable. Subsequent calls will be ignored.
-	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName ) = 0;
+	virtual long	GetBPRelativeOffsetForLocalVar( const std::string& inName ) = 0;
 	
 	// Sub-blocks retrieve and modify these three as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount() = 0;
@@ -46,6 +46,7 @@ public:
 		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
+	virtual void	Simplify();
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 protected:
@@ -77,7 +78,7 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false );
-	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName );
+	virtual long	GetBPRelativeOffsetForLocalVar( const std::string& inName );
 
 	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount()	{ return *mLocalVariableCount; };

@@ -21,7 +21,7 @@ class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
 	CFunctionDefinitionNode( CParseTree* inTree, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
-		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum )
+		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mLocalVariableCount(0)
 	{
 		
 	};
@@ -31,7 +31,7 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false );
-	virtual size_t	GetBPRelativeOffsetForLocalVar( const std::string& inName );
+	virtual long	GetBPRelativeOffsetForLocalVar( const std::string& inName );
 	
 	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount()	{ return mLocalVariableCount; };

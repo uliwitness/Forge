@@ -43,21 +43,22 @@ void	CFunctionDefinitionNode::AddLocalVar( const std::string& inName,
 }
 
 
-size_t	CFunctionDefinitionNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
+long	CFunctionDefinitionNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
 {
 	std::map<std::string,CVariableEntry>::iterator	foundVariable = mLocals.find( inName );
 	if( foundVariable != mLocals.end() )
 	{
-		size_t	bpRelOffs = foundVariable->second.mBPRelativeOffset;
-		if( bpRelOffs == SIZE_MAX )
+		long	bpRelOffs = foundVariable->second.mBPRelativeOffset;
+		if( bpRelOffs == LONG_MAX )
 		{
-			foundVariable->second.mBPRelativeOffset = mLocalVariableCount++;
-			bpRelOffs = foundVariable->second.mBPRelativeOffset;
+			bpRelOffs = mLocalVariableCount++;
+			bpRelOffs = -bpRelOffs;
+			foundVariable->second.mBPRelativeOffset = bpRelOffs;
 		}
 		return bpRelOffs;
 	}
 	else
-		return SIZE_MAX;
+		return LONG_MAX;
 }
 
 
@@ -74,11 +75,11 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 
 void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateFunctionPrologForName( mName );
+	inCodeBlock->GenerateFunctionPrologForName( mName, GetLocalVariableCount() );
 	
 	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
 	
-	inCodeBlock->GenerateFunctionEpilogForName( mName );
+	inCodeBlock->GenerateFunctionEpilogForName( mName, GetLocalVariableCount() );
 }
 
 } /* namespace Carlson */

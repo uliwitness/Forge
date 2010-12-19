@@ -11,7 +11,15 @@
 extern "C" {
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
+#include "LEODebugger.h"
 }
+
+
+#define RUN_CODE			1
+#define DEBUGGER_ON			0
+#define PRINT_INSTRUCTIONS	0
+#define PRINT_TOKENS		0
+#define PRINT_TREE			0
 
 
 using namespace Carlson;
@@ -93,7 +101,7 @@ int main( int argc, char * const argv[] )
 		
 		std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
 		tokens = CToken::TokenListFromText( code, strlen(code) );
-		#if 0
+		#if PRINT_TOKENS
 		for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
 			std::cout << "Token: " << currToken->GetDescription() << std::endl;
 		#endif
@@ -101,18 +109,38 @@ int main( int argc, char * const argv[] )
 		std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree );
 		
-		#if 1
+		#if PRINT_TREE
 		parseTree.DebugPrint( std::cout, 1 );
 		#endif
 		
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0 );
 		LEOContextGroup	*	group = LEOContextGroupCreate();
-		CCodeBlock		block( group, script, &progressDelegate );
+		CCodeBlock			block( group, script, &progressDelegate );
 		
+		parseTree.Simplify();
 		parseTree.GenerateCode( &block );
 		
-		#if 1
+		#if PRINT_INSTRUCTIONS
 		LEODebugPrintScript( group, script );
+		#endif
+		
+		#if RUN_CODE
+		printf( "\nRun the code:\n" );
+		LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, "startUp" );
+		LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
+		
+		LEOContext		ctx;
+		LEOInitContext( &ctx, group );
+		
+		#if DEBUGGER_ON
+		ctx.preInstructionProc = LEODebuggerPreInstructionProc;	// Activate the debugger.
+		LEODebuggerAddBreakpoint( theHandler->instructions );	// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+		#endif
+		
+		LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well.
+		LEORunInContext( theHandler->instructions, &ctx );
+		
+		LEOCleanUpContext( &ctx );
 		#endif
 		
 		LEOScriptRelease( script );

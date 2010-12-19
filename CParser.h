@@ -24,6 +24,7 @@ namespace Carlson
 {
 	class CFunctionDefinitionNode;
 	class CCodeBlockNodeBase;
+	class CFunctionCallNode;
 	
 	// *** An entry in our operator look-up table:
 	struct TOperatorEntry
@@ -154,7 +155,8 @@ namespace Carlson
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								CFunctionCallNode* inFCallToAddTo );
 		CValueNode*	ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseNativeFunctionCallStartingAtParams( std::string& methodName, CObjCMethodEntry& methodInfo,

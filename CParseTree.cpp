@@ -24,6 +24,17 @@ CParseTree::~CParseTree()
 }
 
 
+void	CParseTree::Simplify()
+{
+	std::deque<CNode*>::iterator itty;
+	
+	for( itty = mNodes.begin(); itty != mNodes.end(); itty++ )
+	{
+		(*itty)->Simplify();
+	}
+}
+
+
 void	CParseTree::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::deque<CNode*>::iterator itty;

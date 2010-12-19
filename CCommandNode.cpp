@@ -40,6 +40,17 @@ void	CCommandNode::AddParam( CValueNode* val )
 }
 
 
+void	CCommandNode::Simplify()
+{
+	std::vector<CValueNode*>::iterator itty;
+	
+	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+	{
+		(*itty)->Simplify();
+	}
+}
+
+
 void	CCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::iterator itty;

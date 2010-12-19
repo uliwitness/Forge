@@ -9,6 +9,7 @@
 
 #include "CFunctionCallNode.h"
 #include "CParseTree.h"
+#include "CCodeBlock.h"
 
 
 namespace Carlson
@@ -36,6 +37,43 @@ void	CFunctionCallNode::AddParam( CValueNode* val )
 {
 	mParams.push_back( val );
 	mParseTree->NodeWasAdded(val);
+}
+
+
+void	CFunctionCallNode::Simplify()
+{
+	std::vector<CValueNode*>::iterator itty;
+	
+	// Push all params on stack (in reverse order!):
+	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+		(*itty)->Simplify();
+}
+
+
+void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
+{
+	std::vector<CValueNode*>::reverse_iterator itty;
+	
+	inCodeBlock->GeneratePushStringInstruction( "" );	// Reserve space for the result.
+	
+	// Push all params on stack (in reverse order!):
+	for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
+		(*itty)->GenerateCode( inCodeBlock );
+	
+	size_t		numParams = mParams.size();
+	inCodeBlock->GeneratePushIntInstruction( numParams );
+	
+	// *** Call ***
+	inCodeBlock->GenerateFunctionCallInstruction( mSymbolName );
+	
+	// Clean up param count:
+	inCodeBlock->GeneratePopValueInstruction();
+	
+	// Clean up params:
+	for( size_t x = 0; x < numParams; x++ )
+		inCodeBlock->GeneratePopValueInstruction();
+	
+	// We leave the result on the stack.
 }
 
 } // namespace Carlson
