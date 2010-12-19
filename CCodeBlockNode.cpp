@@ -102,7 +102,6 @@ long	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
 		if( bpRelOffs == LONG_MAX )
 		{
 			bpRelOffs = (*mLocalVariableCount)++;
-			bpRelOffs = -bpRelOffs;
 			foundVariable->second.mBPRelativeOffset = bpRelOffs;
 		}
 		return bpRelOffs;
