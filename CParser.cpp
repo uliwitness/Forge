@@ -1635,9 +1635,10 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	int		lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
-	if( tokenItty->IsIdentifier( EToIdentifier ) )
+	if( tokenItty->IsIdentifier( EToIdentifier ) || tokenItty->IsIdentifier( EThroughIdentifier )
+		|| tokenItty->IsIdentifier( EThruIdentifier ) )
 	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"/"through"/"thru".
 		
 		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 		hadTo = true;
@@ -1685,9 +1686,10 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	int			lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
-	if( tokenItty->IsIdentifier( EToIdentifier ) )
+	if( tokenItty->IsIdentifier( EToIdentifier ) || tokenItty->IsIdentifier( EThroughIdentifier )
+		|| tokenItty->IsIdentifier( EThruIdentifier ) )
 	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"/"through"/"thru".
 		
 		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 		hadTo = true;

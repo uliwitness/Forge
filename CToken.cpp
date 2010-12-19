@@ -136,7 +136,9 @@ namespace Carlson
 		"&&",
 		"is not",
 		"<=",
-		">="
+		">=",
+		"thru",
+		"through"
 	};
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )
