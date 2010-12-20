@@ -52,15 +52,23 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
 		LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, stringIndex );
 	}
+	
+	mNumLocals = inLocals.size();
+}
+
+
+void	CCodeBlock::PrepareToExitFunction()
+{
+	// Get rid of stack space allocated for our local variables:
+	std::map<std::string,CVariableEntry>::const_iterator		itty;
+	for( size_t	x = 0; x < mNumLocals; x++ )
+		LEOHandlerAddInstruction( mCurrentHandler, POP_VALUE_INSTR, BACK_OF_STACK, 0 );
 }
 
 
 void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals )
 {
-	// Get rid of stack space allocated for our local variables:
-	std::map<std::string,CVariableEntry>::const_iterator		itty;
-	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
-		LEOHandlerAddInstruction( mCurrentHandler, POP_VALUE_INSTR, BACK_OF_STACK, 0 );
+	PrepareToExitFunction();
 	
 	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
@@ -68,6 +76,7 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
 	
 	mCurrentHandler = NULL;	// Be paranoid. Don't want to accidentally add stuff to a finished handler.
+	mNumLocals = 0;
 }
 
 
@@ -141,8 +150,16 @@ void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOff
 
 void	CCodeBlock::GenerateReturnInstruction()
 {
-	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );
+	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, 0, 0 );
 }
+
+
+
+void	CCodeBlock::GenerateSetReturnValueInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, SET_RETURN_VALUE_INSTR, 0, 0 );
+}
+
 
 }
 

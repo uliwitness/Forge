@@ -18,6 +18,8 @@ void	CReturnCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
 	
+	inCodeBlock->GenerateSetReturnValueInstruction();
+	inCodeBlock->PrepareToExitFunction();
 	inCodeBlock->GenerateReturnInstruction();
 }
 

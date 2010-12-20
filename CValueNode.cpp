@@ -43,7 +43,8 @@ void	CStringValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 }
 
 
-CLocalVariableRefValueNode::CLocalVariableRefValueNode( CParseTree* inTree, CCodeBlockNodeBase *inCodeBlockNode, const std::string& inVarName, const std::string& inRealVarName )
+CLocalVariableRefValueNode::CLocalVariableRefValueNode( CParseTree* inTree, CCodeBlockNodeBase *inCodeBlockNode,
+														const std::string& inVarName, const std::string& inRealVarName )
 	: CValueNode(inTree), mCodeBlockNode(inCodeBlockNode), mVarName(inVarName), mRealVarName(inRealVarName)
 {
 	mCodeBlockNode->AddLocalVar( inVarName, inRealVarName, TVariantType_INVALID );

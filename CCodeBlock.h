@@ -28,7 +28,8 @@ public:
 	virtual ~CCodeBlock();
 	
 	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );
-	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );
+	void		PrepareToExitFunction();
+	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );	// Calls PrepareToExitFunction.
 	void		GenerateFunctionCallInstruction( bool isCommand, const std::string& inName );
 	
 	void		GeneratePushIntInstruction( int inNumber );
@@ -45,11 +46,13 @@ public:
 
 	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
 	void		GenerateReturnInstruction();
+	void		GenerateSetReturnValueInstruction();
 	
 protected:
-	LEOScript*						mScript;
-	LEOContextGroup*				mGroup;
-	LEOHandler*						mCurrentHandler;
+	LEOScript*				mScript;
+	LEOContextGroup*		mGroup;
+	LEOHandler*				mCurrentHandler;
+	size_t					mNumLocals;
 };
 
 }
