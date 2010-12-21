@@ -142,9 +142,15 @@ void	CCodeBlock::GeneratePrintVariableInstruction( int16_t bpRelativeOffset )
 }
 
 
-void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
+void	CCodeBlock::GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, PARAMETER_INSTR, (*(uint16_t*)&bpRelativeOffset), paramNum +1 );
+}
+
+
+void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, PARAMETER_KEEPREFS_INSTR, (*(uint16_t*)&bpRelativeOffset), paramNum +1 );
 }
 
 

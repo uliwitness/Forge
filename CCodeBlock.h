@@ -44,6 +44,7 @@ public:
 	void		GeneratePrintValueInstruction();
 	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );
 
+	void		GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
 	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
 	void		GenerateReturnInstruction();
 	void		GenerateSetReturnValueInstruction();
