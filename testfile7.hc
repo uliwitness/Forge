@@ -1,7 +1,7 @@
-on testx
+on startup
 	put quoteIt("foo") into myVar
-	return myVar
-end testx
+	put myVar
+end startup
 
 function quoteIt str
 	return quote & str & quote
