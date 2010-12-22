@@ -4,5 +4,5 @@ on startUp
 end startup
 
 function quoteIt str
-	return str
+	return str & "_"
 end quoteIt

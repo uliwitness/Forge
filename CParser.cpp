@@ -22,9 +22,15 @@
 #include "CIfNode.h"
 #include "CPushValueCommandNode.h"
 #include "CAssignCommandNode.h"
+#include "CPutCommandNode.h"
 #include "CGetParamCommandNode.h"
 #include "CPrintCommandNode.h"
 #include "CReturnCommandNode.h"
+#include "COperatorNode.h"
+
+extern "C" {
+#include "LEOInstructions.h"
+}
 
 #include <iostream>
 #include <stdexcept>
@@ -60,33 +66,33 @@ std::map<std::string,int>				CParser::sConstantToValueTable;			// Table of C sys
 // Operator token(s), precedence and instruction function name:
 static TOperatorEntry	sOperators[] =
 {
-	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, "vcy_op_and", EAndIdentifier },
-	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, "vcy_op_or", EOrIdentifier },
-	{ ELessThanOperator, EGreaterThanOperator, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
-	{ ELessThanOperator, EEqualsOperator, 200, "vcy_cmp_le", ELessThanEqualPseudoOperator },
-	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_lt", ELessThanOperator },
-	{ EGreaterThanOperator, EEqualsOperator, 200, "vcy_cmp_ge", EGreaterThanEqualPseudoOperator },
-	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_gt", EGreaterThanOperator },
-	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
-	{ EIsIdentifier, ENotIdentifier, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
-	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
-	{ EAmpersandOperator, EAmpersandOperator, 300, "vcy_cat_space", EDoubleAmpersandPseudoOperator },
-	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, "vcy_cat", EAmpersandOperator },
-	{ EPlusOperator, ELastIdentifier_Sentinel, 500, "vcy_add", EPlusOperator },
-	{ EMinusOperator, ELastIdentifier_Sentinel, 500, "vcy_sub", EMinusOperator },
-	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, "vcy_mul", EMultiplyOperator },
-	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, "vcy_div", EDivideOperator },
-	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
-	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
-	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, "vcy_pow", EExponentOperator },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, 0, "", ELastIdentifier_Sentinel }
+	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, CONCATENATE_VALUES_INSTR, EAndIdentifier },
+//	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, "vcy_op_or", EOrIdentifier },
+//	{ ELessThanOperator, EGreaterThanOperator, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
+//	{ ELessThanOperator, EEqualsOperator, 200, "vcy_cmp_le", ELessThanEqualPseudoOperator },
+//	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_lt", ELessThanOperator },
+//	{ EGreaterThanOperator, EEqualsOperator, 200, "vcy_cmp_ge", EGreaterThanEqualPseudoOperator },
+//	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_gt", EGreaterThanOperator },
+//	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
+//	{ EIsIdentifier, ENotIdentifier, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
+//	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
+//	{ EAmpersandOperator, EAmpersandOperator, 300, "vcy_cat_space", EDoubleAmpersandPseudoOperator },
+//	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, "vcy_cat", EAmpersandOperator },
+//	{ EPlusOperator, ELastIdentifier_Sentinel, 500, "vcy_add", EPlusOperator },
+//	{ EMinusOperator, ELastIdentifier_Sentinel, 500, "vcy_sub", EMinusOperator },
+//	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, "vcy_mul", EMultiplyOperator },
+//	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, "vcy_div", EDivideOperator },
+//	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
+//	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
+//	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, "vcy_pow", EExponentOperator },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, 0, INVALID_INSTR, ELastIdentifier_Sentinel }
 };
 
 static TUnaryOperatorEntry	sUnaryOperators[] =
 {
-	{ ENotIdentifier, "vcy_not" },
-	{ EMinusOperator, "vcy_neg" },
-	{ ELastIdentifier_Sentinel, "" }
+//	{ ENotIdentifier, "vcy_not" },
+//	{ EMinusOperator, "vcy_neg" },
+	{ ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
 
@@ -387,7 +393,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
 		{
-			thePutCommand = new CCommandNode( &parseTree, "Put", startLine );
+			thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
@@ -439,7 +445,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 {
 	CValueNode*			propRef = NULL;
 	CValueNode*			whatExpr = NULL;
-	CCommandNode*		thePutCommand = new CCommandNode( &parseTree, "Put", tokenItty->mLineNum );
+	CCommandNode*		thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
 	try
 	{
 		// Set:
@@ -547,7 +553,7 @@ void	CParser::ParseGlobalStatement( bool isPublic, CParseTree& parseTree, CCodeB
 void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	thePutCommand = new CCommandNode( &parseTree, "Put", tokenItty->mLineNum );
+	CCommandNode*	thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
 	
 	// We map "get" to "put <what> into it":
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "get".
@@ -1344,7 +1350,7 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 }
 
 
-TIdentifierSubtype	CParser::ParseOperator( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int *outPrecedence, const char* *outOpName )
+TIdentifierSubtype	CParser::ParseOperator( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int *outPrecedence, LEOInstructionID *outOpName )
 {
 	if( tokenItty->mType != EIdentifierToken )
 		return ELastIdentifier_Sentinel;
@@ -1360,7 +1366,7 @@ TIdentifierSubtype	CParser::ParseOperator( std::deque<CToken>::iterator& tokenIt
 			if( sOperators[x].mSecondType == ELastIdentifier_Sentinel )
 			{
 				*outPrecedence = sOperators[x].mPrecedence;
-				*outOpName = sOperators[x].mOperationName;
+				*outOpName = sOperators[x].mInstructionID;
 				
 				return sOperators[x].mTypeToReturn;
 			}
@@ -1368,7 +1374,7 @@ TIdentifierSubtype	CParser::ParseOperator( std::deque<CToken>::iterator& tokenIt
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Swallow second operator token, too.
 				*outPrecedence = sOperators[x].mPrecedence;
-				*outOpName = sOperators[x].mOperationName;
+				*outOpName = sOperators[x].mInstructionID;
 				
 				return sOperators[x].mTypeToReturn;
 			}
@@ -1389,10 +1395,10 @@ TIdentifierSubtype	CParser::ParseOperator( std::deque<CToken>::iterator& tokenIt
 //		as the rightmost argument of the next operator.
 // -----------------------------------------------------------------------------
 
-CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<const char*> &operators )
+CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators )
 {
-	CValueNode*		operandA = NULL;
-	const char*		opName = NULL;
+	CValueNode*			operandA = NULL;
+	LEOInstructionID	opName = NULL;
 
 	while( terms.size() > 1 )	// More than 1 operand? Process stuff on stack.
 	{
@@ -1407,7 +1413,7 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 		operandA = terms.back();
 		terms.pop_back();
 		
-		CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, false, opName, operandA->GetLineNum() );
+		COperatorNode*	currOperation = new COperatorNode( &parseTree, false, opName, operandA->GetLineNum() );
 		currOperation->AddParam( operandA );
 		currOperation->AddParam( operandB );
 		
@@ -1433,13 +1439,13 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 										std::deque<CToken>::iterator& tokenItty,
 										std::deque<CToken>& tokens )
 {
-	std::deque<CValueNode*>	terms;
-	std::deque<const char*>	operators;
-	CValueNode*				currArg;
-	TIdentifierSubtype		currOpType = ELastIdentifier_Sentinel;
-	int						currPrecedence = 0,
-							prevPrecedence = 0;
-	const char*				opName = NULL;
+	std::deque<CValueNode*>			terms;
+	std::deque<LEOInstructionID>	operators;
+	CValueNode*						currArg;
+	TIdentifierSubtype				currOpType = ELastIdentifier_Sentinel;
+	int								currPrecedence = 0,
+									prevPrecedence = 0;
+	LEOInstructionID				opName = INVALID_INSTR;
 	
 	currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	terms.push_back( currArg );
@@ -2537,20 +2543,20 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 
 				// Try to find unary operator that matches:
-				const char*	operatorCommandName = NULL;
+				LEOInstructionID	operatorCommandName = INVALID_INSTR;
 				
 				for( x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
 				{
 					if( tokenItty->mSubType == sUnaryOperators[x].mType )
-						operatorCommandName = sUnaryOperators[x].mOperatorCommandName;
+						operatorCommandName = sUnaryOperators[x].mInstructionID;
 				}
 				
-				if( operatorCommandName != NULL )
+				if( operatorCommandName != INVALID_INSTR )
 				{
 					size_t	lineNum = tokenItty->mLineNum;
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip operator token.
 					
-					CFunctionCallNode*	opFCall = new CFunctionCallNode( &parseTree, false, operatorCommandName, lineNum );
+					COperatorNode*	opFCall = new COperatorNode( &parseTree, false, operatorCommandName, lineNum );
 					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
 					theTerm = opFCall;
 					break;

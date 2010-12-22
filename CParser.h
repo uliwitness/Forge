@@ -18,6 +18,9 @@
 
 #include "CParseTree.h"
 #include "CCodeBlockNode.h"
+extern "C" {
+#include "LEOInterpreter.h"
+}
 
 
 namespace Carlson
@@ -32,15 +35,15 @@ namespace Carlson
 		TIdentifierSubtype		mType;				// The identifier for this operator.
 		TIdentifierSubtype		mSecondType;		// The second identifier if this operator consists of two tokens.
 		int						mPrecedence;		// Precedence, with higher number taking precedence over lower numbers (i.e. * > +).
-		char					mOperationName[30];	// Name of function to call for this operator.
+		LEOInstructionID		mInstructionID;		// Name of function to call for this operator.
 		TIdentifierSubtype		mTypeToReturn;		// The identifier to return for this operator.
 	};
 	
 	// *** An entry in our unary operator look-up table:
 	struct TUnaryOperatorEntry
 	{
-		TIdentifierSubtype		mType;						// The identifier for this operator.
-		char					mOperatorCommandName[30];	// Name of function that implements this operator.
+		TIdentifierSubtype		mType;				// The identifier for this operator.
+		LEOInstructionID		mInstructionID;		// Name of function that implements this operator.
 	};
 	
 	// *** An entry in our global property look-up table:
@@ -168,7 +171,7 @@ namespace Carlson
 										std::deque<std::string>	&terms, std::deque<const char*>	&operators );
 		void	CreateVariable( const std::string& varName, const std::string& realVarName, bool initWithName,
 								CCodeBlockNodeBase* currFunction, bool isGlobal = false );
-		TIdentifierSubtype	ParseOperator( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int *outPrecedence, const char* *outOpName );
+		TIdentifierSubtype	ParseOperator( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int *outPrecedence, LEOInstructionID *outOpName );
 		CValueNode*	ParseChunkExpression( TChunkType typeConstant, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseConstantChunkExpression( TChunkType typeConstant, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
@@ -189,7 +192,7 @@ namespace Carlson
 														const char* typesStr,
 														std::stringstream& theCode, std::string &outTrampolineName );
 		
-		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<const char*> &operators );
+		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators );
 		
 		bool		GetUsesObjCCall()									{ return mUsesObjCCall; };
 		std::string	GetFirstHandlerName()								{ return mFirstHandlerName; };

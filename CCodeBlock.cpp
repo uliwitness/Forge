@@ -160,10 +160,15 @@ void	CCodeBlock::GenerateReturnInstruction()
 }
 
 
-
 void	CCodeBlock::GenerateSetReturnValueInstruction()
 {
 	LEOHandlerAddInstruction( mCurrentHandler, SET_RETURN_VALUE_INSTR, 0, 0 );
+}
+
+
+void	CCodeBlock::GenerateOperatorInstruction( LEOInstructionID inInstructionID )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, inInstructionID, 0, 0 );
 }
 
 

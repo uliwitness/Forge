@@ -10,7 +10,9 @@
 #include <string>
 #include "CVariableEntry.h"
 #include <map>
-
+extern "C" {
+#include "LEOInterpreter.h"
+}
 
 struct LEOScript;
 struct LEOHandler;
@@ -48,6 +50,8 @@ public:
 	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
 	void		GenerateReturnInstruction();
 	void		GenerateSetReturnValueInstruction();
+
+	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
 	
 protected:
 	LEOScript*				mScript;
