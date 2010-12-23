@@ -66,8 +66,8 @@ std::map<std::string,int>				CParser::sConstantToValueTable;			// Table of C sys
 // Operator token(s), precedence and instruction function name:
 static TOperatorEntry	sOperators[] =
 {
-//	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, CONCATENATE_VALUES_INSTR, EAndIdentifier },
-//	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, "vcy_op_or", EOrIdentifier },
+	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, AND_INSTR, EAndIdentifier },
+	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, OR_INSTR, EOrIdentifier },
 //	{ ELessThanOperator, EGreaterThanOperator, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
 //	{ ELessThanOperator, EEqualsOperator, 200, "vcy_cmp_le", ELessThanEqualPseudoOperator },
 //	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_lt", ELessThanOperator },
@@ -76,7 +76,7 @@ static TOperatorEntry	sOperators[] =
 //	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
 //	{ EIsIdentifier, ENotIdentifier, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
 //	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
-//	{ EAmpersandOperator, EAmpersandOperator, 300, "vcy_cat_space", EDoubleAmpersandPseudoOperator },
+	{ EAmpersandOperator, EAmpersandOperator, 300, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
 	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
 //	{ EPlusOperator, ELastIdentifier_Sentinel, 500, "vcy_add", EPlusOperator },
 //	{ EMinusOperator, ELastIdentifier_Sentinel, 500, "vcy_sub", EMinusOperator },
