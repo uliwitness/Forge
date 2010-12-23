@@ -10,10 +10,7 @@ Currently, HyperC supports the following HyperTalk syntax:
 	end handlerName
 
 This defines a command handler with the specified number of parameters that are
-automatically assigned to the local variables of that name. Note that right now
-HyperC doesn't support variable parameter counts. The first handler called in
-every file is the startUp handler, which should return a number which will be
-the return status of the compiled command line tool.
+automatically assigned to the local variables of that name.
 
 	function handlerName [<paramName1>[,<paramName2>[, ...]]
 		commands
