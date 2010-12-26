@@ -10,6 +10,7 @@
 #include "COperatorNode.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
+#include "LEOInstructions.h"
 
 
 namespace Carlson
@@ -19,7 +20,7 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Function Call \"" << mInstructionID << "\"" << std::endl
+	destStream << indentChars << "Operator Call \"" << gInstructionNames[mInstructionID] << "\"" << std::endl
 				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;
