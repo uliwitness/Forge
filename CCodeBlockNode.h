@@ -49,7 +49,6 @@ public:
 	virtual void	Simplify();
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
-protected:
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
 	
 protected:

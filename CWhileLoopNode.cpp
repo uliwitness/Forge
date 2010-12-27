@@ -8,10 +8,44 @@
  */
 
 #include "CWhileLoopNode.h"
+#include "CCodeBlock.h"
+
 
 namespace Carlson
 {
 
+void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
+{
+	// Push condition:
+	size_t	conditionInstructionOffset = inBlock->GetNextInstructionOffset();
+	mCondition->GenerateCode(inBlock);
+	
+	// Check condition, jump to end of loop if FALSE:
+	size_t	compareInstructionOffset = inBlock->GetNextInstructionOffset();
+	inBlock->GenerateJumpRelativeIfFalseInstruction( 0 );
+	
+	// Generate loop commands:
+	CCodeBlockNode::GenerateCode( inBlock );
+	
+	// At end of loop section, jump back to compare instruction:
+	size_t	jumpBackInstructionOffset = inBlock->GetNextInstructionOffset();
+	inBlock->GenerateJumpRelativeInstruction( conditionInstructionOffset -jumpBackInstructionOffset );
+	
+	// Retroactively fill in the address of the Else section in the if's jump instruction:
+	size_t	loopEndOffset = inBlock->GetNextInstructionOffset();
+	inBlock->SetJumpAddressOfInstructionAtIndex( compareInstructionOffset, loopEndOffset -compareInstructionOffset );
+}
 
+
+void	CWhileLoopNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
+{
+	INDENT_PREPARE(indentLevel);
+	
+	destStream << indentChars << "While (" << std::endl;
+	mCondition->DebugPrint( destStream, indentLevel );
+	destStream << indentChars << ")" << std::endl;
+	
+	DebugPrintInner( destStream, indentLevel );
+}
 
 } /*Carlson*/

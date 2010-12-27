@@ -172,5 +172,33 @@ void	CCodeBlock::GenerateOperatorInstruction( LEOInstructionID inInstructionID )
 }
 
 
+size_t	CCodeBlock::GetNextInstructionOffset()
+{
+	return mCurrentHandler->numInstructions;
+}
+
+
+void	CCodeBlock::GenerateJumpRelativeInstruction( int32_t numInstructions )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, JUMP_RELATIVE_INSTR, BACK_OF_STACK,
+								(*(uint32_t*)&numInstructions) );
+}
+
+
+void	CCodeBlock::GenerateJumpRelativeIfFalseInstruction( int32_t numInstructions )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, JUMP_RELATIVE_IF_FALSE_INSTR, BACK_OF_STACK,
+								(*(uint32_t*)&numInstructions) );
+}
+
+
+void	CCodeBlock::SetJumpAddressOfInstructionAtIndex( size_t idx, int32_t offs )
+{
+	assert( mCurrentHandler->instructions[idx].instructionID == JUMP_RELATIVE_INSTR
+			|| mCurrentHandler->instructions[idx].instructionID == JUMP_RELATIVE_IF_FALSE_INSTR );
+	
+	mCurrentHandler->instructions[idx].param2 = (*(uint32_t*)&offs);
+}
+
 }
 

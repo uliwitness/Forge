@@ -51,6 +51,12 @@ public:
 	void		GenerateReturnInstruction();
 	void		GenerateSetReturnValueInstruction();
 
+	size_t		GetNextInstructionOffset();	// Offset that next instruction added will have.
+	
+	void		GenerateJumpRelativeInstruction( int32_t numInstructions );
+	void		GenerateJumpRelativeIfFalseInstruction( int32_t numInstructions );
+	void		SetJumpAddressOfInstructionAtIndex( size_t idx, int32_t offs );
+	
 	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
 	
 protected:

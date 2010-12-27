@@ -43,6 +43,7 @@
 		55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */; };
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
+		55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -140,6 +141,10 @@
 		55D78AEA12C27E7B00C5D76E /* CPutCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPutCommandNode.h; sourceTree = "<group>"; };
 		55D78B1912C2B23000C5D76E /* COperatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COperatorNode.cpp; sourceTree = "<group>"; };
 		55D78B1A12C2B23000C5D76E /* COperatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COperatorNode.h; sourceTree = "<group>"; };
+		55FCEC0012C8DD0E00D76F6B /* testfile10.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile10.hc; sourceTree = "<group>"; };
+		55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIfNode.cpp; sourceTree = "<group>"; };
+		55FCEC0912C8DDDB00D76F6B /* CIfNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIfNode.h; sourceTree = "<group>"; };
+		55FCECD312C8F11200D76F6B /* testfile11.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile11.hc; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* Forge */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Forge; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -181,6 +186,8 @@
 				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
 				558A8D1512BD10C800F514F4 /* testfile8.hc */,
 				55D78A0712BE9E1F00C5D76E /* testfile9.hc */,
+				55FCEC0012C8DD0E00D76F6B /* testfile10.hc */,
+				55FCECD312C8F11200D76F6B /* testfile11.hc */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -241,6 +248,8 @@
 				3DAE6D580BF3B67500946F2F /* CFunctionDefinitionNode.cpp */,
 				3DC80A9B0BFF8D8B002CA7FF /* CWhileLoopNode.h */,
 				3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */,
+				55FCEC0912C8DDDB00D76F6B /* CIfNode.h */,
+				55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */,
 			);
 			name = "Code Blocks";
 			sourceTree = "<group>";
@@ -372,6 +381,7 @@
 				55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */,
 				55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */,
 				55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */,
+				55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -69,19 +69,19 @@ static TOperatorEntry	sOperators[] =
 	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, AND_INSTR, EAndIdentifier },
 	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, OR_INSTR, EOrIdentifier },
 //	{ ELessThanOperator, EGreaterThanOperator, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
-//	{ ELessThanOperator, EEqualsOperator, 200, "vcy_cmp_le", ELessThanEqualPseudoOperator },
-//	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_lt", ELessThanOperator },
-//	{ EGreaterThanOperator, EEqualsOperator, 200, "vcy_cmp_ge", EGreaterThanEqualPseudoOperator },
-//	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp_gt", EGreaterThanOperator },
+	{ ELessThanOperator, EEqualsOperator, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualPseudoOperator },
+	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, LESS_THAN_OPERATOR_INSTR, ELessThanOperator },
+	{ EGreaterThanOperator, EEqualsOperator, 200, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualPseudoOperator },
+	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, GREATER_THAN_OPERATOR_INSTR, EGreaterThanOperator },
 //	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
 //	{ EIsIdentifier, ENotIdentifier, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
 //	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
 	{ EAmpersandOperator, EAmpersandOperator, 300, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
 	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
-//	{ EPlusOperator, ELastIdentifier_Sentinel, 500, "vcy_add", EPlusOperator },
-//	{ EMinusOperator, ELastIdentifier_Sentinel, 500, "vcy_sub", EMinusOperator },
-//	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, "vcy_mul", EMultiplyOperator },
-//	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, "vcy_div", EDivideOperator },
+	{ EPlusOperator, ELastIdentifier_Sentinel, 500, ADD_OPERATOR_INSTR, EPlusOperator },
+	{ EMinusOperator, ELastIdentifier_Sentinel, 500, SUBTRACT_OPERATOR_INSTR, EMinusOperator },
+	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, MULTIPLY_OPERATOR_INSTR, EMultiplyOperator },
+	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
 //	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
 //	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
 //	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, "vcy_pow", EExponentOperator },
@@ -829,15 +829,14 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
 		CValueNode*			conditionNode = NULL;
 		
+		currFunction->AddCommand( whileLoop );
+		
 		// Condition:
 		conditionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	funcNode = new CFunctionCallNode( &parseTree, false, "GetAsBool", conditionLineNum );
-		funcNode->AddParam( conditionNode );
-		conditionNode = funcNode;
 
 		if( doUntil )
 		{
-			funcNode = new CFunctionCallNode(  false, &parseTree, "!", conditionLineNum );
+			COperatorNode	*funcNode = new COperatorNode( &parseTree, false, NEGATE_BOOL_INSTR, conditionLineNum );
 			funcNode->AddParam( conditionNode );
 			conditionNode = funcNode;
 		}
@@ -1003,7 +1002,6 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	std::string		tempName = CVariableEntry::GetNewTempName();
 	int				conditionLineNum = tokenItty->mLineNum;
 	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, currFunction );
 	
@@ -1012,8 +1010,6 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 	
 	// Condition:
 	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, "GetAsBool", conditionLineNum );
-	fcall->AddParam( condition );
 	ifNode->SetCondition( condition );
 	
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
