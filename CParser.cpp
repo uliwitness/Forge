@@ -27,6 +27,7 @@
 #include "CPrintCommandNode.h"
 #include "CReturnCommandNode.h"
 #include "COperatorNode.h"
+#include "CAddCommandNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -68,30 +69,30 @@ static TOperatorEntry	sOperators[] =
 {
 	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, AND_INSTR, EAndIdentifier },
 	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, OR_INSTR, EOrIdentifier },
-//	{ ELessThanOperator, EGreaterThanOperator, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
+	{ ELessThanOperator, EGreaterThanOperator, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualPseudoOperator },
 	{ ELessThanOperator, EEqualsOperator, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualPseudoOperator },
 	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, LESS_THAN_OPERATOR_INSTR, ELessThanOperator },
 	{ EGreaterThanOperator, EEqualsOperator, 200, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualPseudoOperator },
 	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, GREATER_THAN_OPERATOR_INSTR, EGreaterThanOperator },
-//	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
-//	{ EIsIdentifier, ENotIdentifier, 200, "vcy_cmp_ne", ENotEqualPseudoOperator },
-//	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, "vcy_cmp", EEqualsOperator },
+	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
+	{ EIsIdentifier, ENotIdentifier, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualPseudoOperator },
+	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
 	{ EAmpersandOperator, EAmpersandOperator, 300, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
 	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
 	{ EPlusOperator, ELastIdentifier_Sentinel, 500, ADD_OPERATOR_INSTR, EPlusOperator },
 	{ EMinusOperator, ELastIdentifier_Sentinel, 500, SUBTRACT_OPERATOR_INSTR, EMinusOperator },
 	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, MULTIPLY_OPERATOR_INSTR, EMultiplyOperator },
 	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
-//	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
-//	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, "vcy_mod", EModuloIdentifier },
-//	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, "vcy_pow", EExponentOperator },
+	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
+	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
+	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, POWER_OPERATOR_INSTR, EExponentOperator },
 	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, 0, INVALID_INSTR, ELastIdentifier_Sentinel }
 };
 
 static TUnaryOperatorEntry	sUnaryOperators[] =
 {
-//	{ ENotIdentifier, "vcy_not" },
-//	{ EMinusOperator, "vcy_neg" },
+	{ ENotIdentifier, NEGATE_BOOL_INSTR },
+	{ EMinusOperator, NEGATE_NUMBER_INSTR },
 	{ ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
@@ -836,7 +837,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 
 		if( doUntil )
 		{
-			COperatorNode	*funcNode = new COperatorNode( &parseTree, false, NEGATE_BOOL_INSTR, conditionLineNum );
+			COperatorNode	*funcNode = new COperatorNode( &parseTree, NEGATE_BOOL_INSTR, conditionLineNum );
 			funcNode->AddParam( conditionNode );
 			conditionNode = funcNode;
 		}
@@ -865,7 +866,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// From:
-		if( !tokenItty->IsIdentifier( EFromIdentifier ) && !tokenItty->IsIdentifier( EEqualsOperator ) )
+		if( !tokenItty->IsIdentifier( EFromIdentifier ) && !tokenItty->IsIdentifier( EEqualsOperator )
+			 && !tokenItty->IsIdentifier( EIsIdentifier ) )
 		{
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" or \"=\" here, found "
@@ -876,49 +878,50 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// startNum:
-		CValueNode*	startNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*			startNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 		
-		const char*	incrementOp = "+=";
-		const char*	compareOp = "<=";
+		LEOInteger			stepSize = 1;
+		LEOInstructionID	compareOp = LESS_THAN_EQUAL_OPERATOR_INSTR;
 		
 		// [down] ?
 		if( tokenItty->IsIdentifier( EDownIdentifier ) )
 		{
-			incrementOp = "-=";
-			compareOp = ">=";
+			stepSize = -1;
+			compareOp = GREATER_THAN_EQUAL_OPERATOR_INSTR;
 			
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		
-		
 		// To:
-		tokenItty->ExpectIdentifier( mFileName, EToIdentifier );
+		if( !tokenItty->IsIdentifier( EToIdentifier ) && !tokenItty->IsIdentifier( EThroughIdentifier ) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" or \"through\" here, found "
+								<< tokenItty->GetShortDescription() << ".";
+			throw std::runtime_error( errMsg.str() );
+		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// endNum:
-		CValueNode*	endNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*		endNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 		std::string		tempName = CVariableEntry::GetNewTempName();
 		currFunction->AddLocalVar( tempName, tempName, TVariantTypeInt );
 		
 		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
 		
-		// tempName = GetAsInt(startNum);
+		// tempName = startNum;
 		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, false, "GetAsInt", conditionLineNum );
-		theFuncCall->AddParam( startNumExpr );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( theFuncCall );
+		theAssignCommand->AddParam( startNumExpr );
 		currFunction->AddCommand( theAssignCommand );
 		
-		// while( tempName <= GetAsInt(endNum) )
-		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, false, compareOp, conditionLineNum );
-		theFuncCall = new CFunctionCallNode( &parseTree, false, "GetAsInt", conditionLineNum );
-		theFuncCall->AddParam( endNumExpr );
+		// while( tempName <= endNum )
+		COperatorNode*	theComparison = new COperatorNode( &parseTree, compareOp, conditionLineNum );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theComparison->AddParam( theFuncCall );
+		theComparison->AddParam( endNumExpr );
 		whileLoop->SetCondition( theComparison );
 		
-		// conterVar = itemName;
+		// counterVarName = tempName;
 		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
@@ -930,10 +933,10 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		}
 		
 		// tempName += 1;
-		theAssignCommand = new CCommandNode( &parseTree, incrementOp, tokenItty->mLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 1) );
-		whileLoop->AddCommand( theAssignCommand );	// TODO: Need to dispose this on exceptions above.
+		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, stepSize) );
+		whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
 		
 		currFunction->AddCommand( whileLoop );
 		
@@ -958,13 +961,14 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// countNum:
 		CValueNode*		countExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-				
+		
 		// [times] ?
 		if( tokenItty->IsIdentifier( ETimesIdentifier ) )
 			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "times".
 		
 		std::string			tempName = CVariableEntry::GetNewTempName();
 		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
+		currFunction->AddCommand( whileLoop );
 		
 		// tempName = 0;
 		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
@@ -973,11 +977,9 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		currFunction->AddCommand( theAssignCommand );
 		
 		// while( tempName < GetAsInt(countExpression) )
-		CFunctionCallNode*	theComparison = new CFunctionCallNode( &parseTree, false, "<", conditionLineNum );
-		CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, false, "GetAsInt", conditionLineNum );
-		theFuncCall->AddParam( countExpression );
+		COperatorNode*	theComparison = new COperatorNode( &parseTree, LESS_THAN_OPERATOR_INSTR, conditionLineNum );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theComparison->AddParam( theFuncCall );
+		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
 
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
@@ -986,11 +988,10 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		}
 		
 		// tempName += 1;
-		theAssignCommand = new CCommandNode( &parseTree, "+=", tokenItty->mLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 1) );
-		whileLoop->AddCommand( theAssignCommand );
-		currFunction->AddCommand( whileLoop );	// TODO: Need to dispose this on exceptions above.
+		COperatorNode	*	theIncrementOperation = new COperatorNode( &parseTree, ADD_OPERATOR_INSTR, tokenItty->mLineNum );
+		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1) );
+		whileLoop->AddCommand( theIncrementOperation );
 
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
@@ -1409,7 +1410,7 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 		operandA = terms.back();
 		terms.pop_back();
 		
-		COperatorNode*	currOperation = new COperatorNode( &parseTree, false, opName, operandA->GetLineNum() );
+		COperatorNode*	currOperation = new COperatorNode( &parseTree, opName, operandA->GetLineNum() );
 		currOperation->AddParam( operandA );
 		currOperation->AddParam( operandB );
 		
@@ -2552,7 +2553,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					size_t	lineNum = tokenItty->mLineNum;
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip operator token.
 					
-					COperatorNode*	opFCall = new COperatorNode( &parseTree, false, operatorCommandName, lineNum );
+					COperatorNode*	opFCall = new COperatorNode( &parseTree, operatorCommandName, lineNum );
 					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
 					theTerm = opFCall;
 					break;

@@ -41,8 +41,8 @@ void	CWhileLoopNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "While (" << std::endl;
-	mCondition->DebugPrint( destStream, indentLevel );
+	destStream << indentChars << "While" << std::endl << indentChars << "(" << std::endl;
+	mCondition->DebugPrint( destStream, indentLevel +1 );
 	destStream << indentChars << ")" << std::endl;
 	
 	DebugPrintInner( destStream, indentLevel );

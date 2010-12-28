@@ -200,5 +200,17 @@ void	CCodeBlock::SetJumpAddressOfInstructionAtIndex( size_t idx, int32_t offs )
 	mCurrentHandler->instructions[idx].param2 = (*(uint32_t*)&offs);
 }
 
+
+void	CCodeBlock::GenerateAddNumberInstruction( int16_t bpRelativeOffset, LEONumber inNumber )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, ADD_NUMBER_INSTR, (*(uint16_t*)&bpRelativeOffset), (*(uint32_t*)&inNumber) );
+}
+
+
+void	CCodeBlock::GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, ADD_INTEGER_INSTR, (*(uint16_t*)&bpRelativeOffset), (*(uint32_t*)&inNumber) );
+}
+
 }
 

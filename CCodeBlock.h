@@ -57,6 +57,8 @@ public:
 	void		GenerateJumpRelativeIfFalseInstruction( int32_t numInstructions );
 	void		SetJumpAddressOfInstructionAtIndex( size_t idx, int32_t offs );
 	
+	void		GenerateAddNumberInstruction( int16_t bpRelativeOffset, LEONumber inNumber );
+	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
 	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
 	
 protected:

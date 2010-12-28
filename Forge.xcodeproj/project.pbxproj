@@ -44,6 +44,7 @@
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
 		55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */; };
+		55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 /* End PBXBuildFile section */
 
@@ -145,6 +146,8 @@
 		55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIfNode.cpp; sourceTree = "<group>"; };
 		55FCEC0912C8DDDB00D76F6B /* CIfNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIfNode.h; sourceTree = "<group>"; };
 		55FCECD312C8F11200D76F6B /* testfile11.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile11.hc; sourceTree = "<group>"; };
+		55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAddCommandNode.cpp; sourceTree = "<group>"; };
+		55FCEE0812C95BE800D76F6B /* CAddCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAddCommandNode.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* Forge */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Forge; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -275,6 +278,8 @@
 				3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */,
 				55D78B1A12C2B23000C5D76E /* COperatorNode.h */,
 				55D78B1912C2B23000C5D76E /* COperatorNode.cpp */,
+				55FCEE0812C95BE800D76F6B /* CAddCommandNode.h */,
+				55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -382,6 +387,7 @@
 				55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */,
 				55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */,
 				55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */,
+				55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
