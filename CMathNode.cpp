@@ -1,5 +1,5 @@
 /*
- *  COperatorNode.cpp
+ *  CMathNode.cpp
  *  HyperCompiler
  *
  *  Created by Uli Kusterer on 12.05.07.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "COperatorNode.h"
+#include "CMathNode.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
 #include "LEOInstructions.h"
@@ -16,11 +16,11 @@
 namespace Carlson
 {
 
-void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
+void	CMathNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Operator Call \"" << gInstructionNames[mInstructionID] << "\"" << std::endl
+	destStream << indentChars << "Math Call \"" << gInstructionNames[mInstructionID] << "\"" << std::endl
 				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;
@@ -34,14 +34,14 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 }
 
 
-void	COperatorNode::AddParam( CValueNode* val )
+void	CMathNode::AddParam( CValueNode* val )
 {
 	mParams.push_back( val );
 	mParseTree->NodeWasAdded(val);
 }
 
 
-void	COperatorNode::Simplify()
+void	CMathNode::Simplify()
 {
 	std::vector<CValueNode*>::iterator itty;
 	
@@ -50,7 +50,7 @@ void	COperatorNode::Simplify()
 }
 
 
-void	COperatorNode::GenerateCode( CCodeBlock* inCodeBlock )
+void	CMathNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::iterator itty;
 	

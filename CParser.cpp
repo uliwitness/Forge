@@ -959,6 +959,13 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			}
 		}
 		
+		// tempName = 0;
+		std::string			tempName = CVariableEntry::GetNewTempName();
+		CCommandNode*		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 0) );
+		currFunction->AddCommand( theAssignCommand );
+		
 		// countNum:
 		CValueNode*		countExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 		
@@ -966,17 +973,10 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		if( tokenItty->IsIdentifier( ETimesIdentifier ) )
 			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "times".
 		
-		std::string			tempName = CVariableEntry::GetNewTempName();
 		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
 		currFunction->AddCommand( whileLoop );
 		
-		// tempName = 0;
-		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 0) );
-		currFunction->AddCommand( theAssignCommand );
-		
-		// while( tempName < GetAsInt(countExpression) )
+		// while( tempName < countExpression )
 		COperatorNode*	theComparison = new COperatorNode( &parseTree, LESS_THAN_OPERATOR_INSTR, conditionLineNum );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		theComparison->AddParam( countExpression );
@@ -988,11 +988,11 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		}
 		
 		// tempName += 1;
-		COperatorNode	*	theIncrementOperation = new COperatorNode( &parseTree, ADD_OPERATOR_INSTR, tokenItty->mLineNum );
+		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
 		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1) );
 		whileLoop->AddCommand( theIncrementOperation );
-
+		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
