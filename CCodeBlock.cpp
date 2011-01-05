@@ -212,5 +212,12 @@ void	CCodeBlock::GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInt
 	LEOHandlerAddInstruction( mCurrentHandler, ADD_INTEGER_INSTR, (*(uint16_t*)&bpRelativeOffset), (*(uint32_t*)&inNumber) );
 }
 
+
+void	CCodeBlock::GenerateLineMarkerInstruction( size_t inLineNum )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, inLineNum );
+}
+
+
 }
 

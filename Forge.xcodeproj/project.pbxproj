@@ -40,6 +40,7 @@
 		55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF3127DD30B00CF0F16 /* LEOChunks.c */; };
 		55C72BFD127DD30B00CF0F16 /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */; };
 		55C72C3B127DD79B00CF0F16 /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */; };
+		55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */; };
 		55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */; };
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
@@ -135,6 +136,8 @@
 		55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOContextGroup.c; path = ../Leonie/common/LEOContextGroup.c; sourceTree = SOURCE_ROOT; };
 		55C72BF6127DD30B00CF0F16 /* LEOHandlerID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOHandlerID.h; path = ../Leonie/common/LEOHandlerID.h; sourceTree = SOURCE_ROOT; };
 		55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructionsGeneric.c; path = ../Leonie/generic/LEOInstructionsGeneric.c; sourceTree = SOURCE_ROOT; };
+		55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLineMarkerNode.cpp; sourceTree = "<group>"; };
+		55CFBE2712D3D156007B3627 /* CLineMarkerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLineMarkerNode.h; sourceTree = "<group>"; };
 		55D789E412BE937600C5D76E /* CReturnCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CReturnCommandNode.h; sourceTree = "<group>"; };
 		55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CReturnCommandNode.cpp; sourceTree = "<group>"; };
 		55D78A0712BE9E1F00C5D76E /* testfile9.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile9.hc; sourceTree = "<group>"; };
@@ -280,6 +283,8 @@
 				55D78B1912C2B23000C5D76E /* COperatorNode.cpp */,
 				55FCEE0812C95BE800D76F6B /* CAddCommandNode.h */,
 				55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */,
+				55CFBE2712D3D156007B3627 /* CLineMarkerNode.h */,
+				55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -388,6 +393,7 @@
 				55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */,
 				55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */,
 				55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */,
+				55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

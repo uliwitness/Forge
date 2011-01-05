@@ -10,4 +10,7 @@ on startUp
 	repeat with x is 10 down to 1
 		put "Iteration" && x
 	end repeat
+	repeat for each item theItem in "foo,bar,baz"
+		put theItem
+	end repeat
 end startUp

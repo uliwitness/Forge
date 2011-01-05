@@ -61,6 +61,8 @@ public:
 	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
 	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
 	
+	void		GenerateLineMarkerInstruction( size_t inLineNum );
+	
 protected:
 	LEOScript*				mScript;
 	LEOContextGroup*		mGroup;

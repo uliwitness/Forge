@@ -28,6 +28,7 @@
 #include "CReturnCommandNode.h"
 #include "COperatorNode.h"
 #include "CAddCommandNode.h"
+#include "CLineMarkerNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -731,7 +732,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// of:
-	if( !tokenItty->IsIdentifier( EOfIdentifier ) )
+	if( !tokenItty->IsIdentifier( EOfIdentifier ) && !tokenItty->IsIdentifier( EInIdentifier ) )
 	{
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
@@ -1171,6 +1172,9 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 {
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	CLineMarkerNode*	lineMarker = new CLineMarkerNode( &parseTree, tokenItty->mLineNum );
+	currFunction->AddCommand( lineMarker );
 	
 	if( tokenItty->mType == EIdentifierToken && tokenItty->mSubType == ELastIdentifier_Sentinel )	// Unknown identifier.
 		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
