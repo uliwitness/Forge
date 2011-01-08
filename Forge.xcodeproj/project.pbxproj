@@ -31,6 +31,9 @@
 		558A8EFE12BD6A4B00F514F4 /* CGetParamCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8EFD12BD6A4B00F514F4 /* CGetParamCommandNode.cpp */; };
 		558A8F1A12BD73DF00F514F4 /* CPrintCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8F1912BD73DF00F514F4 /* CPrintCommandNode.cpp */; };
 		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
+		55BF651412D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BF651212D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp */; };
+		55BF655412D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BF655212D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp */; };
+		55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */; };
 		55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */; };
 		55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BE9127DD30B00CF0F16 /* LEOValue.c */; };
 		55C72BF8127DD30B00CF0F16 /* LEOInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */; };
@@ -118,6 +121,12 @@
 		558A8F1912BD73DF00F514F4 /* CPrintCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPrintCommandNode.cpp; sourceTree = "<group>"; };
 		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
 		55B24F5E0C189906001C7796 /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CVariableEntry.cpp; sourceTree = "<group>"; };
+		55BF651212D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAssignChunkArrayNode.cpp; sourceTree = "<group>"; };
+		55BF651312D8A26300C2FDC3 /* CAssignChunkArrayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAssignChunkArrayNode.h; sourceTree = "<group>"; };
+		55BF655212D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGetArrayItemCountNode.cpp; sourceTree = "<group>"; };
+		55BF655312D91ACC00C2FDC3 /* CGetArrayItemCountNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGetArrayItemCountNode.h; sourceTree = "<group>"; };
+		55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGetArrayItemNode.cpp; sourceTree = "<group>"; };
+		55BF655912D91AEE00C2FDC3 /* CGetArrayItemNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGetArrayItemNode.h; sourceTree = "<group>"; };
 		55C72BDC127DCEF400CF0F16 /* CCodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCodeBlock.h; sourceTree = "<group>"; };
 		55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCodeBlock.cpp; sourceTree = "<group>"; };
 		55C72BE8127DD30B00CF0F16 /* LEOValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOValue.h; path = ../Leonie/common/LEOValue.h; sourceTree = SOURCE_ROOT; };
@@ -285,6 +294,12 @@
 				55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */,
 				55CFBE2712D3D156007B3627 /* CLineMarkerNode.h */,
 				55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */,
+				55BF651312D8A26300C2FDC3 /* CAssignChunkArrayNode.h */,
+				55BF651212D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp */,
+				55BF655312D91ACC00C2FDC3 /* CGetArrayItemCountNode.h */,
+				55BF655212D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp */,
+				55BF655912D91AEE00C2FDC3 /* CGetArrayItemNode.h */,
+				55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -394,6 +409,9 @@
 				55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */,
 				55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */,
 				55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */,
+				55BF651412D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp in Sources */,
+				55BF655412D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp in Sources */,
+				55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

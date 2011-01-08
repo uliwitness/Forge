@@ -48,9 +48,10 @@ typedef enum TPutOperationType
 
 
 // The chunk types we currently support:
-typedef enum TChunkType
+typedef enum TChunkType	// Keep this same as LEOChunkType:
 {
 	TChunkTypeInvalid = 0,
+	TChunkTypeByte,
 	TChunkTypeCharacter,
 	TChunkTypeItem,
 	TChunkTypeLine,

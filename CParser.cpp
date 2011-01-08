@@ -29,6 +29,9 @@
 #include "COperatorNode.h"
 #include "CAddCommandNode.h"
 #include "CLineMarkerNode.h"
+#include "CAssignChunkArrayNode.h"
+#include "CGetArrayItemCountNode.h"
+#include "CGetArrayItemNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -745,62 +748,54 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	size_t			currLineNum = tokenItty->mLineNum;
 	CValueNode* theExpressionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 	
-	// MakeListOfAllChunksOfType( tempName, <expression> );
+	// AssignChunkArray( tempName, chunkType, <expression> );
 	std::string		tempName = CVariableEntry::GetNewTempName();
 	std::string		tempCounterName = CVariableEntry::GetNewTempName();
 	std::string		tempMaxCountName = CVariableEntry::GetNewTempName();
 	
-	CCommandNode*			theVarAssignCommand = new CCommandNode( &parseTree, "GetChunkArray", currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-	theVarAssignCommand->AddParam( theExpressionNode );
-	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant) );
-	currFunction->AddCommand( theVarAssignCommand );
-
-	// tempCounterName = 0;
-	theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
+	CCommandNode*			theVarChunkListCommand = new CAssignChunkArrayNode( &parseTree, currLineNum );
+	theVarChunkListCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+	theVarChunkListCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant) );
+	theVarChunkListCommand->AddParam( theExpressionNode );
+	currFunction->AddCommand( theVarChunkListCommand );
+	
+	// tempCounterName = 1;
+	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 0) );
-	currFunction->AddCommand( theVarAssignCommand );
-
-	// tempMaxCountName = GetElementCount( tempName );
-	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, false, "GetNumListItems",currLineNum);
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-	theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
-	theVarAssignCommand->AddParam( currFunctionCall );
+	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 1) );
 	currFunction->AddCommand( theVarAssignCommand );
 	
-	// while( tempCounterName < tempMaxCountName )
-	currFunctionCall = new CFunctionCallNode( &parseTree, false, "<", currLineNum );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
+	// tempMaxCountName = GetArrayItemCount( tempName );
+	CGetArrayItemCountNode*	currFunctionCall = new CGetArrayItemCountNode( &parseTree, currLineNum);
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
+	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+	currFunction->AddCommand( currFunctionCall );
 	
+	// while( tempCounterName <= tempMaxCountName )
 	CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, currLineNum, currFunction );
-	currFunctionCall = new CFunctionCallNode( &parseTree, false, "<", currLineNum );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
-	whileLoop->SetCondition( currFunctionCall );
 	currFunction->AddCommand( whileLoop );
+	COperatorNode	*	opNode = new COperatorNode( &parseTree, LESS_THAN_EQUAL_OPERATOR_INSTR, currLineNum );
+	whileLoop->SetCondition( opNode );
+	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
+	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
 	
-	// counterVarName = GetConstElementAtIndex( tempName, tempCounterName );
-	currFunctionCall = new CFunctionCallNode( &parseTree, false, "GetConstElementAtIndex", currLineNum );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
-	theVarAssignCommand->AddParam( currFunctionCall );
-	whileLoop->AddCommand( theVarAssignCommand );
-
+	// counterVarName = GetArrayItem( tempName, tempCounterName );
+	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, currLineNum );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+	whileLoop->AddCommand( getItemNode );
+	
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 	{
 		ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 	}
 	
 	// tempCounterName += 1;	-- increment loop counter.
-	theVarAssignCommand = new CCommandNode( &parseTree, "+=", currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 1) );
-	whileLoop->AddCommand( theVarAssignCommand );
+	CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+	theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
+	theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1) );
+	whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
 	
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	if( !tokenItty->IsIdentifier(ERepeatIdentifier) )	// end repeat

@@ -63,6 +63,10 @@ public:
 	
 	void		GenerateLineMarkerInstruction( size_t inLineNum );
 	
+	void		GenerateAssignChunkArrayInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
+	void		GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset );
+	void		GenerateGetArrayItemInstruction( int16_t bpRelativeOffset );
+	
 protected:
 	LEOScript*				mScript;
 	LEOContextGroup*		mGroup;

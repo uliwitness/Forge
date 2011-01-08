@@ -7,8 +7,11 @@ on startUp
 	repeat for 10 times
 		put "Looping..."
 	end repeat
+	repeat with x is 1 through 10
+		put "Uppy" && x
+	end repeat
 	repeat with x is 10 down to 1
-		put "Iteration" && x
+		put "Downy" && x
 	end repeat
 	repeat for each item theItem in "foo,bar,baz"
 		put theItem

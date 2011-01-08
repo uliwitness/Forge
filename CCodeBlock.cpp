@@ -219,5 +219,22 @@ void	CCodeBlock::GenerateLineMarkerInstruction( size_t inLineNum )
 }
 
 
+void	CCodeBlock::GenerateAssignChunkArrayInstruction( int16_t bpRelativeOffset, uint32_t inChunkType )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, ASSIGN_CHUNK_ARRAY_INSTR, bpRelativeOffset, inChunkType );
+}
+
+
+void	CCodeBlock::GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, GET_ARRAY_ITEM_COUNT_INSTR, bpRelativeOffset, 0 );
+}
+
+
+void	CCodeBlock::GenerateGetArrayItemInstruction( int16_t bpRelativeOffset )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, GET_ARRAY_ITEM_INSTR, bpRelativeOffset, 0 );
+}
+
 }
 
