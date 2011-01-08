@@ -15,7 +15,8 @@ namespace Carlson
 class CLineMarkerNode : public CCommandNode
 {
 public:
-	CLineMarkerNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "LINE:", inLineNum ) {};
+	CLineMarkerNode( CParseTree* inTree, size_t inLineNum )
+		: CCommandNode( inTree, "LINE:", inLineNum ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };
