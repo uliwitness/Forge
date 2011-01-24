@@ -15,7 +15,7 @@ namespace Carlson
 class CPutCommandNode : public CCommandNode
 {
 public:
-	CPutCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "=", inLineNum ) {};
+	CPutCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "Put", inLineNum ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

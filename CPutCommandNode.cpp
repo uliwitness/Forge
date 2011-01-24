@@ -23,7 +23,7 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	srcValue->GenerateCode( inCodeBlock );
 	
 	if(( varValue = dynamic_cast<CLocalVariableRefValueNode*>(destValue) ))
-		inCodeBlock->GeneratePopIntoVariableInstruction( varValue->GetBPRelativeOffset() );
+		inCodeBlock->GeneratePopSimpleValueIntoVariableInstruction( varValue->GetBPRelativeOffset() );
 	else
 		throw std::runtime_error("Can't assign to this value.");
 }

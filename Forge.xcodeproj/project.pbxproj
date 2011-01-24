@@ -127,6 +127,7 @@
 		55BF655312D91ACC00C2FDC3 /* CGetArrayItemCountNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGetArrayItemCountNode.h; sourceTree = "<group>"; };
 		55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGetArrayItemNode.cpp; sourceTree = "<group>"; };
 		55BF655912D91AEE00C2FDC3 /* CGetArrayItemNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGetArrayItemNode.h; sourceTree = "<group>"; };
+		55BF65DC12D936C000C2FDC3 /* testfile12.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile12.hc; sourceTree = "<group>"; };
 		55C72BDC127DCEF400CF0F16 /* CCodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCodeBlock.h; sourceTree = "<group>"; };
 		55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCodeBlock.cpp; sourceTree = "<group>"; };
 		55C72BE8127DD30B00CF0F16 /* LEOValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOValue.h; path = ../Leonie/common/LEOValue.h; sourceTree = SOURCE_ROOT; };
@@ -203,6 +204,7 @@
 				55D78A0712BE9E1F00C5D76E /* testfile9.hc */,
 				55FCEC0012C8DD0E00D76F6B /* testfile10.hc */,
 				55FCECD312C8F11200D76F6B /* testfile11.hc */,
+				55BF65DC12D936C000C2FDC3 /* testfile12.hc */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,

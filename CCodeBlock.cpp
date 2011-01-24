@@ -122,6 +122,12 @@ void	CCodeBlock::GeneratePushVariableInstruction( int16_t bpRelativeOffset )
 }
 
 
+void	CCodeBlock::GeneratePopSimpleValueIntoVariableInstruction( int16_t bpRelativeOffset )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, POP_SIMPLE_VALUE_INSTR, (*(uint16_t*)&bpRelativeOffset), 0 );
+}
+
+
 void	CCodeBlock::GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, POP_VALUE_INSTR, (*(uint16_t*)&bpRelativeOffset), 0 );

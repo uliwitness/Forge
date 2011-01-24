@@ -41,7 +41,8 @@ public:
 	void		GeneratePushVariableInstruction( int16_t bpRelativeOffset );
 
 	void		GeneratePopValueInstruction();
-	void		GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset );
+	void		GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset );	// Maintains references.
+	void		GeneratePopSimpleValueIntoVariableInstruction( int16_t bpRelativeOffset );	// Follows references.
 
 	void		GeneratePrintValueInstruction();
 	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );

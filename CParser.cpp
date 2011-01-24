@@ -252,14 +252,14 @@ const std::string CVariableEntry::GetNewTempName()
 // -----------------------------------------------------------------------------
 //	Parse:
 //		Main entrypoint. This takes a script that's been tokenised and generates
-//		the proper source files.
+//		the proper parse tree.
 // -----------------------------------------------------------------------------
 
 void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
 	// -------------------------------------------------------------------------
 	// First recursively parse our script for top-level constructs:
-	//	(functions, commands, globals, whatever...)
+	//	(functions, commands, CompileIt-style globals, whatever...)
 	std::deque<CToken>::iterator	tokenItty = tokens.begin();
 	
 	mFileName = fname;
@@ -409,22 +409,28 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else if( tokenItty->IsIdentifier( EAfterIdentifier ) )
 		{
-			thePutCommand = new CCommandNode( &parseTree, "Append", startLine );
-			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
-			
-			// container:
+
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+			
+			thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
+			concatOperation->AddParam( destContainer->Copy() );
+			concatOperation->AddParam( whatExpression );
+			thePutCommand->AddParam( concatOperation );
 			thePutCommand->AddParam( destContainer );
 		}
 		else if( tokenItty->IsIdentifier( EBeforeIdentifier ) )
 		{
-			thePutCommand = new CCommandNode( &parseTree, "Prepend", startLine );
-			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
-			
-			// container:
+
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+			
+			thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
+			concatOperation->AddParam( whatExpression );
+			concatOperation->AddParam( destContainer->Copy() );
+			thePutCommand->AddParam( concatOperation );
 			thePutCommand->AddParam( destContainer );
 		}
 		else
@@ -919,7 +925,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		whileLoop->SetCondition( theComparison );
 		
 		// counterVarName = tempName;
-		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
+		theAssignCommand = new CPutCommandNode( &parseTree, conditionLineNum );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
 		whileLoop->AddCommand( theAssignCommand );
