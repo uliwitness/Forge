@@ -114,6 +114,7 @@ static TGlobalPropertyEntry	sGlobalProperties[] =
 // Chunk expression start token -> Chunk type constant (as string for code generation):
 static TChunkTypeEntry	sChunkTypes[] =
 {
+	{ EByteIdentifier, EBytesIdentifier, TChunkTypeByte },
 	{ ECharIdentifier, ECharsIdentifier, TChunkTypeCharacter },
 	{ ECharacterIdentifier, ECharactersIdentifier, TChunkTypeCharacter },
 	{ ELineIdentifier, ELinesIdentifier, TChunkTypeLine },

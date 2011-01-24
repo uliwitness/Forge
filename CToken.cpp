@@ -139,7 +139,9 @@ namespace Carlson
 		">=",
 		"thru",
 		"through",
-		"in"
+		"in",
+		"byte",
+		"bytes"
 	};
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )
