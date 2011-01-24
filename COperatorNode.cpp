@@ -47,6 +47,17 @@ void	COperatorNode::Simplify()
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 		(*itty)->Simplify();
+	
+	switch( mInstructionID )
+	{
+		case CONCATENATE_VALUES_INSTR:
+			
+			break;
+		
+		case CONCATENATE_VALUES_WITH_SPACE_INSTR:
+			
+			break;
+	}
 }
 
 
