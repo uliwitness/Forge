@@ -11,7 +11,7 @@
 extern "C" {
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
-#include "LEODebugger.h"
+#include "LEORemoteDebugger.h"
 }
 
 
@@ -106,8 +106,11 @@ int main( int argc, char * const argv[] )
 		LEOInitContext( &ctx, group );
 		
 		#if DEBUGGER_ON
-		ctx.preInstructionProc = LEODebuggerPreInstructionProc;	// Activate the debugger.
-		LEODebuggerAddBreakpoint( theHandler->instructions );	// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+		if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+		{
+			ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
+			LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+		}
 		#endif
 		
 		LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
