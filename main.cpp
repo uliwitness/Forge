@@ -15,17 +15,17 @@ extern "C" {
 }
 
 
-#define RUN_CODE			1
-#define DEBUGGER_ON			0
-#define PRINT_INSTRUCTIONS	0
-#define PRINT_TOKENS		0
-#define PRINT_TREE			0
-
-
 using namespace Carlson;
 
 int main( int argc, char * const argv[] )
 {
+	bool	debuggerOn = false,
+			runCode = true,
+			printInstructions = false,
+			printTokens = false,
+			printParseTree = false,
+			verbose = false;
+	
 	int		fnameIdx = 0, outputFNameIdx = 0;
 	for( int x = 1; x < argc; )
 	{
@@ -40,6 +40,30 @@ int main( int argc, char * const argv[] )
 					return 4;
 				}
 				outputFNameIdx = x;
+			}
+			else if( strcmp( argv[x], "--debug" ) == 0 )
+			{
+				debuggerOn = true;
+			}
+			else if( strcmp( argv[x], "--dontrun" ) == 0 )
+			{
+				runCode = false;
+			}
+			else if( strcmp( argv[x], "--printinstructions" ) == 0 )
+			{
+				printInstructions = true;
+			}
+			else if( strcmp( argv[x], "--printtokens" ) == 0 )
+			{
+				printTokens = true;
+			}
+			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
+			{
+				printParseTree = true;
+			}
+			else if( strcmp( argv[x], "--verbose" ) == 0 )
+			{
+				verbose = true;
 			}
 			else
 			{
@@ -62,7 +86,7 @@ int main( int argc, char * const argv[] )
 	if( !code )
 	{
 		if( !filename )
-			std::cerr << "error: First parameter should be name of script to compile." << std::endl;
+			std::cerr << "error: Last parameter should be name of script to compile." << std::endl;
 		else
 			std::cerr << "error: Couldn't find file \"" << filename << "\"." << std::endl;
 		return 2;
@@ -72,19 +96,24 @@ int main( int argc, char * const argv[] )
 	{
 		CParseTree				parseTree;
 		
-		//std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
+		if( verbose )
+			std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
 		tokens = CToken::TokenListFromText( code, strlen(code) );
-		#if PRINT_TOKENS
-		for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
-			std::cout << "Token: " << currToken->GetDescription() << std::endl;
-		#endif
+		if( printTokens )
+		{
+			for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
+				std::cout << "Token: " << currToken->GetDescription() << std::endl;
+		}
 		
-		//std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
+		if( verbose )
+			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree );
 		
-		#if PRINT_TREE
-		parseTree.DebugPrint( std::cout, 1 );
-		#endif
+		if( printInstructions || runCode || printParseTree )
+			LEOInitInstructionArray();
+		
+		if( printParseTree )
+			parseTree.DebugPrint( std::cout, 1 );
 		
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0 );
 		LEOContextGroup	*	group = LEOContextGroupCreate();
@@ -93,37 +122,40 @@ int main( int argc, char * const argv[] )
 		parseTree.Simplify();
 		parseTree.GenerateCode( &block );
 		
-		#if PRINT_INSTRUCTIONS
-		LEODebugPrintScript( group, script );
-		#endif
+		if( printInstructions )
+			LEODebugPrintScript( group, script );
 		
-		#if RUN_CODE
-		//printf( "\nRun the code:\n" );
-		LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, "startUp" );
-		LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
-		
-		LEOContext		ctx;
-		LEOInitContext( &ctx, group );
-		
-		#if DEBUGGER_ON
-		if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+		if( runCode )
 		{
-			ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
-			LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+			if( verbose )
+				printf( "\nRun the code:\n" );
+			
+			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, "startUp" );
+			LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
+			
+			LEOContext		ctx;
+			LEOInitContext( &ctx, group );
+			
+			if( debuggerOn )
+			{
+				if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+				{
+					ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
+					LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+				}
+			}
+			
+			LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
+				// params would go here...
+			LEOPushIntegerOnStack( &ctx, 0 );	// Parameter count.
+			
+			LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
+			LEORunInContext( theHandler->instructions, &ctx );
+			if( ctx.errMsg[0] != 0 )
+				printf("ERROR: %s\n", ctx.errMsg );
+			
+			LEOCleanUpContext( &ctx );
 		}
-		#endif
-		
-		LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
-			// params would go here...
-		LEOPushIntegerOnStack( &ctx, 0 );	// Parameter count.
-		
-		LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
-		LEORunInContext( theHandler->instructions, &ctx );
-		if( ctx.errMsg[0] != 0 )
-			printf("ERROR: %s\n", ctx.errMsg );
-		
-		LEOCleanUpContext( &ctx );
-		#endif
 		
 		LEOScriptRelease( script );
 		LEOContextGroupRelease( group );
@@ -134,7 +166,8 @@ int main( int argc, char * const argv[] )
 		return 3;
 	}
 	
-	//std::cout << "Finished successfully." << std::endl;
+	if( verbose )
+		std::cout << "Finished successfully." << std::endl;
 	
     return 0;
 }
