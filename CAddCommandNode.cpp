@@ -21,9 +21,7 @@ void	CAddCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	CValueNode					*	srcValue = GetParamAtIndex( 1 );
 	CLocalVariableRefValueNode	*	varValue = NULL;
 	CFloatValueNode				*	constValue = NULL;
-	
-	srcValue->GenerateCode( inCodeBlock );
-	
+		
 	if(( varValue = dynamic_cast<CLocalVariableRefValueNode*>(destValue) ))
 	{
 		constValue = dynamic_cast<CFloatValueNode*>(srcValue);
@@ -35,7 +33,13 @@ void	CAddCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 			if( constIntValue )
 				inCodeBlock->GenerateAddIntegerInstruction( varValue->GetBPRelativeOffset(), constIntValue->GetAsInt() );
 			else
+			{
+				srcValue->GenerateCode( inCodeBlock );
+				
+				// TODO: Add code to add non-constant values.
+				
 				throw std::runtime_error("Can't assign this value.");
+			}
 		}
 	}
 	else
