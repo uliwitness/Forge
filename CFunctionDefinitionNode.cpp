@@ -74,7 +74,7 @@ void	CFunctionDefinitionNode::DebugPrint( std::ostream& destStream, size_t inden
 
 void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateFunctionPrologForName( mIsCommand, mName, mLocals );
+	inCodeBlock->GenerateFunctionPrologForName( mIsCommand, mName, mLocals, mLineNum );
 	
 	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
 	

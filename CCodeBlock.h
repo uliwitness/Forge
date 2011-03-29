@@ -29,7 +29,7 @@ public:
 	CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript );
 	virtual ~CCodeBlock();
 	
-	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );
+	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );
 	void		PrepareToExitFunction();
 	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );	// Calls PrepareToExitFunction.
 	void		GenerateFunctionCallInstruction( bool isCommand, const std::string& inName );

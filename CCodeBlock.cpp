@@ -35,7 +35,7 @@ CCodeBlock::~CCodeBlock()
 }
 
 
-void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals )
+void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber )
 {
 	// Create the handler:
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
@@ -45,6 +45,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
 	// Allocate stack space for our local variables:
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, lineNumber );
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
