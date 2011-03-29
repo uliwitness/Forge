@@ -926,8 +926,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// counterVarName = tempName;
 		theAssignCommand = new CPutCommandNode( &parseTree, conditionLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
 		whileLoop->AddCommand( theAssignCommand );
 		
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
