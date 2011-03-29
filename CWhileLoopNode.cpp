@@ -16,8 +16,10 @@ namespace Carlson
 
 void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 {
+	size_t	lineMarkerInstructionOffset = inBlock->GetNextInstructionOffset();
+	inBlock->GenerateLineMarkerInstruction( mLineNum );	// Make sure debugger indicates condition as current line on every iteration.
+	
 	// Push condition:
-	size_t	conditionInstructionOffset = inBlock->GetNextInstructionOffset();
 	mCondition->GenerateCode(inBlock);
 	
 	// Check condition, jump to end of loop if FALSE:
@@ -29,7 +31,7 @@ void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 	
 	// At end of loop section, jump back to compare instruction:
 	size_t	jumpBackInstructionOffset = inBlock->GetNextInstructionOffset();
-	inBlock->GenerateJumpRelativeInstruction( conditionInstructionOffset -jumpBackInstructionOffset );
+	inBlock->GenerateJumpRelativeInstruction( lineMarkerInstructionOffset -jumpBackInstructionOffset );
 	
 	// Retroactively fill in the address of the Else section in the if's jump instruction:
 	size_t	loopEndOffset = inBlock->GetNextInstructionOffset();
