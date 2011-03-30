@@ -48,6 +48,8 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, lineNumber );
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
+	mNumLocals = 0;
+	
 	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
 	{
 		if( itty->second.mBPRelativeOffset != LONG_MAX )
@@ -55,10 +57,9 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 			size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
 			LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, stringIndex );
 			LEOHandlerAddVariableNameMapping( mCurrentHandler, itty->first.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
+			mNumLocals++;
 		}
 	}
-	
-	mNumLocals = inLocals.size();
 }
 
 
