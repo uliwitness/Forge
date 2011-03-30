@@ -1,5 +1,4 @@
-on startUp
-	put false into theCondition
+on startUp theCondition
 	if theCondition then
 		put "Condition is true."
 	else
