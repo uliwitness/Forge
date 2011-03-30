@@ -465,6 +465,10 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		// Set:
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
+		// [the]
+		if( tokenItty->IsIdentifier( ETheIdentifier ) )	// Skip any optional "the".
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
 		// property:
 		if( tokenItty->mType != EIdentifierToken )
 		{
