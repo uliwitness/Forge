@@ -31,6 +31,8 @@ public:
 	virtual CValueNode*	GetParamAtIndex( size_t idx )					{ return mParams[idx]; };
 	virtual void		SetParamAtIndex( size_t idx, CValueNode* val )	{ mParams[idx] = val; };
 	virtual void		AddParam( CValueNode* val );
+
+	virtual CValueNode*	Copy();
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 

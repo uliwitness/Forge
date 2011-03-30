@@ -15,6 +15,20 @@
 namespace Carlson
 {
 
+CValueNode*	CFunctionCallNode::Copy()
+{
+	CFunctionCallNode	*	nodeCopy = new CFunctionCallNode( mParseTree, mIsCommand, mSymbolName, mLineNum );
+	
+	std::vector<CValueNode*>::const_iterator	itty;
+	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+	{
+		nodeCopy->AddParam( (*itty)->Copy() );
+	}
+	
+	return nodeCopy;
+}
+
+
 void	CFunctionCallNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
