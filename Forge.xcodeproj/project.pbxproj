@@ -26,6 +26,11 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		5523FE9413426059009D8EF1 /* testfile8.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 558A8D1512BD10C800F514F4 /* testfile8.hc */; };
+		5523FE961342605B009D8EF1 /* testfile9.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55D78A0712BE9E1F00C5D76E /* testfile9.hc */; };
+		5523FE9813426067009D8EF1 /* testfile11.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCECD312C8F11200D76F6B /* testfile11.hc */; };
+		5523FE991342606B009D8EF1 /* testfile12.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55BF65DC12D936C000C2FDC3 /* testfile12.hc */; };
+		5523FE9A13426074009D8EF1 /* testfile10.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCEC0012C8DD0E00D76F6B /* testfile10.hc */; };
 		558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */; };
 		558A8DC212BD2BBC00F514F4 /* CAssignCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8DC012BD2BBC00F514F4 /* CAssignCommandNode.cpp */; };
 		558A8EFE12BD6A4B00F514F4 /* CGetParamCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8EFD12BD6A4B00F514F4 /* CGetParamCommandNode.cpp */; };
@@ -67,6 +72,11 @@
 				3DB565560AF8F46500F04130 /* testfile5.hc in CopyFiles */,
 				3D0E9CF50AFCFDE3004CE917 /* testfile6.hc in CopyFiles */,
 				3D4E23AB0D99301000CDC3BC /* testfile7.hc in CopyFiles */,
+				5523FE9413426059009D8EF1 /* testfile8.hc in CopyFiles */,
+				5523FE961342605B009D8EF1 /* testfile9.hc in CopyFiles */,
+				5523FE9A13426074009D8EF1 /* testfile10.hc in CopyFiles */,
+				5523FE9813426067009D8EF1 /* testfile11.hc in CopyFiles */,
+				5523FE991342606B009D8EF1 /* testfile12.hc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
