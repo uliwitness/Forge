@@ -19,6 +19,7 @@ using namespace Carlson;
 
 int main( int argc, char * const argv[] )
 {
+	char*	debuggerHost = NULL;
 	bool	debuggerOn = false,
 			runCode = true,
 			printInstructions = false,
@@ -26,24 +27,21 @@ int main( int argc, char * const argv[] )
 			printParseTree = false,
 			verbose = false;
 	
-	int		fnameIdx = 0, outputFNameIdx = 0;
+	int		fnameIdx = 0;
 	for( int x = 1; x < argc; )
 	{
 		if( argv[x][0] == '-' )
 		{
-			if( strcmp( argv[x], "--output" ) == 0 )
-			{
-				x++;
-				if( x >= argc )
-				{
-					std::cerr << "Expected file name after --output." << std::endl;
-					return 4;
-				}
-				outputFNameIdx = x;
-			}
-			else if( strcmp( argv[x], "--debug" ) == 0 )
+			if( strcmp( argv[x], "--debug" ) == 0 )
 			{
 				debuggerOn = true;
+				if( (argc -1) < (x +1) )	// No parameter after debug option?
+				{
+					std::cerr << "Error: Expected host name after --debug option." << std::endl;
+					return 6;
+				}
+				debuggerHost = argv[x+1];
+				x++;
 			}
 			else if( strcmp( argv[x], "--dontrun" ) == 0 )
 			{
