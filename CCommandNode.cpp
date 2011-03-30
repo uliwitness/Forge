@@ -9,7 +9,7 @@
 
 #include "CCommandNode.h"
 #include "CValueNode.h"
-#include "CParseTree.h";
+#include "CParseTree.h"
 
 
 namespace Carlson
