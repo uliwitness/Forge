@@ -142,7 +142,7 @@ int main( int argc, char * const argv[] )
 				{
 					ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 					LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
-					LEORemoteDebuggerAddFile( filename, code, theHandler->instructions, theHandler->numInstructions );	// TODO: Fix to provide all handlers' instructions.
+					LEORemoteDebuggerAddFile( filename, code, script );
 				}
 			}
 			
