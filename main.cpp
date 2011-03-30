@@ -70,7 +70,10 @@ int main( int argc, char * const argv[] )
 			}
 		}
 		else	// end of options, file name.
+		{
 			fnameIdx = x;
+			break;
+		}
 		
 		x++;
 	}
@@ -145,8 +148,17 @@ int main( int argc, char * const argv[] )
 			}
 			
 			LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
-				// params would go here...
-			LEOPushIntegerOnStack( &ctx, 0 );	// Parameter count.
+			
+			// Push params on stack in reverse order:
+			LEOInteger	paramCount = 0;
+			
+			for( int x = (argc -1); x > fnameIdx; x-- )
+			{
+				LEOPushStringValueOnStack( &ctx, argv[x], strlen(argv[x]) );
+				paramCount++;
+			}
+
+			LEOPushIntegerOnStack( &ctx, paramCount );	// Parameter count.
 			
 			LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
 			LEORunInContext( theHandler->instructions, &ctx );
