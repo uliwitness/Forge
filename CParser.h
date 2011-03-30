@@ -155,7 +155,8 @@ namespace Carlson
 										bool dontSwallowReturn = false );
 		void	ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+									size_t *outEndLineNum = NULL );
 		void	ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,

@@ -30,8 +30,8 @@ public:
 	virtual ~CCodeBlock();
 	
 	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );
-	void		PrepareToExitFunction();
-	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals );	// Calls PrepareToExitFunction.
+	void		PrepareToExitFunction( size_t lineNumber );
+	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );	// Calls PrepareToExitFunction.
 	void		GenerateFunctionCallInstruction( bool isCommand, const std::string& inName );
 	
 	void		GeneratePushIntInstruction( int inNumber );

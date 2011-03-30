@@ -360,7 +360,9 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	while( tokenItty->IsIdentifier( ENewlineOperator ) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 
-	ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens );
+	size_t		endLineNum = fcnLineNum;
+	ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
+	currFunctionNode->SetEndLineNum( endLineNum );
 }
 
 
@@ -1308,7 +1310,8 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 
 void	CParser::ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								    size_t *outEndLineNum )
 {
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )	// Sub-constructs will swallow their own "end XXX" instructions, so we can exit the loop. Either it's our "end", or it's unbalanced.
 	{
@@ -1323,6 +1326,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 								<< tokenItty->GetShortDescription() << ".";
 		throw std::runtime_error( errMsg.str() );
 	}
+	if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 }
 

@@ -78,7 +78,7 @@ void	CFunctionDefinitionNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 	CCodeBlockNodeBase::GenerateCode( inCodeBlock );
 	
-	inCodeBlock->GenerateFunctionEpilogForName( mIsCommand, mName, mLocals );
+	inCodeBlock->GenerateFunctionEpilogForName( mIsCommand, mName, mLocals, mEndLineNum );
 }
 
 } /* namespace Carlson */

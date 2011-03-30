@@ -21,7 +21,7 @@ class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
 	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
-		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mLocalVariableCount(0), mIsCommand(isCommand)
+		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
 	{
 		
 	};
@@ -40,12 +40,15 @@ public:
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
+	
+	void			SetEndLineNum( size_t inEndLineNum )	{ mEndLineNum = inEndLineNum; };	// Line number of function's "end" marker, so we can indicate end to the debugger.
 
 	
 protected:
 	std::string								mName;
 	bool									mIsCommand;
 	size_t									mLineNum;
+	size_t									mEndLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
 	size_t									mLocalVariableCount;
 };

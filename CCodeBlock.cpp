@@ -63,8 +63,9 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 }
 
 
-void	CCodeBlock::PrepareToExitFunction()
+void	CCodeBlock::PrepareToExitFunction( size_t lineNumber )
 {
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, lineNumber );
 	// Get rid of stack space allocated for our local variables:
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	for( size_t	x = 0; x < mNumLocals; x++ )
@@ -72,9 +73,9 @@ void	CCodeBlock::PrepareToExitFunction()
 }
 
 
-void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals )
+void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber )
 {
-	PrepareToExitFunction();
+	PrepareToExitFunction( lineNumber );
 	
 	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
