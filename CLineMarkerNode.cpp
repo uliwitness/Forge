@@ -14,6 +14,13 @@
 namespace Carlson
 {
 
+void	CLineMarkerNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
+{
+	INDENT_PREPARE(indentLevel);
+	
+	destStream << indentChars << "# LINE " << mLineNum << std::endl;
+}
+
 void	CLineMarkerNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	inCodeBlock->GenerateLineMarkerInstruction( mLineNum );

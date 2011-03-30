@@ -17,6 +17,8 @@ class CLineMarkerNode : public CCommandNode
 public:
 	CLineMarkerNode( CParseTree* inTree, size_t inLineNum )
 		: CCommandNode( inTree, "LINE:", inLineNum ) {};
+	
+	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };
