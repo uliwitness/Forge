@@ -1,56 +1,39 @@
-HYPER-C
+FORGE
 
-HyperC is a HyperTalk-to-C compiler. It generates (admittedly not very pretty)
-C++ code that is equivalent to a HyperTalk script entered. Optionally, it will
-run the code through the GCC compiler and generate a command-line executable
-from it.
+This is a HyperTalk interpreter that compiles scripts into a bytecode and then
+executes the "startup" handler in them. The command line tool has the following
+syntax:
 
-To use this, make sure the HyperC_StdLib.h and HyperC_StdLib.cpp files are in
-the same folder as the HyperC program. Then call it from the command line with:
+forge [options] <inputfile>
 
-	/Path/To/HyperC -C sourcecode.hc
+Where inputfile is the path to a UTF8-encoded text file that contains a valid
+HyperTalk script. Currently, the following options are supported:
 
-(Where sourcecode.hc would be the name of the file containing the HyperTalk
-script you want to compile) This will generate a hyperc_out.c and hyperc_out.h
-file pair with the C source code for your script. To immediately compile the
-code into an application, just write:
+--debug	<host>			Try to connect to a remote debugger on startup on server
+						<host>:13762. This will also set a breakpoint on the
+						startUp handler's first instruction so you can step
+						through the code if you desire. It is OK to pass
+						127.0.0.1 here to connect to a debugger on your local
+						machine, like ForgeDebugger.
 
-	/Path/To/HyperC sourcecode.hc
+--dontrun				Compile the code, but do not actually execute it (this
+						also means the debugger won't have anything to debug).
 
-Which will generate a command line executable named hyperc_out. If you want to
-use Objective C objects (e.g. Cocoa) in your application, you have to also
-have the frameworkheaders.hhc file in HyperC's directory.
+--printinstructions		Dump all bytecode instructions as a sort of pseudo-
+						source-code to stdout.
 
-If you want to use other frameworks besides the standard Cocoa one, make sure
-you include them explicitly by specifying the
+--printtokens			Dump information on all tokens in the script to stdout.
 
-	-framework AddressBook
+--printparsetree		Dump a text description of the parse tree matching the
+						given script to stdout.
 
-option (where AddressBook would be replaced with the name of the framework you
-want to use). You may also have to check whether the frameworkheaders.hhc file
-has been built for this framework, otherwise you may need to rebuild it using
-the headerimport.php script.
+--verbose				Dump some additional headings and status messages to
+						stdout.
+						
 
-HyperC also forwards some GCC Flags to the compiler, e.g.:
 
-	-bundle_loader blah
-	-bundle
-	-dylib
-	-lBlah
 
-and of course -framework. If you're building a dylib or bundle, you will also
-have to make sure HyperC uses the appropriate template to generate the desired
-main entry point and maybe include customised versions of certain commands. You
-can do that via the -template option. Templates have to be stored in the
-hyperc_templates folder next to the HyperC application. Just specify the name
-of one of the folders that contains the desired template. The default template
-is the "tool" template, which you could explicitly specify by passing the
 
-	-template tool
-	
-option. If you want to create a SuperCard bundle XCMD as the BundleBridge XCMD
-calls them, use the option
 
-	-template bundlebridge
-	
-you get the idea.
+
+
