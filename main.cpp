@@ -19,15 +19,16 @@ using namespace Carlson;
 
 int main( int argc, char * const argv[] )
 {
-	char*	debuggerHost = NULL;
-	bool	debuggerOn = false,
-			runCode = true,
-			printInstructions = false,
-			printTokens = false,
-			printParseTree = false,
-			verbose = false;
+	const char*	debuggerHost = NULL;
+	const char* messageName = "startUp";
+	bool		debuggerOn = false,
+				runCode = true,
+				printInstructions = false,
+				printTokens = false,
+				printParseTree = false,
+				verbose = false;
 	
-	int		fnameIdx = 0;
+	int			fnameIdx = 0;
 	for( int x = 1; x < argc; )
 	{
 		if( argv[x][0] == '-' )
@@ -62,6 +63,16 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], "--verbose" ) == 0 )
 			{
 				verbose = true;
+			}
+			else if( strcmp( argv[x], "--message" ) == 0 )
+			{
+				if( (argc -1) < (x +1) )	// No parameter after message option?
+				{
+					std::cerr << "Error: Expected handler name after --message option." << std::endl;
+					return 7;
+				}
+				messageName = argv[x+1];
+				x++;
 			}
 			else
 			{
@@ -131,7 +142,7 @@ int main( int argc, char * const argv[] )
 			if( verbose )
 				printf( "\nRun the code:\n" );
 			
-			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, "startUp" );
+			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, messageName );
 			LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
 			
 			LEOContext		ctx;

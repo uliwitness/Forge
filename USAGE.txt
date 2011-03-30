@@ -30,6 +30,10 @@ HyperTalk script. Currently, the following options are supported:
 --verbose				Dump some additional headings and status messages to
 						stdout.
 						
+--message <messageName>	The message to send. I.e. the name of the first handler
+						to call. If this is not specified, the handler named
+						"startUp" will be called.
+
 
 
 
