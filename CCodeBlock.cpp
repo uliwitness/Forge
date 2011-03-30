@@ -79,6 +79,7 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
 	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, emptyStringIndex );
+	GenerateSetReturnValueInstruction();
 	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
 	
 	mCurrentHandler = NULL;	// Be paranoid. Don't want to accidentally add stuff to a finished handler.
