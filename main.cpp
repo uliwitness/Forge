@@ -145,38 +145,45 @@ int main( int argc, char * const argv[] )
 			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, messageName );
 			LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
 			
-			LEOContext		ctx;
-			LEOInitContext( &ctx, group );
-			
-			if( debuggerOn )
+			if( theHandler == NULL )
 			{
-				if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+				printf( "ERROR: Could not find handler to run!" );
+			}
+			else
+			{
+				LEOContext		ctx;
+				LEOInitContext( &ctx, group );
+				
+				if( debuggerOn )
 				{
-					ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
-					LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
-					LEORemoteDebuggerAddFile( filename, code, script );
+					if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+					{
+						ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
+						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
+						LEORemoteDebuggerAddFile( filename, code, script );
+					}
 				}
-			}
-			
-			LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
-			
-			// Push params on stack in reverse order:
-			LEOInteger	paramCount = 0;
-			
-			for( int x = (argc -1); x > fnameIdx; x-- )
-			{
-				LEOPushStringValueOnStack( &ctx, argv[x], strlen(argv[x]) );
-				paramCount++;
-			}
+				
+				LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
+				
+				// Push params on stack in reverse order:
+				LEOInteger	paramCount = 0;
+				
+				for( int x = (argc -1); x > fnameIdx; x-- )
+				{
+					LEOPushStringValueOnStack( &ctx, argv[x], strlen(argv[x]) );
+					paramCount++;
+				}
 
-			LEOPushIntegerOnStack( &ctx, paramCount );	// Parameter count.
-			
-			LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
-			LEORunInContext( theHandler->instructions, &ctx );
-			if( ctx.errMsg[0] != 0 )
-				printf("ERROR: %s\n", ctx.errMsg );
-			
-			LEOCleanUpContext( &ctx );
+				LEOPushIntegerOnStack( &ctx, paramCount );	// Parameter count.
+				
+				LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
+				LEORunInContext( theHandler->instructions, &ctx );
+				if( ctx.errMsg[0] != 0 )
+					printf("ERROR: %s\n", ctx.errMsg );
+				
+				LEOCleanUpContext( &ctx );
+			}
 		}
 		
 		LEOScriptRelease( script );
