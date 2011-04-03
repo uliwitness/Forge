@@ -245,6 +245,12 @@ void	CCodeBlock::GeneratePushChunkRefInstruction( int16_t bpRelativeOffset, uint
 }
 
 
+void	CCodeBlock::GeneratePushChunkConstInstruction( int16_t bpRelativeOffset, uint32_t inChunkType )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_CHUNK_INSTR, bpRelativeOffset, inChunkType );
+}
+
+
 void	CCodeBlock::GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, GET_ARRAY_ITEM_COUNT_INSTR, bpRelativeOffset, 0 );
@@ -259,7 +265,7 @@ void	CCodeBlock::GenerateGetArrayItemInstruction( int16_t bpRelativeOffset )
 
 void	CCodeBlock::GenerateSetStringInstruction( int16_t bpRelativeOffset )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, SET_STRING_INSTRUCTION, bpRelativeOffset, 0 );
+	LEOHandlerAddInstruction( mCurrentHandler, SET_STRING_INSTR, bpRelativeOffset, 0 );
 }
 
 }

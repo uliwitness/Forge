@@ -36,6 +36,7 @@
 		558A8EFE12BD6A4B00F514F4 /* CGetParamCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8EFD12BD6A4B00F514F4 /* CGetParamCommandNode.cpp */; };
 		558A8F1A12BD73DF00F514F4 /* CPrintCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8F1912BD73DF00F514F4 /* CPrintCommandNode.cpp */; };
 		55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */; };
+		55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */; };
 		55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A5855C12F369E1009550CD /* LEORemoteDebugger.c */; };
 		55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B24F5E0C189906001C7796 /* CVariableEntry.cpp */; };
 		55BF651412D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BF651212D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp */; };
@@ -133,6 +134,8 @@
 		558A8F1912BD73DF00F514F4 /* CPrintCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPrintCommandNode.cpp; sourceTree = "<group>"; };
 		55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMakeChunkRefNode.cpp; sourceTree = "<group>"; };
 		55993B7D1347EBB2001624A2 /* CMakeChunkRefNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMakeChunkRefNode.h; sourceTree = "<group>"; };
+		55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMakeChunkConstNode.cpp; sourceTree = "<group>"; };
+		55993B811348F3AB001624A2 /* CMakeChunkConstNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMakeChunkConstNode.h; sourceTree = "<group>"; };
 		55A5855C12F369E1009550CD /* LEORemoteDebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEORemoteDebugger.c; path = ../Leonie/macosx/LEORemoteDebugger.c; sourceTree = "<group>"; };
 		55A5855D12F369E1009550CD /* LEORemoteDebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEORemoteDebugger.h; path = ../Leonie/macosx/LEORemoteDebugger.h; sourceTree = "<group>"; };
 		55B24F5D0C189906001C7796 /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVariableEntry.h; sourceTree = "<group>"; };
@@ -318,8 +321,10 @@
 				55BF655212D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp */,
 				55BF655912D91AEE00C2FDC3 /* CGetArrayItemNode.h */,
 				55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */,
-				55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */,
 				55993B7D1347EBB2001624A2 /* CMakeChunkRefNode.h */,
+				55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */,
+				55993B811348F3AB001624A2 /* CMakeChunkConstNode.h */,
+				55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -436,6 +441,7 @@
 				55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */,
 				55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */,
 				55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */,
+				55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

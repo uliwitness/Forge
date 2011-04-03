@@ -33,6 +33,7 @@
 #include "CGetArrayItemCountNode.h"
 #include "CGetArrayItemNode.h"
 #include "CMakeChunkRefNode.h"
+#include "CMakeChunkConstNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -1727,11 +1728,11 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
-	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, true, std::string("MakeChunkConst"), lineNum );
+	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, lineNum );
+	currOperation->AddParam( targetValObj );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );
 	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj );
-	currOperation->AddParam( targetValObj );
 
 	return currOperation;
 }

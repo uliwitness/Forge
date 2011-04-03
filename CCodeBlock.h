@@ -65,6 +65,7 @@ public:
 	void		GenerateLineMarkerInstruction( size_t inLineNum );
 	
 	void		GeneratePushChunkRefInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
+	void		GeneratePushChunkConstInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	void		GenerateAssignChunkArrayInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	void		GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset );
 	void		GenerateGetArrayItemInstruction( int16_t bpRelativeOffset );
