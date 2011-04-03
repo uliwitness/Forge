@@ -250,5 +250,11 @@ void	CCodeBlock::GenerateGetArrayItemInstruction( int16_t bpRelativeOffset )
 	LEOHandlerAddInstruction( mCurrentHandler, GET_ARRAY_ITEM_INSTR, bpRelativeOffset, 0 );
 }
 
+
+void	CCodeBlock::GenerateSetStringInstruction( int16_t bpRelativeOffset )
+{
+	LEOHandlerAddInstruction( mCurrentHandler, SET_STRING_INSTRUCTION, bpRelativeOffset, 0 );
+}
+
 }
 

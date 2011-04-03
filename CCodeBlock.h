@@ -68,6 +68,8 @@ public:
 	void		GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset );
 	void		GenerateGetArrayItemInstruction( int16_t bpRelativeOffset );
 	
+	void		GenerateSetStringInstruction( int16_t bpRelativeOffset );
+	
 protected:
 	LEOScript*				mScript;
 	LEOContextGroup*		mGroup;
