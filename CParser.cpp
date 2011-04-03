@@ -32,6 +32,7 @@
 #include "CAssignChunkArrayNode.h"
 #include "CGetArrayItemCountNode.h"
 #include "CGetArrayItemNode.h"
+#include "CMakeChunkRefNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -1677,12 +1678,11 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
 	// Now output code:
-	CFunctionCallNode*	currOperation = new CFunctionCallNode( &parseTree, true, std::string("MakeChunk"), lineNum );
+	CMakeChunkRefNode*	currOperation = new CMakeChunkRefNode( &parseTree, lineNum );
+	currOperation->AddParam( targetValObj );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );
-	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj );
-	currOperation->AddParam( targetValObj );
-	currOperation->AddParam( targetValObj );
+	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj->Copy() );
 	
 	return currOperation;
 }
