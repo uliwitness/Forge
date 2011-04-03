@@ -156,7 +156,7 @@ int main( int argc, char * const argv[] )
 				
 				if( debuggerOn )
 				{
-					if( LEOInitRemoteDebugger( "127.0.0.1" ) )
+					if( LEOInitRemoteDebugger( debuggerHost ) )
 					{
 						ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
