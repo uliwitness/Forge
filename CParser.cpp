@@ -105,10 +105,10 @@ static TUnaryOperatorEntry	sUnaryOperators[] =
 
 static TGlobalPropertyEntry	sGlobalProperties[] =
 {
-	{ EItemDelIdentifier, "gItemDel" },
-	{ EItemDelimIdentifier, "gItemDel" },
-	{ EItemDelimiterIdentifier, "gItemDel" },
-	{ ELastIdentifier_Sentinel, "" }
+	{ EItemDelIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ EItemDelimIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ EItemDelimiterIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
 
@@ -459,9 +459,9 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CValueNode*			propRef = NULL;
+	COperatorNode*		propRef = NULL;
 	CValueNode*			whatExpr = NULL;
-	CCommandNode*		thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
+
 	try
 	{
 		// Set:
@@ -506,40 +506,59 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			{
 				if( sGlobalProperties[x].mType == subType )
 				{
-					propRef = new CLocalVariableRefValueNode( &parseTree, currFunction, sGlobalProperties[x].mGlobalPropertyVarName, sGlobalProperties[x].mGlobalPropertyVarName );
+					propRef = new COperatorNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, tokenItty->mLineNum );
 					break;
 				}
 			}
 			
-			if( propRef == NULL )
+			if( propRef != NULL )
 			{
-				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unknown global property \""
-										<< propertyName << "\".";
-				throw std::runtime_error( errMsg.str() );
-			}
-			
-			// to:
-			if( !tokenItty->IsIdentifier( EToIdentifier ) )
-			{
-				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
-										<< propertyName << "\".";
-				throw std::runtime_error( errMsg.str() );
-			}
+				// to:
+				if( !tokenItty->IsIdentifier( EToIdentifier ) )
+				{
+					std::stringstream		errMsg;
+					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
+											<< propertyName << "\".";
+					throw std::runtime_error( errMsg.str() );
+				}
 
-			CToken::GoNextToken( mFileName, tokenItty, tokens );
-			
-			// What:
-			whatExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-			thePutCommand->AddParam( whatExpr );
-			whatExpr = NULL;
-			
-			thePutCommand->AddParam( propRef );
-			propRef = NULL;
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+				
+				// What:
+				whatExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+				propRef->AddParam( whatExpr );
+				whatExpr = NULL;
+				
+				currFunction->AddCommand( propRef );
+			}
+			else
+			{
+				CCommandNode * thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
+				
+				// Variable:
+				CValueNode	*	container = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+				thePutCommand->AddParam( container );
+				container = NULL;
+				
+				// to:
+				if( !tokenItty->IsIdentifier( EToIdentifier ) )
+				{
+					std::stringstream		errMsg;
+					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
+											<< propertyName << "\".";
+					throw std::runtime_error( errMsg.str() );
+				}
+				
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+
+				// What:
+				whatExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+				thePutCommand->AddParam( whatExpr );
+				whatExpr = NULL;
+				
+				currFunction->AddCommand( thePutCommand );
+			}
 		}
-		
-		currFunction->AddCommand( thePutCommand );
 	}
 	catch( ... )
 	{
@@ -547,8 +566,6 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			delete propRef;
 		if( whatExpr )
 			delete whatExpr;
-		if( thePutCommand )
-			delete thePutCommand;
 		
 		throw;
 	}
@@ -1119,6 +1136,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	// Try to find chunk type that matches:
+	CValueNode*	container = NULL;
 	TChunkType	typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->mSubType );
 	
 	if( typeConstant != TChunkTypeInvalid )
@@ -1130,31 +1148,46 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( tokenItty->IsIdentifier( ETheIdentifier ) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
-	std::string		realVarName( tokenItty->GetIdentifierText() );
-	std::string		varName( "var_" );
 	if( tokenItty->IsIdentifier( EResultIdentifier ) )
 	{
-		varName.assign( "theResult" );
+		std::string		realVarName( tokenItty->GetIdentifierText() );
+		std::string		varName( "theResult" );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
-	}
-	else if( tokenItty->IsIdentifier( EItemDelimiterIdentifier ) || tokenItty->IsIdentifier( EItemDelIdentifier )
-			|| tokenItty->IsIdentifier( EItemDelimIdentifier ) )
-	{
-		varName.assign( "gItemDel" );
-		realVarName.assign( "itemDelimiter" );
-		CreateVariable( varName, realVarName, initWithName, currFunction, true );
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 	}
 	else
 	{
-		varName.append( realVarName );
-		CreateVariable( varName, realVarName, initWithName, currFunction );
+		TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+		// Find it in our list of global properties:
+		int				x = 0;
+		
+		for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+		{
+			if( sGlobalProperties[x].mType == subType )
+			{
+				container = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+				break;
+			}
+		}
+		
+		if( !container )
+		{
+			std::string		realVarName( tokenItty->GetIdentifierText() );
+			std::string		varName( "var_" );
+			
+			varName.append( realVarName );
+			CreateVariable( varName, realVarName, initWithName, currFunction );
+			container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		}
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	
-//	theFunctionBody << (asPointer? "&" : "") << varName;
-	
-	CToken::GoNextToken( mFileName, tokenItty, tokens );
-	
-	return new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+	return container;
 }
 
 

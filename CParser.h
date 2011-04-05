@@ -43,14 +43,15 @@ namespace Carlson
 	struct TUnaryOperatorEntry
 	{
 		TIdentifierSubtype		mType;				// The identifier for this operator.
-		LEOInstructionID		mInstructionID;		// Name of function that implements this operator.
+		LEOInstructionID		mInstructionID;		// Instruction that implements this operator.
 	};
 	
 	// *** An entry in our global property look-up table:
 	struct TGlobalPropertyEntry
 	{
-		TIdentifierSubtype		mType;						// The identifier for this property.
-		char					mGlobalPropertyVarName[30];	// Name of global variable that holds this global property.
+		TIdentifierSubtype		mType;					// The identifier for this property.
+		LEOInstructionID		mSetterInstructionID;	// Instruction for changing this property.
+		LEOInstructionID		mGetterInstructionID;	// Instruction for retrieving this property's value.
 	};
 	
 	// *** An entry in our chunk type look-up table:
