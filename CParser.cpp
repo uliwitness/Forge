@@ -1160,29 +1160,12 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	else
 	{
-		TIdentifierSubtype	subType = tokenItty->mSubType;
+		std::string		realVarName( tokenItty->GetIdentifierText() );
+		std::string		varName( "var_" );
 		
-		// Find it in our list of global properties:
-		int				x = 0;
-		
-		for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
-		{
-			if( sGlobalProperties[x].mType == subType )
-			{
-				container = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
-				break;
-			}
-		}
-		
-		if( !container )
-		{
-			std::string		realVarName( tokenItty->GetIdentifierText() );
-			std::string		varName( "var_" );
-			
-			varName.append( realVarName );
-			CreateVariable( varName, realVarName, initWithName, currFunction );
-			container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
-		}
+		varName.append( realVarName );
+		CreateVariable( varName, realVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2461,8 +2444,26 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				else
 				{
-					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
-					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+					TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+					// Find it in our list of global properties:
+					int				x = 0;
+					
+					for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+					{
+						if( sGlobalProperties[x].mType == subType )
+						{
+							theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
+						}
+					}
+					
+					if( !theTerm )	// Not a global property? Try a container:
+					{
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
+						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+					}
 				}
 				break;
 			}
@@ -2559,6 +2560,22 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			}
 			else
 			{
+				TIdentifierSubtype	subType = tokenItty->mSubType;
+	
+				// Find it in our list of global properties:
+				for( int x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+				{
+					if( sGlobalProperties[x].mType == subType )
+					{
+						theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+						CToken::GoNextToken( mFileName, tokenItty, tokens );
+						break;
+					}
+				}
+				
+				if( theTerm )
+					break;
+				
 				// Try to find chunk type that matches:
 				TChunkType typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->mSubType );
 				if( typeConstant != TChunkTypeInvalid )
@@ -2569,9 +2586,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 
 				// Now try constant:
 				CValueNode*	constantValue = NULL;
-				int			x = 0;
 				
-				for( x = 0; sConstants[x].mType != ELastIdentifier_Sentinel; x++ )
+				for( int x = 0; sConstants[x].mType != ELastIdentifier_Sentinel; x++ )
 				{
 					if( tokenItty->mSubType == sConstants[x].mType )
 					{
@@ -2590,7 +2606,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				// Try to find unary operator that matches:
 				LEOInstructionID	operatorCommandName = INVALID_INSTR;
 				
-				for( x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+				for( int x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
 				{
 					if( tokenItty->mSubType == sUnaryOperators[x].mType )
 						operatorCommandName = sUnaryOperators[x].mInstructionID;

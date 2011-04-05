@@ -6,10 +6,14 @@ on testx
   put "is," before item 2 of theList
   put ",no" after item 2 of theList
   
-  put theList
+  put theList & return
+  
+  put itemDelimiter into saveDelim
   
   set the itemDelim to "."
-  put item 2 of "192.168.0.1"
+  put (item 2 of "192.168.0.1") &return
+  
+  set the itemDel to saveDelim
   
   return 0
 end testx
