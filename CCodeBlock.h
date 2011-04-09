@@ -47,8 +47,8 @@ public:
 	void		GeneratePrintValueInstruction();
 	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );
 
-	void		GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
-	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum );
+	void		GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum );
+	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum );
 	void		GenerateReturnInstruction();
 	void		GenerateSetReturnValueInstruction();
 
@@ -62,7 +62,7 @@ public:
 	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
 	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
 	
-	void		GenerateLineMarkerInstruction( size_t inLineNum );
+	void		GenerateLineMarkerInstruction( uint32_t inLineNum );
 	
 	void		GeneratePushChunkRefInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	void		GeneratePushChunkConstInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );

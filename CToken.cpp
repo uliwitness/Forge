@@ -449,7 +449,7 @@ namespace Carlson
 					else
 					{
 						char*	endPtr = NULL;
-						int		num = strtol( currText.c_str(), &endPtr, 10 );
+						long	num = strtol( currText.c_str(), &endPtr, 10 );
 						tokenList.push_back( CToken( ENumberToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, num ) );
 						currText.clear();
 						currType = EInvalidToken;
@@ -522,6 +522,10 @@ namespace Carlson
 					else
 						currText.append( str +x, newX -x );
 					break;
+				
+				case ELastToken_Sentinel:
+					throw std::logic_error( "ELastToken_Sentinel token encountered. Should never happen." );
+					break;
 			}
 			
 			if( currCh == '\n' || currCh == '\r' )
@@ -532,7 +536,7 @@ namespace Carlson
 		
 		if( currType != EInvalidToken )	// We have an unfinished token waiting to be ended!
 		{
-			int		num = 0;
+			long	num = 0;
 			char*	endPtr = NULL;
 			if( currType == ENumberToken )
 				num = strtol( currText.c_str(), &endPtr, 10 );
@@ -562,7 +566,7 @@ namespace Carlson
 		str.append( numstr );
 		sprintf( numstr,", %lu", (unsigned long) mOffset );
 		str.append( numstr );
-		sprintf( numstr,", %d", mNumberValue );
+		sprintf( numstr,", %ld", mNumberValue );
 		str.append( numstr );
 		
 		return str;
@@ -573,7 +577,7 @@ namespace Carlson
 		if( mType == ENumberToken )
 		{
 			char		numstr[256];
-			sprintf( numstr,"%d", mNumberValue );
+			sprintf( numstr,"%ld", mNumberValue );
 			return std::string(numstr);
 		}
 		else if( mType == EStringToken )

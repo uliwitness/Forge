@@ -53,7 +53,7 @@ public:
 class CIntValueNode : public CValueNode
 {
 public:
-	CIntValueNode( CParseTree* inTree, int n ) : CValueNode(inTree), mIntValue(n) {};
+	CIntValueNode( CParseTree* inTree, long n ) : CValueNode(inTree), mIntValue(n) {};
 	
 	virtual void			GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 
@@ -68,12 +68,13 @@ public:
 		destStream << indentChars << "int( " << mIntValue << " )" << std::endl;
 	};
 
-	virtual int				GetAsInt()		{ return mIntValue; };
+	virtual int				GetAsInt()		{ return (int)mIntValue; };
+	virtual long			GetAsLong()		{ return mIntValue; };
 	virtual float			GetAsFloat()	{ return mIntValue; };
-	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%d", mIntValue); return std::string( numStr ); };
+	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%ld", mIntValue); return std::string( numStr ); };
 	
 protected:
-	int		mIntValue;
+	long		mIntValue;
 };
 
 

@@ -74,7 +74,7 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 	for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
 		(*itty)->GenerateCode( inCodeBlock );
 	
-	size_t		numParams = mParams.size();
+	int		numParams = (int)mParams.size();
 	inCodeBlock->GeneratePushIntInstruction( numParams );
 	
 	// *** Call ***

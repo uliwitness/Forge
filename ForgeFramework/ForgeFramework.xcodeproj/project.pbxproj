@@ -1,0 +1,852 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		55A867A913508E620036AA4B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55A867A813508E620036AA4B /* Cocoa.framework */; };
+		55A867B313508E620036AA4B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55A867B113508E620036AA4B /* InfoPlist.strings */; };
+		55A867BB13508E620036AA4B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55A867A813508E620036AA4B /* Cocoa.framework */; };
+		55A867BE13508E620036AA4B /* ForgeFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55A867A513508E620036AA4B /* ForgeFramework.framework */; };
+		55A867C413508E620036AA4B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55A867C213508E620036AA4B /* InfoPlist.strings */; };
+		55A867C713508E620036AA4B /* ForgeFrameworkTests.h in Resources */ = {isa = PBXBuildFile; fileRef = 55A867C613508E620036AA4B /* ForgeFrameworkTests.h */; };
+		55A867C913508E620036AA4B /* ForgeFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A867C813508E620036AA4B /* ForgeFrameworkTests.m */; };
+		55A867E613508EB70036AA4B /* CCodeBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867DB13508EB70036AA4B /* CCodeBlock.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867E713508EB70036AA4B /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867DC13508EB70036AA4B /* CCodeBlock.cpp */; };
+		55A867E813508EB70036AA4B /* CVariableEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867DD13508EB70036AA4B /* CVariableEntry.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867E913508EB70036AA4B /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867DE13508EB70036AA4B /* CVariableEntry.cpp */; };
+		55A867EA13508EB70036AA4B /* UTF32CaseTables.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867DF13508EB70036AA4B /* UTF32CaseTables.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867EB13508EB70036AA4B /* CToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867E013508EB70036AA4B /* CToken.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867EC13508EB70036AA4B /* CToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867E113508EB70036AA4B /* CToken.cpp */; };
+		55A867ED13508EB70036AA4B /* CParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867E213508EB70036AA4B /* CParser.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867EE13508EB70036AA4B /* CParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867E313508EB70036AA4B /* CParser.cpp */; };
+		55A867F113508ED10036AA4B /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867DC13508EB70036AA4B /* CCodeBlock.cpp */; };
+		55A867F213508ED10036AA4B /* CVariableEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867DE13508EB70036AA4B /* CVariableEntry.cpp */; };
+		55A867F313508ED10036AA4B /* CToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867E113508EB70036AA4B /* CToken.cpp */; };
+		55A867F413508ED10036AA4B /* CParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867E313508EB70036AA4B /* CParser.cpp */; };
+		55A867FD13508EFF0036AA4B /* CParseTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867F713508EFF0036AA4B /* CParseTree.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A867FE13508EFF0036AA4B /* CParseTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867F813508EFF0036AA4B /* CParseTree.cpp */; };
+		55A867FF13508EFF0036AA4B /* CParseTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867F813508EFF0036AA4B /* CParseTree.cpp */; };
+		55A8680013508EFF0036AA4B /* CNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867F913508EFF0036AA4B /* CNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8680113508EFF0036AA4B /* CNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867FA13508EFF0036AA4B /* CNode.cpp */; };
+		55A8680213508EFF0036AA4B /* CNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867FA13508EFF0036AA4B /* CNode.cpp */; };
+		55A8680313508EFF0036AA4B /* CValueNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A867FB13508EFF0036AA4B /* CValueNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8680413508EFF0036AA4B /* CValueNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867FC13508EFF0036AA4B /* CValueNode.cpp */; };
+		55A8680513508EFF0036AA4B /* CValueNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A867FC13508EFF0036AA4B /* CValueNode.cpp */; };
+		55A8682813508F210036AA4B /* CCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8680813508F210036AA4B /* CCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8682913508F210036AA4B /* CCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680913508F210036AA4B /* CCommandNode.cpp */; };
+		55A8682A13508F210036AA4B /* CCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680913508F210036AA4B /* CCommandNode.cpp */; };
+		55A8682B13508F210036AA4B /* CPushValueCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8680A13508F210036AA4B /* CPushValueCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8682C13508F210036AA4B /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680B13508F210036AA4B /* CPushValueCommandNode.cpp */; };
+		55A8682D13508F210036AA4B /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680B13508F210036AA4B /* CPushValueCommandNode.cpp */; };
+		55A8682E13508F210036AA4B /* CAssignCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8680C13508F210036AA4B /* CAssignCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8682F13508F210036AA4B /* CAssignCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680D13508F210036AA4B /* CAssignCommandNode.cpp */; };
+		55A8683013508F210036AA4B /* CAssignCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680D13508F210036AA4B /* CAssignCommandNode.cpp */; };
+		55A8683113508F210036AA4B /* CPutCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8680E13508F210036AA4B /* CPutCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8683213508F210036AA4B /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680F13508F210036AA4B /* CPutCommandNode.cpp */; };
+		55A8683313508F210036AA4B /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8680F13508F210036AA4B /* CPutCommandNode.cpp */; };
+		55A8683413508F210036AA4B /* CGetParamCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681013508F210036AA4B /* CGetParamCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8683513508F210036AA4B /* CGetParamCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681113508F210036AA4B /* CGetParamCommandNode.cpp */; };
+		55A8683613508F210036AA4B /* CGetParamCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681113508F210036AA4B /* CGetParamCommandNode.cpp */; };
+		55A8683713508F210036AA4B /* CPrintCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681213508F210036AA4B /* CPrintCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8683813508F210036AA4B /* CPrintCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681313508F210036AA4B /* CPrintCommandNode.cpp */; };
+		55A8683913508F210036AA4B /* CPrintCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681313508F210036AA4B /* CPrintCommandNode.cpp */; };
+		55A8683A13508F210036AA4B /* CReturnCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681413508F210036AA4B /* CReturnCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8683B13508F210036AA4B /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681513508F210036AA4B /* CReturnCommandNode.cpp */; };
+		55A8683C13508F210036AA4B /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681513508F210036AA4B /* CReturnCommandNode.cpp */; };
+		55A8683D13508F210036AA4B /* CFunctionCallNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681613508F210036AA4B /* CFunctionCallNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8683E13508F210036AA4B /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681713508F210036AA4B /* CFunctionCallNode.cpp */; };
+		55A8683F13508F210036AA4B /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681713508F210036AA4B /* CFunctionCallNode.cpp */; };
+		55A8684013508F210036AA4B /* COperatorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681813508F210036AA4B /* COperatorNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8684113508F210036AA4B /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681913508F210036AA4B /* COperatorNode.cpp */; };
+		55A8684213508F210036AA4B /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681913508F210036AA4B /* COperatorNode.cpp */; };
+		55A8684313508F210036AA4B /* CAddCommandNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681A13508F210036AA4B /* CAddCommandNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8684413508F210036AA4B /* CAddCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681B13508F210036AA4B /* CAddCommandNode.cpp */; };
+		55A8684513508F210036AA4B /* CAddCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681B13508F210036AA4B /* CAddCommandNode.cpp */; };
+		55A8684613508F210036AA4B /* CLineMarkerNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681C13508F210036AA4B /* CLineMarkerNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8684713508F210036AA4B /* CLineMarkerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681D13508F210036AA4B /* CLineMarkerNode.cpp */; };
+		55A8684813508F210036AA4B /* CLineMarkerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681D13508F210036AA4B /* CLineMarkerNode.cpp */; };
+		55A8684913508F210036AA4B /* CAssignChunkArrayNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8681E13508F210036AA4B /* CAssignChunkArrayNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8684A13508F210036AA4B /* CAssignChunkArrayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681F13508F210036AA4B /* CAssignChunkArrayNode.cpp */; };
+		55A8684B13508F210036AA4B /* CAssignChunkArrayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8681F13508F210036AA4B /* CAssignChunkArrayNode.cpp */; };
+		55A8684C13508F210036AA4B /* CGetArrayItemCountNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8682013508F210036AA4B /* CGetArrayItemCountNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8684D13508F210036AA4B /* CGetArrayItemCountNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682113508F210036AA4B /* CGetArrayItemCountNode.cpp */; };
+		55A8684E13508F210036AA4B /* CGetArrayItemCountNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682113508F210036AA4B /* CGetArrayItemCountNode.cpp */; };
+		55A8684F13508F210036AA4B /* CGetArrayItemNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8682213508F210036AA4B /* CGetArrayItemNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8685013508F210036AA4B /* CGetArrayItemNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682313508F210036AA4B /* CGetArrayItemNode.cpp */; };
+		55A8685113508F210036AA4B /* CGetArrayItemNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682313508F210036AA4B /* CGetArrayItemNode.cpp */; };
+		55A8685213508F210036AA4B /* CMakeChunkRefNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8682413508F210036AA4B /* CMakeChunkRefNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8685313508F210036AA4B /* CMakeChunkRefNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682513508F210036AA4B /* CMakeChunkRefNode.cpp */; };
+		55A8685413508F210036AA4B /* CMakeChunkRefNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682513508F210036AA4B /* CMakeChunkRefNode.cpp */; };
+		55A8685513508F210036AA4B /* CMakeChunkConstNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8682613508F210036AA4B /* CMakeChunkConstNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8685613508F210036AA4B /* CMakeChunkConstNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682713508F210036AA4B /* CMakeChunkConstNode.cpp */; };
+		55A8685713508F210036AA4B /* CMakeChunkConstNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8682713508F210036AA4B /* CMakeChunkConstNode.cpp */; };
+		55A8686013508F330036AA4B /* CCodeBlockNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8685813508F330036AA4B /* CCodeBlockNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8686113508F330036AA4B /* CCodeBlockNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685913508F330036AA4B /* CCodeBlockNode.cpp */; };
+		55A8686213508F330036AA4B /* CCodeBlockNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685913508F330036AA4B /* CCodeBlockNode.cpp */; };
+		55A8686313508F330036AA4B /* CFunctionDefinitionNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8685A13508F330036AA4B /* CFunctionDefinitionNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8686413508F330036AA4B /* CFunctionDefinitionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685B13508F330036AA4B /* CFunctionDefinitionNode.cpp */; };
+		55A8686513508F330036AA4B /* CFunctionDefinitionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685B13508F330036AA4B /* CFunctionDefinitionNode.cpp */; };
+		55A8686613508F330036AA4B /* CWhileLoopNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8685C13508F330036AA4B /* CWhileLoopNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8686713508F330036AA4B /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685D13508F330036AA4B /* CWhileLoopNode.cpp */; };
+		55A8686813508F330036AA4B /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685D13508F330036AA4B /* CWhileLoopNode.cpp */; };
+		55A8686913508F330036AA4B /* CIfNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8685E13508F330036AA4B /* CIfNode.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		55A8686A13508F330036AA4B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685F13508F330036AA4B /* CIfNode.cpp */; };
+		55A8686B13508F330036AA4B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8685F13508F330036AA4B /* CIfNode.cpp */; };
+		55A8687F13508F650036AA4B /* LEOValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8686D13508F650036AA4B /* LEOValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688013508F650036AA4B /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8686E13508F650036AA4B /* LEOValue.c */; };
+		55A8688113508F650036AA4B /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8686E13508F650036AA4B /* LEOValue.c */; };
+		55A8688213508F650036AA4B /* LEOInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8686F13508F650036AA4B /* LEOInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688313508F650036AA4B /* LEOInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687013508F650036AA4B /* LEOInterpreter.c */; };
+		55A8688413508F650036AA4B /* LEOInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687013508F650036AA4B /* LEOInterpreter.c */; };
+		55A8688513508F650036AA4B /* LEOInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687113508F650036AA4B /* LEOInstructions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688613508F650036AA4B /* LEOInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687213508F650036AA4B /* LEOInstructions.c */; };
+		55A8688713508F650036AA4B /* LEOInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687213508F650036AA4B /* LEOInstructions.c */; };
+		55A8688813508F650036AA4B /* LEOScript.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687313508F650036AA4B /* LEOScript.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688913508F650036AA4B /* LEOScript.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687413508F650036AA4B /* LEOScript.c */; };
+		55A8688A13508F650036AA4B /* LEOScript.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687413508F650036AA4B /* LEOScript.c */; };
+		55A8688B13508F650036AA4B /* LEODebugger.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687513508F650036AA4B /* LEODebugger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688C13508F650036AA4B /* LEODebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687613508F650036AA4B /* LEODebugger.c */; };
+		55A8688D13508F650036AA4B /* LEODebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687613508F650036AA4B /* LEODebugger.c */; };
+		55A8688E13508F650036AA4B /* LEORemoteDebugger.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687713508F650036AA4B /* LEORemoteDebugger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8688F13508F650036AA4B /* LEORemoteDebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687813508F650036AA4B /* LEORemoteDebugger.c */; };
+		55A8689013508F650036AA4B /* LEORemoteDebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687813508F650036AA4B /* LEORemoteDebugger.c */; };
+		55A8689113508F650036AA4B /* LEOChunks.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687913508F650036AA4B /* LEOChunks.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8689213508F650036AA4B /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687A13508F650036AA4B /* LEOChunks.c */; };
+		55A8689313508F650036AA4B /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687A13508F650036AA4B /* LEOChunks.c */; };
+		55A8689413508F650036AA4B /* LEOContextGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687B13508F650036AA4B /* LEOContextGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8689513508F650036AA4B /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687C13508F650036AA4B /* LEOContextGroup.c */; };
+		55A8689613508F650036AA4B /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687C13508F650036AA4B /* LEOContextGroup.c */; };
+		55A8689713508F650036AA4B /* LEOHandlerID.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687D13508F650036AA4B /* LEOHandlerID.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8689813508F650036AA4B /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */; };
+		55A8689913508F650036AA4B /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */; };
+		55A8689B135094340036AA4B /* ForgeFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8689A135094340036AA4B /* ForgeFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55A8689D1350957B0036AA4B /* ForgeFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8689C1350957B0036AA4B /* ForgeFramework.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		55A867BC13508E620036AA4B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 55A8679B13508E620036AA4B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55A867A413508E620036AA4B;
+			remoteInfo = ForgeFramework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		55A867A513508E620036AA4B /* ForgeFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ForgeFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		55A867A813508E620036AA4B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		55A867AB13508E620036AA4B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		55A867AC13508E620036AA4B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		55A867AD13508E620036AA4B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		55A867B013508E620036AA4B /* ForgeFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ForgeFramework-Info.plist"; sourceTree = "<group>"; };
+		55A867B213508E620036AA4B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		55A867B413508E620036AA4B /* ForgeFramework-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ForgeFramework-Prefix.pch"; sourceTree = "<group>"; };
+		55A867BA13508E620036AA4B /* ForgeFrameworkTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForgeFrameworkTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		55A867C113508E620036AA4B /* ForgeFrameworkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ForgeFrameworkTests-Info.plist"; sourceTree = "<group>"; };
+		55A867C313508E620036AA4B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		55A867C513508E620036AA4B /* ForgeFrameworkTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ForgeFrameworkTests-Prefix.pch"; sourceTree = "<group>"; };
+		55A867C613508E620036AA4B /* ForgeFrameworkTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForgeFrameworkTests.h; sourceTree = "<group>"; };
+		55A867C813508E620036AA4B /* ForgeFrameworkTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ForgeFrameworkTests.m; sourceTree = "<group>"; };
+		55A867DB13508EB70036AA4B /* CCodeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCodeBlock.h; path = ../../CCodeBlock.h; sourceTree = "<group>"; };
+		55A867DC13508EB70036AA4B /* CCodeBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCodeBlock.cpp; path = ../../CCodeBlock.cpp; sourceTree = "<group>"; };
+		55A867DD13508EB70036AA4B /* CVariableEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CVariableEntry.h; path = ../../CVariableEntry.h; sourceTree = "<group>"; };
+		55A867DE13508EB70036AA4B /* CVariableEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CVariableEntry.cpp; path = ../../CVariableEntry.cpp; sourceTree = "<group>"; };
+		55A867DF13508EB70036AA4B /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF32CaseTables.h; path = ../../UTF32CaseTables.h; sourceTree = "<group>"; };
+		55A867E013508EB70036AA4B /* CToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CToken.h; path = ../../CToken.h; sourceTree = "<group>"; };
+		55A867E113508EB70036AA4B /* CToken.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CToken.cpp; path = ../../CToken.cpp; sourceTree = "<group>"; };
+		55A867E213508EB70036AA4B /* CParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CParser.h; path = ../../CParser.h; sourceTree = "<group>"; };
+		55A867E313508EB70036AA4B /* CParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CParser.cpp; path = ../../CParser.cpp; sourceTree = "<group>"; };
+		55A867F713508EFF0036AA4B /* CParseTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CParseTree.h; path = ../../CParseTree.h; sourceTree = "<group>"; };
+		55A867F813508EFF0036AA4B /* CParseTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CParseTree.cpp; path = ../../CParseTree.cpp; sourceTree = "<group>"; };
+		55A867F913508EFF0036AA4B /* CNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CNode.h; path = ../../CNode.h; sourceTree = "<group>"; };
+		55A867FA13508EFF0036AA4B /* CNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CNode.cpp; path = ../../CNode.cpp; sourceTree = "<group>"; };
+		55A867FB13508EFF0036AA4B /* CValueNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CValueNode.h; path = ../../CValueNode.h; sourceTree = "<group>"; };
+		55A867FC13508EFF0036AA4B /* CValueNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CValueNode.cpp; path = ../../CValueNode.cpp; sourceTree = "<group>"; };
+		55A8680813508F210036AA4B /* CCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCommandNode.h; path = ../../CCommandNode.h; sourceTree = "<group>"; };
+		55A8680913508F210036AA4B /* CCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCommandNode.cpp; path = ../../CCommandNode.cpp; sourceTree = "<group>"; };
+		55A8680A13508F210036AA4B /* CPushValueCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPushValueCommandNode.h; path = ../../CPushValueCommandNode.h; sourceTree = "<group>"; };
+		55A8680B13508F210036AA4B /* CPushValueCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPushValueCommandNode.cpp; path = ../../CPushValueCommandNode.cpp; sourceTree = "<group>"; };
+		55A8680C13508F210036AA4B /* CAssignCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CAssignCommandNode.h; path = ../../CAssignCommandNode.h; sourceTree = "<group>"; };
+		55A8680D13508F210036AA4B /* CAssignCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CAssignCommandNode.cpp; path = ../../CAssignCommandNode.cpp; sourceTree = "<group>"; };
+		55A8680E13508F210036AA4B /* CPutCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPutCommandNode.h; path = ../../CPutCommandNode.h; sourceTree = "<group>"; };
+		55A8680F13508F210036AA4B /* CPutCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPutCommandNode.cpp; path = ../../CPutCommandNode.cpp; sourceTree = "<group>"; };
+		55A8681013508F210036AA4B /* CGetParamCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGetParamCommandNode.h; path = ../../CGetParamCommandNode.h; sourceTree = "<group>"; };
+		55A8681113508F210036AA4B /* CGetParamCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CGetParamCommandNode.cpp; path = ../../CGetParamCommandNode.cpp; sourceTree = "<group>"; };
+		55A8681213508F210036AA4B /* CPrintCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPrintCommandNode.h; path = ../../CPrintCommandNode.h; sourceTree = "<group>"; };
+		55A8681313508F210036AA4B /* CPrintCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CPrintCommandNode.cpp; path = ../../CPrintCommandNode.cpp; sourceTree = "<group>"; };
+		55A8681413508F210036AA4B /* CReturnCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CReturnCommandNode.h; path = ../../CReturnCommandNode.h; sourceTree = "<group>"; };
+		55A8681513508F210036AA4B /* CReturnCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CReturnCommandNode.cpp; path = ../../CReturnCommandNode.cpp; sourceTree = "<group>"; };
+		55A8681613508F210036AA4B /* CFunctionCallNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CFunctionCallNode.h; path = ../../CFunctionCallNode.h; sourceTree = "<group>"; };
+		55A8681713508F210036AA4B /* CFunctionCallNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CFunctionCallNode.cpp; path = ../../CFunctionCallNode.cpp; sourceTree = "<group>"; };
+		55A8681813508F210036AA4B /* COperatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = COperatorNode.h; path = ../../COperatorNode.h; sourceTree = "<group>"; };
+		55A8681913508F210036AA4B /* COperatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = COperatorNode.cpp; path = ../../COperatorNode.cpp; sourceTree = "<group>"; };
+		55A8681A13508F210036AA4B /* CAddCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CAddCommandNode.h; path = ../../CAddCommandNode.h; sourceTree = "<group>"; };
+		55A8681B13508F210036AA4B /* CAddCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CAddCommandNode.cpp; path = ../../CAddCommandNode.cpp; sourceTree = "<group>"; };
+		55A8681C13508F210036AA4B /* CLineMarkerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLineMarkerNode.h; path = ../../CLineMarkerNode.h; sourceTree = "<group>"; };
+		55A8681D13508F210036AA4B /* CLineMarkerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CLineMarkerNode.cpp; path = ../../CLineMarkerNode.cpp; sourceTree = "<group>"; };
+		55A8681E13508F210036AA4B /* CAssignChunkArrayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CAssignChunkArrayNode.h; path = ../../CAssignChunkArrayNode.h; sourceTree = "<group>"; };
+		55A8681F13508F210036AA4B /* CAssignChunkArrayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CAssignChunkArrayNode.cpp; path = ../../CAssignChunkArrayNode.cpp; sourceTree = "<group>"; };
+		55A8682013508F210036AA4B /* CGetArrayItemCountNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGetArrayItemCountNode.h; path = ../../CGetArrayItemCountNode.h; sourceTree = "<group>"; };
+		55A8682113508F210036AA4B /* CGetArrayItemCountNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CGetArrayItemCountNode.cpp; path = ../../CGetArrayItemCountNode.cpp; sourceTree = "<group>"; };
+		55A8682213508F210036AA4B /* CGetArrayItemNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGetArrayItemNode.h; path = ../../CGetArrayItemNode.h; sourceTree = "<group>"; };
+		55A8682313508F210036AA4B /* CGetArrayItemNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CGetArrayItemNode.cpp; path = ../../CGetArrayItemNode.cpp; sourceTree = "<group>"; };
+		55A8682413508F210036AA4B /* CMakeChunkRefNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMakeChunkRefNode.h; path = ../../CMakeChunkRefNode.h; sourceTree = "<group>"; };
+		55A8682513508F210036AA4B /* CMakeChunkRefNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMakeChunkRefNode.cpp; path = ../../CMakeChunkRefNode.cpp; sourceTree = "<group>"; };
+		55A8682613508F210036AA4B /* CMakeChunkConstNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMakeChunkConstNode.h; path = ../../CMakeChunkConstNode.h; sourceTree = "<group>"; };
+		55A8682713508F210036AA4B /* CMakeChunkConstNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMakeChunkConstNode.cpp; path = ../../CMakeChunkConstNode.cpp; sourceTree = "<group>"; };
+		55A8685813508F330036AA4B /* CCodeBlockNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCodeBlockNode.h; path = ../../CCodeBlockNode.h; sourceTree = "<group>"; };
+		55A8685913508F330036AA4B /* CCodeBlockNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCodeBlockNode.cpp; path = ../../CCodeBlockNode.cpp; sourceTree = "<group>"; };
+		55A8685A13508F330036AA4B /* CFunctionDefinitionNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CFunctionDefinitionNode.h; path = ../../CFunctionDefinitionNode.h; sourceTree = "<group>"; };
+		55A8685B13508F330036AA4B /* CFunctionDefinitionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CFunctionDefinitionNode.cpp; path = ../../CFunctionDefinitionNode.cpp; sourceTree = "<group>"; };
+		55A8685C13508F330036AA4B /* CWhileLoopNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CWhileLoopNode.h; path = ../../CWhileLoopNode.h; sourceTree = "<group>"; };
+		55A8685D13508F330036AA4B /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CWhileLoopNode.cpp; path = ../../CWhileLoopNode.cpp; sourceTree = "<group>"; };
+		55A8685E13508F330036AA4B /* CIfNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CIfNode.h; path = ../../CIfNode.h; sourceTree = "<group>"; };
+		55A8685F13508F330036AA4B /* CIfNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CIfNode.cpp; path = ../../CIfNode.cpp; sourceTree = "<group>"; };
+		55A8686D13508F650036AA4B /* LEOValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOValue.h; path = ../../../Leonie/common/LEOValue.h; sourceTree = "<group>"; };
+		55A8686E13508F650036AA4B /* LEOValue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOValue.c; path = ../../../Leonie/common/LEOValue.c; sourceTree = "<group>"; };
+		55A8686F13508F650036AA4B /* LEOInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOInterpreter.h; path = ../../../Leonie/common/LEOInterpreter.h; sourceTree = "<group>"; };
+		55A8687013508F650036AA4B /* LEOInterpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInterpreter.c; path = ../../../Leonie/common/LEOInterpreter.c; sourceTree = "<group>"; };
+		55A8687113508F650036AA4B /* LEOInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOInstructions.h; path = ../../../Leonie/common/LEOInstructions.h; sourceTree = "<group>"; };
+		55A8687213508F650036AA4B /* LEOInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructions.c; path = ../../../Leonie/common/LEOInstructions.c; sourceTree = "<group>"; };
+		55A8687313508F650036AA4B /* LEOScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOScript.h; path = ../../../Leonie/common/LEOScript.h; sourceTree = "<group>"; };
+		55A8687413508F650036AA4B /* LEOScript.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOScript.c; path = ../../../Leonie/common/LEOScript.c; sourceTree = "<group>"; };
+		55A8687513508F650036AA4B /* LEODebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEODebugger.h; path = ../../../Leonie/common/LEODebugger.h; sourceTree = "<group>"; };
+		55A8687613508F650036AA4B /* LEODebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEODebugger.c; path = ../../../Leonie/common/LEODebugger.c; sourceTree = "<group>"; };
+		55A8687713508F650036AA4B /* LEORemoteDebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEORemoteDebugger.h; path = ../../../Leonie/macosx/LEORemoteDebugger.h; sourceTree = "<group>"; };
+		55A8687813508F650036AA4B /* LEORemoteDebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEORemoteDebugger.c; path = ../../../Leonie/macosx/LEORemoteDebugger.c; sourceTree = "<group>"; };
+		55A8687913508F650036AA4B /* LEOChunks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOChunks.h; path = ../../../Leonie/common/LEOChunks.h; sourceTree = "<group>"; };
+		55A8687A13508F650036AA4B /* LEOChunks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOChunks.c; path = ../../../Leonie/common/LEOChunks.c; sourceTree = "<group>"; };
+		55A8687B13508F650036AA4B /* LEOContextGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOContextGroup.h; path = ../../../Leonie/common/LEOContextGroup.h; sourceTree = "<group>"; };
+		55A8687C13508F650036AA4B /* LEOContextGroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOContextGroup.c; path = ../../../Leonie/common/LEOContextGroup.c; sourceTree = "<group>"; };
+		55A8687D13508F650036AA4B /* LEOHandlerID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOHandlerID.h; path = ../../../Leonie/common/LEOHandlerID.h; sourceTree = "<group>"; };
+		55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructionsGeneric.c; path = ../../../Leonie/generic/LEOInstructionsGeneric.c; sourceTree = "<group>"; };
+		55A8689A135094340036AA4B /* ForgeFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgeFramework.h; sourceTree = "<group>"; };
+		55A8689C1350957B0036AA4B /* ForgeFramework.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ForgeFramework.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		55A867A113508E620036AA4B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867A913508E620036AA4B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55A867B613508E620036AA4B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867BB13508E620036AA4B /* Cocoa.framework in Frameworks */,
+				55A867BE13508E620036AA4B /* ForgeFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		55A8679913508E620036AA4B = {
+			isa = PBXGroup;
+			children = (
+				55A867AE13508E620036AA4B /* ForgeFramework */,
+				55A867BF13508E620036AA4B /* ForgeFrameworkTests */,
+				55A867A713508E620036AA4B /* Frameworks */,
+				55A867A613508E620036AA4B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		55A867A613508E620036AA4B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				55A867A513508E620036AA4B /* ForgeFramework.framework */,
+				55A867BA13508E620036AA4B /* ForgeFrameworkTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		55A867A713508E620036AA4B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				55A867A813508E620036AA4B /* Cocoa.framework */,
+				55A867AA13508E620036AA4B /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		55A867AA13508E620036AA4B /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				55A867AB13508E620036AA4B /* AppKit.framework */,
+				55A867AC13508E620036AA4B /* CoreData.framework */,
+				55A867AD13508E620036AA4B /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		55A867AE13508E620036AA4B /* ForgeFramework */ = {
+			isa = PBXGroup;
+			children = (
+				55A867DA13508EA40036AA4B /* Source */,
+				55A867AF13508E620036AA4B /* Supporting Files */,
+			);
+			path = ForgeFramework;
+			sourceTree = "<group>";
+		};
+		55A867AF13508E620036AA4B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				55A867B013508E620036AA4B /* ForgeFramework-Info.plist */,
+				55A867B113508E620036AA4B /* InfoPlist.strings */,
+				55A867B413508E620036AA4B /* ForgeFramework-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		55A867BF13508E620036AA4B /* ForgeFrameworkTests */ = {
+			isa = PBXGroup;
+			children = (
+				55A867C613508E620036AA4B /* ForgeFrameworkTests.h */,
+				55A867C813508E620036AA4B /* ForgeFrameworkTests.m */,
+				55A867C013508E620036AA4B /* Supporting Files */,
+			);
+			path = ForgeFrameworkTests;
+			sourceTree = "<group>";
+		};
+		55A867C013508E620036AA4B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				55A867C113508E620036AA4B /* ForgeFrameworkTests-Info.plist */,
+				55A867C213508E620036AA4B /* InfoPlist.strings */,
+				55A867C513508E620036AA4B /* ForgeFrameworkTests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		55A867DA13508EA40036AA4B /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				55A8689A135094340036AA4B /* ForgeFramework.h */,
+				55A8689C1350957B0036AA4B /* ForgeFramework.cpp */,
+				55A867DB13508EB70036AA4B /* CCodeBlock.h */,
+				55A867DC13508EB70036AA4B /* CCodeBlock.cpp */,
+				55A867DD13508EB70036AA4B /* CVariableEntry.h */,
+				55A867DE13508EB70036AA4B /* CVariableEntry.cpp */,
+				55A867DF13508EB70036AA4B /* UTF32CaseTables.h */,
+				55A867E013508EB70036AA4B /* CToken.h */,
+				55A867E113508EB70036AA4B /* CToken.cpp */,
+				55A867E213508EB70036AA4B /* CParser.h */,
+				55A867E313508EB70036AA4B /* CParser.cpp */,
+				55A867F613508EED0036AA4B /* Parse Tree */,
+				55A8686C13508F3E0036AA4B /* Leonie */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		55A867F613508EED0036AA4B /* Parse Tree */ = {
+			isa = PBXGroup;
+			children = (
+				55A867F713508EFF0036AA4B /* CParseTree.h */,
+				55A867F813508EFF0036AA4B /* CParseTree.cpp */,
+				55A867F913508EFF0036AA4B /* CNode.h */,
+				55A867FA13508EFF0036AA4B /* CNode.cpp */,
+				55A867FB13508EFF0036AA4B /* CValueNode.h */,
+				55A867FC13508EFF0036AA4B /* CValueNode.cpp */,
+				55A8680713508F060036AA4B /* Commands */,
+				55A8680613508F030036AA4B /* Code Blocks */,
+			);
+			name = "Parse Tree";
+			sourceTree = "<group>";
+		};
+		55A8680613508F030036AA4B /* Code Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				55A8685813508F330036AA4B /* CCodeBlockNode.h */,
+				55A8685913508F330036AA4B /* CCodeBlockNode.cpp */,
+				55A8685A13508F330036AA4B /* CFunctionDefinitionNode.h */,
+				55A8685B13508F330036AA4B /* CFunctionDefinitionNode.cpp */,
+				55A8685C13508F330036AA4B /* CWhileLoopNode.h */,
+				55A8685D13508F330036AA4B /* CWhileLoopNode.cpp */,
+				55A8685E13508F330036AA4B /* CIfNode.h */,
+				55A8685F13508F330036AA4B /* CIfNode.cpp */,
+			);
+			name = "Code Blocks";
+			sourceTree = "<group>";
+		};
+		55A8680713508F060036AA4B /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				55A8680813508F210036AA4B /* CCommandNode.h */,
+				55A8680913508F210036AA4B /* CCommandNode.cpp */,
+				55A8680A13508F210036AA4B /* CPushValueCommandNode.h */,
+				55A8680B13508F210036AA4B /* CPushValueCommandNode.cpp */,
+				55A8680C13508F210036AA4B /* CAssignCommandNode.h */,
+				55A8680D13508F210036AA4B /* CAssignCommandNode.cpp */,
+				55A8680E13508F210036AA4B /* CPutCommandNode.h */,
+				55A8680F13508F210036AA4B /* CPutCommandNode.cpp */,
+				55A8681013508F210036AA4B /* CGetParamCommandNode.h */,
+				55A8681113508F210036AA4B /* CGetParamCommandNode.cpp */,
+				55A8681213508F210036AA4B /* CPrintCommandNode.h */,
+				55A8681313508F210036AA4B /* CPrintCommandNode.cpp */,
+				55A8681413508F210036AA4B /* CReturnCommandNode.h */,
+				55A8681513508F210036AA4B /* CReturnCommandNode.cpp */,
+				55A8681613508F210036AA4B /* CFunctionCallNode.h */,
+				55A8681713508F210036AA4B /* CFunctionCallNode.cpp */,
+				55A8681813508F210036AA4B /* COperatorNode.h */,
+				55A8681913508F210036AA4B /* COperatorNode.cpp */,
+				55A8681A13508F210036AA4B /* CAddCommandNode.h */,
+				55A8681B13508F210036AA4B /* CAddCommandNode.cpp */,
+				55A8681C13508F210036AA4B /* CLineMarkerNode.h */,
+				55A8681D13508F210036AA4B /* CLineMarkerNode.cpp */,
+				55A8681E13508F210036AA4B /* CAssignChunkArrayNode.h */,
+				55A8681F13508F210036AA4B /* CAssignChunkArrayNode.cpp */,
+				55A8682013508F210036AA4B /* CGetArrayItemCountNode.h */,
+				55A8682113508F210036AA4B /* CGetArrayItemCountNode.cpp */,
+				55A8682213508F210036AA4B /* CGetArrayItemNode.h */,
+				55A8682313508F210036AA4B /* CGetArrayItemNode.cpp */,
+				55A8682413508F210036AA4B /* CMakeChunkRefNode.h */,
+				55A8682513508F210036AA4B /* CMakeChunkRefNode.cpp */,
+				55A8682613508F210036AA4B /* CMakeChunkConstNode.h */,
+				55A8682713508F210036AA4B /* CMakeChunkConstNode.cpp */,
+			);
+			name = Commands;
+			sourceTree = "<group>";
+		};
+		55A8686C13508F3E0036AA4B /* Leonie */ = {
+			isa = PBXGroup;
+			children = (
+				55A8686D13508F650036AA4B /* LEOValue.h */,
+				55A8686E13508F650036AA4B /* LEOValue.c */,
+				55A8686F13508F650036AA4B /* LEOInterpreter.h */,
+				55A8687013508F650036AA4B /* LEOInterpreter.c */,
+				55A8687113508F650036AA4B /* LEOInstructions.h */,
+				55A8687213508F650036AA4B /* LEOInstructions.c */,
+				55A8687313508F650036AA4B /* LEOScript.h */,
+				55A8687413508F650036AA4B /* LEOScript.c */,
+				55A8687513508F650036AA4B /* LEODebugger.h */,
+				55A8687613508F650036AA4B /* LEODebugger.c */,
+				55A8687713508F650036AA4B /* LEORemoteDebugger.h */,
+				55A8687813508F650036AA4B /* LEORemoteDebugger.c */,
+				55A8687913508F650036AA4B /* LEOChunks.h */,
+				55A8687A13508F650036AA4B /* LEOChunks.c */,
+				55A8687B13508F650036AA4B /* LEOContextGroup.h */,
+				55A8687C13508F650036AA4B /* LEOContextGroup.c */,
+				55A8687D13508F650036AA4B /* LEOHandlerID.h */,
+				55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */,
+			);
+			name = Leonie;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		55A867A213508E620036AA4B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A8689B135094340036AA4B /* ForgeFramework.h in Headers */,
+				55A8687F13508F650036AA4B /* LEOValue.h in Headers */,
+				55A8688213508F650036AA4B /* LEOInterpreter.h in Headers */,
+				55A8688513508F650036AA4B /* LEOInstructions.h in Headers */,
+				55A8688813508F650036AA4B /* LEOScript.h in Headers */,
+				55A8688B13508F650036AA4B /* LEODebugger.h in Headers */,
+				55A8688E13508F650036AA4B /* LEORemoteDebugger.h in Headers */,
+				55A8689113508F650036AA4B /* LEOChunks.h in Headers */,
+				55A8689413508F650036AA4B /* LEOContextGroup.h in Headers */,
+				55A8689713508F650036AA4B /* LEOHandlerID.h in Headers */,
+				55A867E613508EB70036AA4B /* CCodeBlock.h in Headers */,
+				55A867E813508EB70036AA4B /* CVariableEntry.h in Headers */,
+				55A867EA13508EB70036AA4B /* UTF32CaseTables.h in Headers */,
+				55A867EB13508EB70036AA4B /* CToken.h in Headers */,
+				55A867ED13508EB70036AA4B /* CParser.h in Headers */,
+				55A867FD13508EFF0036AA4B /* CParseTree.h in Headers */,
+				55A8680013508EFF0036AA4B /* CNode.h in Headers */,
+				55A8680313508EFF0036AA4B /* CValueNode.h in Headers */,
+				55A8682813508F210036AA4B /* CCommandNode.h in Headers */,
+				55A8682B13508F210036AA4B /* CPushValueCommandNode.h in Headers */,
+				55A8682E13508F210036AA4B /* CAssignCommandNode.h in Headers */,
+				55A8683113508F210036AA4B /* CPutCommandNode.h in Headers */,
+				55A8683413508F210036AA4B /* CGetParamCommandNode.h in Headers */,
+				55A8683713508F210036AA4B /* CPrintCommandNode.h in Headers */,
+				55A8683A13508F210036AA4B /* CReturnCommandNode.h in Headers */,
+				55A8683D13508F210036AA4B /* CFunctionCallNode.h in Headers */,
+				55A8684013508F210036AA4B /* COperatorNode.h in Headers */,
+				55A8684313508F210036AA4B /* CAddCommandNode.h in Headers */,
+				55A8684613508F210036AA4B /* CLineMarkerNode.h in Headers */,
+				55A8684913508F210036AA4B /* CAssignChunkArrayNode.h in Headers */,
+				55A8684C13508F210036AA4B /* CGetArrayItemCountNode.h in Headers */,
+				55A8684F13508F210036AA4B /* CGetArrayItemNode.h in Headers */,
+				55A8685213508F210036AA4B /* CMakeChunkRefNode.h in Headers */,
+				55A8685513508F210036AA4B /* CMakeChunkConstNode.h in Headers */,
+				55A8686013508F330036AA4B /* CCodeBlockNode.h in Headers */,
+				55A8686313508F330036AA4B /* CFunctionDefinitionNode.h in Headers */,
+				55A8686613508F330036AA4B /* CWhileLoopNode.h in Headers */,
+				55A8686913508F330036AA4B /* CIfNode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		55A867A413508E620036AA4B /* ForgeFramework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 55A867CC13508E620036AA4B /* Build configuration list for PBXNativeTarget "ForgeFramework" */;
+			buildPhases = (
+				55A867A013508E620036AA4B /* Sources */,
+				55A867A113508E620036AA4B /* Frameworks */,
+				55A867A213508E620036AA4B /* Headers */,
+				55A867A313508E620036AA4B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ForgeFramework;
+			productName = ForgeFramework;
+			productReference = 55A867A513508E620036AA4B /* ForgeFramework.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		55A867B913508E620036AA4B /* ForgeFrameworkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 55A867CF13508E620036AA4B /* Build configuration list for PBXNativeTarget "ForgeFrameworkTests" */;
+			buildPhases = (
+				55A867B513508E620036AA4B /* Sources */,
+				55A867B613508E620036AA4B /* Frameworks */,
+				55A867B713508E620036AA4B /* Resources */,
+				55A867B813508E620036AA4B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				55A867BD13508E620036AA4B /* PBXTargetDependency */,
+			);
+			name = ForgeFrameworkTests;
+			productName = ForgeFrameworkTests;
+			productReference = 55A867BA13508E620036AA4B /* ForgeFrameworkTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		55A8679B13508E620036AA4B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "The Void Software";
+			};
+			buildConfigurationList = 55A8679E13508E620036AA4B /* Build configuration list for PBXProject "ForgeFramework" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 55A8679913508E620036AA4B;
+			productRefGroup = 55A867A613508E620036AA4B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				55A867A413508E620036AA4B /* ForgeFramework */,
+				55A867B913508E620036AA4B /* ForgeFrameworkTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		55A867A313508E620036AA4B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867B313508E620036AA4B /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55A867B713508E620036AA4B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867C413508E620036AA4B /* InfoPlist.strings in Resources */,
+				55A867C713508E620036AA4B /* ForgeFrameworkTests.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		55A867B813508E620036AA4B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		55A867A013508E620036AA4B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867E713508EB70036AA4B /* CCodeBlock.cpp in Sources */,
+				55A867E913508EB70036AA4B /* CVariableEntry.cpp in Sources */,
+				55A867EC13508EB70036AA4B /* CToken.cpp in Sources */,
+				55A867EE13508EB70036AA4B /* CParser.cpp in Sources */,
+				55A867FE13508EFF0036AA4B /* CParseTree.cpp in Sources */,
+				55A8680113508EFF0036AA4B /* CNode.cpp in Sources */,
+				55A8680413508EFF0036AA4B /* CValueNode.cpp in Sources */,
+				55A8682913508F210036AA4B /* CCommandNode.cpp in Sources */,
+				55A8682C13508F210036AA4B /* CPushValueCommandNode.cpp in Sources */,
+				55A8682F13508F210036AA4B /* CAssignCommandNode.cpp in Sources */,
+				55A8683213508F210036AA4B /* CPutCommandNode.cpp in Sources */,
+				55A8683513508F210036AA4B /* CGetParamCommandNode.cpp in Sources */,
+				55A8683813508F210036AA4B /* CPrintCommandNode.cpp in Sources */,
+				55A8683B13508F210036AA4B /* CReturnCommandNode.cpp in Sources */,
+				55A8683E13508F210036AA4B /* CFunctionCallNode.cpp in Sources */,
+				55A8684113508F210036AA4B /* COperatorNode.cpp in Sources */,
+				55A8684413508F210036AA4B /* CAddCommandNode.cpp in Sources */,
+				55A8684713508F210036AA4B /* CLineMarkerNode.cpp in Sources */,
+				55A8684A13508F210036AA4B /* CAssignChunkArrayNode.cpp in Sources */,
+				55A8684D13508F210036AA4B /* CGetArrayItemCountNode.cpp in Sources */,
+				55A8685013508F210036AA4B /* CGetArrayItemNode.cpp in Sources */,
+				55A8685313508F210036AA4B /* CMakeChunkRefNode.cpp in Sources */,
+				55A8685613508F210036AA4B /* CMakeChunkConstNode.cpp in Sources */,
+				55A8686113508F330036AA4B /* CCodeBlockNode.cpp in Sources */,
+				55A8686413508F330036AA4B /* CFunctionDefinitionNode.cpp in Sources */,
+				55A8686713508F330036AA4B /* CWhileLoopNode.cpp in Sources */,
+				55A8686A13508F330036AA4B /* CIfNode.cpp in Sources */,
+				55A8688013508F650036AA4B /* LEOValue.c in Sources */,
+				55A8688313508F650036AA4B /* LEOInterpreter.c in Sources */,
+				55A8688613508F650036AA4B /* LEOInstructions.c in Sources */,
+				55A8688913508F650036AA4B /* LEOScript.c in Sources */,
+				55A8688C13508F650036AA4B /* LEODebugger.c in Sources */,
+				55A8688F13508F650036AA4B /* LEORemoteDebugger.c in Sources */,
+				55A8689213508F650036AA4B /* LEOChunks.c in Sources */,
+				55A8689513508F650036AA4B /* LEOContextGroup.c in Sources */,
+				55A8689813508F650036AA4B /* LEOInstructionsGeneric.c in Sources */,
+				55A8689D1350957B0036AA4B /* ForgeFramework.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55A867B513508E620036AA4B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55A867C913508E620036AA4B /* ForgeFrameworkTests.m in Sources */,
+				55A867F113508ED10036AA4B /* CCodeBlock.cpp in Sources */,
+				55A867F213508ED10036AA4B /* CVariableEntry.cpp in Sources */,
+				55A867F313508ED10036AA4B /* CToken.cpp in Sources */,
+				55A867F413508ED10036AA4B /* CParser.cpp in Sources */,
+				55A867FF13508EFF0036AA4B /* CParseTree.cpp in Sources */,
+				55A8680213508EFF0036AA4B /* CNode.cpp in Sources */,
+				55A8680513508EFF0036AA4B /* CValueNode.cpp in Sources */,
+				55A8682A13508F210036AA4B /* CCommandNode.cpp in Sources */,
+				55A8682D13508F210036AA4B /* CPushValueCommandNode.cpp in Sources */,
+				55A8683013508F210036AA4B /* CAssignCommandNode.cpp in Sources */,
+				55A8683313508F210036AA4B /* CPutCommandNode.cpp in Sources */,
+				55A8683613508F210036AA4B /* CGetParamCommandNode.cpp in Sources */,
+				55A8683913508F210036AA4B /* CPrintCommandNode.cpp in Sources */,
+				55A8683C13508F210036AA4B /* CReturnCommandNode.cpp in Sources */,
+				55A8683F13508F210036AA4B /* CFunctionCallNode.cpp in Sources */,
+				55A8684213508F210036AA4B /* COperatorNode.cpp in Sources */,
+				55A8684513508F210036AA4B /* CAddCommandNode.cpp in Sources */,
+				55A8684813508F210036AA4B /* CLineMarkerNode.cpp in Sources */,
+				55A8684B13508F210036AA4B /* CAssignChunkArrayNode.cpp in Sources */,
+				55A8684E13508F210036AA4B /* CGetArrayItemCountNode.cpp in Sources */,
+				55A8685113508F210036AA4B /* CGetArrayItemNode.cpp in Sources */,
+				55A8685413508F210036AA4B /* CMakeChunkRefNode.cpp in Sources */,
+				55A8685713508F210036AA4B /* CMakeChunkConstNode.cpp in Sources */,
+				55A8686213508F330036AA4B /* CCodeBlockNode.cpp in Sources */,
+				55A8686513508F330036AA4B /* CFunctionDefinitionNode.cpp in Sources */,
+				55A8686813508F330036AA4B /* CWhileLoopNode.cpp in Sources */,
+				55A8686B13508F330036AA4B /* CIfNode.cpp in Sources */,
+				55A8688113508F650036AA4B /* LEOValue.c in Sources */,
+				55A8688413508F650036AA4B /* LEOInterpreter.c in Sources */,
+				55A8688713508F650036AA4B /* LEOInstructions.c in Sources */,
+				55A8688A13508F650036AA4B /* LEOScript.c in Sources */,
+				55A8688D13508F650036AA4B /* LEODebugger.c in Sources */,
+				55A8689013508F650036AA4B /* LEORemoteDebugger.c in Sources */,
+				55A8689313508F650036AA4B /* LEOChunks.c in Sources */,
+				55A8689613508F650036AA4B /* LEOContextGroup.c in Sources */,
+				55A8689913508F650036AA4B /* LEOInstructionsGeneric.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		55A867BD13508E620036AA4B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55A867A413508E620036AA4B /* ForgeFramework */;
+			targetProxy = 55A867BC13508E620036AA4B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		55A867B113508E620036AA4B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55A867B213508E620036AA4B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		55A867C213508E620036AA4B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55A867C313508E620036AA4B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		55A867CA13508E620036AA4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		55A867CB13508E620036AA4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		55A867CD13508E620036AA4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ForgeFramework/ForgeFramework-Prefix.pch";
+				INFOPLIST_FILE = "ForgeFramework/ForgeFramework-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		55A867CE13508E620036AA4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ForgeFramework/ForgeFramework-Prefix.pch";
+				INFOPLIST_FILE = "ForgeFramework/ForgeFramework-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		55A867D013508E620036AA4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ForgeFrameworkTests/ForgeFrameworkTests-Prefix.pch";
+				INFOPLIST_FILE = "ForgeFrameworkTests/ForgeFrameworkTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		55A867D113508E620036AA4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ForgeFrameworkTests/ForgeFrameworkTests-Prefix.pch";
+				INFOPLIST_FILE = "ForgeFrameworkTests/ForgeFrameworkTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		55A8679E13508E620036AA4B /* Build configuration list for PBXProject "ForgeFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				55A867CA13508E620036AA4B /* Debug */,
+				55A867CB13508E620036AA4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		55A867CC13508E620036AA4B /* Build configuration list for PBXNativeTarget "ForgeFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				55A867CD13508E620036AA4B /* Debug */,
+				55A867CE13508E620036AA4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		55A867CF13508E620036AA4B /* Build configuration list for PBXNativeTarget "ForgeFrameworkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				55A867D013508E620036AA4B /* Debug */,
+				55A867D113508E620036AA4B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 55A8679B13508E620036AA4B /* Project object */;
+}

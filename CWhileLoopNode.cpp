@@ -16,25 +16,25 @@ namespace Carlson
 
 void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 {
-	size_t	lineMarkerInstructionOffset = inBlock->GetNextInstructionOffset();
-	inBlock->GenerateLineMarkerInstruction( mLineNum );	// Make sure debugger indicates condition as current line on every iteration.
+	int32_t	lineMarkerInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
+	inBlock->GenerateLineMarkerInstruction( (int32_t) mLineNum );	// Make sure debugger indicates condition as current line on every iteration.
 	
 	// Push condition:
 	mCondition->GenerateCode(inBlock);
 	
 	// Check condition, jump to end of loop if FALSE:
-	size_t	compareInstructionOffset = inBlock->GetNextInstructionOffset();
+	int32_t	compareInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->GenerateJumpRelativeIfFalseInstruction( 0 );
 	
 	// Generate loop commands:
 	CCodeBlockNode::GenerateCode( inBlock );
 	
 	// At end of loop section, jump back to compare instruction:
-	size_t	jumpBackInstructionOffset = inBlock->GetNextInstructionOffset();
+	int32_t	jumpBackInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->GenerateJumpRelativeInstruction( lineMarkerInstructionOffset -jumpBackInstructionOffset );
 	
 	// Retroactively fill in the address of the Else section in the if's jump instruction:
-	size_t	loopEndOffset = inBlock->GetNextInstructionOffset();
+	int32_t	loopEndOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->SetJumpAddressOfInstructionAtIndex( compareInstructionOffset, loopEndOffset -compareInstructionOffset );
 }
 

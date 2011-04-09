@@ -844,7 +844,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	int		conditionLineNum = tokenItty->mLineNum;
+	size_t		conditionLineNum = tokenItty->mLineNum;
 	
 	// Repeat:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1031,7 +1031,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	int				conditionLineNum = tokenItty->mLineNum;
+	size_t			conditionLineNum = tokenItty->mLineNum;
 	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, currFunction );
 	
 	// If:
@@ -1668,7 +1668,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	CValueNode*	startOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 	CValueNode*	endOffsObj = NULL;
 	
-	int		lineNum = tokenItty->mLineNum;
+	size_t		lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
 	if( tokenItty->IsIdentifier( EToIdentifier ) || tokenItty->IsIdentifier( EThroughIdentifier )
@@ -1718,7 +1718,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	// Start offset:
 	CValueNode*	startOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-	int			lineNum = tokenItty->mLineNum;
+	size_t			lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
 	if( tokenItty->IsIdentifier( EToIdentifier ) || tokenItty->IsIdentifier( EThroughIdentifier )
@@ -2212,7 +2212,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 
 		case ENumberToken:	// Any number (integer). We fake floats by parsing an integer/period-operator/integer sequence.
 		{
-			int					theNumber = tokenItty->mNumberValue;
+			long					theNumber = tokenItty->mNumberValue;
 			
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			

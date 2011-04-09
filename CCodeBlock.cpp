@@ -45,7 +45,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
 	// Allocate stack space for our local variables:
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, lineNumber );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, (uint32_t)lineNumber );
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	mNumLocals = 0;
@@ -55,7 +55,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		if( itty->second.mBPRelativeOffset != LONG_MAX )
 		{
 			size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
-			LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, stringIndex );
+			LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
 			LEOHandlerAddVariableNameMapping( mCurrentHandler, itty->first.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			mNumLocals++;
 		}
@@ -65,7 +65,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 
 void	CCodeBlock::PrepareToExitFunction( size_t lineNumber )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, lineNumber );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, (uint32_t)lineNumber );
 	// Get rid of stack space allocated for our local variables:
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	for( size_t	x = 0; x < mNumLocals; x++ )
@@ -79,7 +79,7 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 	
 	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
-	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, emptyStringIndex );
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)emptyStringIndex );
 	GenerateSetReturnValueInstruction();
 	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
 	
@@ -116,7 +116,7 @@ void	CCodeBlock::GeneratePushBoolInstruction( bool inBoolean )
 void	CCodeBlock::GeneratePushStringInstruction( const std::string& inString )
 {
 	size_t	stringIndex = LEOScriptAddString( mScript, inString.c_str() );
-	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, stringIndex );
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
 }
 
 
@@ -156,13 +156,13 @@ void	CCodeBlock::GeneratePrintVariableInstruction( int16_t bpRelativeOffset )
 }
 
 
-void	CCodeBlock::GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
+void	CCodeBlock::GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, PARAMETER_INSTR, (*(uint16_t*)&bpRelativeOffset), paramNum +1 );
 }
 
 
-void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, size_t paramNum )
+void	CCodeBlock::GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, PARAMETER_KEEPREFS_INSTR, (*(uint16_t*)&bpRelativeOffset), paramNum +1 );
 }
@@ -227,7 +227,7 @@ void	CCodeBlock::GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInt
 }
 
 
-void	CCodeBlock::GenerateLineMarkerInstruction( size_t inLineNum )
+void	CCodeBlock::GenerateLineMarkerInstruction( uint32_t inLineNum )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, inLineNum );
 }

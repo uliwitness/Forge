@@ -29,25 +29,25 @@ void	CIfNode::GenerateCode( CCodeBlock* inBlock )
 	mCondition->GenerateCode(inBlock);
 	
 	// Check condition, jump to Else start if FALSE:
-	size_t	compareInstructionOffset = inBlock->GetNextInstructionOffset();
+	int32_t	compareInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->GenerateJumpRelativeIfFalseInstruction( 0 );
 	
 	// Generate If section:
 	CCodeBlockNode::GenerateCode( inBlock );
 	
 	// At end of If section, jump *over* Else section:
-	size_t	jumpOverElseInstructionOffset = inBlock->GetNextInstructionOffset();
+	int32_t	jumpOverElseInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->GenerateJumpRelativeInstruction( 0 );
 	
 	// Retroactively fill in the address of the Else section in the if's jump instruction:
-	size_t	elseSectionStartOffset = inBlock->GetNextInstructionOffset();
+	int32_t		elseSectionStartOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->SetJumpAddressOfInstructionAtIndex( compareInstructionOffset, elseSectionStartOffset -compareInstructionOffset );
 	
 	// Generate Else section:
 	mElseBlock->GenerateCode( inBlock );
 	
 	// Retroactively fill in the address of the end of the Else section in the jump instruction at the If's end:
-	size_t	elseSectionEndOffset = inBlock->GetNextInstructionOffset();
+	int32_t	elseSectionEndOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->SetJumpAddressOfInstructionAtIndex( jumpOverElseInstructionOffset, elseSectionEndOffset -jumpOverElseInstructionOffset );
 }
 

@@ -21,7 +21,7 @@ namespace Carlson
 
 void	CIntValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GeneratePushIntInstruction( mIntValue );
+	inCodeBlock->GeneratePushIntInstruction( (int)mIntValue );
 }
 
 

@@ -23,7 +23,7 @@ void	CLineMarkerNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 
 void	CLineMarkerNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateLineMarkerInstruction( mLineNum );
+	inCodeBlock->GenerateLineMarkerInstruction( (uint32_t) mLineNum );
 }
 
 } // namespace Carlson
