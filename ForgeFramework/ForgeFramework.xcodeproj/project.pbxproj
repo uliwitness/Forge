@@ -121,10 +121,10 @@
 		55A8689513508F650036AA4B /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687C13508F650036AA4B /* LEOContextGroup.c */; };
 		55A8689613508F650036AA4B /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687C13508F650036AA4B /* LEOContextGroup.c */; };
 		55A8689713508F650036AA4B /* LEOHandlerID.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8687D13508F650036AA4B /* LEOHandlerID.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		55A8689813508F650036AA4B /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */; };
-		55A8689913508F650036AA4B /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */; };
 		55A8689B135094340036AA4B /* ForgeFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 55A8689A135094340036AA4B /* ForgeFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55A8689D1350957B0036AA4B /* ForgeFramework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55A8689C1350957B0036AA4B /* ForgeFramework.cpp */; };
+		55D3405213522650006A197D /* LEOMsgInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 55D3405113522650006A197D /* LEOMsgInstructions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55D3407213522779006A197D /* LEOMsgInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55D3407113522779006A197D /* LEOMsgInstructions.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,9 +224,10 @@
 		55A8687B13508F650036AA4B /* LEOContextGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOContextGroup.h; path = ../../../Leonie/common/LEOContextGroup.h; sourceTree = "<group>"; };
 		55A8687C13508F650036AA4B /* LEOContextGroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOContextGroup.c; path = ../../../Leonie/common/LEOContextGroup.c; sourceTree = "<group>"; };
 		55A8687D13508F650036AA4B /* LEOHandlerID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOHandlerID.h; path = ../../../Leonie/common/LEOHandlerID.h; sourceTree = "<group>"; };
-		55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructionsGeneric.c; path = ../../../Leonie/generic/LEOInstructionsGeneric.c; sourceTree = "<group>"; };
 		55A8689A135094340036AA4B /* ForgeFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgeFramework.h; sourceTree = "<group>"; };
 		55A8689C1350957B0036AA4B /* ForgeFramework.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ForgeFramework.cpp; sourceTree = "<group>"; };
+		55D3405113522650006A197D /* LEOMsgInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOMsgInstructions.h; path = ../../../Leonie/generic/LEOMsgInstructions.h; sourceTree = "<group>"; };
+		55D3407113522779006A197D /* LEOMsgInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOMsgInstructions.c; path = ../../../Leonie/generic/LEOMsgInstructions.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -436,7 +437,8 @@
 				55A8687B13508F650036AA4B /* LEOContextGroup.h */,
 				55A8687C13508F650036AA4B /* LEOContextGroup.c */,
 				55A8687D13508F650036AA4B /* LEOHandlerID.h */,
-				55A8687E13508F650036AA4B /* LEOInstructionsGeneric.c */,
+				55D3405113522650006A197D /* LEOMsgInstructions.h */,
+				55D3407113522779006A197D /* LEOMsgInstructions.c */,
 			);
 			name = Leonie;
 			sourceTree = "<group>";
@@ -458,6 +460,7 @@
 				55A8689113508F650036AA4B /* LEOChunks.h in Headers */,
 				55A8689413508F650036AA4B /* LEOContextGroup.h in Headers */,
 				55A8689713508F650036AA4B /* LEOHandlerID.h in Headers */,
+				55D3405213522650006A197D /* LEOMsgInstructions.h in Headers */,
 				55A867E613508EB70036AA4B /* CCodeBlock.h in Headers */,
 				55A867E813508EB70036AA4B /* CVariableEntry.h in Headers */,
 				55A867EA13508EB70036AA4B /* UTF32CaseTables.h in Headers */,
@@ -631,8 +634,8 @@
 				55A8688F13508F650036AA4B /* LEORemoteDebugger.c in Sources */,
 				55A8689213508F650036AA4B /* LEOChunks.c in Sources */,
 				55A8689513508F650036AA4B /* LEOContextGroup.c in Sources */,
-				55A8689813508F650036AA4B /* LEOInstructionsGeneric.c in Sources */,
 				55A8689D1350957B0036AA4B /* ForgeFramework.cpp in Sources */,
+				55D3407213522779006A197D /* LEOMsgInstructions.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,7 +679,6 @@
 				55A8689013508F650036AA4B /* LEORemoteDebugger.c in Sources */,
 				55A8689313508F650036AA4B /* LEOChunks.c in Sources */,
 				55A8689613508F650036AA4B /* LEOContextGroup.c in Sources */,
-				55A8689913508F650036AA4B /* LEOInstructionsGeneric.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +757,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ForgeFramework/ForgeFramework-Prefix.pch";
 				INFOPLIST_FILE = "ForgeFramework/ForgeFramework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -773,6 +776,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ForgeFramework/ForgeFramework-Prefix.pch";
 				INFOPLIST_FILE = "ForgeFramework/ForgeFramework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -837,6 +841,7 @@
 				55A867CE13508E620036AA4B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		55A867CF13508E620036AA4B /* Build configuration list for PBXNativeTarget "ForgeFrameworkTests" */ = {
 			isa = XCConfigurationList;
@@ -845,6 +850,7 @@
 				55A867D113508E620036AA4B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

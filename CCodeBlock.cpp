@@ -8,10 +8,12 @@
  */
 
 #include "CCodeBlock.h"
-extern "C" {
+extern "C"
+{
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEOInstructions.h"
+#include "LEOMsgInstructions.h"
 }
 
 namespace Carlson
@@ -146,13 +148,13 @@ void	CCodeBlock::GeneratePopValueInstruction()
 
 void	CCodeBlock::GeneratePrintValueInstruction()
 {
-	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR, BACK_OF_STACK, 0 );
+	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR +kFirstMsgInstruction, BACK_OF_STACK, 0 );
 }
 
 
 void	CCodeBlock::GeneratePrintVariableInstruction( int16_t bpRelativeOffset )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR, (*(uint16_t*)&bpRelativeOffset), 0 );
+	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR +kFirstMsgInstruction, (*(uint16_t*)&bpRelativeOffset), 0 );
 }
 
 

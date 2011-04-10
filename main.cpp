@@ -12,6 +12,7 @@ extern "C" {
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEORemoteDebugger.h"
+#include "LEOMsgInstructions.h"
 }
 
 
@@ -121,8 +122,8 @@ int main( int argc, char * const argv[] )
 			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree );
 		
-		if( printInstructions || runCode || printParseTree )
-			LEOInitInstructionArray();
+		LEOInitInstructionArray();
+		LEOAddInstructionsToInstructionArray( gMsgInstructions, gMsgInstructionNames, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );

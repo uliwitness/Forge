@@ -50,8 +50,9 @@
 		55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF1127DD30B00CF0F16 /* LEODebugger.c */; };
 		55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF3127DD30B00CF0F16 /* LEOChunks.c */; };
 		55C72BFD127DD30B00CF0F16 /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */; };
-		55C72C3B127DD79B00CF0F16 /* LEOInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */; };
+		55C72C3B127DD79B00CF0F16 /* LEOMsgInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72C3A127DD79B00CF0F16 /* LEOMsgInstructionsGeneric.c */; };
 		55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */; };
+		55D340541352275C006A197D /* LEOMsgInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55D340531352275C006A197D /* LEOMsgInstructions.c */; };
 		55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */; };
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
@@ -164,9 +165,11 @@
 		55C72BF4127DD30B00CF0F16 /* LEOContextGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOContextGroup.h; path = ../Leonie/common/LEOContextGroup.h; sourceTree = SOURCE_ROOT; };
 		55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOContextGroup.c; path = ../Leonie/common/LEOContextGroup.c; sourceTree = SOURCE_ROOT; };
 		55C72BF6127DD30B00CF0F16 /* LEOHandlerID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOHandlerID.h; path = ../Leonie/common/LEOHandlerID.h; sourceTree = SOURCE_ROOT; };
-		55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructionsGeneric.c; path = ../Leonie/generic/LEOInstructionsGeneric.c; sourceTree = SOURCE_ROOT; };
+		55C72C3A127DD79B00CF0F16 /* LEOMsgInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOMsgInstructionsGeneric.c; path = ../Leonie/generic/LEOMsgInstructionsGeneric.c; sourceTree = SOURCE_ROOT; };
 		55CFBE2612D3D156007B3627 /* CLineMarkerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLineMarkerNode.cpp; sourceTree = "<group>"; };
 		55CFBE2712D3D156007B3627 /* CLineMarkerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLineMarkerNode.h; sourceTree = "<group>"; };
+		55D3404B135212B5006A197D /* LEOMsgInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOMsgInstructions.h; path = ../Leonie/generic/LEOMsgInstructions.h; sourceTree = "<group>"; };
+		55D340531352275C006A197D /* LEOMsgInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOMsgInstructions.c; path = ../Leonie/generic/LEOMsgInstructions.c; sourceTree = "<group>"; };
 		55D789E412BE937600C5D76E /* CReturnCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CReturnCommandNode.h; sourceTree = "<group>"; };
 		55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CReturnCommandNode.cpp; sourceTree = "<group>"; };
 		55D78A0712BE9E1F00C5D76E /* testfile9.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile9.hc; sourceTree = "<group>"; };
@@ -349,7 +352,9 @@
 				55C72BF4127DD30B00CF0F16 /* LEOContextGroup.h */,
 				55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */,
 				55C72BF6127DD30B00CF0F16 /* LEOHandlerID.h */,
-				55C72C3A127DD79B00CF0F16 /* LEOInstructionsGeneric.c */,
+				55D3404B135212B5006A197D /* LEOMsgInstructions.h */,
+				55D340531352275C006A197D /* LEOMsgInstructions.c */,
+				55C72C3A127DD79B00CF0F16 /* LEOMsgInstructionsGeneric.c */,
 			);
 			name = Leonie;
 			sourceTree = "<group>";
@@ -425,7 +430,7 @@
 				55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */,
 				55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */,
 				55C72BFD127DD30B00CF0F16 /* LEOContextGroup.c in Sources */,
-				55C72C3B127DD79B00CF0F16 /* LEOInstructionsGeneric.c in Sources */,
+				55C72C3B127DD79B00CF0F16 /* LEOMsgInstructionsGeneric.c in Sources */,
 				558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */,
 				558A8DC212BD2BBC00F514F4 /* CAssignCommandNode.cpp in Sources */,
 				558A8EFE12BD6A4B00F514F4 /* CGetParamCommandNode.cpp in Sources */,
@@ -442,6 +447,7 @@
 				55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */,
 				55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */,
 				55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */,
+				55D340541352275C006A197D /* LEOMsgInstructions.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
