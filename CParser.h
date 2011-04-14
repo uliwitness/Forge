@@ -113,7 +113,7 @@ namespace Carlson
 		static std::map<std::string,int>				sConstantToValueTable;	// Populated from frameworkheaders.hhc file.
 		
 	public:
-		CParser() : mUsesObjCCall(false)	{};
+		CParser();
 		
 		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );
 		
@@ -205,5 +205,7 @@ namespace Carlson
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
 		void		LoadNativeHeaders();
 		void		LoadNativeHeadersFromFile( const char* filepath );
+		
+		static void		AddGlobalProperties( TGlobalPropertyEntry* inEntries );
 	};
 }

@@ -103,13 +103,15 @@ static TUnaryOperatorEntry	sUnaryOperators[] =
 };
 
 
-static TGlobalPropertyEntry	sGlobalProperties[] =
+static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 {
 	{ EItemDelIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
 	{ EItemDelimIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
 	{ EItemDelimiterIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
 	{ ELastIdentifier_Sentinel, INVALID_INSTR }
 };
+
+static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
 
 #pragma mark [Chunk type lookup table]
@@ -248,6 +250,55 @@ const std::string CVariableEntry::GetNewTempName()
 	snprintf( tempName, 40, "temp%d", mTempCounterSeed++ );
 	
 	return std::string( tempName );
+}
+
+
+// -----------------------------------------------------------------------------
+//	* CONSTRUCTOR:
+// -----------------------------------------------------------------------------
+
+CParser::CParser()
+	: mUsesObjCCall(false)
+{
+	if( !sGlobalProperties )
+		sGlobalProperties = sDefaultGlobalProperties;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddGlobalProperties:
+//		Main entrypoint. This takes a script that's been tokenised and generates
+//		the proper parse tree.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddGlobalProperties( TGlobalPropertyEntry* inEntries )
+{
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	for( size_t x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+		numOldEntries = x;
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+		numNewEntries = x;
+	
+	TGlobalPropertyEntry*	newTable = NULL;
+	if( sGlobalProperties == sDefaultGlobalProperties )
+	{
+		newTable = (TGlobalPropertyEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TGlobalPropertyEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable, sGlobalProperties, numOldEntries *sizeof(TGlobalPropertyEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TGlobalPropertyEntry) );
+	}
+	else
+	{
+		newTable = (TGlobalPropertyEntry*) realloc( sGlobalProperties, (numOldEntries +numNewEntries +1) * sizeof(TGlobalPropertyEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TGlobalPropertyEntry) );
+	}
+	
+	sGlobalProperties = newTable;
 }
 
 
