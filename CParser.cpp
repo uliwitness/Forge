@@ -324,6 +324,31 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 }
 
 
+void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree )
+{
+	std::deque<CToken>::iterator	tokenItty = tokens.begin();
+	std::string						handlerName( ":run" );
+	mFileName = fname;
+	
+	if( mFirstHandlerName.length() == 0 )
+	{
+		mFirstHandlerName = handlerName;
+		mFirstHandlerIsFunction = false;
+	}
+
+	CFunctionDefinitionNode*		currFunctionNode = NULL;
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1, parseTree.GetGlobals() );
+	parseTree.AddNode( currFunctionNode );
+	
+	// Make built-in system variables so they get declared below like other local vars:
+	currFunctionNode->AddLocalVar( "theResult", "the result", TVariantTypeEmptyString, false, false, false, false );
+
+	size_t		endLineNum = 1;
+	ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
+	currFunctionNode->SetEndLineNum( endLineNum );
+}
+
+
 void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
 	if( tokenItty->IsIdentifier( ENewlineOperator ) )
@@ -1365,7 +1390,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	}
 	
 	// End this line:
-	if( !dontSwallowReturn )
+	if( !dontSwallowReturn && tokenItty != tokens.end() )
 	{
 		if( !tokenItty->IsIdentifier(ENewlineOperator) )
 		{
@@ -1384,23 +1409,29 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 void	CParser::ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
-								    size_t *outEndLineNum )
+								    size_t *outEndLineNum, TIdentifierSubtype endIdentifier )
 {
-	while( !tokenItty->IsIdentifier( EEndIdentifier ) )	// Sub-constructs will swallow their own "end XXX" instructions, so we can exit the loop. Either it's our "end", or it's unbalanced.
+	while( tokenItty != tokens.end()
+			&& !tokenItty->IsIdentifier( endIdentifier ) )	// Sub-constructs will swallow their own "end XXX" instructions, so we can exit the loop. Either it's our "end", or it's unbalanced.
 	{
 		ParseOneLine( userHandlerName, parseTree, currFunction, tokenItty, tokens );
 	}
 	
-	CToken::GoNextToken( mFileName, tokenItty, tokens );
-	if( tokenItty->GetIdentifierText().compare(userHandlerName) != 0 )
+	if( tokenItty != tokens.end() )
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	if( endIdentifier == EEndIdentifier && tokenItty != tokens.end() )
 	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
-								<< tokenItty->GetShortDescription() << ".";
-		throw std::runtime_error( errMsg.str() );
+		if( tokenItty->GetIdentifierText().compare(userHandlerName) != 0 )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			throw std::runtime_error( errMsg.str() );
+		}
+		if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
-	if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
-	CToken::GoNextToken( mFileName, tokenItty, tokens );
 }
 
 
@@ -1411,10 +1442,17 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								CFunctionCallNode* inFCallToAddTo )
 {
+	if( tokenItty == tokens.end() )
+		return;
 	while( !tokenItty->IsIdentifier( identifierToEndOn ) )
 	{
 		CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		if( !paramExpression )
+			return;
 		inFCallToAddTo->AddParam( paramExpression );
+		
+		if( tokenItty == tokens.end() )
+			return;
 		
 		if( !tokenItty->IsIdentifier( ECommaOperator ) )
 		{
@@ -1519,6 +1557,9 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 										std::deque<CToken>::iterator& tokenItty,
 										std::deque<CToken>& tokens )
 {
+	if( tokenItty == tokens.end() )
+		return NULL;
+	
 	std::deque<CValueNode*>			terms;
 	std::deque<LEOInstructionID>	operators;
 	CValueNode*						currArg;
@@ -1528,6 +1569,8 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 	LEOInstructionID				opName = INVALID_INSTR;
 	
 	currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+	if( !currArg )
+		return NULL;
 	terms.push_back( currArg );
 	currArg = NULL;
 	
@@ -1540,6 +1583,12 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 		}
 
 		currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+		if( !currArg )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":0: error: Expected term here, found end of script.";
+			throw std::runtime_error( errMsg.str() );
+		}
 		terms.push_back( currArg );
 		currArg = NULL;
 		
@@ -2251,6 +2300,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	CValueNode*	theTerm = NULL;
+	
+	if( tokenItty == tokens.end() )
+		return NULL;
 	
 	switch( tokenItty->mType )
 	{

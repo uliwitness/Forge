@@ -116,6 +116,7 @@ namespace Carlson
 		CParser();
 		
 		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );
+		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );	// Generates a handler named ":run"
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
 		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
@@ -157,7 +158,7 @@ namespace Carlson
 		void	ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
-									size_t *outEndLineNum = NULL );
+									size_t *outEndLineNum = NULL, TIdentifierSubtype endIdentifier = EEndIdentifier );
 		void	ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
