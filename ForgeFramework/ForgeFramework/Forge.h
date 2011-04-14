@@ -1,6 +1,6 @@
 //
-//  ForgeFramework.h
-//  ForgeFramework
+//  Forge.h
+//  Forge
 //
 //  Created by Uli Kusterer on 09.04.11.
 //  Copyright 2011 The Void Software. All rights reserved.
@@ -39,6 +39,8 @@ typedef struct LEOParseTree	LEOParseTree;	// Private internal data structure rep
 // -----------------------------------------------------------------------------
 
 LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename );
+LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename );
+
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
 void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree );

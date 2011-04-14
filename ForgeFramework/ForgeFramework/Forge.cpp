@@ -1,13 +1,13 @@
 //
-//  ForgeFramework.c
-//  ForgeFramework
+//  Forge.c
+//  Forge
 //
 //  Created by Uli Kusterer on 09.04.11.
 //  Copyright 2011 The Void Software. All rights reserved.
 //
 
 extern "C" {
-#include "ForgeFramework.h"
+#include "Forge.h"
 }
 
 #include "CToken.h"
@@ -33,6 +33,39 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		std::deque<CToken>	tokens = CToken::TokenListFromText( inCode, codeLength );
 		parser.Parse( filename, tokens, *parseTree );
 		
+		parseTree->Simplify();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+		if( parseTree )
+			delete parseTree;
+		parseTree = NULL;
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+		if( parseTree )
+			delete parseTree;
+		parseTree = NULL;
+	}
+	
+	return (LEOParseTree*)parseTree;
+}
+
+
+extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename )
+{
+	CParseTree	*	parseTree = NULL;
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		parseTree = new CParseTree;
+		CParser				parser;
+		std::deque<CToken>	tokens = CToken::TokenListFromText( inCode, codeLength );
+		parser.ParseCommandOrExpression( filename, tokens, *parseTree );
+
 		parseTree->Simplify();
 	}
 	catch( std::exception& err )
