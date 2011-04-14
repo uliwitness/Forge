@@ -609,6 +609,8 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			}
 			else
 			{
+				CToken::GoPrevToken( mFileName, tokenItty, tokens );
+				
 				CCommandNode * thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
 				
 				// Variable:
@@ -621,7 +623,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 				{
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
-											<< propertyName << "\".";
+											<< tokenItty->GetShortDescription() << "\".";
 					throw std::runtime_error( errMsg.str() );
 				}
 				
