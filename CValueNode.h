@@ -44,10 +44,10 @@ public:
 	virtual CValueNode*	Copy()			{ return NULL; };
 	
 	// If IsConstant() gives TRUE, you can call the following to try and get at your values:
-	virtual int			GetAsInt()			{ throw std::runtime_error( "ERROR: Can't make value into integer." ); return 0; };
-	virtual std::string	GetAsString()		{ throw std::runtime_error( "ERROR: Can't make value into string." ); return std::string(); };
-	virtual bool		GetAsBool()			{ throw std::runtime_error( "ERROR: Can't make value into boolean." ); return false; };
-	virtual float		GetAsFloat()		{ throw std::runtime_error( "ERROR: Can't make value into float." ); return 0.0; };
+	virtual int			GetAsInt()			{ throw std::runtime_error( "Can't make value into integer." ); return 0; };
+	virtual std::string	GetAsString()		{ throw std::runtime_error( "Can't make value into string." ); return std::string(); };
+	virtual bool		GetAsBool()			{ throw std::runtime_error( "Can't make value into boolean." ); return false; };
+	virtual float		GetAsFloat()		{ throw std::runtime_error( "Can't make value into float." ); return 0.0; };
 };
 
 class CIntValueNode : public CValueNode
@@ -97,7 +97,14 @@ public:
 	};
 	
 	virtual float				GetAsFloat()	{ return mFloatValue; };
-	virtual int					GetAsInt()		{ if( mFloatValue == truncf(mFloatValue) ) return mFloatValue; else throw std::runtime_error( "ERROR: Can't make floating point number into integer." ); return 0.0; };
+	virtual int					GetAsInt()
+	{
+		if( mFloatValue == truncf(mFloatValue) )
+			return mFloatValue;
+		else
+			throw std::runtime_error( "Can't make floating point number into integer." );
+		return 0.0;
+	};
 	virtual std::string			GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%f", mFloatValue); return std::string( numStr ); };
 
 protected:
@@ -150,7 +157,14 @@ public:
 	};
 	
 	virtual std::string			GetAsString()	{ return mStringValue; };
-	virtual bool				GetAsBool()		{ if( mStringValue.compare("true") == 0 ) return true; else if( mStringValue.compare("false") != 0 ) throw std::runtime_error( "ERROR: Can't make string into boolean." ); return false; };
+	virtual bool				GetAsBool()
+	{
+		if( mStringValue.compare("true") == 0 )
+			return true;
+		else if( mStringValue.compare("false") != 0 )
+			throw std::runtime_error( "Can't make string into boolean." );
+		return false;
+	};
 
 protected:
 	std::string		mStringValue;
