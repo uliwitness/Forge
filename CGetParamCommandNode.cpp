@@ -24,8 +24,6 @@ void	CGetParamCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 		inCodeBlock->GenerateAssignParamToVariableInstruction( varValue->GetBPRelativeOffset(), paramIdx->GetAsInt() );
 	else
 		throw std::runtime_error("Can't assign to this value.");
-	
-	
 }
 
 } // namespace Carlson
