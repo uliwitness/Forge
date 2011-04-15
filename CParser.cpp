@@ -1461,8 +1461,8 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 			if( tokenItty->IsIdentifier( identifierToEndOn ) )
 				break;	// Exit loop.
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma here, found "
-									<< tokenItty->GetShortDescription() << ".";
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma here, found \""
+									<< tokenItty->GetShortDescription() << "\".";
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -2733,8 +2733,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		default:
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a term here, found "
-									<< tokenItty->GetShortDescription() << ".";
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a term here, found \""
+									<< tokenItty->GetShortDescription() << "\".";
 			throw std::runtime_error( errMsg.str() );
 			break;
 		}
