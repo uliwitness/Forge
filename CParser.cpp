@@ -114,6 +114,9 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
 
+static THostCommandEntry*		sHostCommands = NULL;
+
+
 #pragma mark [Chunk type lookup table]
 // Chunk expression start token -> Chunk type constant (as string for code generation):
 static TChunkTypeEntry	sChunkTypes[] =
@@ -647,6 +650,106 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		throw;
 	}
 
+}
+
+
+void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	bool		foundCommand = false;
+	TTokenType	firstIdentifier = tokenItty->mType;
+	
+	if( sHostCommands != NULL )
+	{
+		for( size_t commandIdx = 0; sHostCommands[commandIdx].mType != ELastIdentifier_Sentinel; commandIdx++ )
+		{
+			if( sHostCommands[commandIdx].mType == firstIdentifier )
+			{
+				foundCommand = true;
+				
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+				
+				THostCommandEntry*		cmd = sHostCommands + commandIdx;
+				THostParameterEntry*	par = cmd->mParam;
+				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
+				currFunction->AddCommand( hostCommand );
+				
+				while( par->mType != EHostParam_Sentinel )
+				{
+					switch( par->mType )
+					{
+						case EHostParamImmediateValue:
+						{
+							CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+							if( !term )
+							{
+								std::stringstream		errMsg;
+								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
+														<< tokenItty->GetShortDescription() << "\".";
+								throw std::runtime_error( errMsg.str() );
+							}
+							hostCommand->AddParam( term );
+							break;
+						}
+
+						case EHostParamIdentifier:
+						{
+							if( tokenItty->IsIdentifier(par->mIdentifierType) )
+							{
+								CToken::GoNextToken( mFileName, tokenItty, tokens );
+								hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+							}
+							else if( par->mIsOptional )
+								hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							else
+							{
+								std::stringstream		errMsg;
+								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+														<< tokenItty->GetShortDescription() << "\".";
+								throw std::runtime_error( errMsg.str() );
+							}
+							break;
+						}
+
+						case EHostParamLabeledValue:
+						{
+							if( tokenItty->IsIdentifier(par->mIdentifierType) )
+							{
+								CToken::GoNextToken( mFileName, tokenItty, tokens );
+								
+								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+								if( !term )
+								{
+									std::stringstream		errMsg;
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
+															<< tokenItty->GetShortDescription() << "\".";
+									throw std::runtime_error( errMsg.str() );
+								}
+								hostCommand->AddParam( term );
+							}
+							else if( par->mIsOptional )
+								hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							else
+							{
+								std::stringstream		errMsg;
+								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+														<< tokenItty->GetShortDescription() << "\".";
+								throw std::runtime_error( errMsg.str() );
+							}
+							break;
+						}
+					}
+					
+					par++;
+				}
+				
+				break;	// Found a command that matches, stop looping.
+			}
+		}
+	}
+	
+	if( !foundCommand )
+		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
 }
 
 
@@ -1354,12 +1457,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	else if( tokenItty->IsIdentifier(EGlobalIdentifier) )
 		ParseGlobalStatement( parseTree, currFunction, tokenItty, tokens );
 	else
-	{
-		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected command name or \"end " << userHandlerName << "\", found "
-				<< tokenItty->GetShortDescription() << ".";
-		throw std::runtime_error( errMsg.str() );
-	}
+		ParseHostCommand( parseTree, currFunction, tokenItty, tokens );
 	
 	// End this line:
 	if( !dontSwallowReturn && tokenItty != tokens.end() )
@@ -2695,10 +2793,14 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					COperatorNode*	opFCall = new COperatorNode( &parseTree, operatorCommandName, lineNum );
 					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
 					theTerm = opFCall;
-					break;
+				}
+				else
+				{
+					theTerm = new CLocalVariableRefValueNode( &parseTree, currFunction, tokenItty->GetIdentifierText(), tokenItty->GetIdentifierText() );
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip variable name.
 				}
 			}
-			// else fall through to error.
+			break;
 		
 		default:
 		{

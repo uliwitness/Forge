@@ -123,6 +123,8 @@ namespace Carlson
 		void	ParseSetStatement( CParseTree& parseTree,
 									CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		void	ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseGlobalStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseReturnStatement( CParseTree& parseTree,
