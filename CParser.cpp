@@ -267,8 +267,7 @@ CParser::CParser()
 
 // -----------------------------------------------------------------------------
 //	AddGlobalProperties:
-//		Main entrypoint. This takes a script that's been tokenised and generates
-//		the proper parse tree.
+//		Add additional global properties to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
 /*static*/ void	CParser::AddGlobalProperties( TGlobalPropertyEntry* inEntries )
