@@ -337,7 +337,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 	}
 
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1, parseTree.GetGlobals() );
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
@@ -403,7 +403,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	}
 	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, fcnLineNum, parseTree.GetGlobals() );
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, fcnLineNum );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
@@ -651,7 +651,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 }
 
 
-void	CParser::ParseGlobalStatement( bool isPublic, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+void	CParser::ParseGlobalStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "global".
@@ -1353,36 +1353,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	else if( tokenItty->IsIdentifier(ESetIdentifier) )
 		ParseSetStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EGlobalIdentifier) )
-	{
-		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: We can't do globals yet, only private globals.";
-		throw std::runtime_error( errMsg.str() );
-		//ParseGlobalStatement( false, currFunction, tokenItty, tokens );
-	}
-	else if( tokenItty->IsIdentifier(EPrivateIdentifier) )
-	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		if( !tokenItty->IsIdentifier(EGlobalIdentifier) )
-		{
-			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"global\" after \"private\", found "
-					<< tokenItty->GetShortDescription() << ".";
-			throw std::runtime_error( errMsg.str() );
-		}
-		ParseGlobalStatement( false, parseTree, currFunction, tokenItty, tokens );
-	}
-	else if( tokenItty->IsIdentifier(EPublicIdentifier) )
-	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		if( !tokenItty->IsIdentifier(EGlobalIdentifier) )
-		{
-			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"global\" after \"public\", found "
-					<< tokenItty->GetShortDescription() << ".";
-			throw std::runtime_error( errMsg.str() );
-		}
-		ParseGlobalStatement( true, parseTree, currFunction, tokenItty, tokens );
-	}
+		ParseGlobalStatement( parseTree, currFunction, tokenItty, tokens );
 	else
 	{
 		std::stringstream errMsg;

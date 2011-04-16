@@ -27,8 +27,8 @@ class CCommandNode;
 class CCodeBlockNodeBase : public CNode
 {
 public:
-	CCodeBlockNodeBase( CParseTree* inTree, size_t inLineNum, std::map<std::string,CVariableEntry>* inGlobals )
-		: CNode(inTree), mLineNum( inLineNum ), mGlobals(inGlobals) {};
+	CCodeBlockNodeBase( CParseTree* inTree, size_t inLineNum )
+		: CNode(inTree), mLineNum( inLineNum ) {};
 	virtual ~CCodeBlockNodeBase();
 	
 	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); mParseTree->NodeWasAdded( inCmd ); };	// Function node now owns this command and will delete it!
@@ -42,7 +42,7 @@ public:
 	// Sub-blocks retrieve and modify these three as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetLocals() = 0;
-	virtual std::map<std::string,CVariableEntry>&		GetGlobals()	{ return *mGlobals; };
+	virtual std::map<std::string,CVariableEntry>&		GetGlobals() = 0;
 		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
@@ -54,7 +54,6 @@ public:
 protected:
 	size_t									mLineNum;
 	std::vector<CNode*>						mCommands;
-	std::map<std::string,CVariableEntry>*	mGlobals;
 };
 
 
@@ -64,9 +63,8 @@ class CCodeBlockNode : public CCodeBlockNodeBase
 {
 public:
 	CCodeBlockNode( CParseTree* inTree, size_t inLineNum, CCodeBlockNodeBase* owningBlock )
-		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mOwningBlock(NULL)
+		: CCodeBlockNodeBase( inTree, inLineNum ), mOwningBlock(owningBlock)
 	{
-		mOwningBlock = owningBlock;
 		mGlobals = &owningBlock->GetGlobals();
 		mLocals = &owningBlock->GetLocals();
 		mLocalVariableCount = &owningBlock->GetLocalVariableCount();
@@ -82,11 +80,13 @@ public:
 	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount()	{ return *mLocalVariableCount; };
 	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return *mLocals; };
+	virtual std::map<std::string,CVariableEntry>&		GetGlobals()			{ return *mGlobals; };
 	
 protected:
 	std::map<std::string,CVariableEntry>*	mLocals;
 	size_t*									mLocalVariableCount;
 	CCodeBlockNodeBase*						mOwningBlock;
+	std::map<std::string,CVariableEntry>*	mGlobals;
 };
 
 }

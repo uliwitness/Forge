@@ -23,13 +23,7 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	CLocalVariableRefValueNode	*	varValue = NULL;
 	CMakeChunkRefNode			*	chunkValue = NULL;
 	
-	if(( varValue = dynamic_cast<CLocalVariableRefValueNode*>(destValue) ))
-	{
-		srcValue->GenerateCode( inCodeBlock );
-		
-		inCodeBlock->GeneratePopSimpleValueIntoVariableInstruction( varValue->GetBPRelativeOffset() );
-	}
-	else if(( chunkValue = dynamic_cast<CMakeChunkRefNode*>(destValue) ))
+	if(( chunkValue = dynamic_cast<CMakeChunkRefNode*>(destValue) ))
 	{
 		destValue->GenerateCode( inCodeBlock );
 		srcValue->GenerateCode( inCodeBlock );
@@ -38,8 +32,13 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	}
 	else
 	{
-		DebugPrint( std::cerr, 0 );
-		throw std::runtime_error("Can't assign to this value.");
+		destValue->GenerateCode( inCodeBlock );
+		srcValue->GenerateCode( inCodeBlock );
+		
+		inCodeBlock->GeneratePutValueIntoValueInstruction();
+
+//		DebugPrint( std::cerr, 0 );
+//		throw std::runtime_error("Can't assign to this value.");
 	}
 }
 

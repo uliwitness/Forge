@@ -56,8 +56,17 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 	{
 		if( itty->second.mBPRelativeOffset != LONG_MAX )
 		{
-			size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
-			LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+			if( itty->second.mIsGlobal )
+			{
+				size_t	stringIndex = LEOScriptAddString( mScript, itty->second.mRealName.c_str() );
+				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+				LEOHandlerAddInstruction( mCurrentHandler, PUSH_GLOBAL_REFERENCE_INSTR, 0, 0 );
+			}
+			else
+			{
+				size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
+				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+			}
 			LEOHandlerAddVariableNameMapping( mCurrentHandler, itty->first.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			mNumLocals++;
 		}
@@ -268,6 +277,12 @@ void	CCodeBlock::GenerateGetArrayItemInstruction( int16_t bpRelativeOffset )
 void	CCodeBlock::GenerateSetStringInstruction( int16_t bpRelativeOffset )
 {
 	LEOHandlerAddInstruction( mCurrentHandler, SET_STRING_INSTR, bpRelativeOffset, 0 );
+}
+
+
+void	CCodeBlock::GeneratePutValueIntoValueInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, PUT_VALUE_INTO_VALUE_INSTR, 0, 0 );
 }
 
 }

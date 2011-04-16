@@ -36,9 +36,9 @@ void	CFunctionDefinitionNode::AddLocalVar( const std::string& inName,
 		mLocals[inName] = newEntry;
 	if( isGlobal )
 	{
-		foundVariable = (*mGlobals).find( inName );
-		if( foundVariable == (*mGlobals).end() )
-			(*mGlobals)[inName] = newEntry;
+		foundVariable = mGlobals.find( inName );
+		if( foundVariable == mGlobals.end() )
+			mGlobals[inName] = newEntry;
 	}
 }
 

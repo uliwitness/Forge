@@ -20,8 +20,8 @@ class CCommandNode;
 class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
-	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, size_t inLineNum, std::map<std::string,CVariableEntry>& inGlobals )
-		: CCodeBlockNodeBase( inTree, inLineNum, NULL ), mName( inName ), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
+	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, size_t inLineNum )
+		: CCodeBlockNodeBase( inTree, inLineNum ), mName( inName ), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
 	{
 		
 	};
@@ -36,6 +36,7 @@ public:
 	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
 	virtual size_t&										GetLocalVariableCount()	{ return mLocalVariableCount; };
 	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return mLocals; };
+	virtual std::map<std::string,CVariableEntry>&		GetGlobals()			{ return mGlobals; };
 	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
@@ -51,6 +52,7 @@ protected:
 	size_t									mEndLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
 	size_t									mLocalVariableCount;
+	std::map<std::string,CVariableEntry>	mGlobals;
 };
 
 

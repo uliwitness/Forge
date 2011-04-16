@@ -71,6 +71,7 @@ public:
 	void		GenerateGetArrayItemInstruction( int16_t bpRelativeOffset );
 	
 	void		GenerateSetStringInstruction( int16_t bpRelativeOffset );
+	void		GeneratePutValueIntoValueInstruction();
 	
 protected:
 	LEOScript*				mScript;
