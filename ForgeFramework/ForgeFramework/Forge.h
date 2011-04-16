@@ -46,3 +46,8 @@ void			LEOCleanUpParseTree( LEOParseTree* inTree );
 void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree );
 
 const char*		LEOParserGetLastErrorMessage();	// Call this after LEOParseTreeCreateFromUTF8Characters or LEOScriptCompileAndAddParseTree to detect errors. If it returns NULL, everything was fine.
+
+void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
+
+void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );

@@ -8,6 +8,7 @@
 
 extern "C" {
 #include "Forge.h"
+#include "ForgeTypes.h"
 }
 
 #include "CToken.h"
@@ -131,3 +132,63 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 		strcpy( gLEOLastErrorString, "Unknown error." );
 	}
 }
+
+
+extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		CParser::AddGlobalPropertiesAndOffsetInstructions( inEntries, firstGlobalPropertyInstruction );
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
+extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		CParser::AddHostCommandsAndOffsetInstructions( inEntries, firstHostCommandInstruction );
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
+extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostFunctionInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		CParser::AddHostFunctionsAndOffsetInstructions( inEntries, firstHostFunctionInstruction );
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
+

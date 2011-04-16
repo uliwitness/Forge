@@ -127,6 +127,20 @@ typedef enum
 	EInIdentifier,
 	EByteIdentifier,
 	EBytesIdentifier,
+	EGoIdentifier,
+	ECursorIdentifier,
+	EStackIdentifier,
+	EBackgroundIdentifier,
+	EBkgndIdentifier,
+	EBkgdIdentifier,
+	EBgIdentifier,
+	ECardIdentifier,
+	ECdIdentifier,
+	EFieldIdentifier,
+	EFldIdentifier,
+	EButtonIdentifier,
+	EBtnIdentifier,
+	EPartIdentifier,
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;
 
@@ -137,6 +151,13 @@ typedef enum {
 	EHostParamLabeledValue,			// A value preceded by an identifier labeling it.
 	EHostParam_Sentinel				// If this value is specified, this is the last parameter.
 } THostParameterType;
+
+
+typedef enum
+{
+	EHostParameterOptional = 1,
+	EHostParameterRequired = 0
+} THostParameterOptional;
 
 
 #define LEO_MAX_HOST_PARAMS		8
@@ -154,9 +175,10 @@ struct TGlobalPropertyEntry
 // *** An entry for a parameter to a command in our host command look-up table:
 struct THostParameterEntry
 {
-	THostParameterType	mType;				// One of the flags above.
-	TIdentifierSubtype	mIdentifierType;	// The identifier (for the label if EHostParamLabeled, ignored if EHostParamImmediateValue).
-	bool				mIsOptional;		// If not present, pass an empty string.
+	THostParameterType		mType;				// One of the flags above.
+	TIdentifierSubtype		mIdentifierType;	// The identifier (for the label if EHostParamLabeled, ignored if EHostParamImmediateValue).
+	THostParameterOptional	mIsOptional;		// If not present, pass an empty string.
+	LEOInstructionID		mInstructionID;		// If not INVALID_INSTR, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
 };
 
 

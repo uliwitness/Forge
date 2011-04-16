@@ -37,6 +37,8 @@ public:
 
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	
+	virtual void		SetInstructionID( LEOInstructionID inID )		{ mInstructionID = inID; };
 
 protected:
 	LEOInstructionID			mInstructionID;

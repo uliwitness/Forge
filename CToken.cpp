@@ -28,7 +28,7 @@ namespace Carlson
 		"***ECommentPseudoToken"
 	};
 
-	const char*		gIdentifierStrings[ELastIdentifier_Sentinel] =	// All strings in this array must be "ToLowerString"ed, so our fake case insensitivity works.
+	const char*		gIdentifierStrings[ELastIdentifier_Sentinel] =	// All strings in this array must already be "ToLowerString"ed, so our fake case insensitivity works.
 	{
 		"function",
 		"end",
@@ -141,7 +141,21 @@ namespace Carlson
 		"through",
 		"in",
 		"byte",
-		"bytes"
+		"bytes",
+		"go",
+		"cursor",
+		"stack",
+		"background",
+		"bkgnd",
+		"bkgd",
+		"bg",
+		"card",
+		"cd",
+		"field",
+		"fld",
+		"button",
+		"btn",
+		"part"
 	};
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )

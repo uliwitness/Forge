@@ -113,8 +113,9 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
-
 static THostCommandEntry*		sHostCommands = NULL;
+
+static THostCommandEntry*		sHostFunctions = NULL;
 
 
 #pragma mark [Chunk type lookup table]
@@ -273,15 +274,18 @@ CParser::CParser()
 //		Add additional global properties to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddGlobalProperties( TGlobalPropertyEntry* inEntries )
+/*static*/ void	CParser::AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
 {
+	if( !sGlobalProperties )
+		sGlobalProperties = sDefaultGlobalProperties;
+	
 	size_t		numOldEntries = 0,
 				numNewEntries = 0;
 	
 	for( size_t x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
-		numOldEntries = x;
+		numOldEntries++;
 	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
-		numNewEntries = x;
+		numNewEntries++;
 	
 	TGlobalPropertyEntry*	newTable = NULL;
 	if( sGlobalProperties == sDefaultGlobalProperties )
@@ -300,7 +304,104 @@ CParser::CParser()
 		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TGlobalPropertyEntry) );
 	}
 	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		newTable[x].mSetterInstructionID += firstGlobalPropertyInstruction;
+		newTable[x].mGetterInstructionID += firstGlobalPropertyInstruction;
+	}
+	
 	sGlobalProperties = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddHostCommands:
+//		Add additional commands to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+{
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	if( sHostCommands )
+	{
+		for( size_t x = 0; sHostCommands[x].mType != ELastIdentifier_Sentinel; x++ )
+			numOldEntries++;
+	}
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		THostCommandEntry*	currEntry = inEntries +x;
+		numNewEntries++;
+	}
+	
+	THostCommandEntry*	newTable = NULL;
+	if( sHostCommands == NULL )
+	{
+		newTable = (THostCommandEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(THostCommandEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of host commands." );
+		memmove( newTable, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
+	}
+	else
+	{
+		newTable = (THostCommandEntry*) realloc( sHostCommands, (numOldEntries +numNewEntries +1) * sizeof(THostCommandEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of host commands." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+		newTable[x].mInstructionID += firstHostCommandInstruction;
+	
+	sHostCommands = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddHostCommands:
+//		Add additional commands to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+{
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	if( sHostFunctions )
+	{
+		for( size_t x = 0; sHostFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
+			numOldEntries++;
+	}
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		THostCommandEntry*	currEntry = inEntries +x;
+		numNewEntries++;
+	}
+	
+	THostCommandEntry*	newTable = NULL;
+	if( sHostFunctions == NULL )
+	{
+		newTable = (THostCommandEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(THostCommandEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of host commands." );
+		memmove( newTable, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
+	}
+	else
+	{
+		newTable = (THostCommandEntry*) realloc( sHostFunctions, (numOldEntries +numNewEntries +1) * sizeof(THostCommandEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of host commands." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+		newTable[x].mInstructionID += firstHostCommandInstruction;
+	
+	sHostFunctions = newTable;
 }
 
 
@@ -653,26 +754,44 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 }
 
 
+CValueNode*	CParser::ParseHostFunction( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	return ParseHostEntityWithTable( parseTree, currFunction, tokenItty, tokens, sHostFunctions );
+}
+
+
 void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	bool		foundCommand = false;
-	TTokenType	firstIdentifier = tokenItty->mType;
+	CNode*	theNode = ParseHostEntityWithTable( parseTree, currFunction,
+												tokenItty, tokens, sHostCommands );
+	if( theNode )
+		currFunction->AddCommand( theNode );
+	else
+		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
+}
+
+
+CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+									THostCommandEntry* inHostTable )
+{
+	CValueNode			*theNode = NULL;
+	TIdentifierSubtype	firstIdentifier = tokenItty->mSubType;
 	
-	if( sHostCommands != NULL )
+	if( inHostTable != NULL )
 	{
-		for( size_t commandIdx = 0; sHostCommands[commandIdx].mType != ELastIdentifier_Sentinel; commandIdx++ )
+		for( size_t commandIdx = 0; inHostTable[commandIdx].mType != ELastIdentifier_Sentinel; commandIdx++ )
 		{
-			if( sHostCommands[commandIdx].mType == firstIdentifier )
+			if( inHostTable[commandIdx].mType == firstIdentifier )
 			{
-				foundCommand = true;
-				
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				
-				THostCommandEntry*		cmd = sHostCommands + commandIdx;
+				THostCommandEntry*		cmd = inHostTable + commandIdx;
 				THostParameterEntry*	par = cmd->mParam;
 				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
-				currFunction->AddCommand( hostCommand );
+				theNode = hostCommand;
 				
 				while( par->mType != EHostParam_Sentinel )
 				{
@@ -683,12 +802,21 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 							CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 							if( !term )
 							{
+								delete hostCommand;
 								std::stringstream		errMsg;
-								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
-														<< tokenItty->GetShortDescription() << "\".";
+								if( tokenItty != tokens.end() )
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
+															<< tokenItty->GetShortDescription() << "\".";
+								else
+									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected term here.";
 								throw std::runtime_error( errMsg.str() );
 							}
-							hostCommand->AddParam( term );
+							else
+							{
+								hostCommand->AddParam( term );
+								if( par->mInstructionID != INVALID_INSTR )
+									hostCommand->SetInstructionID( par->mInstructionID );
+							}
 							break;
 						}
 
@@ -696,16 +824,26 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						{
 							if( tokenItty->IsIdentifier(par->mIdentifierType) )
 							{
+								if( par->mInstructionID == INVALID_INSTR )
+									hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+								else
+									hostCommand->SetInstructionID( par->mInstructionID );
 								CToken::GoNextToken( mFileName, tokenItty, tokens );
-								hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
 							}
 							else if( par->mIsOptional )
-								hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							{
+								if( par->mInstructionID == INVALID_INSTR )
+									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							}
 							else
 							{
+								delete hostCommand;
 								std::stringstream		errMsg;
-								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+								if( tokenItty != tokens.end() )
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
 														<< tokenItty->GetShortDescription() << "\".";
+								else
+									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 								throw std::runtime_error( errMsg.str() );
 							}
 							break;
@@ -720,20 +858,33 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 								if( !term )
 								{
+									delete hostCommand;
 									std::stringstream		errMsg;
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
+									if( tokenItty != tokens.end() )
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
 															<< tokenItty->GetShortDescription() << "\".";
+									else
+										errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 									throw std::runtime_error( errMsg.str() );
 								}
-								hostCommand->AddParam( term );
+								else
+								{
+									hostCommand->AddParam( term );
+									if( par->mInstructionID != INVALID_INSTR )
+										hostCommand->SetInstructionID( par->mInstructionID );
+								}
 							}
 							else if( par->mIsOptional )
 								hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
 							else
 							{
+								delete hostCommand;
 								std::stringstream		errMsg;
-								errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+								if( tokenItty != tokens.end() )
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
 														<< tokenItty->GetShortDescription() << "\".";
+								else
+									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 								throw std::runtime_error( errMsg.str() );
 							}
 							break;
@@ -748,8 +899,7 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		}
 	}
 	
-	if( !foundCommand )
-		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
+	return theNode;
 }
 
 
@@ -1323,7 +1473,12 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	{
 		return ParseChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
 	}
-
+	
+	// Try to parse a host-specific function (e.g. object descriptor):
+	container = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
+	if( container )
+		return container;
+	
 	// Otherwise try to parse a variable:
 	if( tokenItty->IsIdentifier( ETheIdentifier ) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -2795,10 +2950,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					theTerm = opFCall;
 				}
 				else
-				{
-					theTerm = new CLocalVariableRefValueNode( &parseTree, currFunction, tokenItty->GetIdentifierText(), tokenItty->GetIdentifierText() );
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip variable name.
-				}
+					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
 			}
 			break;
 		

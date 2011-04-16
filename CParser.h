@@ -125,6 +125,11 @@ namespace Carlson
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		CValueNode*	ParseHostFunction( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		CValueNode*	ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+										THostCommandEntry* inHostTable );
 		void	ParseGlobalStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseReturnStatement( CParseTree& parseTree,
@@ -201,6 +206,8 @@ namespace Carlson
 		void		LoadNativeHeaders();
 		void		LoadNativeHeadersFromFile( const char* filepath );
 		
-		static void		AddGlobalProperties( TGlobalPropertyEntry* inEntries );
+		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
+		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 	};
 }
