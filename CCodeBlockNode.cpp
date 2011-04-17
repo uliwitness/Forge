@@ -13,6 +13,13 @@
 namespace Carlson
 {
 
+bool	CCodeBlockNodeBase::LocalVariableExists( const std::string& inStr )
+{
+	std::map<std::string,CVariableEntry>&	locals = GetLocals();
+	return locals.find( inStr ) != locals.end();
+}
+
+
 void	CCodeBlockNodeBase::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);

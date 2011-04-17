@@ -43,6 +43,7 @@ public:
 	virtual size_t&										GetLocalVariableCount() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetLocals() = 0;
 	virtual std::map<std::string,CVariableEntry>&		GetGlobals() = 0;
+	virtual bool										LocalVariableExists( const std::string& inStr );
 		
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
