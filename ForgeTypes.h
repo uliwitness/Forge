@@ -182,7 +182,9 @@ struct THostParameterEntry
 	THostParameterType		mType;				// One of the flags above.
 	TIdentifierSubtype		mIdentifierType;	// The identifier (for the label if EHostParamLabeled, ignored if EHostParamImmediateValue).
 	THostParameterOptional	mIsOptional;		// If not present, pass an empty string.
-	LEOInstructionID		mInstructionID;		// If not INVALID_INSTR, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
+	LEOInstructionID		mInstructionID;		// If not INVALID_INSTR2, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
+	uint16_t				mInstructionParam1;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
+	uint32_t				mInstructionParam2;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
 };
 
 
@@ -191,7 +193,9 @@ struct THostCommandEntry
 {
 	TIdentifierSubtype			mType;							// The identifier that introduces this command.
 	LEOInstructionID			mInstructionID;					// The instruction to execute after pushing this command's params & param count on the stack.
-	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	// Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
+	uint16_t					mInstructionParam1;				// These parameters will be assigned to the instruction.
+	uint32_t					mInstructionParam2;				// These parameters will be assigned to the instruction.
+	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	// These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
 };
 	
 

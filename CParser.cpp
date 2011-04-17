@@ -354,7 +354,16 @@ CParser::CParser()
 	
 	// Fix up instruction IDs to account for the ones that were already there:
 	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
 		newTable[x].mInstructionID += firstHostCommandInstruction;
+		for( size_t y = 0; newTable[x].mParam[y].mType != EHostParam_Sentinel; y++ )
+		{
+			if( newTable[x].mParam[y].mInstructionID == INVALID_INSTR2 )
+				newTable[x].mParam[y].mInstructionID = INVALID_INSTR;
+			else
+				newTable[x].mParam[y].mInstructionID += firstHostCommandInstruction;
+		}
+	}
 	
 	sHostCommands = newTable;
 }
@@ -399,7 +408,16 @@ CParser::CParser()
 	
 	// Fix up instruction IDs to account for the ones that were already there:
 	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
 		newTable[x].mInstructionID += firstHostCommandInstruction;
+		for( size_t y = 0; newTable[x].mParam[y].mType != EHostParam_Sentinel; y++ )
+		{
+			if( newTable[x].mParam[y].mInstructionID == INVALID_INSTR2 )
+				newTable[x].mParam[y].mInstructionID = INVALID_INSTR;
+			else
+				newTable[x].mParam[y].mInstructionID += firstHostCommandInstruction;
+		}
+	}
 	
 	sHostFunctions = newTable;
 }
@@ -2544,10 +2562,10 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
-			if( tokenItty->IsIdentifier( EPeriodOperator ) )	// Integer followed by period? Could be a float!
+			if( tokenItty != tokens.end() && tokenItty->IsIdentifier( EPeriodOperator ) )	// Integer followed by period? Could be a float!
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
-				if( tokenItty->mType == ENumberToken )	// Is a float!
+				if( tokenItty != tokens.end() && tokenItty->mType == ENumberToken )	// Is a float!
 				{
 					std::stringstream	numStr;
 					numStr << theNumber << "." << tokenItty->mNumberValue;
