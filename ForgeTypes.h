@@ -141,6 +141,10 @@ typedef enum
 	EButtonIdentifier,
 	EBtnIdentifier,
 	EPartIdentifier,
+	EPreviousIdentifier,
+	EPrevIdentifier,
+	EFirstIdentifier,
+	ELastIdentifier,
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;
 

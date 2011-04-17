@@ -155,7 +155,11 @@ namespace Carlson
 		"fld",
 		"button",
 		"btn",
-		"part"
+		"part",
+		"previous",
+		"prev",
+		"first",
+		"last"
 	};
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )
