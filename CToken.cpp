@@ -159,7 +159,9 @@ namespace Carlson
 		"previous",
 		"prev",
 		"first",
-		"last"
+		"last",
+		"visual",
+		"effect"
 	};
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )
