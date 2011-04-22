@@ -1498,7 +1498,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( container )
 		return container;
 	
-	// Otherwise try to parse a variable:
+	// Otherwise try to parse a built-in variable:
 	if( tokenItty->IsIdentifier( ETheIdentifier ) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1512,7 +1512,25 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 	}
+	
+	// Check if it could be an object property expression:
+	size_t			lineNum = tokenItty->mLineNum;
+	std::string		propName = tokenItty->GetIdentifierText();
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	if( tokenItty->IsIdentifier( EOfIdentifier ) )
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+		CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+		
+		CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+		propExpr->AddParam( targetObj );
+		container = propExpr;
+	}
 	else
+		CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+	
+	// Fall back on any old variable:
+	if( !container )
 	{
 		std::string		realVarName( tokenItty->GetIdentifierText() );
 		std::string		varName( "var_" );

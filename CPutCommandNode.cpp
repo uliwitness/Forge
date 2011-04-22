@@ -11,6 +11,7 @@
 #include "CValueNode.h"
 #include "CCodeBlock.h"
 #include "CMakeChunkRefNode.h"
+#include "CObjectPropertyNode.h"
 #include <iostream>
 
 namespace Carlson
@@ -22,6 +23,7 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	CValueNode					*	srcValue = GetParamAtIndex( 0 );
 	CLocalVariableRefValueNode	*	varValue = NULL;
 	CMakeChunkRefNode			*	chunkValue = NULL;
+	CObjectPropertyNode			*	propertyValue = NULL;
 	
 	if(( chunkValue = dynamic_cast<CMakeChunkRefNode*>(destValue) ))
 	{
@@ -29,6 +31,16 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateSetStringInstruction( BACK_OF_STACK );
+	}
+	else if(( propertyValue = dynamic_cast<CObjectPropertyNode*>(destValue) ))
+	{
+		std::string		propName;
+		propertyValue->GetSymbolName(propName);
+		inCodeBlock->GeneratePushStringInstruction( propName );
+		propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
+		srcValue->GenerateCode( inCodeBlock );
+		
+		inCodeBlock->GenerateSetPropertyOfObjectInstruction();
 	}
 	else
 	{
