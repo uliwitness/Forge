@@ -73,6 +73,9 @@ public:
 	void		GenerateSetStringInstruction( int16_t bpRelativeOffset );
 	void		GeneratePutValueIntoValueInstruction();
 	
+	void		GeneratePushPropertyOfObjectInstruction();
+	void		GenerateSetPropertyOfObjectInstruction();
+	
 protected:
 	LEOScript*				mScript;
 	LEOContextGroup*		mGroup;

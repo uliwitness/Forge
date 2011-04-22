@@ -14,6 +14,7 @@ extern "C"
 #include "LEOContextGroup.h"
 #include "LEOInstructions.h"
 #include "LEOMsgInstructions.h"
+#include "LEOPropertyInstructions.h"
 }
 
 namespace Carlson
@@ -283,6 +284,18 @@ void	CCodeBlock::GenerateSetStringInstruction( int16_t bpRelativeOffset )
 void	CCodeBlock::GeneratePutValueIntoValueInstruction()
 {
 	LEOHandlerAddInstruction( mCurrentHandler, PUT_VALUE_INTO_VALUE_INSTR, 0, 0 );
+}
+
+
+void	CCodeBlock::GeneratePushPropertyOfObjectInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +PUSH_PROPERTY_OF_OBJECT_INSTR, 0, 0 );
+}
+
+
+void	CCodeBlock::GenerateSetPropertyOfObjectInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +SET_PROPERTY_OF_OBJECT_INSTR, 0, 0 );
 }
 
 }

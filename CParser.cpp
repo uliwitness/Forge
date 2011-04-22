@@ -34,6 +34,7 @@
 #include "CGetArrayItemNode.h"
 #include "CMakeChunkRefNode.h"
 #include "CMakeChunkConstNode.h"
+#include "CObjectPropertyNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -2790,18 +2791,37 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				else
 				{
-					TIdentifierSubtype	subType = tokenItty->mSubType;
-		
-					// Find it in our list of global properties:
-					int				x = 0;
-					
-					for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+					// Check if it could be an object property expression:
+					size_t			lineNum = tokenItty->mLineNum;
+					std::string		propName = tokenItty->GetIdentifierText();
+					CToken::GoNextToken( mFileName, tokenItty, tokens );
+					if( tokenItty->IsIdentifier( EOfIdentifier ) )
 					{
-						if( sGlobalProperties[x].mType == subType )
+						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+						CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+						
+						CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+						propExpr->AddParam( targetObj );
+						theTerm = propExpr;
+					}
+					else
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+					
+					if( !theTerm )
+					{
+						TIdentifierSubtype	subType = tokenItty->mSubType;
+			
+						// Find it in our list of global properties:
+						int				x = 0;
+						
+						for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 						{
-							theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
-							CToken::GoNextToken( mFileName, tokenItty, tokens );
-							break;
+							if( sGlobalProperties[x].mType == subType )
+							{
+								theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+								CToken::GoNextToken( mFileName, tokenItty, tokens );
+								break;
+							}
 						}
 					}
 					
