@@ -17,7 +17,11 @@
 
 namespace Carlson
 {
+#pragma mark Constant tokens
+
 	const CToken&	CToken::KNewlineToken = CToken( EIdentifierToken, ENewlineOperator, 0, 0, std::string("") );	
+
+#pragma mark Token type strings
 
 	const char*		gTokenTypeStrings[ELastToken_Sentinel] =
 	{
@@ -27,6 +31,8 @@ namespace Carlson
 		"ENumberToken",
 		"***ECommentPseudoToken"
 	};
+
+#pragma mark Token identifier strings
 
 	const char*		gIdentifierStrings[ELastIdentifier_Sentinel] =	// All strings in this array must already be "ToLowerString"ed, so our fake case insensitivity works.
 	{
@@ -161,8 +167,12 @@ namespace Carlson
 		"first",
 		"last",
 		"visual",
-		"effect"
+		"effect",
+		"me",
+		"this"
 	};
+
+#pragma mark -
 	
 	size_t	GetLengthOfUTF8SequenceStartingWith( unsigned char inChar )
 	{
@@ -375,6 +385,8 @@ namespace Carlson
 		
 		return outStr;
 	}
+
+#pragma mark -
 	
 	TIdentifierSubtype	CToken::IdentifierTypeFromText( const char* inLowercasedString )
 	{
