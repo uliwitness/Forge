@@ -136,21 +136,48 @@ static TChunkTypeEntry	sChunkTypes[] =
 // Constant identifier and actual code to generate the value:
 struct TConstantEntry	sConstants[] =
 {
-	{ ETrueIdentifier, new CBoolValueNode( NULL, true ) },
-	{ EFalseIdentifier, new CBoolValueNode( NULL, false ) },
-	{ EEmptyIdentifier, new CStringValueNode( NULL, std::string("") ) },
-	{ ECommaIdentifier, new CStringValueNode( NULL, std::string(",") ) },
-	{ EColonIdentifier, new CStringValueNode( NULL, std::string(":") ) },
-	{ ECrIdentifier, new CStringValueNode( NULL, std::string("\r") ) },
-	{ ELineFeedIdentifier, new CStringValueNode( NULL, std::string("\n") ) },
-	{ ENullIdentifier, new CStringValueNode( NULL, std::string("\0") ) },
-	{ EQuoteIdentifier, new CStringValueNode( NULL, std::string("\"") ) },
-	{ EReturnIdentifier, new CStringValueNode( NULL, std::string("\r") ) },
-	{ ENewlineIdentifier, new CStringValueNode( NULL, std::string("\n") ) },
-	{ ESpaceIdentifier, new CStringValueNode( NULL, std::string(" ") ) },
-	{ ETabIdentifier, new CStringValueNode( NULL, std::string("\t") ) },
-	{ EPiIdentifier, new CFloatValueNode( NULL, (float) M_PI ) },
-	{ ELastIdentifier_Sentinel, NULL }
+	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true ) },
+	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false ) },
+	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("") ) },
+	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(",") ) },
+	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":") ) },
+	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r") ) },
+	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n") ) },
+	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0") ) },
+	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\"") ) },
+	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r") ) },
+	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n") ) },
+	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" ") ) },
+	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t") ) },
+	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI ) },
+	{ { EBarnIdentifier, EDoorIdentifier, EOpenIdentifier }, new CStringValueNode( NULL, std::string("barn door open") ) },
+	{ { EBarnIdentifier, EDoorIdentifier, ECloseIdentifier }, new CStringValueNode( NULL, std::string("barn door close") ) },
+	{ { EIrisIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris open") ) },
+	{ { EIrisIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris close") ) },
+	{ { EPushIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push up") ) },
+	{ { EPushIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push down") ) },
+	{ { EPushIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push left") ) },
+	{ { EPushIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push right") ) },
+	{ { EScrollIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll up") ) },
+	{ { EScrollIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll down") ) },
+	{ { EScrollIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll left") ) },
+	{ { EScrollIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll right") ) },
+	{ { EShrinkIdentifier, EToIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("shrink to top") ) },
+	{ { EShrinkIdentifier, EToIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("shrink to center") ) },
+	{ { EShrinkIdentifier, EToIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("shrink to bottom") ) },
+	{ { EStretchIdentifier, EFromIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("stretch from top") ) },
+	{ { EStretchIdentifier, EFromIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("stretch from center") ) },
+	{ { EStretchIdentifier, EFromIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("stretch from bottom") ) },
+	{ { EVenetianIdentifier, EBlindsIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("venetian blinds") ) },
+	{ { EWipeIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe up") ) },
+	{ { EWipeIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe down") ) },
+	{ { EWipeIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe left") ) },
+	{ { EWipeIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe right") ) },
+	{ { EZoomIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom close") ) },
+	{ { EZoomIdentifier, EInIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom in") ) },
+	{ { EZoomIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom open") ) },
+	{ { EZoomIdentifier, EOutIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom out") ) },
+	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL }
 };
 
 #pragma mark [ObjC -> Variant mapping table]
@@ -2969,15 +2996,34 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 
 				// Now try constant:
-				CValueNode*	constantValue = NULL;
+				CValueNode		*	constantValue = NULL;
+				TConstantEntry	*	currConst = sConstants;
 				
-				for( int x = 0; sConstants[x].mType != ELastIdentifier_Sentinel; x++ )
+				while( currConst->mType[0] != ELastIdentifier_Sentinel )
 				{
-					if( tokenItty->mSubType == sConstants[x].mType )
+					for( size_t y = 0; y < MAX_CONSTANT_IDENTS; y++ )
 					{
-						constantValue = sConstants[x].mValue;
-						break;
+						if( currConst->mType[y] != ELastIdentifier_Sentinel
+							&& !tokenItty->IsIdentifier( currConst->mType[y] ) )
+						{
+							for( size_t z = 0; z < y; z++ )	// < so we don't skip to *before* first token.
+								CToken::GoPrevToken( mFileName, tokenItty, tokens );
+							break;
+						}
+						
+						if( y == (MAX_CONSTANT_IDENTS -1) || currConst->mType[y+1] == ELastIdentifier_Sentinel )
+						{
+							constantValue = currConst->mValue;
+							break;
+						}
+						
+						CToken::GoNextToken( mFileName, tokenItty, tokens );
 					}
+					
+					if( constantValue )
+						break;
+					
+					currConst++;
 				}
 				
 				if( constantValue )	// Found constant of that name!

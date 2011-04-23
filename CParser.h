@@ -56,9 +56,10 @@ namespace Carlson
 	};
 	
 	// *** An entry in our constant look-up table:
+	#define MAX_CONSTANT_IDENTS		3
 	struct TConstantEntry
 	{
-		TIdentifierSubtype		mType;	// The identifier for this constant.
+		TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	// The identifier for this constant.
 		CValueNode*				mValue;	// TVariant holding this constant.
 	};
 	

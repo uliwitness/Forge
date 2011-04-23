@@ -169,7 +169,27 @@ namespace Carlson
 		"visual",
 		"effect",
 		"me",
-		"this"
+		"this",
+		"iris",
+		"zoom",
+		"barn",
+		"door",
+		"wipe",
+		"push",
+		"scroll",
+		"shrink",
+		"stretch",
+		"venetian",
+		"blinds",
+		"left",
+		"right",
+		"up",
+		"open",
+		"close",
+		"out",
+		"top",
+		"bottom",
+		"center"
 	};
 
 #pragma mark -
