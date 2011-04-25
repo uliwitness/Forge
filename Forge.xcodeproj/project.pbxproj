@@ -45,7 +45,6 @@
 		55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */; };
 		55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BE9127DD30B00CF0F16 /* LEOValue.c */; };
 		55C72BF8127DD30B00CF0F16 /* LEOInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */; };
-		55C72BF9127DD30B00CF0F16 /* LEOInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BED127DD30B00CF0F16 /* LEOInstructions.c */; };
 		55C72BFA127DD30B00CF0F16 /* LEOScript.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEF127DD30B00CF0F16 /* LEOScript.c */; };
 		55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF1127DD30B00CF0F16 /* LEODebugger.c */; };
 		55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF3127DD30B00CF0F16 /* LEOChunks.c */; };
@@ -56,6 +55,10 @@
 		55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */; };
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
+		55E805FC13662198006F1287 /* LEOInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BED127DD30B00CF0F16 /* LEOInstructions.c */; };
+		55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */; };
+		55E8060213662396006F1287 /* CObjectPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E8060013662395006F1287 /* CObjectPropertyNode.cpp */; };
+		55E8060F136624D6006F1287 /* Forge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E8060D136624D6006F1287 /* Forge.cpp */; };
 		55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */; };
 		55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
@@ -177,6 +180,13 @@
 		55D78AEA12C27E7B00C5D76E /* CPutCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPutCommandNode.h; sourceTree = "<group>"; };
 		55D78B1912C2B23000C5D76E /* COperatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COperatorNode.cpp; sourceTree = "<group>"; };
 		55D78B1A12C2B23000C5D76E /* COperatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COperatorNode.h; sourceTree = "<group>"; };
+		55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGlobalPropertyNode.cpp; sourceTree = "<group>"; };
+		55E805FE1366237C006F1287 /* CGlobalPropertyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGlobalPropertyNode.h; sourceTree = "<group>"; };
+		55E8060013662395006F1287 /* CObjectPropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CObjectPropertyNode.cpp; sourceTree = "<group>"; };
+		55E8060113662396006F1287 /* CObjectPropertyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CObjectPropertyNode.h; sourceTree = "<group>"; };
+		55E8060B1366249C006F1287 /* ForgeTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgeTypes.h; sourceTree = "<group>"; };
+		55E8060D136624D6006F1287 /* Forge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Forge.cpp; path = ForgeFramework/ForgeFramework/Forge.cpp; sourceTree = "<group>"; };
+		55E8060E136624D6006F1287 /* Forge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Forge.h; path = ForgeFramework/ForgeFramework/Forge.h; sourceTree = "<group>"; };
 		55FCEC0012C8DD0E00D76F6B /* testfile10.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile10.hc; sourceTree = "<group>"; };
 		55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIfNode.cpp; sourceTree = "<group>"; };
 		55FCEC0912C8DDDB00D76F6B /* CIfNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIfNode.h; sourceTree = "<group>"; };
@@ -249,6 +259,9 @@
 				3D7298570A7BC9990065F0AC /* CParser.cpp */,
 				3D729D900A7C44260065F0AC /* GetFileContents.h */,
 				3D729D8F0A7C44260065F0AC /* GetFileContents.c */,
+				55E8060B1366249C006F1287 /* ForgeTypes.h */,
+				55E8060E136624D6006F1287 /* Forge.h */,
+				55E8060D136624D6006F1287 /* Forge.cpp */,
 				3DAE6D2F0BF29A8A00946F2F /* Parse Tree */,
 				55C72BFE127DD31600CF0F16 /* Leonie */,
 			);
@@ -328,6 +341,10 @@
 				55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */,
 				55993B811348F3AB001624A2 /* CMakeChunkConstNode.h */,
 				55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */,
+				55E805FE1366237C006F1287 /* CGlobalPropertyNode.h */,
+				55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */,
+				55E8060113662396006F1287 /* CObjectPropertyNode.h */,
+				55E8060013662395006F1287 /* CObjectPropertyNode.cpp */,
 			);
 			name = Commands;
 			sourceTree = "<group>";
@@ -425,7 +442,6 @@
 				55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */,
 				55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */,
 				55C72BF8127DD30B00CF0F16 /* LEOInterpreter.c in Sources */,
-				55C72BF9127DD30B00CF0F16 /* LEOInstructions.c in Sources */,
 				55C72BFA127DD30B00CF0F16 /* LEOScript.c in Sources */,
 				55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */,
 				55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */,
@@ -448,6 +464,10 @@
 				55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */,
 				55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */,
 				55D340541352275C006A197D /* LEOMsgInstructions.c in Sources */,
+				55E805FC13662198006F1287 /* LEOInstructions.c in Sources */,
+				55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */,
+				55E8060213662396006F1287 /* CObjectPropertyNode.cpp in Sources */,
+				55E8060F136624D6006F1287 /* Forge.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
