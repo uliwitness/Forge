@@ -2810,35 +2810,28 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "paramCount".
 				}
-				else if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-						|| tokenItty->IsIdentifier( EAbbrIdentifier ) || tokenItty->IsIdentifier( EAbbrevIdentifier )
-						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
-				{
-					std::string			paramListTemp( CVariableEntry::GetNewTempName() );
-					CreateVariable( paramListTemp, paramListTemp, false, currFunction );
-					std::string			lengthQualifier( tokenItty->GetIdentifierText() );
-					
-					CFunctionCallNode*	makeListCall = new CFunctionCallNode( &parseTree, true, "vcy_list_assign_items", tokenItty->mLineNum );
-					makeListCall->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, paramListTemp, paramListTemp ) );
-					makeListCall->AddParam( new CIntValueNode(&parseTree, 1) );
-					makeListCall->AddParam( new CStringValueNode( &parseTree, lengthQualifier ) );
-					
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip long|short|abbreviated identifier.
-					std::stringstream	funName;
-					funName << "fun_" << tokenItty->GetIdentifierText();
-					
-					CFunctionCallNode*	theFuncCall = new CFunctionCallNode( &parseTree, false, funName.str(), tokenItty->mLineNum );
-					theFuncCall->AddParam( makeListCall );
-					
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip function name identifier.
-					
-					theTerm = theFuncCall;
-				}
 				else
 				{
+					std::string		propName;
+					bool			isStyleQualifiedProperty = false;
+					
 					// Check if it could be an object property expression:
+					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+						|| tokenItty->IsIdentifier( EAbbrIdentifier ) || tokenItty->IsIdentifier( EAbbrevIdentifier )
+						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+					{
+						if( tokenItty->IsIdentifier( EAbbrIdentifier ) || tokenItty->IsIdentifier( EAbbrevIdentifier ) )
+							propName = "abbreviated";
+						else
+							propName = tokenItty->GetIdentifierText();
+						propName.append( 1, ' ' );
+						
+						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+						isStyleQualifiedProperty = true;
+					}
+					
 					size_t			lineNum = tokenItty->mLineNum;
-					std::string		propName = tokenItty->GetIdentifierText();
+					propName.append( tokenItty->GetIdentifierText() );
 					CToken::GoNextToken( mFileName, tokenItty, tokens );
 					if( tokenItty->IsIdentifier( EOfIdentifier ) )
 					{
@@ -2850,7 +2843,11 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						theTerm = propExpr;
 					}
 					else
+					{
 						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+						if( isStyleQualifiedProperty )
+							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+					}
 					
 					if( !theTerm )
 					{
