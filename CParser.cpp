@@ -35,6 +35,7 @@
 #include "CMakeChunkRefNode.h"
 #include "CMakeChunkConstNode.h"
 #include "CObjectPropertyNode.h"
+#include "CGlobalPropertyNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -360,7 +361,6 @@ CParser::CParser()
 	}
 	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
 	{
-		THostCommandEntry*	currEntry = inEntries +x;
 		numNewEntries++;
 	}
 	
@@ -414,7 +414,6 @@ CParser::CParser()
 	}
 	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
 	{
-		THostCommandEntry*	currEntry = inEntries +x;
 		numNewEntries++;
 	}
 	
@@ -680,123 +679,48 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 }
 
 
-// This currently just compiles to a "put" command:
 void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	COperatorNode*		propRef = NULL;
-	CValueNode*			whatExpr = NULL;
-
-	try
-	{
-		// Set:
+	// Set:
+	CCommandNode*	thePutCommand = NULL;
+	size_t			startLine = tokenItty->mLineNum;
+	
+	try {
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
-		// [the]
-		if( tokenItty->IsIdentifier( ETheIdentifier ) )	// Skip any optional "the".
-			CToken::GoNextToken( mFileName, tokenItty, tokens );
+		// container:
+		CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 		
-		// property:
-		if( tokenItty->mType != EIdentifierToken )
+		// to:
+		if( !tokenItty->IsIdentifier( EToIdentifier ) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected property name here, found "
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"to\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			throw std::runtime_error( errMsg.str() );
 		}
-		
-		std::string			propertyName( tokenItty->GetIdentifierText() );
-		TIdentifierSubtype	subType = tokenItty->mSubType;
-		
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		
-		if( tokenItty->mType != EIdentifierToken )
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" or \"to\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			throw std::runtime_error( errMsg.str() );
-		}
-		
-		if( tokenItty->IsIdentifier( EOfIdentifier ) )
-		{
-			throw std::runtime_error( "TODO: Object properties not yet implemented." );
-		}
-		else
-		{
-			// Find it in our list of global properties:
-			int				x = 0;
-			
-			for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
-			{
-				if( sGlobalProperties[x].mType == subType )
-				{
-					propRef = new COperatorNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, tokenItty->mLineNum );
-					break;
-				}
-			}
-			
-			if( propRef != NULL )
-			{
-				// to:
-				if( !tokenItty->IsIdentifier( EToIdentifier ) )
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
-											<< propertyName << "\".";
-					throw std::runtime_error( errMsg.str() );
-				}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
 
-				CToken::GoNextToken( mFileName, tokenItty, tokens );
-				
-				// What:
-				whatExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-				propRef->AddParam( whatExpr );
-				whatExpr = NULL;
-				
-				currFunction->AddCommand( propRef );
-			}
-			else
-			{
-				CToken::GoPrevToken( mFileName, tokenItty, tokens );
-				
-				CCommandNode * thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
-				
-				// Variable:
-				CValueNode	*	container = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
-				thePutCommand->AddParam( container );
-				container = NULL;
-				
-				// to:
-				if( !tokenItty->IsIdentifier( EToIdentifier ) )
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found \""
-											<< tokenItty->GetShortDescription() << "\".";
-					throw std::runtime_error( errMsg.str() );
-				}
-				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );
-
-				// What:
-				whatExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-				thePutCommand->AddParam( whatExpr );
-				whatExpr = NULL;
-				
-				currFunction->AddCommand( thePutCommand );
-			}
-		}
+		// what:
+		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		
+		// Just build a put command:
+		thePutCommand = new CPutCommandNode( &parseTree, startLine );
+		thePutCommand->AddParam( whatExpression );
+		thePutCommand->AddParam( destContainer );
+		
+		currFunction->AddCommand( thePutCommand );
 	}
 	catch( ... )
 	{
-		if( propRef )
-			delete propRef;
-		if( whatExpr )
-			delete whatExpr;
+		if( thePutCommand )
+			delete thePutCommand;
+		
+		// TODO: Don't leak destContainer and whatExpression if error before they're added to command.
 		
 		throw;
 	}
-
 }
 
 
@@ -935,6 +859,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							}
 							break;
 						}
+						
+						case EHostParam_Sentinel:
+							break;
 					}
 					
 					par++;
@@ -1541,20 +1468,42 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	
 	// Check if it could be an object property expression:
-	size_t			lineNum = tokenItty->mLineNum;
-	std::string		propName = tokenItty->GetIdentifierText();
+	size_t				lineNum = tokenItty->mLineNum;
+	std::string			propName = tokenItty->GetIdentifierText();
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	if( tokenItty->IsIdentifier( EOfIdentifier ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 		CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 		
-		CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-		propExpr->AddParam( targetObj );
-		container = propExpr;
+		if( targetObj )
+		{
+			CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+			propExpr->AddParam( targetObj );
+			container = propExpr;
+		}
+		else
+			CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 	}
 	else
 		CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+	
+	// Check if it could be a global property expression:
+	if( !container )
+	{
+		// Find it in our list of global properties:
+		int				x = 0;
+		
+		for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+		{
+			if( sGlobalProperties[x].mType == tokenItty->GetIdentifierSubType() )
+			{
+				container = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the property name.
+				break;
+			}
+		}
+	}
 	
 	// Fall back on any old variable:
 	if( !container )
