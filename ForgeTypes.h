@@ -177,8 +177,10 @@ typedef enum
 
 typedef enum {
 	EHostParamImmediateValue = 0,	// Just a value.
+	EHostParamExpression,			// An entire expression, but no label.
 	EHostParamIdentifier,			// An identifier that gets passed as a string.
 	EHostParamLabeledValue,			// A value preceded by an identifier labeling it.
+	EHostParamLabeledExpression,	// An expression preceded by an identifier labeling it.
 	EHostParam_Sentinel				// If this value is specified, this is the last parameter.
 } THostParameterType;
 

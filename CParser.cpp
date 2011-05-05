@@ -770,7 +770,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						case EHostParamImmediateValue:
 						{
 							CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-							if( !term )
+							if( !term && par->mIsOptional )
+							{
+								if( par->mInstructionID == INVALID_INSTR )
+									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							}
+							else if( !term )
 							{
 								delete hostCommand;
 								std::stringstream		errMsg;
@@ -779,6 +784,34 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 															<< tokenItty->GetShortDescription() << "\".";
 								else
 									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected term here.";
+								throw std::runtime_error( errMsg.str() );
+							}
+							else
+							{
+								hostCommand->AddParam( term );
+								if( par->mInstructionID != INVALID_INSTR )
+									hostCommand->SetInstructionID( par->mInstructionID );
+							}
+							break;
+						}
+
+						case EHostParamExpression:
+						{
+							CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+							if( !term && par->mIsOptional )
+							{
+								if( par->mInstructionID == INVALID_INSTR )
+									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+							}
+							else if( !term )
+							{
+								delete hostCommand;
+								std::stringstream		errMsg;
+								if( tokenItty != tokens.end() )
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
+															<< tokenItty->GetShortDescription() << "\".";
+								else
+									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected expression here.";
 								throw std::runtime_error( errMsg.str() );
 							}
 							else
@@ -820,21 +853,30 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						}
 
 						case EHostParamLabeledValue:
+						case EHostParamLabeledExpression:
 						{
 							if( tokenItty->IsIdentifier(par->mIdentifierType) )
 							{
 								CToken::GoNextToken( mFileName, tokenItty, tokens );
 								
-								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+								CValueNode	*	term = NULL;
+								const char	*	valType = "term";
+								if( par->mType == EHostParamLabeledExpression )
+								{
+									term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+									valType = "expression";
+								}
+								else
+									term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 								if( !term )
 								{
 									delete hostCommand;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
 															<< tokenItty->GetShortDescription() << "\".";
 									else
-										errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected term after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+										errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 									throw std::runtime_error( errMsg.str() );
 								}
 								else
