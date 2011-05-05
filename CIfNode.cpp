@@ -52,6 +52,14 @@ void	CIfNode::GenerateCode( CCodeBlock* inBlock )
 }
 
 
+void	CIfNode::Simplify()
+{
+	mCondition->Simplify();
+	CCodeBlockNode::Simplify();
+	mElseBlock->Simplify();
+}
+
+
 void	CIfNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);

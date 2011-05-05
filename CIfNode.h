@@ -24,6 +24,7 @@ public:
 	
 	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel );
 	virtual void			GenerateCode( CCodeBlock* inBlock );
+	virtual void			Simplify();
 	
 protected:
 	CCodeBlockNode*	mElseBlock;

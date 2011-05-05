@@ -39,6 +39,13 @@ void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 }
 
 
+void	CWhileLoopNode::Simplify()
+{
+	mCondition->Simplify();
+	CCodeBlockNode::Simplify();
+}
+
+
 void	CWhileLoopNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
