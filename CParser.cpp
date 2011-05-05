@@ -555,7 +555,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
-	currFunctionNode->AddLocalVar( "theResult", "the result", TVariantTypeEmptyString, false, false, false, false );
+	currFunctionNode->AddLocalVar( "var_result", "result", TVariantTypeEmptyString, false, false, false, false );
 
 	int		currParamIdx = 0;
 	
@@ -1500,36 +1500,37 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	
 	if( tokenItty->IsIdentifier( EResultIdentifier ) )
 	{
-		std::string		realVarName( tokenItty->GetIdentifierText() );
-		std::string		varName( "theResult" );
+		std::string		realVarName( "result" );
+		std::string		varName( "var_result" );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 	}
 	
 	// Check if it could be an object property expression:
-	size_t				lineNum = tokenItty->mLineNum;
-	std::string			propName = tokenItty->GetIdentifierText();
-	CToken::GoNextToken( mFileName, tokenItty, tokens );
-	if( tokenItty->IsIdentifier( EOfIdentifier ) )
+	if( !container )
 	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-		CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-		
-		if( targetObj )
+		size_t				lineNum = tokenItty->mLineNum;
+		std::string			propName = tokenItty->GetIdentifierText();
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		if( tokenItty->IsIdentifier( EOfIdentifier ) )
 		{
-			CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-			propExpr->AddParam( targetObj );
-			container = propExpr;
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+			CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+			
+			if( targetObj )
+			{
+				CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+				propExpr->AddParam( targetObj );
+				container = propExpr;
+			}
+			else
+				CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 		}
 		else
 			CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 	}
-	else
-		CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
-	
 	// Check if it could be a global property expression:
 	if( !container )
 	{
