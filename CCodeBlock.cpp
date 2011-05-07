@@ -60,13 +60,13 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 			if( itty->second.mIsGlobal )
 			{
 				size_t	stringIndex = LEOScriptAddString( mScript, itty->second.mRealName.c_str() );
-				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_VARIANT_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
 				LEOHandlerAddInstruction( mCurrentHandler, PUSH_GLOBAL_REFERENCE_INSTR, 0, 0 );
 			}
 			else
 			{
 				size_t	stringIndex = itty->second.mInitWithName ? LEOScriptAddString( mScript, itty->second.mRealName.c_str() ) : emptyStringIndex;
-				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+				LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_VARIANT_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
 			}
 			LEOHandlerAddVariableNameMapping( mCurrentHandler, itty->first.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			mNumLocals++;
