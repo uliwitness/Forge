@@ -499,7 +499,9 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 
 void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
-	if( tokenItty->IsIdentifier( ENewlineOperator ) )
+	if( tokenItty == tokens.end() )
+		;
+	else if( tokenItty->IsIdentifier( ENewlineOperator ) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
 	}
