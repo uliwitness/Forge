@@ -38,10 +38,13 @@ public:
 
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	
+	virtual void		SetIsMessagePassing( bool inState )	{ mIsMessagePassing = inState; };
 
 protected:
 	std::string					mSymbolName;
 	bool						mIsCommand;
+	bool						mIsMessagePassing;
 	std::vector<CValueNode*>	mParams;
 	size_t						mLineNum;
 };

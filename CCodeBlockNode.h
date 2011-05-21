@@ -51,6 +51,8 @@ public:
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
+
+	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return NULL; };
 	
 protected:
 	size_t									mLineNum;
@@ -82,6 +84,8 @@ public:
 	virtual size_t&										GetLocalVariableCount()	{ return *mLocalVariableCount; };
 	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return *mLocals; };
 	virtual std::map<std::string,CVariableEntry>&		GetGlobals()			{ return *mGlobals; };
+
+	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return mOwningBlock->GetContainingFunction(); };
 	
 protected:
 	std::map<std::string,CVariableEntry>*	mLocals;

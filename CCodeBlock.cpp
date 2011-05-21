@@ -100,10 +100,10 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 }
 
 
-void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, const std::string& inName )
+void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, bool isMessagePassing, const std::string& inName )
 {
 	LEOHandlerID handlerID = LEOContextGroupHandlerIDForHandlerName( mGroup, inName.c_str() );
-	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, (isCommand ? 0 : 1), handlerID );
+	LEOHandlerAddInstruction( mCurrentHandler, CALL_HANDLER_INSTR, (isCommand ? kLEOCallHandler_IsCommandFlag : kLEOCallHandler_IsFunctionFlag) | (isMessagePassing ? kLEOCallHandler_PassMessage : 0), handlerID );
 }
 
 

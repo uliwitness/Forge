@@ -78,7 +78,7 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 	inCodeBlock->GeneratePushIntInstruction( (int)numParams );
 	
 	// *** Call ***
-	inCodeBlock->GenerateFunctionCallInstruction( mIsCommand, mSymbolName );
+	inCodeBlock->GenerateFunctionCallInstruction( mIsCommand, mIsMessagePassing, mSymbolName );
 	
 	// Clean up param count:
 	inCodeBlock->GeneratePopValueInstruction();

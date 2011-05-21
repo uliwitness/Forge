@@ -191,7 +191,8 @@ namespace Carlson
 		"bottom",
 		"center",
 		"answer",
-		"ask"
+		"ask",
+		"pass"
 	};
 
 #pragma mark -

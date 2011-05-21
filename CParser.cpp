@@ -489,7 +489,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
-	currFunctionNode->AddLocalVar( "theResult", "the result", TVariantTypeEmptyString, false, false, false, false );
+	currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
 
 	size_t		endLineNum = 1;
 	ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
@@ -557,7 +557,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
-	currFunctionNode->AddLocalVar( "var_result", "result", TVariantTypeEmptyString, false, false, false, false );
+	currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
 
 	int		currParamIdx = 0;
 	
@@ -594,8 +594,66 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 }
 
 
-void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+CValueNode	*	CParser::ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	CValueNode*	theTerm = NULL;
+	std::string	handlerName( tokenItty->GetIdentifierText() );
+	std::string	realHandlerName( tokenItty->GetOriginalIdentifierText() );
+	size_t		callLineNum = tokenItty->mLineNum;
+	
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	if( tokenItty->IsIdentifier(EOpenBracketOperator) )	// Yes! Function call!
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
+		
+		std::map<std::string,CObjCMethodEntry>::iterator funcItty = sCFunctionTable.find( realHandlerName );
+		if( funcItty == sCFunctionTable.end() )	// No native function of that name? Call function handler:
+		{
+			CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, handlerName, callLineNum );
+			if( isMessagePassing )
+				fcall->SetIsMessagePassing(true);
+			theTerm = fcall;
+			ParseParamList( ECloseBracketOperator, parseTree, currFunction, tokenItty, tokens, fcall );
+			
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
+		}
+		else if( !isMessagePassing )	// Native call!
+			theTerm = ParseNativeFunctionCallStartingAtParams( realHandlerName, funcItty->second, parseTree, currFunction, tokenItty, tokens );
+	}
+	else
+		CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what wasn't a bracket.
+	
+	return theTerm;
+}
+
+void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "pass".
+	
+	CFunctionDefinitionNode* theFunction = dynamic_cast<CFunctionDefinitionNode*>( currFunction->GetContainingFunction() );
+	if( !theFunction )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can only pass messages in command or function handlers.";
+		throw std::runtime_error( errMsg.str() );
+	}
+	
+	if( theFunction->GetIsCommand() )
+		ParseHandlerCall( parseTree, currFunction, true, tokenItty, tokens );
+	else
+	{
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		CValueNode*		theWhatNode = ParseFunctionCall( parseTree, currFunction, true, tokenItty, tokens );
+		theReturnCommand->AddParam( theWhatNode );
+		
+		currFunction->AddCommand( theReturnCommand );
+	}
+}
+
+
+void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	std::string	handlerName;
 	size_t		currLineNum = tokenItty->mLineNum;
@@ -606,9 +664,19 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	CFunctionCallNode*	currFunctionCall = new CFunctionCallNode( &parseTree, true, handlerName, currLineNum );
 	ParseParamList( ENewlineOperator, parseTree, currFunction, tokenItty, tokens, currFunctionCall );
 	
-	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "theResult", "the result") );
-	theVarAssignCommand->AddParam( currFunctionCall );
+	CCommandNode*			theVarAssignCommand = NULL;
+	if( isMessagePassing )
+	{
+		currFunctionCall->SetIsMessagePassing( true );
+		theVarAssignCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarAssignCommand->AddParam( currFunctionCall );
+	}
+	else
+	{
+		theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
+		theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "result", "result") );
+		theVarAssignCommand->AddParam( currFunctionCall );
+	}
 	currFunction->AddCommand( theVarAssignCommand );
 }
 
@@ -741,7 +809,7 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	if( theNode )
 		currFunction->AddCommand( theNode );
 	else
-		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
+		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
 }
 
 
@@ -1503,7 +1571,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( tokenItty->IsIdentifier( EResultIdentifier ) )
 	{
 		std::string		realVarName( "result" );
-		std::string		varName( "var_result" );
+		std::string		varName( "result" );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 		
@@ -1596,7 +1664,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	currFunction->AddCommand( lineMarker );
 	
 	if( tokenItty->mType == EIdentifierToken && tokenItty->mSubType == ELastIdentifier_Sentinel )	// Unknown identifier.
-		ParseHandlerCall( parseTree, currFunction, tokenItty, tokens );
+		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EPutIdentifier) )		// put command.
 		ParsePutStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EDeleteIdentifier) )	// delete command.
@@ -1610,6 +1678,8 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	}
 	else if( tokenItty->IsIdentifier(EReturnIdentifier) )
 		ParseReturnStatement( parseTree, currFunction, tokenItty, tokens );
+	else if( tokenItty->IsIdentifier(EPassIdentifier) )
+		ParsePassStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EExitIdentifier) )
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "exit".
@@ -1718,8 +1788,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 }
 
 
-// Parse a list of expressions separated by commas as a list value for passing to
-//	a handler as a parameter list:
+// Parse a list of expressions separated by commas for passing to a handler as a parameter list:
 void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 								CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
@@ -2630,39 +2699,17 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		case EIdentifierToken:	// Function call?
 			if( tokenItty->mSubType == ELastIdentifier_Sentinel )	// Any user-defined identifier.
 			{
-				std::string	handlerName( tokenItty->GetIdentifierText() );
-				std::string	realHandlerName( tokenItty->GetOriginalIdentifierText() );
-				size_t		callLineNum = tokenItty->mLineNum;
-				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );
-				
-				if( tokenItty->IsIdentifier(EOpenBracketOperator) )	// Yes! Function call!
+				theTerm = ParseFunctionCall( parseTree, currFunction, false, tokenItty, tokens );
+				if( !theTerm ) 
 				{
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
-					
-					std::map<std::string,CObjCMethodEntry>::iterator funcItty = sCFunctionTable.find( realHandlerName );
-					if( funcItty == sCFunctionTable.end() )	// No native function of that name? Call function handler:
-					{
-						CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, handlerName, callLineNum );
-						theTerm = fcall;
-						ParseParamList( ECloseBracketOperator, parseTree, currFunction, tokenItty, tokens, fcall );
-						
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
-					}
-					else	// Native call!
-						theTerm = ParseNativeFunctionCallStartingAtParams( realHandlerName, funcItty->second, parseTree, currFunction, tokenItty, tokens );
-				}
-				else	// No. 
-				{
-					std::map<std::string,int>::iterator		sysConstItty = sConstantToValueTable.find( realHandlerName );
+					std::map<std::string,int>::iterator		sysConstItty = sConstantToValueTable.find( tokenItty->GetOriginalIdentifierText() );
 					if( sysConstItty == sConstantToValueTable.end() )	// Not a system constant either? Guess it was a variable name:
-					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Rewind past token that wasn't a bracket.
-						
 						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
-					}
 					else
+					{
 						theTerm = new CIntValueNode( &parseTree, sysConstItty->second );
+						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the identifier for the constant we just parsed.
+					}
 				}
 				
 				break;	// Exit our switch.
