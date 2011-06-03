@@ -192,7 +192,9 @@ namespace Carlson
 		"center",
 		"answer",
 		"ask",
-		"pass"
+		"pass",
+		"movie",
+		"player"
 	};
 
 #pragma mark -
