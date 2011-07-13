@@ -522,14 +522,18 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	}
 	else
 	{
-		std::cerr << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping " << tokenItty->GetShortDescription();
+		std::stringstream errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping " << tokenItty->GetShortDescription();
+		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Just skip it, whatever it may be.
 		while( !tokenItty->IsIdentifier( ENewlineOperator ) )	// Now skip until the end of the line.
 		{
-			std::cerr << " " << tokenItty->GetShortDescription();
+			errMsg << " " << tokenItty->GetShortDescription();
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 		}
-		std::cerr << "." << std::endl;
+		errMsg << "." << std::endl;
+		
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 	}
 }
 
@@ -580,6 +584,8 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma or end of line here, found "
 									<< tokenItty->GetShortDescription() << ".";
+			
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -637,6 +643,7 @@ void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* cur
 	{
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can only pass messages in command or function handlers.";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	
@@ -768,6 +775,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"to\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
@@ -850,10 +858,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								delete hostCommand;
 								std::stringstream		errMsg;
 								if( tokenItty != tokens.end() )
+								{
 									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
 															<< tokenItty->GetShortDescription() << "\".";
+								}
 								else
-									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected term here.";
+								{
+									--tokenItty;
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
+								}
+								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 								throw std::runtime_error( errMsg.str() );
 							}
 							else
@@ -878,10 +892,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								delete hostCommand;
 								std::stringstream		errMsg;
 								if( tokenItty != tokens.end() )
+								{
 									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
 															<< tokenItty->GetShortDescription() << "\".";
+								}
 								else
-									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected expression here.";
+								{
+									--tokenItty;
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
+								}
+								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 								throw std::runtime_error( errMsg.str() );
 							}
 							else
@@ -916,7 +936,11 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
 														<< tokenItty->GetShortDescription() << "\".";
 								else
-									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+								{
+									--tokenItty;
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+								}
+								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 								throw std::runtime_error( errMsg.str() );
 							}
 							break;
@@ -943,10 +967,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									delete hostCommand;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
+									{
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
 															<< tokenItty->GetShortDescription() << "\".";
+									}
 									else
-										errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 									throw std::runtime_error( errMsg.str() );
 								}
 								else
@@ -963,10 +993,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								delete hostCommand;
 								std::stringstream		errMsg;
 								if( tokenItty != tokens.end() )
+								{
 									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
 														<< tokenItty->GetShortDescription() << "\".";
+								}
 								else
-									errMsg << mFileName << ":" << (--tokenItty)->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+								{
+									--tokenItty;
+									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+								}
+								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 								throw std::runtime_error( errMsg.str() );
 							}
 							break;
@@ -1056,6 +1092,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1086,6 +1123,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1116,6 +1154,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"with\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1146,6 +1185,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"by\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1169,6 +1209,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected chunk type identifier here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip chunk type.
@@ -1187,6 +1228,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1250,6 +1292,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end repeat\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1315,6 +1358,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" or \"=\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		
@@ -1341,6 +1385,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" or \"through\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1515,6 +1560,7 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1701,6 +1747,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			std::stringstream errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"exit repeat\" or \"exit " << userHandlerName << "\", found "
 					<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 	}
@@ -1718,6 +1765,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			std::stringstream errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"next repeat\", found "
 					<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 	}
@@ -1750,6 +1798,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			std::stringstream errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected end of line, found "
 					<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 			
@@ -1780,6 +1829,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
@@ -1813,6 +1863,7 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma here, found \""
 									<< tokenItty->GetShortDescription() << "\".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1939,6 +1990,7 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 		{
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":0: error: Expected term here, found end of script.";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
 			throw std::runtime_error( errMsg.str() );
 		}
 		terms.push_back( currArg );
@@ -2091,10 +2143,13 @@ void	CParser::LoadNativeHeadersFromFile( const char* filepath )
 //			}
 //			
 //			default:	// unknown.
-//				std::cout << "warning: Ignoring unknown data of type \"" << theCh << "\" in framework headers:" << std::endl;
+//				std::stringstream errMsg;
+//				errMsg << "warning: Ignoring unknown data of type \"" << theCh << "\" in framework headers:" << std::endl;
 //				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//					std::cout << theCh;	// Print characters on this line.
-//				std::cout << std::endl;
+//					errMsg << theCh;	// Print characters on this line.
+//				errMsg << std::endl;
+//				
+//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //				break;
 //		}
 //	}
@@ -2140,6 +2195,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 		if( !hadTo )
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
@@ -2190,6 +2246,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 		if( !hadTo )
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
@@ -2262,6 +2319,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 //		std::stringstream		errMsg;
 //		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a method name here, found "
 //								<< tokenItty->GetShortDescription() << ".";
+//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //		throw std::runtime_error( errMsg.str() );
 //	}
 //	
@@ -2295,6 +2353,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 //				std::stringstream		errMsg;
 //				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a parameter label here, found "
 //										<< tokenItty->GetShortDescription() << ".";
+//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //				throw std::runtime_error( errMsg.str() );
 //			}
 //			
@@ -2309,6 +2368,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 //				std::stringstream		errMsg;
 //				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected colon after parameter label here, found "
 //										<< tokenItty->GetShortDescription() << ".";
+//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //				throw std::runtime_error( errMsg.str() );
 //			}
 //			
@@ -2331,6 +2391,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 //		std::stringstream		errMsg;
 //		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Couldn't find definition of Objective C method "
 //								<< methodName.str() << ".";
+//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //		throw std::runtime_error( errMsg.str() );
 //	}
 //	
@@ -2436,6 +2497,7 @@ void	CParser::GenerateObjCTypeToVariantCode( std::string type, std::string &pref
 //		std::stringstream		errMsg;
 //		errMsg << mFileName << ":0: error: Don't know what to do with data of type \""
 //								<< type << "\".";
+//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
 //		throw std::runtime_error( errMsg.str() );
 //	}
 }
@@ -2491,6 +2553,7 @@ void	CParser::GenerateVariantToObjCTypeCode( std::string type, std::string &pref
 //			std::stringstream		errMsg;
 //			errMsg << mFileName << ":0: error: expected a handler ID here, but what I got can't be made into a \""
 //									<< type << "\".";
+//			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
 //			throw std::runtime_error( errMsg.str() );
 //		}
 //		handlerName.erase(0,strlen(handlerIDPrefix));
@@ -2500,6 +2563,7 @@ void	CParser::GenerateVariantToObjCTypeCode( std::string type, std::string &pref
 //			std::stringstream		errMsg;
 //			errMsg << mFileName << ":0: error: expected a handler ID here, but what I got can't be made into a \""
 //									<< type << "\".";
+//			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
 //			throw std::runtime_error( errMsg.str() );
 //		}
 //		handlerName.erase(expectedPos,strlen(handlerIDSuffix));
@@ -2546,6 +2610,7 @@ void	CParser::GenerateVariantToObjCTypeCode( std::string type, std::string &pref
 //		std::stringstream		errMsg;
 //		errMsg << mFileName << ":0: error: Don't know how to convert to data of type \""
 //								<< type << "\".";
+//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
 //		throw std::runtime_error( errMsg.str() );
 //	}
 }
@@ -2594,6 +2659,7 @@ CValueNode*	CParser::ParseNativeFunctionCallStartingAtParams( std::string& metho
 //		std::stringstream		errMsg;
 //		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket after parameter list, found "
 //					<< tokenItty->GetShortDescription() << ".";
+//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 //		throw std::runtime_error( errMsg.str() );
 //	}
 //	
@@ -2733,6 +2799,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
@@ -2754,6 +2821,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						std::stringstream		errMsg;
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
 												<< tokenItty->GetShortDescription() << ".";
+						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 						throw std::runtime_error( errMsg.str() );
 					}
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
@@ -2766,6 +2834,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						std::stringstream		errMsg;
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
 												<< tokenItty->GetShortDescription() << ".";
+						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 						throw std::runtime_error( errMsg.str() );
 					}
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
@@ -2788,6 +2857,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
@@ -2799,6 +2869,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a chunk type like \"character\", \"item\", \"word\" or \"line\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "items" etc.
@@ -2809,6 +2880,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
@@ -2834,6 +2906,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket here, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -2938,6 +3011,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"(\" and \")\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				
@@ -2958,6 +3032,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				
@@ -2974,6 +3049,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
+					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw std::runtime_error( errMsg.str() );
 				}
 				
@@ -3099,6 +3175,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a term here, found \""
 									<< tokenItty->GetShortDescription() << "\".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw std::runtime_error( errMsg.str() );
 			break;
 		}

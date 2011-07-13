@@ -14,6 +14,7 @@
 #include <sstream>
 #include <ios>
 #include <map>
+#include <vector>
 
 
 #include "CParseTree.h"
@@ -85,6 +86,16 @@ namespace Carlson
 		std::string				mMethodSignature;	// The return and parameter types of the method.
 	};
 	
+	class CMessageEntry	// warning/error
+	{
+	public:
+		std::string		mMessage;
+		std::string		mFileName;
+		size_t			mLineNum;
+		
+		CMessageEntry( std::string inMessage, std::string inFileName, size_t inLineNum )	: mMessage(inMessage), mFileName(inFileName), mLineNum(inLineNum) {};
+	};
+	
 	// -------------------------------------------------------------------------
 	//	MAIN CLASS:
 	// -------------------------------------------------------------------------
@@ -93,11 +104,12 @@ namespace Carlson
 	{
 	protected:
 		std::map<std::string,CVariableEntry>	mGlobals;	// List of globals so we can declare them.
-		std::string				mFirstHandlerName;			// Name of the function implementing the first handler we parse (can be used by templates as main entry point).
-		bool					mFirstHandlerIsFunction;	// TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
-		bool					mUsesObjCCall;				// Flag that gets set if we need to include the ObjC-support library.
-		const char*				mFileName;					// Name of file being parsed right now.
-		const char*				mSupportFolderPath;			// Path to folder with support files.
+		std::string					mFirstHandlerName;			// Name of the function implementing the first handler we parse (can be used by templates as main entry point).
+		bool						mFirstHandlerIsFunction;	// TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
+		bool						mUsesObjCCall;				// Flag that gets set if we need to include the ObjC-support library.
+		const char*					mFileName;					// Name of file being parsed right now.
+		const char*					mSupportFolderPath;			// Path to folder with support files.
+		std::vector<CMessageEntry>	mMessages;					// Errors and warnings.
 		
 	protected:
 		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		// Populated from frameworkheaders.hhc file.
