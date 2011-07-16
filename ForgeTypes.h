@@ -174,6 +174,7 @@ typedef enum
 	EPassIdentifier,
 	EMovieIdentifier,
 	EPlayerIdentifier,
+	EMyIdentifier,
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;
 
@@ -228,6 +229,5 @@ struct THostCommandEntry
 	uint32_t					mInstructionParam2;				// These parameters will be assigned to the instruction.
 	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	// These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
 };
-	
 
 #endif /*FORGE_TYPES_H*/

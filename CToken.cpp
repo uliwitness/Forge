@@ -194,7 +194,8 @@ namespace Carlson
 		"ask",
 		"pass",
 		"movie",
-		"player"
+		"player",
+		"my"
 	};
 
 TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =

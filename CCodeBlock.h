@@ -75,6 +75,7 @@ public:
 	
 	void		GeneratePushPropertyOfObjectInstruction();
 	void		GenerateSetPropertyOfObjectInstruction();
+	void		GeneratePushMeInstruction();
 	
 protected:
 	LEOScript*				mScript;

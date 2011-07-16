@@ -39,6 +39,7 @@
 
 extern "C" {
 #include "LEOInstructions.h"
+#include "LEOPropertyInstructions.h"
 }
 
 #include <iostream>
@@ -1603,6 +1604,27 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( typeConstant != TChunkTypeInvalid )
 	{
 		return ParseChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
+	}
+	
+	// Try if it is a "my <property>"-style property expression:
+	if( tokenItty->IsIdentifier( EMyIdentifier ) )
+	{
+		COperatorNode*		meContainer = new COperatorNode( &parseTree, kFirstPropertyInstruction +PUSH_ME_INSTR, tokenItty->mLineNum );
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// skip "my".
+		
+		CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, tokenItty->GetIdentifierText(), tokenItty->mLineNum );
+		propExpr->AddParam( meContainer );
+
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// skip property name.
+		
+		return propExpr;
+	}
+	else if( tokenItty->IsIdentifier( EMeIdentifier ) )	// A reference to the object owning this script?
+	{
+		COperatorNode*		hostCommand = new COperatorNode( &parseTree, kFirstPropertyInstruction +PUSH_ME_INSTR, tokenItty->mLineNum );
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		return hostCommand;
 	}
 	
 	// Try to parse a host-specific function (e.g. object descriptor):
