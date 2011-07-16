@@ -1613,7 +1613,20 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// skip "my".
 		
-		CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, tokenItty->GetIdentifierText(), tokenItty->mLineNum );
+		// Look for long/abbreviated/short style qualifier:
+		std::string		propName;
+		if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+		{
+			propName = tokenItty->GetIdentifierText();
+			propName.append( 1, ' ' );
+			
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+		}
+		
+		// Look for actual property name:
+		propName.append( tokenItty->GetIdentifierText() );
+		CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, tokenItty->mLineNum );
 		propExpr->AddParam( meContainer );
 
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// skip property name.
@@ -2953,13 +2966,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					
 					// Check if it could be an object property expression:
 					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-						|| tokenItty->IsIdentifier( EAbbrIdentifier ) || tokenItty->IsIdentifier( EAbbrevIdentifier )
 						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 					{
-						if( tokenItty->IsIdentifier( EAbbrIdentifier ) || tokenItty->IsIdentifier( EAbbrevIdentifier ) )
-							propName = "abbreviated";
-						else
-							propName = tokenItty->GetIdentifierText();
+						propName = tokenItty->GetIdentifierText();
 						propName.append( 1, ' ' );
 						
 						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.

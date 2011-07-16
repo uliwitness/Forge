@@ -836,7 +836,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		if( mType != EIdentifierToken )
 			throw std::runtime_error( "Expected identifier here." );
 		
-		return ToLowerString( mStringValue );
+		if( mSubType == ELastIdentifier_Sentinel )
+			return ToLowerString(mStringValue);
+		else
+			return std::string(gIdentifierStrings[mSubType]);
 	}
 	
 	const std::string	CToken::GetOriginalIdentifierText() const
