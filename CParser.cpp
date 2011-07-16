@@ -826,7 +826,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									THostCommandEntry* inHostTable )
 {
 	CValueNode			*theNode = NULL;
-	TIdentifierSubtype	firstIdentifier = tokenItty->mSubType;
+	TIdentifierSubtype	firstIdentifier = tokenItty->GetIdentifierSubType();
 	
 	if( inHostTable != NULL )
 	{
