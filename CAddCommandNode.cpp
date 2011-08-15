@@ -10,6 +10,7 @@
 #include "CAddCommandNode.h"
 #include "CValueNode.h"
 #include "CCodeBlock.h"
+#include "LEOInstructions.h"
 
 
 namespace Carlson
@@ -35,15 +36,17 @@ void	CAddCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 			else
 			{
 				srcValue->GenerateCode( inCodeBlock );
-				
-				// TODO: Add code to add non-constant values.
-				
-				throw std::runtime_error("Can't assign this value.");
+				destValue->GenerateCode( inCodeBlock );
+				inCodeBlock->GenerateOperatorInstruction( ADD_COMMAND_INSTR );
 			}
 		}
 	}
 	else
-		throw std::runtime_error("Can't assign to this value.");
+	{
+		srcValue->GenerateCode( inCodeBlock );
+		destValue->GenerateCode( inCodeBlock );
+		inCodeBlock->GenerateOperatorInstruction( ADD_COMMAND_INSTR );
+	}
 }
 
 } // namespace Carlson

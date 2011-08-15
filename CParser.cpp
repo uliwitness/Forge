@@ -1078,18 +1078,18 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "AddTo", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
 	
 	// Add:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
 	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-	theAddCommand->AddParam( theWhatNode );
 	
 	// To:
 	if( !tokenItty->IsIdentifier( EToIdentifier ) )
 	{
+		delete theWhatNode;
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
@@ -1101,6 +1101,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	// Dest:
 	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 	theAddCommand->AddParam( theContainerNode );
+	theAddCommand->AddParam( theWhatNode );
 	
 	currFunction->AddCommand( theAddCommand );
 }

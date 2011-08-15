@@ -15,7 +15,7 @@ namespace Carlson
 class CAddCommandNode : public CCommandNode
 {
 public:
-	CAddCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "=", inLineNum ) {};
+	CAddCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "AddTo", inLineNum ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };
