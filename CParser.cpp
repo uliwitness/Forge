@@ -1641,11 +1641,25 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		return hostCommand;
 	}
 	
+	// If we know we have a variable of that name, choose that:
+	std::string		realVarName( tokenItty->GetIdentifierText() );
+	std::string		varName( "var_" );
+	varName.append( realVarName );
+	if( !container && currFunction->LocalVariableExists( varName ) )
+	{
+		CreateVariable( varName, realVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		return container;
+	}
+	
 	// Try to parse a host-specific function (e.g. object descriptor):
 	container = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
 	if( container )
 		return container;
-	
+
 	// Otherwise try to parse a built-in variable:
 	if( tokenItty->IsIdentifier( ETheIdentifier ) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1700,13 +1714,9 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		}
 	}
 	
-	// Fall back on any old variable:
+	// Implicit declaration of any old variable:
 	if( !container )
 	{
-		std::string		realVarName( tokenItty->GetIdentifierText() );
-		std::string		varName( "var_" );
-		
-		varName.append( realVarName );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 		
@@ -2261,7 +2271,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	CValueNode*				endOffsObj = NULL;
 	
 	// Start offset:
-	CValueNode*	startOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*		startOffsObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	size_t			lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
