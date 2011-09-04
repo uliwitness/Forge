@@ -10,6 +10,7 @@
 #include "CFunctionCallNode.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
+#include "LEOInstructions.h"
 
 
 namespace Carlson
@@ -66,28 +67,45 @@ void	CFunctionCallNode::Simplify()
 
 void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	std::vector<CValueNode*>::reverse_iterator itty;
+	LEOInstructionID	instructionID = INVALID_INSTR;
 	
-	inCodeBlock->GeneratePushStringInstruction( "" );	// Reserve space for the result.
+	if( mSymbolName.compare( "numtochar" ) == 0 )
+		instructionID = NUM_TO_CHAR_INSTR;
+	else if( mSymbolName.compare( "chartonum" ) == 0 )
+		instructionID = CHAR_TO_NUM_INSTR;
 	
-	// Push all params on stack (in reverse order!):
-	for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
-		(*itty)->GenerateCode( inCodeBlock );
-	
-	size_t		numParams = mParams.size();
-	inCodeBlock->GeneratePushIntInstruction( (int)numParams );
-	
-	// *** Call ***
-	inCodeBlock->GenerateFunctionCallInstruction( mIsCommand, mIsMessagePassing, mSymbolName );
-	
-	// Clean up param count:
-	inCodeBlock->GeneratePopValueInstruction();
-	
-	// Clean up params:
-	for( size_t x = 0; x < numParams; x++ )
+	if( instructionID != INVALID_INSTR )
+	{
+		// Push the param on the stack:
+		mParams[0]->GenerateCode( inCodeBlock );
+		
+		inCodeBlock->GenerateOperatorInstruction( instructionID );
+	}
+	else
+	{
+		std::vector<CValueNode*>::reverse_iterator itty;
+		
+		inCodeBlock->GeneratePushStringInstruction( "" );	// Reserve space for the result.
+		
+		// Push all params on stack (in reverse order!):
+		for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
+			(*itty)->GenerateCode( inCodeBlock );
+		
+		size_t		numParams = mParams.size();
+		inCodeBlock->GeneratePushIntInstruction( (int)numParams );
+		
+		// *** Call ***
+		inCodeBlock->GenerateFunctionCallInstruction( mIsCommand, mIsMessagePassing, mSymbolName );
+		
+		// Clean up param count:
 		inCodeBlock->GeneratePopValueInstruction();
-	
-	// We leave the result on the stack.
+		
+		// Clean up params:
+		for( size_t x = 0; x < numParams; x++ )
+			inCodeBlock->GeneratePopValueInstruction();
+		
+		// We leave the result on the stack.
+	}
 }
 
 } // namespace Carlson
