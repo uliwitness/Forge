@@ -73,6 +73,10 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 		instructionID = NUM_TO_CHAR_INSTR;
 	else if( mSymbolName.compare( "chartonum" ) == 0 )
 		instructionID = CHAR_TO_NUM_INSTR;
+	else if( mSymbolName.compare( "numtohex" ) == 0 )
+		instructionID = NUM_TO_HEX_INSTR;
+	else if( mSymbolName.compare( "hextonum" ) == 0 )
+		instructionID = HEX_TO_NUM_INSTR;
 	
 	if( instructionID != INVALID_INSTR )
 	{
