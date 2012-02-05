@@ -817,6 +817,14 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 												tokenItty, tokens, sHostCommands );
 	if( theNode )
 		currFunction->AddCommand( theNode );
+	else if( tokenItty != tokens.end() && tokenItty->IsIdentifier(EEndIdentifier) )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected handler call here, found \""
+							<< tokenItty->GetShortDescription() << "\".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
 	else
 		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
 }
@@ -1417,10 +1425,21 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
 		whileLoop->AddCommand( theAssignCommand );
 		
-		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+		do
 		{
+			// If there is no command to repeat, we don't want to parse the
+			//	"end" statement as a handler call named "end", so we need to
+			//	make sure we eliminate that case beforehand.
+			
+			while( tokenItty != tokens.end() && tokenItty->IsIdentifier( ENewlineOperator) )
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+			
+			if( tokenItty == tokens.end() || tokenItty->IsIdentifier( EEndIdentifier ) )
+				break;
+			
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
+		while( true );
 		
 		// tempName += 1;
 		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
