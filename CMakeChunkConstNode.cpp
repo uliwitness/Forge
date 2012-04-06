@@ -45,7 +45,14 @@ void	CMakeChunkConstNode::GenerateCode( CCodeBlock* inCodeBlock )
 		(*itty)->GenerateCode( inCodeBlock );
 	}
 
+	#if 0
+	// We want to use GeneratePushChunkConstInstruction here, but for properties
+	//	we will need a chunk reference instead. +++ TODO: build non-const syntax
+	//	tree element if we see it's used by a property.
+	inCodeBlock->GeneratePushChunkRefInstruction( BACK_OF_STACK, chunkType );
+	#else
 	inCodeBlock->GeneratePushChunkConstInstruction( BACK_OF_STACK, chunkType );
+	#endif
 }
 
 } // namespace Carlson
