@@ -1,7 +1,7 @@
-HYPER-C: SUPPORTED HYPERTALK SYNTAX
+FORGE: SUPPORTED HYPERTALK SYNTAX
 -----------------------------------
 
-Currently, HyperC supports the following HyperTalk syntax:
+Currently, Forge supports the following HyperTalk syntax:
 
 1) TOP-LEVEL CONSTRUCTS:
 
@@ -268,6 +268,34 @@ You can also change the value of a chunk.
 Counts the number of entities of the specified chunk type that can be extracted
 from the specified expression. 
 
+	constant
+	
+There are several constants whose name consists of a single identifier:
+
+	true
+	false
+	return		-- the return character, numToChar(13), also available under the
+					shorter "cr" name.
+	lineFeed	-- the Unix newline character, numToChar(10), also available
+					under the name "newline".
+	unset		-- a value that contains an unset value. isset(unset) always
+					returns FALSE.
+	empty		-- an empty string. Equivalent to "".
+	quote		-- the quote character (")
+	comma		-- the comma character (,)
+	colon		-- the colon character (:)
+	null		-- the NUL character, numToChar(0)
+	space		-- the space character (" "), numToChar(32)
+	tab			-- the tabulator character, numToChar(9)
+	pi			-- the number "pi". Roughly 3.14
+	nullPointer	-- a system object with the address 0, usually used to indicate
+					an invalid, unspecified or unset object. In C documentation
+					this is generally referred to as NULL or NIL.
+	
+BROKEN SYNTAX:
+
+The following syntax was implemented at some point, then became broken, and will one day be reinstated. It may parse, but it will definitely not run:
+
 	id of function [handler] <handlerName>
 	id of [message] handler <handlerName>
 	
@@ -311,28 +339,3 @@ other data type.
 This is an instance method call. varName must contain an opaque reference to an
 Objective C object previously created with another Objective C call. The message
 will then be dispatched to that object.
-
-	constant
-	
-There are several constants whose name consists of a single identifier:
-
-	true
-	false
-	return		-- the return character, numToChar(13), also available under the
-					shorter "cr" name.
-	lineFeed	-- the Unix newline character, numToChar(10), also available
-					under the name "newline".
-	unset		-- a value that contains an unset value. isset(unset) always
-					returns FALSE.
-	empty		-- an empty string. Equivalent to "".
-	quote		-- the quote character (")
-	comma		-- the comma character (,)
-	colon		-- the colon character (:)
-	null		-- the NUL character, numToChar(0)
-	space		-- the space character (" "), numToChar(32)
-	tab			-- the tabulator character, numToChar(9)
-	pi			-- the number "pi". Roughly 3.14
-	nullPointer	-- a system object with the address 0, usually used to indicate
-					an invalid, unspecified or unset object. In C documentation
-					this is generally referred to as NULL or NIL.
-	
