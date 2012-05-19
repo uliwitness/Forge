@@ -59,9 +59,10 @@ void	CFunctionCallNode::Simplify()
 {
 	std::vector<CValueNode*>::iterator itty;
 	
-	// Push all params on stack (in reverse order!):
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+	{
 		(*itty)->Simplify();
+	}
 }
 
 
