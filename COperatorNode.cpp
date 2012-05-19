@@ -41,6 +41,20 @@ void	COperatorNode::AddParam( CValueNode* val )
 }
 
 
+CValueNode*	COperatorNode::Copy()
+{
+	COperatorNode	*	nodeCopy = new COperatorNode( mParseTree, mInstructionID, mLineNum );
+	
+	std::vector<CValueNode*>::const_iterator	itty;
+	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+	{
+		nodeCopy->AddParam( (*itty)->Copy() );
+	}
+	
+	return nodeCopy;
+}
+
+
 void	COperatorNode::Simplify()
 {
 	std::vector<CValueNode*>::iterator itty;
