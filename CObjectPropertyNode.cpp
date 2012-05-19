@@ -10,6 +10,8 @@
 #include "CObjectPropertyNode.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
+#include "CMakeChunkConstNode.h"
+#include "CMakeChunkRefNode.h"
 
 
 namespace Carlson
@@ -60,6 +62,32 @@ void	CObjectPropertyNode::Simplify()
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 		(*itty)->Simplify();
+	
+	if( mParams.size() >= 1 )
+	{
+		/*
+			Chunks can have properties as well, in which case we have to tell the
+			parent object to modify that chunk of itself, we can't change the
+			property once we've evaluated the chunk and turned it into a substring.
+			
+			So we detect this case here and replace the constant chunk expression
+			with a chunk reference.
+		*/
+		
+		CMakeChunkConstNode	*	constChunkExpr = dynamic_cast<CMakeChunkConstNode*>( mParams[0] );
+		if( constChunkExpr != NULL )
+		{
+			CMakeChunkRefNode	*	chunkRefExpr = new CMakeChunkRefNode( mParseTree, constChunkExpr->GetLineNum() );
+			for( size_t x = 0; x < constChunkExpr->GetParamCount(); x++ )
+			{
+				CValueNode	*	theParam = constChunkExpr->GetParamAtIndex(x);
+				CValueNode	*	theParamCopy = theParam->Copy();
+				chunkRefExpr->AddParam( theParamCopy );
+			}
+			delete mParams[0];
+			mParams[0] = chunkRefExpr;
+		}
+	}
 }
 
 
