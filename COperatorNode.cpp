@@ -57,6 +57,8 @@ CValueNode*	COperatorNode::Copy()
 
 void	COperatorNode::Simplify()
 {
+	CValueNode::Simplify();
+	
 	std::vector<CValueNode*>::iterator itty;
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
@@ -65,11 +67,11 @@ void	COperatorNode::Simplify()
 	switch( mInstructionID )
 	{
 		case CONCATENATE_VALUES_INSTR:
-			
+			// +++
 			break;
 		
 		case CONCATENATE_VALUES_WITH_SPACE_INSTR:
-			
+			// +++
 			break;
 	}
 }

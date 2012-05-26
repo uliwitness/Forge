@@ -54,6 +54,8 @@ CLocalVariableRefValueNode::CLocalVariableRefValueNode( CParseTree* inTree, CCod
 void	CLocalVariableRefValueNode::Simplify()
 {
 	GetBPRelativeOffset();	// Make sure we are assigned a slot NOW, so we know how many variables we need by the time we generate the function prolog.
+	
+	CNode::Simplify();
 }
 
 

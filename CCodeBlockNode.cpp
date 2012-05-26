@@ -49,6 +49,8 @@ void	CCodeBlockNodeBase::DebugPrintInner( std::ostream& destStream, size_t inden
 
 void	CCodeBlockNodeBase::Simplify()
 {
+	CNode::Simplify();
+	
 	std::vector<CNode*>::iterator itty;
 	
 	for( itty = mCommands.begin(); itty != mCommands.end(); itty++ )

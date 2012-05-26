@@ -43,7 +43,7 @@ public:
 	explicit CNode( CParseTree* inTree ) : mParseTree(inTree)					{};
 	virtual ~CNode() {};
 	
-	virtual void	Simplify()													{};	// For optimizing our parse tree before we actually generate code.
+	virtual void	Simplify();	// For optimizing our parse tree before we actually generate code.
 	
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock )						{};	// Generate the actual bytecode.
 	

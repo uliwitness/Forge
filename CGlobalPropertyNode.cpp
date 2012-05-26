@@ -43,6 +43,8 @@ void	CGlobalPropertyNode::AddParam( CValueNode* val )
 
 void	CGlobalPropertyNode::Simplify()
 {
+	CValueNode::Simplify();
+	
 	std::vector<CValueNode*>::iterator itty;
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )

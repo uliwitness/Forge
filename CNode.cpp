@@ -8,4 +8,13 @@
  */
 
 #include "CNode.h"
+#include "CNodeTransformation.h"
 
+
+using namespace Carlson;
+
+
+void	CNode::Simplify()
+{
+	CNodeTransformationBase::Apply( this );
+}

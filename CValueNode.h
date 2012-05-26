@@ -36,9 +36,7 @@ public:
 	virtual size_t	GetLineNum()		{ return 0; };
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock )		{};	// Generate the actual bytecode so it leaves the result on the stack.
-	
-	virtual void	Simplify()			{};
-	
+		
 	virtual bool	IsConstant()		{ return false; };
 	
 	virtual CValueNode*	Copy()			{ return NULL; };

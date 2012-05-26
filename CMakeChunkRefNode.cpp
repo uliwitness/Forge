@@ -30,17 +30,15 @@ CValueNode*	CMakeChunkRefNode::Copy()
 void	CMakeChunkRefNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::const_iterator	itty = mParams.begin();
-	int16_t										bpRelativeOffset = BACK_OF_STACK;	// Means
 	
 	CLocalVariableRefValueNode * theVar = dynamic_cast<CLocalVariableRefValueNode*>(*itty);
 	
-	if( theVar )
-		bpRelativeOffset = theVar->GetBPRelativeOffset();
-	else
+	if( !theVar )
 	{
-		(*itty)->GenerateCode( inCodeBlock );
-		bpRelativeOffset = BACK_OF_STACK;
+		throw std::runtime_error("Can't make chunks of this value.");
 	}
+	
+	int16_t		bpRelativeOffset = theVar->GetBPRelativeOffset();
 	
 	itty++;
 	
