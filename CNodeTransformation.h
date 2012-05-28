@@ -51,7 +51,7 @@ extern std::vector<CNodeTransformationBase*>		sNodeTransformations;
 */
 
 template <class c_node_subclass>
-class CNodeTransformation
+class CNodeTransformation : public CNodeTransformationBase
 {
 public:
 	virtual ~CNodeTransformation() {};
@@ -68,7 +68,7 @@ public:
 		}
 	}
 	
-	static void		Initialize()	{ sNodeTransformations.push_back( new CNodeTransformation<c_node_subclass> ); };
+	//static void		Initialize()	{ sNodeTransformations.push_back( new MYCLASSNAME ); };
 };
 
 

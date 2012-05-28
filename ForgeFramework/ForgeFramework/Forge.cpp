@@ -15,8 +15,23 @@ extern "C" {
 #include "CParser.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
+#include "CChunkPropertyNodeTransformation.h"
 
 using namespace Carlson;
+
+
+
+
+extern "C" void LEOInitializeNodeTransformationsIfNeeded()
+{
+	static bool	sAlreadyInitializedThem = false;
+	if( !sAlreadyInitializedThem )
+	{
+		CChunkPropertyNodeTransformation::Initialize();
+		
+		sAlreadyInitializedThem = true;
+	}
+}
 
 
 char	gLEOLastErrorString[1024] = { 0 };
@@ -24,6 +39,8 @@ char	gLEOLastErrorString[1024] = { 0 };
 
 extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename )
 {
+	LEOInitializeNodeTransformationsIfNeeded();
+	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
 	
@@ -57,6 +74,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 
 extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename )
 {
+	LEOInitializeNodeTransformationsIfNeeded();
+	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
 	
@@ -115,6 +134,8 @@ extern "C" const char*	LEOParserGetLastErrorMessage()
 
 extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree )
 {
+	LEOInitializeNodeTransformationsIfNeeded();
+	
 	gLEOLastErrorString[0] = 0;
 	
 	try
@@ -189,6 +210,5 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 		strcpy( gLEOLastErrorString, "Unknown error." );
 	}
 }
-
 
 

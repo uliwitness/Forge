@@ -49,6 +49,8 @@ public:
 	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel ) = 0;
 	
+	virtual CParseTree*	GetParseTree()	{ return mParseTree; };
+	
 protected:
 	CParseTree*		mParseTree;
 };
