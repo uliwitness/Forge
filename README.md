@@ -13,7 +13,7 @@ To build the sample project (which creates a command-line tool), check out the L
 License
 -------
 
-  Copyright 2003-2012 by Uli Kusterer.
+	Copyright 2003-2012 by Uli Kusterer.
 	
 	This software is provided 'as-is', without any express or implied
 	warranty. In no event will the authors be held liable for any damages
