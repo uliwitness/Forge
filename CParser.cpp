@@ -1236,7 +1236,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	if( !tokenItty->IsIdentifier( EOfIdentifier ) && !tokenItty->IsIdentifier( EInIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" or \"in\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
