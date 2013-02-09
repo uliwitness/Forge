@@ -69,6 +69,8 @@ public:
 	void		GenerateAssignChunkArrayInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	void		GenerateGetArrayItemCountInstruction( int16_t bpRelativeOffset );
 	void		GenerateGetArrayItemInstruction( int16_t bpRelativeOffset );
+	void		GenerateSetChunkPropertyInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
+	void		GeneratePushChunkPropertyInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	
 	void		GenerateSetStringInstruction( int16_t bpRelativeOffset );
 	void		GeneratePutValueIntoValueInstruction();
