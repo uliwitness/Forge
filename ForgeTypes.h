@@ -72,6 +72,7 @@ typedef enum
 	EEntryIdentifier,
 	EParamIdentifier,
 	EParameterIdentifier,
+	EParametersIdentifier,
 	EParamCountIdentifier,
 	EUnsetIdentifier,
 	EIsIdentifier,
@@ -207,6 +208,14 @@ struct TGlobalPropertyEntry
 	TIdentifierSubtype		mType;					// The identifier for this property.
 	LEOInstructionID		mSetterInstructionID;	// Instruction for changing this property.
 	LEOInstructionID		mGetterInstructionID;	// Instruction for retrieving this property's value.
+};
+
+
+// *** An entry in our global property look-up table:
+struct TBuiltInFunctionEntry
+{
+	TIdentifierSubtype		mType;			// The identifier for this property.
+	LEOInstructionID		mInstructionID;	// Instruction for this function.
 };
 
 

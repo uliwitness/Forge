@@ -80,11 +80,14 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 		instructionID = NUM_TO_HEX_INSTR;
 	else if( mSymbolName.compare( "hextonum" ) == 0 )
 		instructionID = HEX_TO_NUM_INSTR;
+	else if( mSymbolName.compare( "paramcount" ) == 0 )
+		instructionID = PARAMETER_COUNT_INSTR;
 	
 	if( instructionID != INVALID_INSTR )
 	{
 		// Push the param on the stack:
-		mParams[0]->GenerateCode( inCodeBlock );
+		if( mParams.size() > 0 )
+			mParams[0]->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateOperatorInstruction( instructionID );
 	}

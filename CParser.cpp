@@ -114,6 +114,13 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 	{ ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
+static TBuiltInFunctionEntry	sBuiltInFunctions[] =
+{
+	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR },
+	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR },
+	{ ELastIdentifier_Sentinel, NULL }
+};
+
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
 static THostCommandEntry*		sHostCommands = NULL;
@@ -2980,73 +2987,81 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			else if( tokenItty->mSubType == ETheIdentifier )
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "the".
-				if( tokenItty->IsIdentifier( EParamCountIdentifier ) )
+				
+				std::string		propName;
+				bool			isStyleQualifiedProperty = false;
+				
+				// Check if it could be an object property expression:
+				if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+					|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 				{
-					CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-					CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, false, "vcy_list_count", tokenItty->mLineNum );
-					countFunction->AddParam( paramsNode );
-					theTerm = countFunction;
+					propName = tokenItty->GetIdentifierText();
+					propName.append( 1, ' ' );
 					
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "paramCount".
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+					isStyleQualifiedProperty = true;
+				}
+				
+				size_t			lineNum = tokenItty->mLineNum;
+				propName.append( tokenItty->GetIdentifierText() );
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+				if( tokenItty->IsIdentifier( EOfIdentifier ) )
+				{
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+					CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+					
+					CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+					propExpr->AddParam( targetObj );
+					theTerm = propExpr;
 				}
 				else
 				{
-					std::string		propName;
-					bool			isStyleQualifiedProperty = false;
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+					if( isStyleQualifiedProperty )
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+				}
+				
+				if( !theTerm )
+				{
+					TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+					// Find it in our list of global properties:
+					int				x = 0;
 					
-					// Check if it could be an object property expression:
-					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+					for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						propName = tokenItty->GetIdentifierText();
-						propName.append( 1, ' ' );
-						
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
-						isStyleQualifiedProperty = true;
-					}
-					
-					size_t			lineNum = tokenItty->mLineNum;
-					propName.append( tokenItty->GetIdentifierText() );
-					CToken::GoNextToken( mFileName, tokenItty, tokens );
-					if( tokenItty->IsIdentifier( EOfIdentifier ) )
-					{
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-						CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-						
-						CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-						propExpr->AddParam( targetObj );
-						theTerm = propExpr;
-					}
-					else
-					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
-						if( isStyleQualifiedProperty )
-							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
-					}
-					
-					if( !theTerm )
-					{
-						TIdentifierSubtype	subType = tokenItty->mSubType;
-			
-						// Find it in our list of global properties:
-						int				x = 0;
-						
-						for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+						if( sGlobalProperties[x].mType == subType )
 						{
-							if( sGlobalProperties[x].mType == subType )
-							{
-								theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
-								CToken::GoNextToken( mFileName, tokenItty, tokens );
-								break;
-							}
+							theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
 						}
 					}
+				}
+				
+				
+				if( !theTerm )
+				{
+					TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+					// Find it in our list of built-in functions:
+					int				x = 0;
 					
-					if( !theTerm )	// Not a global property? Try a container:
+					for( x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
-						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+						if( sBuiltInFunctions[x].mType == subType )
+						{
+							theTerm = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
+						}
 					}
+				}
+				
+				if( !theTerm )	// Not a global property? Try a container:
+				{
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
+					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
 				}
 				break;
 			}
@@ -3076,10 +3091,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					throw std::runtime_error( errMsg.str() );
 				}
 				
-				CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, false, "vcy_list_count", lineNum );
-				countFunction->AddParam( paramsNode );
-				theTerm = countFunction;
+				theTerm = new CFunctionCallNode( &parseTree, false, "paramcount", lineNum );
 				break;
 			}
 			else if( tokenItty->mSubType == EParamIdentifier )
