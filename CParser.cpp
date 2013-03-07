@@ -931,7 +931,8 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 
 						case EHostParamIdentifier:
 						{
-							if( tokenItty->IsIdentifier(par->mIdentifierType) )
+							if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
+								|| tokenItty->IsIdentifier(par->mIdentifierType) )
 							{
 								if( par->mInstructionID == INVALID_INSTR )
 									hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );

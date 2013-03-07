@@ -177,6 +177,8 @@ typedef enum
 	EPlayerIdentifier,
 	EMyIdentifier,
 	EVersionIdentifier,
+	ECreateIdentifier,
+	ENewIdentifier,
 	
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;

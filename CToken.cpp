@@ -197,7 +197,9 @@ namespace Carlson
 		"movie",
 		"player",
 		"my",
-		"version"
+		"version",
+		"create",
+		"new"
 	};
 
 TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
@@ -364,6 +366,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	EPlayerIdentifier,
 	EMyIdentifier,
 	EVersionIdentifier,
+	ECreateIdentifier,
+	ENewIdentifier,
 	ELastIdentifier_Sentinel
 };
 
