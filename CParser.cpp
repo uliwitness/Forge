@@ -860,7 +860,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				
 				while( par->mType != EHostParam_Sentinel )
 				{
-					if( par->mModeRequired == 0 || par->mModeRequired == currMode )
+					if( par->mModeRequired == '\0' || par->mModeRequired == currMode )
 					{
 						switch( par->mType )
 						{
