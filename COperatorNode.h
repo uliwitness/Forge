@@ -25,7 +25,8 @@ class COperatorNode : public CValueNode
 {
 public:
 	COperatorNode( CParseTree* inTree, LEOInstructionID inInstructionID, size_t inLineNum )
-		: CValueNode(inTree), mInstructionID(inInstructionID), mLineNum(inLineNum) {};
+		: CValueNode(inTree), mInstructionID(inInstructionID),
+		mInstructionParam1(0), mInstructionParam2(0), mLineNum(inLineNum) {};
 	virtual ~COperatorNode() {};
 	
 	virtual size_t		GetParamCount()									{ return mParams.size(); };
@@ -40,10 +41,13 @@ public:
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
-	virtual void		SetInstructionID( LEOInstructionID inID )		{ mInstructionID = inID; };
+	virtual void		SetInstructionID( LEOInstructionID inID )					{ mInstructionID = inID; };
+	virtual void		SetInstructionParams( uint16_t inParam1, uint32_t inParam2 ){ mInstructionParam1 = inParam1; mInstructionParam2 = inParam2; };
 
 protected:
 	LEOInstructionID			mInstructionID;
+	uint16_t					mInstructionParam1;
+	uint32_t					mInstructionParam2;
 	std::vector<CValueNode*>	mParams;
 	size_t						mLineNum;
 };

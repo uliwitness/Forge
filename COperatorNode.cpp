@@ -85,7 +85,7 @@ void	COperatorNode::GenerateCode( CCodeBlock* inCodeBlock )
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 		(*itty)->GenerateCode( inCodeBlock );
 	
-	inCodeBlock->GenerateOperatorInstruction( mInstructionID );
+	inCodeBlock->GenerateOperatorInstruction( mInstructionID, mInstructionParam1, mInstructionParam2 );
 }
 
 } // namespace Carlson

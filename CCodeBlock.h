@@ -60,7 +60,7 @@ public:
 	
 	void		GenerateAddNumberInstruction( int16_t bpRelativeOffset, LEONumber inNumber );
 	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
-	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
+	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID, uint16_t inParam1 = 0, uint32_t inParam2 = 0 );
 	
 	void		GenerateLineMarkerInstruction( uint32_t inLineNum );
 	

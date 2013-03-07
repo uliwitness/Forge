@@ -192,9 +192,9 @@ void	CCodeBlock::GenerateSetReturnValueInstruction()
 }
 
 
-void	CCodeBlock::GenerateOperatorInstruction( LEOInstructionID inInstructionID )
+void	CCodeBlock::GenerateOperatorInstruction( LEOInstructionID inInstructionID, uint16_t inParam1, uint32_t inParam2 )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, inInstructionID, 0, 0 );
+	LEOHandlerAddInstruction( mCurrentHandler, inInstructionID, inParam1, inParam2 );
 }
 
 
