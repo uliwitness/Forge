@@ -201,7 +201,7 @@ typedef enum
 } THostParameterOptional;
 
 
-#define LEO_MAX_HOST_PARAMS		8
+#define LEO_MAX_HOST_PARAMS		15
 
 
 // *** An entry in our global property look-up table:
@@ -230,6 +230,8 @@ struct THostParameterEntry
 	LEOInstructionID		mInstructionID;		// If not INVALID_INSTR2, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
 	uint16_t				mInstructionParam1;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
 	uint32_t				mInstructionParam2;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
+	char					mModeRequired;		// If this isn't 0, only parse this if the current mode is this number. The mode can be used to group together certain parameters so they only match when a previous parameter matched.
+	char					mModeToSet;			// If this parameter matches, and this isn't 0, change the current mode to this.
 };
 
 
