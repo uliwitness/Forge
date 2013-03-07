@@ -871,8 +871,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								{
 									if( par->mInstructionID == INVALID_INSTR )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-									if( par->mModeToSet != 0 )
-										currMode = par->mModeToSet;
 								}
 								else if( !term )
 								{
@@ -912,8 +910,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								{
 									if( par->mInstructionID == INVALID_INSTR )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-									if( par->mModeToSet != 0 )
-										currMode = par->mModeToSet;
 								}
 								else if( !term )
 								{
@@ -966,8 +962,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								{
 									if( par->mInstructionID == INVALID_INSTR )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-									if( par->mModeToSet != 0 )
-										currMode = par->mModeToSet;
 								}
 								else
 								{
@@ -1035,8 +1029,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( par->mIsOptional )
 								{
 									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-									if( par->mModeToSet != 0 )
-										currMode = par->mModeToSet;
 								}
 								else
 								{
