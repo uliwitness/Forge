@@ -44,7 +44,8 @@ void	CIfNode::GenerateCode( CCodeBlock* inBlock )
 	inBlock->SetJumpAddressOfInstructionAtIndex( compareInstructionOffset, elseSectionStartOffset -compareInstructionOffset );
 	
 	// Generate Else section:
-	mElseBlock->GenerateCode( inBlock );
+	if( mElseBlock )
+		mElseBlock->GenerateCode( inBlock );
 	
 	// Retroactively fill in the address of the end of the Else section in the jump instruction at the If's end:
 	int32_t	elseSectionEndOffset = (int32_t) inBlock->GetNextInstructionOffset();
@@ -56,7 +57,8 @@ void	CIfNode::Simplify()
 {
 	mCondition->Simplify();
 	CCodeBlockNode::Simplify();
-	mElseBlock->Simplify();
+	if( mElseBlock )
+		mElseBlock->Simplify();
 }
 
 
@@ -70,9 +72,12 @@ void	CIfNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 	
 	DebugPrintInner( destStream, indentLevel );
 	
-	destStream << indentChars << "else" << std::endl;
-	
-	mElseBlock->DebugPrintInner( destStream, indentLevel );
+	if( mElseBlock )
+	{
+		destStream << indentChars << "else" << std::endl;
+		
+		mElseBlock->DebugPrintInner( destStream, indentLevel );
+	}
 }
 
 
