@@ -12,7 +12,10 @@
 #include "LEOInterpreter.h"
 
 
-/* The various built-in identifiers the parser recognizes: */
+/* The various built-in identifiers the parser recognizes:
+	When adding an identifier here, remember to always also add an entry for it
+	to gIdentifierStrings and gIdentifierSynonyms.
+*/
 typedef enum
 {
 	EFunctionIdentifier = 0,
@@ -179,6 +182,8 @@ typedef enum
 	EVersionIdentifier,
 	ECreateIdentifier,
 	ENewIdentifier,
+	EDebugIdentifier,
+	ECheckpointIdentifier,
 	
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;
