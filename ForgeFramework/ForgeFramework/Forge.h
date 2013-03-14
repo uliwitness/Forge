@@ -39,12 +39,12 @@ typedef struct LEOParseTree	LEOParseTree;	// Private internal data structure rep
 //	Forge methods:
 // -----------------------------------------------------------------------------
 
-LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename );
-LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename );
+LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID );
+LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID );
 
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
-void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree );
+void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree, uint16_t inFileID );
 
 const char*		LEOParserGetLastErrorMessage();	// Call this after LEOParseTreeCreateFromUTF8Characters or LEOScriptCompileAndAddParseTree to detect errors. If it returns NULL, everything was fine.
 

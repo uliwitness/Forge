@@ -20,8 +20,8 @@ extern "C"
 namespace Carlson
 {
 
-CCodeBlock::CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript )
-	: mGroup(NULL), mCurrentHandler(NULL), mScript(NULL)
+CCodeBlock::CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript, uint16_t inFileID )
+	: mGroup(NULL), mCurrentHandler(NULL), mScript(NULL), mFileID(inFileID)
 {
 	mScript = LEOScriptRetain( inScript );
 	mGroup = LEOContextGroupRetain( inGroup );
@@ -48,7 +48,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
 	// Allocate stack space for our local variables:
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, (uint32_t)lineNumber );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, mFileID, (uint32_t)lineNumber );
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	mNumLocals = 0;
@@ -77,7 +77,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 
 void	CCodeBlock::PrepareToExitFunction( size_t lineNumber )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, (uint32_t)lineNumber );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, mFileID, (uint32_t)lineNumber );
 	// Get rid of stack space allocated for our local variables:
 	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	for( size_t	x = 0; x < mNumLocals; x++ )
@@ -241,7 +241,7 @@ void	CCodeBlock::GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInt
 
 void	CCodeBlock::GenerateLineMarkerInstruction( uint32_t inLineNum )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, 0, inLineNum );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, mFileID, inLineNum );
 }
 
 
