@@ -16,6 +16,9 @@ extern "C" {
 #include "CParseTree.h"
 #include "CCodeBlock.h"
 #include "CChunkPropertyNodeTransformation.h"
+#include "CConcatOperatorNodeTransformation.h"
+#include "CConcatSpaceOperatorNodeTransformation.h"
+
 
 using namespace Carlson;
 
@@ -27,6 +30,8 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded()
 	static bool	sAlreadyInitializedThem = false;
 	if( !sAlreadyInitializedThem )
 	{
+//		CConcatOperatorNodeTransformation::Initialize();
+//		CConcatSpaceOperatorNodeTransformation::Initialize();
 		CChunkPropertyNodeTransformation::Initialize();
 		
 		sAlreadyInitializedThem = true;

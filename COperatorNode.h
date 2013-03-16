@@ -42,6 +42,7 @@ public:
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void		SetInstructionID( LEOInstructionID inID )					{ mInstructionID = inID; };
+	virtual LEOInstructionID	GetInstructionID()									{ return mInstructionID; };
 	virtual void		SetInstructionParams( uint16_t inParam1, uint32_t inParam2 ){ mInstructionParam1 = inParam1; mInstructionParam2 = inParam2; };
 
 protected:
