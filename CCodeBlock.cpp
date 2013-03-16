@@ -71,6 +71,8 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 			LEOHandlerAddVariableNameMapping( mCurrentHandler, itty->first.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			mNumLocals++;
 		}
+		else
+			; //printf( "Variable %s unused.\n", itty->second.mRealName.c_str() );
 	}
 }
 
