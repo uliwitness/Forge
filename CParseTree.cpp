@@ -8,6 +8,7 @@
  */
 
 #include "CParseTree.h"
+#include "CNodeTransformation.h"
 
 namespace Carlson
 {
@@ -30,7 +31,14 @@ void	CParseTree::Simplify()
 	
 	for( itty = mNodes.begin(); itty != mNodes.end(); itty++ )
 	{
-		(*itty)->Simplify();
+		CNode	*	originalNode = *itty;
+		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
+		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
+		if( newNode != originalNode )
+		{
+			*itty = newNode;
+			delete originalNode;
+		}
 	}
 }
 

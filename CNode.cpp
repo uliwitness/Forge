@@ -16,5 +16,5 @@ using namespace Carlson;
 
 void	CNode::Simplify()
 {
-	CNodeTransformationBase::Apply( this );
+	
 }

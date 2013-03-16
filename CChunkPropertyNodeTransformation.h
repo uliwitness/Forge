@@ -17,7 +17,7 @@ namespace Carlson
 class CChunkPropertyNodeTransformation : public CNodeTransformation<CObjectPropertyNode>
 {
 public:
-	virtual void	Simplify( CObjectPropertyNode *inPropNode );
+	virtual CNode*	Simplify( CObjectPropertyNode* inPropNode );
 
 	static void		Initialize()	{ sNodeTransformations.push_back( new CChunkPropertyNodeTransformation ); };
 };

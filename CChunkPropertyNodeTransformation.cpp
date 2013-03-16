@@ -15,7 +15,7 @@ namespace Carlson
 {
 
 
-void	CChunkPropertyNodeTransformation::Simplify( CObjectPropertyNode *inPropNode )
+CNode*	CChunkPropertyNodeTransformation::Simplify( CObjectPropertyNode* inPropNode )
 {
 	if( inPropNode->GetParamCount() >= 1 )
 	{
@@ -42,6 +42,8 @@ void	CChunkPropertyNodeTransformation::Simplify( CObjectPropertyNode *inPropNode
 			inPropNode->SetParamAtIndex(0, chunkRefExpr);
 		}
 	}
+	
+	return inPropNode;
 }
 
 
