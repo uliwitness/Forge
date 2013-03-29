@@ -1186,6 +1186,20 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		
 		CCodeBlockNodeBase*		progressNode = theDownloadCommand->CreateProgressBlock( tokenItty->mLineNum );
 
+		// Make sure function declares "the result" for use by handler calls:
+		progressNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+
+		// Make sure parameter 1 is available under "the download". It's an array
+		//	containing info like download size (current, total) etc.:
+		std::string	realVarName( "download" );
+		std::string	varName("download");
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, progressNode, varName, realVarName) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		progressNode->AddCommand( theVarCopyCommand );
+		
+		progressNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
+
 		if( tokenItty->IsIdentifier( ENewlineOperator ) )
 		{
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1221,6 +1235,20 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		CCodeBlockNodeBase*		completionNode = theDownloadCommand->CreateCompletionBlock( tokenItty->mLineNum );
+		
+		// Make sure function declares "the result" for use by handler calls:
+		completionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+
+		// Make sure parameter 1 is available under "the download". It's an array
+		//	containing info like download size (current, total) etc.:
+		std::string	realVarName( "download" );
+		std::string	varName("download");
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, completionNode, varName, realVarName) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		completionNode->AddCommand( theVarCopyCommand );
+		
+		completionNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
 
 		if( tokenItty->IsIdentifier( ENewlineOperator ) )
 		{
@@ -1886,6 +1914,15 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	{
 		std::string		realVarName( "result" );
 		std::string		varName( "result" );
+		CreateVariable( varName, realVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	}
+	else if( tokenItty->IsIdentifier( EDownloadIdentifier ) )
+	{
+		std::string		realVarName( "download" );
+		std::string		varName( "download" );
 		CreateVariable( varName, realVarName, initWithName, currFunction );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
 		
