@@ -1,5 +1,5 @@
 //
-//  Forge.c
+//  Forge.cpp
 //  Forge
 //
 //  Created by Uli Kusterer on 09.04.11.
@@ -19,6 +19,8 @@ extern "C" {
 #include "CConcatOperatorNodeTransformation.h"
 #include "CConcatSpaceOperatorNodeTransformation.h"
 
+
+#include <iostream>
 
 using namespace Carlson;
 
@@ -57,10 +59,17 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
 		
 		parseTree->Simplify();
+		
+		#if 1
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
+		#if 1
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 		if( parseTree )
 			delete parseTree;
 		parseTree = NULL;

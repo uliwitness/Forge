@@ -9,9 +9,20 @@
 
 #include "CParseTree.h"
 #include "CNodeTransformation.h"
+#include <string>
+#include <assert.h>
+
 
 namespace Carlson
 {
+
+
+CParseTree::CParseTree()
+	: mUniqueIdentifierSeed(0)
+{
+
+}
+
 
 CParseTree::~CParseTree()
 {
@@ -66,5 +77,15 @@ void	CParseTree::DebugPrint( std::ostream& destStream, size_t indentLevel )
 	}
 }
 
+
+std::string	CParseTree::GetUniqueIdentifierBasedOn( std::string inBaseIdentifier )
+{
+	std::string		outIdent( inBaseIdentifier );
+	assert(ULLONG_MAX <= 18446744073709551615ULL);
+	char			numStr[20+1] = {0};
+	snprintf(numStr, 20, "%llu", mUniqueIdentifierSeed++);
+	outIdent.append(numStr);
+	return outIdent;
+}
 
 } // namespace Carlson

@@ -25,6 +25,7 @@
 #include "LEOHandlerID.h"
 #include "LEOMsgInstructions.h"
 #include "LEOPropertyInstructions.h"
+#include "LEODownloadInstructions.h"
 
 
 // -----------------------------------------------------------------------------

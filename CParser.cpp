@@ -36,6 +36,7 @@
 #include "CMakeChunkConstNode.h"
 #include "CObjectPropertyNode.h"
 #include "CGlobalPropertyNode.h"
+#include "CDownloadCommandNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -1117,6 +1118,170 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 }
 
 
+void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& parseTree,
+										CCodeBlockNodeBase* currFunction,
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	CDownloadCommandNode*	theDownloadCommand = new CDownloadCommandNode( &parseTree, tokenItty->mLineNum );
+	currFunction->AddCommand( theDownloadCommand );
+	
+	// Download:
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	// What:
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	theDownloadCommand->AddParam( theWhatNode );
+	
+	// [In]to:
+	if( !tokenItty->IsIdentifier( EIntoIdentifier ) && !tokenItty->IsIdentifier( EToIdentifier ) )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"into\" here, found "
+								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	// Dest:
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	theDownloadCommand->AddParam( theContainerNode );
+	
+	bool		needEndDownload = false;
+	bool		haveProgressBlock = false;
+	bool		haveCompletionBlock = false;
+	
+	// For ease of reading, we allow the 'for' and 'when' clauses on a new line, if desired:
+	if( tokenItty->IsIdentifier( ENewlineOperator ) )	// +++ Cope with more than 1 line break.
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		if( !tokenItty->IsIdentifier( EForIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
+			CToken::GoPrevToken( mFileName, tokenItty, tokens );
+	}
+	
+	// For each chunk:
+	if( tokenItty->IsIdentifier( EForIdentifier ) )
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EEachIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"each chunk\" after \"for\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EChunkIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"chunk\" after \"for each\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		CCodeBlockNodeBase*		progressNode = theDownloadCommand->CreateProgressBlock( tokenItty->mLineNum );
+
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
+		{
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+			needEndDownload = true;
+			
+			// Commands:
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
+			{
+				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
+			}
+		}
+		else
+		{
+			ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens, true );
+		}
+		
+		haveProgressBlock = true;
+	}
+	
+	// when done:
+	if( tokenItty->IsIdentifier( EWhenIdentifier ) )
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EDoneIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"done\" after \"when\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		CCodeBlockNodeBase*		completionNode = theDownloadCommand->CreateCompletionBlock( tokenItty->mLineNum );
+
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
+		{
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+			needEndDownload = true;
+			
+			// Commands:
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+			{
+				ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens );
+			}
+		}
+		else
+		{
+			ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens, true );
+		}
+		
+		haveCompletionBlock = true;
+	}
+	
+	if( needEndDownload )
+	{
+		if( !tokenItty->IsIdentifier(EEndIdentifier) )
+		{
+			std::stringstream		errMsg;
+			
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end download\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		if( !tokenItty->IsIdentifier(EDownloadIdentifier) )
+		{
+			std::stringstream		errMsg;
+			
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"download\" after \"end\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	}
+	
+	if( !tokenItty->IsIdentifier(ENewlineOperator) )
+	{
+		const char*		expectations = "end of line";
+		if( !haveCompletionBlock && haveProgressBlock )
+			expectations = "\"when done\" or end of line";
+		else if( !haveCompletionBlock && !haveProgressBlock )
+			expectations = "\"for each chunk\", \"when done\" or end of line";
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << expectations << " here, found "
+								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
+}
+
+
 void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
@@ -1821,6 +1986,8 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		theFCall->AddParam( theContainer );
 		currFunction->AddCommand( theFCall );
 	}
+	else if( tokenItty->IsIdentifier(EDownloadIdentifier) )
+		ParseDownloadStatement( userHandlerName, parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EReturnIdentifier) )
 		ParseReturnStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EPassIdentifier) )

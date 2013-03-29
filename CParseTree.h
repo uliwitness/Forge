@@ -24,6 +24,7 @@ class CParseTree;
 class CParseTree
 {
 public:
+	CParseTree();
 	virtual ~CParseTree();
 	
 	virtual void		AddNode( CNode* inNode )			{ mNodes.push_back( inNode ); };
@@ -35,10 +36,13 @@ public:
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
+	
+	virtual std::string	GetUniqueIdentifierBasedOn( std::string inBaseIdentifier );	// Unique among other identifiers returned by this with the same base identifier.
 
 protected:
 	std::deque<CNode*>						mNodes;	// The tree owns any nodes you add and will delete them when it goes out of scope.
 	std::map<std::string,CVariableEntry>	mGlobals;
+	unsigned long long						mUniqueIdentifierSeed;
 };
 
 }

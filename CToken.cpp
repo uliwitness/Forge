@@ -201,7 +201,11 @@ namespace Carlson
 		"create",
 		"new",
 		"debug",
-		"checkpoint"
+		"checkpoint",
+		"download",
+		"when",
+		"done",
+		"chunk"
 	};
 
 TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
@@ -372,6 +376,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	ENewIdentifier,
 	EDebugIdentifier,
 	ECheckpointIdentifier,
+	EDownloadIdentifier,
+	EWhenIdentifier,
+	EDoneIdentifier,
+	EChunkIdentifier,
 	
 	ELastIdentifier_Sentinel
 };
