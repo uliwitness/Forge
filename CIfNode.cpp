@@ -63,7 +63,6 @@ void	CIfNode::Simplify()
 	{
 		assert( dynamic_cast<CValueNode*>(newNode) != NULL );
 		mCondition = (CValueNode*)newNode;
-		delete originalNode;
 	}
 	
 	CCodeBlockNode::Simplify();
@@ -77,7 +76,6 @@ void	CIfNode::Simplify()
 		{
 			assert( dynamic_cast<CCodeBlockNode*>(newNode) != NULL );
 			mElseBlock = (CCodeBlockNode*)newNode;
-			delete originalNode;
 		}
 	}
 }

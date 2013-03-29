@@ -32,8 +32,8 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded()
 	static bool	sAlreadyInitializedThem = false;
 	if( !sAlreadyInitializedThem )
 	{
-//		CConcatOperatorNodeTransformation::Initialize();
-//		CConcatSpaceOperatorNodeTransformation::Initialize();
+		CConcatOperatorNodeTransformation::Initialize();
+		CConcatSpaceOperatorNodeTransformation::Initialize();
 		CChunkPropertyNodeTransformation::Initialize();
 		
 		sAlreadyInitializedThem = true;
@@ -60,14 +60,14 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		
 		parseTree->Simplify();
 		
-		#if 1
+		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
 	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
-		#if 1
+		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
 		if( parseTree )

@@ -49,7 +49,6 @@ void	CWhileLoopNode::Simplify()
 	{
 		assert( dynamic_cast<CValueNode*>(newNode) != NULL );
 		mCondition = (CValueNode*)newNode;
-		delete originalNode;
 	}
 
 	CCodeBlockNode::Simplify();

@@ -71,7 +71,6 @@ void	COperatorNode::Simplify()
 		{
 			assert( dynamic_cast<CValueNode*>(newNode) != NULL );
 			*itty = (CValueNode*)newNode;
-			delete originalNode;
 		}
 	}
 }
