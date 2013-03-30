@@ -2556,7 +2556,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
-	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, lineNum );
+	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, currFunction, lineNum );
 	currOperation->AddParam( targetValObj );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );

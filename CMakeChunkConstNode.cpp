@@ -16,7 +16,7 @@ namespace Carlson
 		
 CValueNode*	CMakeChunkConstNode::Copy()
 {
-	CMakeChunkConstNode	*	nodeCopy = new CMakeChunkConstNode( mParseTree, mLineNum );
+	CMakeChunkConstNode	*	nodeCopy = new CMakeChunkConstNode( mParseTree, GetCurrentFunction(), mLineNum );
 	
 	std::vector<CValueNode*>::const_iterator	itty;
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )

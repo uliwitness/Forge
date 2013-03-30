@@ -35,6 +35,7 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded()
 		CConcatOperatorNodeTransformation::Initialize();
 		CConcatSpaceOperatorNodeTransformation::Initialize();
 		CChunkPropertyNodeTransformation::Initialize();
+		CChunkPropertyPutNodeTransformation::Initialize();
 		
 		sAlreadyInitializedThem = true;
 	}
@@ -60,7 +61,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		
 		parseTree->Simplify();
 		
-		#if 0
+		#if 1
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
 	}
@@ -101,6 +102,10 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 		parser.ParseCommandOrExpression( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
 
 		parseTree->Simplify();
+		
+		#if 1
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( std::exception& err )
 	{
@@ -156,11 +161,16 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	{
 		CCodeBlock			block( inGroup, inScript, inFileID );
 		
+		((CParseTree*)inTree)->Simplify();
 		((CParseTree*)inTree)->GenerateCode( &block );
 	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
+		
+		#if 1
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( ... )
 	{

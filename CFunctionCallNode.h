@@ -40,6 +40,8 @@ public:
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void		SetIsMessagePassing( bool inState )	{ mIsMessagePassing = inState; };
+	
+	virtual size_t		GetLineNum()	{ return mLineNum; };
 
 protected:
 	std::string					mSymbolName;

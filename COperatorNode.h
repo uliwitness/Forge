@@ -20,7 +20,6 @@ namespace Carlson
 
 class CValueNode;
 
-
 class COperatorNode : public CValueNode
 {
 public:
@@ -37,6 +36,7 @@ public:
 	virtual CValueNode*	Copy();
 
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
+	virtual const char*	GetDebugNodeName()	{ return "Operator Call"; };
 
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );

@@ -15,8 +15,8 @@ namespace Carlson
 class CMakeChunkRefNode : public CFunctionCallNode
 {
 public:
-		CMakeChunkRefNode( CParseTree* inTree, size_t inLineNum )
-			: CFunctionCallNode( inTree, false, "MakeChunkRef", inLineNum ) {};
+	CMakeChunkRefNode( CParseTree* inTree, size_t inLineNum )
+		: CFunctionCallNode( inTree, false, "MakeChunkRef", inLineNum ) {};
 		
 	virtual CValueNode*	Copy();
 
