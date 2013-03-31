@@ -9,6 +9,7 @@
 
 #include "CIfNode.h"
 #include "CCodeBlock.h"
+#include "CNodeTransformation.h"
 
 
 namespace Carlson
@@ -44,7 +45,8 @@ void	CIfNode::GenerateCode( CCodeBlock* inBlock )
 	inBlock->SetJumpAddressOfInstructionAtIndex( compareInstructionOffset, elseSectionStartOffset -compareInstructionOffset );
 	
 	// Generate Else section:
-	mElseBlock->GenerateCode( inBlock );
+	if( mElseBlock )
+		mElseBlock->GenerateCode( inBlock );
 	
 	// Retroactively fill in the address of the end of the Else section in the jump instruction at the If's end:
 	int32_t	elseSectionEndOffset = (int32_t) inBlock->GetNextInstructionOffset();
@@ -54,9 +56,28 @@ void	CIfNode::GenerateCode( CCodeBlock* inBlock )
 
 void	CIfNode::Simplify()
 {
-	mCondition->Simplify();
+	CNode	*	originalNode = mCondition;
+	originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
+	CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
+	if( newNode != originalNode )
+	{
+		assert( dynamic_cast<CValueNode*>(newNode) != NULL );
+		mCondition = (CValueNode*)newNode;
+	}
+	
 	CCodeBlockNode::Simplify();
-	mElseBlock->Simplify();
+	
+	if( mElseBlock )
+	{
+		originalNode = mElseBlock;
+		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
+		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either 'this', or an optimized copy. We get to keep one and delete the other.
+		if( newNode != originalNode )
+		{
+			assert( dynamic_cast<CCodeBlockNode*>(newNode) != NULL );
+			mElseBlock = (CCodeBlockNode*)newNode;
+		}
+	}
 }
 
 
@@ -70,9 +91,12 @@ void	CIfNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 	
 	DebugPrintInner( destStream, indentLevel );
 	
-	destStream << indentChars << "else" << std::endl;
-	
-	mElseBlock->DebugPrintInner( destStream, indentLevel );
+	if( mElseBlock )
+	{
+		destStream << indentChars << "else" << std::endl;
+		
+		mElseBlock->DebugPrintInner( destStream, indentLevel );
+	}
 }
 
 

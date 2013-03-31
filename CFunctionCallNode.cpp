@@ -10,6 +10,7 @@
 #include "CFunctionCallNode.h"
 #include "CParseTree.h"
 #include "CCodeBlock.h"
+#include "CNodeTransformation.h"
 #include "LEOInstructions.h"
 
 
@@ -63,7 +64,14 @@ void	CFunctionCallNode::Simplify()
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 	{
-		(*itty)->Simplify();
+		CValueNode	*	originalNode = *itty;
+		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
+		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
+		if( newNode != originalNode )
+		{
+			assert( dynamic_cast<CValueNode*>(newNode) != NULL );
+			*itty = (CValueNode*)newNode;
+		}
 	}
 }
 
@@ -80,11 +88,14 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 		instructionID = NUM_TO_HEX_INSTR;
 	else if( mSymbolName.compare( "hextonum" ) == 0 )
 		instructionID = HEX_TO_NUM_INSTR;
+	else if( mSymbolName.compare( "paramcount" ) == 0 )
+		instructionID = PARAMETER_COUNT_INSTR;
 	
 	if( instructionID != INVALID_INSTR )
 	{
 		// Push the param on the stack:
-		mParams[0]->GenerateCode( inCodeBlock );
+		if( mParams.size() > 0 )
+			mParams[0]->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateOperatorInstruction( instructionID );
 	}

@@ -149,6 +149,9 @@ namespace Carlson
 		void	ParseReturnStatement( CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		void	ParseDownloadStatement( std::string& userHandlerName, CParseTree& parseTree,
+										CCodeBlockNodeBase* currFunction,
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseRepeatForEachStatement( std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

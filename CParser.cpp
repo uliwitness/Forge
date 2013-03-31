@@ -36,6 +36,7 @@
 #include "CMakeChunkConstNode.h"
 #include "CObjectPropertyNode.h"
 #include "CGlobalPropertyNode.h"
+#include "CDownloadCommandNode.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -112,6 +113,13 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 	{ EItemDelimIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
 	{ EItemDelimiterIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
 	{ ELastIdentifier_Sentinel, INVALID_INSTR }
+};
+
+static TBuiltInFunctionEntry	sBuiltInFunctions[] =
+{
+	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR },
+	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR },
+	{ ELastIdentifier_Sentinel, NULL }
 };
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
@@ -845,6 +853,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				
+				uint8_t					currMode = '\0';
 				THostCommandEntry*		cmd = inHostTable + commandIdx;
 				THostParameterEntry*	par = cmd->mParam;
 				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
@@ -852,138 +861,31 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				
 				while( par->mType != EHostParam_Sentinel )
 				{
-					switch( par->mType )
+					if( par->mModeRequired == '\0' || par->mModeRequired == currMode )
 					{
-						case EHostParamImmediateValue:
+						switch( par->mType )
 						{
-							CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-							if( !term && par->mIsOptional )
+							case EHostParamImmediateValue:
 							{
-								if( par->mInstructionID == INVALID_INSTR )
-									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-							}
-							else if( !term )
-							{
-								delete hostCommand;
-								std::stringstream		errMsg;
-								if( tokenItty != tokens.end() )
+								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+								if( !term && par->mIsOptional )
 								{
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
-															<< tokenItty->GetShortDescription() << "\".";
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
 								}
-								else
-								{
-									--tokenItty;
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
-								}
-								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-								throw std::runtime_error( errMsg.str() );
-							}
-							else
-							{
-								hostCommand->AddParam( term );
-								if( par->mInstructionID != INVALID_INSTR )
-									hostCommand->SetInstructionID( par->mInstructionID );
-							}
-							break;
-						}
-
-						case EHostParamExpression:
-						{
-							CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-							if( !term && par->mIsOptional )
-							{
-								if( par->mInstructionID == INVALID_INSTR )
-									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-							}
-							else if( !term )
-							{
-								delete hostCommand;
-								std::stringstream		errMsg;
-								if( tokenItty != tokens.end() )
-								{
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
-															<< tokenItty->GetShortDescription() << "\".";
-								}
-								else
-								{
-									--tokenItty;
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
-								}
-								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-								throw std::runtime_error( errMsg.str() );
-							}
-							else
-							{
-								hostCommand->AddParam( term );
-								if( par->mInstructionID != INVALID_INSTR )
-									hostCommand->SetInstructionID( par->mInstructionID );
-							}
-							break;
-						}
-
-						case EHostParamIdentifier:
-						{
-							if( tokenItty->IsIdentifier(par->mIdentifierType) )
-							{
-								if( par->mInstructionID == INVALID_INSTR )
-									hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
-								else
-									hostCommand->SetInstructionID( par->mInstructionID );
-								CToken::GoNextToken( mFileName, tokenItty, tokens );
-							}
-							else if( par->mIsOptional )
-							{
-								if( par->mInstructionID == INVALID_INSTR )
-									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-							}
-							else
-							{
-								delete hostCommand;
-								std::stringstream		errMsg;
-								if( tokenItty != tokens.end() )
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
-														<< tokenItty->GetShortDescription() << "\".";
-								else
-								{
-									--tokenItty;
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
-								}
-								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-								throw std::runtime_error( errMsg.str() );
-							}
-							break;
-						}
-
-						case EHostParamLabeledValue:
-						case EHostParamLabeledExpression:
-						{
-							if( tokenItty->IsIdentifier(par->mIdentifierType) )
-							{
-								CToken::GoNextToken( mFileName, tokenItty, tokens );
-								
-								CValueNode	*	term = NULL;
-								const char	*	valType = "term";
-								if( par->mType == EHostParamLabeledExpression )
-								{
-									term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
-									valType = "expression";
-								}
-								else
-									term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-								if( !term )
+								else if( !term )
 								{
 									delete hostCommand;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
-															<< tokenItty->GetShortDescription() << "\".";
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
+																<< tokenItty->GetShortDescription() << "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 									throw std::runtime_error( errMsg.str() );
@@ -992,33 +894,166 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								{
 									hostCommand->AddParam( term );
 									if( par->mInstructionID != INVALID_INSTR )
+									{
 										hostCommand->SetInstructionID( par->mInstructionID );
+										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+									}
+									if( par->mModeToSet != 0 )
+										currMode = par->mModeToSet;
 								}
+								break;
 							}
-							else if( par->mIsOptional )
-								hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
-							else
+
+							case EHostParamExpression:
 							{
-								delete hostCommand;
-								std::stringstream		errMsg;
-								if( tokenItty != tokens.end() )
+								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+								if( !term && par->mIsOptional )
 								{
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
-														<< tokenItty->GetShortDescription() << "\".";
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+								}
+								else if( !term )
+								{
+									delete hostCommand;
+									std::stringstream		errMsg;
+									if( tokenItty != tokens.end() )
+									{
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
+																<< tokenItty->GetShortDescription() << "\".";
+									}
+									else
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									throw std::runtime_error( errMsg.str() );
 								}
 								else
 								{
-									--tokenItty;
-									errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+									hostCommand->AddParam( term );
+									if( par->mInstructionID != INVALID_INSTR )
+									{
+										hostCommand->SetInstructionID( par->mInstructionID );
+										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+									}
+									if( par->mModeToSet != 0 )
+										currMode = par->mModeToSet;
 								}
-								mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-								throw std::runtime_error( errMsg.str() );
+								break;
 							}
-							break;
+
+							case EHostParamIdentifier:
+							{
+								if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
+									|| tokenItty->IsIdentifier(par->mIdentifierType) )
+								{
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+									else
+									{
+										hostCommand->SetInstructionID( par->mInstructionID );
+										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+									}
+									CToken::GoNextToken( mFileName, tokenItty, tokens );
+									if( par->mModeToSet != 0 )
+										currMode = par->mModeToSet;
+								}
+								else if( par->mIsOptional )
+								{
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+								}
+								else
+								{
+									delete hostCommand;
+									std::stringstream		errMsg;
+									if( tokenItty != tokens.end() )
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+															<< tokenItty->GetShortDescription() << "\".";
+									else
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									throw std::runtime_error( errMsg.str() );
+								}
+								break;
+							}
+
+							case EHostParamLabeledValue:
+							case EHostParamLabeledExpression:
+							{
+								if( tokenItty->IsIdentifier(par->mIdentifierType) )
+								{
+									CToken::GoNextToken( mFileName, tokenItty, tokens );
+									
+									CValueNode	*	term = NULL;
+									const char	*	valType = "term";
+									if( par->mType == EHostParamLabeledExpression )
+									{
+										term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+										valType = "expression";
+									}
+									else
+										term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+									if( !term )
+									{
+										delete hostCommand;
+										std::stringstream		errMsg;
+										if( tokenItty != tokens.end() )
+										{
+											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
+																<< tokenItty->GetShortDescription() << "\".";
+										}
+										else
+										{
+											--tokenItty;
+											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+										}
+										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										throw std::runtime_error( errMsg.str() );
+									}
+									else
+									{
+										hostCommand->AddParam( term );
+										if( par->mInstructionID != INVALID_INSTR )
+										{
+											hostCommand->SetInstructionID( par->mInstructionID );
+											hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+										}
+									}
+									if( par->mModeToSet != 0 )
+										currMode = par->mModeToSet;
+								}
+								else if( par->mIsOptional )
+								{
+									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+								}
+								else
+								{
+									delete hostCommand;
+									std::stringstream		errMsg;
+									if( tokenItty != tokens.end() )
+									{
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+															<< tokenItty->GetShortDescription() << "\".";
+									}
+									else
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									throw std::runtime_error( errMsg.str() );
+								}
+								break;
+							}
+							
+							case EHostParam_Sentinel:
+								break;
 						}
-						
-						case EHostParam_Sentinel:
-							break;
 					}
 					
 					par++;
@@ -1080,6 +1115,198 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 	theReturnCommand->AddParam( theWhatNode );
 	
 	currFunction->AddCommand( theReturnCommand );
+}
+
+
+void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& parseTree,
+										CCodeBlockNodeBase* currFunction,
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	CDownloadCommandNode*	theDownloadCommand = new CDownloadCommandNode( &parseTree, tokenItty->mLineNum );
+	currFunction->AddCommand( theDownloadCommand );
+	
+	// Download:
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	// What:
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	theDownloadCommand->AddParam( theWhatNode );
+	
+	// [In]to:
+	if( !tokenItty->IsIdentifier( EIntoIdentifier ) && !tokenItty->IsIdentifier( EToIdentifier ) )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"into\" here, found "
+								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
+	CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+	// Dest:
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	theDownloadCommand->AddParam( theContainerNode );
+	
+	bool		needEndDownload = false;
+	bool		haveProgressBlock = false;
+	bool		haveCompletionBlock = false;
+	
+	// For ease of reading, we allow the 'for' and 'when' clauses on a new line, if desired:
+	if( tokenItty->IsIdentifier( ENewlineOperator ) )	// +++ Cope with more than 1 line break.
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		if( !tokenItty->IsIdentifier( EForIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
+			CToken::GoPrevToken( mFileName, tokenItty, tokens );
+	}
+	
+	// For each chunk:
+	if( tokenItty->IsIdentifier( EForIdentifier ) )
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EEachIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"each chunk\" after \"for\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EChunkIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"chunk\" after \"for each\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		CCodeBlockNodeBase*		progressNode = theDownloadCommand->CreateProgressBlock( tokenItty->mLineNum );
+
+		// Make sure function declares "the result" for use by handler calls:
+		progressNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+
+		// Make sure parameter 1 is available under "the download". It's an array
+		//	containing info like download size (current, total) etc.:
+		std::string	realVarName( "download" );
+		std::string	varName("download");
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, progressNode, varName, realVarName) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		progressNode->AddCommand( theVarCopyCommand );
+		
+		progressNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
+
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
+		{
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+			needEndDownload = true;
+			
+			// Commands:
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
+			{
+				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
+			}
+		}
+		else
+		{
+			ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens, true );
+		}
+		
+		haveProgressBlock = true;
+	}
+	
+	// when done:
+	if( tokenItty->IsIdentifier( EWhenIdentifier ) )
+	{
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
+		if( !tokenItty->IsIdentifier(EDoneIdentifier) )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"done\" after \"when\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		CCodeBlockNodeBase*		completionNode = theDownloadCommand->CreateCompletionBlock( tokenItty->mLineNum );
+		
+		// Make sure function declares "the result" for use by handler calls:
+		completionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+
+		// Make sure parameter 1 is available under "the download". It's an array
+		//	containing info like download size (current, total) etc.:
+		std::string	realVarName( "download" );
+		std::string	varName("download");
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, completionNode, varName, realVarName) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		completionNode->AddCommand( theVarCopyCommand );
+		
+		completionNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
+
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
+		{
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+			needEndDownload = true;
+			
+			// Commands:
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+			{
+				ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens );
+			}
+		}
+		else
+		{
+			ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens, true );
+		}
+		
+		haveCompletionBlock = true;
+	}
+	
+	if( needEndDownload )
+	{
+		if( !tokenItty->IsIdentifier(EEndIdentifier) )
+		{
+			std::stringstream		errMsg;
+			
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end download\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+		
+		if( !tokenItty->IsIdentifier(EDownloadIdentifier) )
+		{
+			std::stringstream		errMsg;
+			
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"download\" after \"end\" here, found "
+									<< tokenItty->GetShortDescription() << ".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw std::runtime_error( errMsg.str() );
+		}
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	}
+	
+	if( !tokenItty->IsIdentifier(ENewlineOperator) )
+	{
+		const char*		expectations = "end of line";
+		if( !haveCompletionBlock && haveProgressBlock )
+			expectations = "\"when done\" or end of line";
+		else if( !haveCompletionBlock && !haveProgressBlock )
+			expectations = "\"for each chunk\", \"when done\" or end of line";
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << expectations << " here, found "
+								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
 }
 
 
@@ -1692,6 +1919,15 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
+	else if( tokenItty->IsIdentifier( EDownloadIdentifier ) )
+	{
+		std::string		realVarName( "download" );
+		std::string		varName( "download" );
+		CreateVariable( varName, realVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	}
 	
 	// Check if it could be an object property expression:
 	if( !container )
@@ -1787,6 +2023,8 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		theFCall->AddParam( theContainer );
 		currFunction->AddCommand( theFCall );
 	}
+	else if( tokenItty->IsIdentifier(EDownloadIdentifier) )
+		ParseDownloadStatement( userHandlerName, parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EReturnIdentifier) )
 		ParseReturnStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EPassIdentifier) )
@@ -2318,7 +2556,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
 	
-	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, lineNum );
+	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, currFunction, lineNum );
 	currOperation->AddParam( targetValObj );
 	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 	currOperation->AddParam( startOffsObj );
@@ -2980,73 +3218,81 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			else if( tokenItty->mSubType == ETheIdentifier )
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "the".
-				if( tokenItty->IsIdentifier( EParamCountIdentifier ) )
+				
+				std::string		propName;
+				bool			isStyleQualifiedProperty = false;
+				
+				// Check if it could be an object property expression:
+				if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+					|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 				{
-					CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-					CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, false, "vcy_list_count", tokenItty->mLineNum );
-					countFunction->AddParam( paramsNode );
-					theTerm = countFunction;
+					propName = tokenItty->GetIdentifierText();
+					propName.append( 1, ' ' );
 					
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "paramCount".
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+					isStyleQualifiedProperty = true;
+				}
+				
+				size_t			lineNum = tokenItty->mLineNum;
+				propName.append( tokenItty->GetIdentifierText() );
+				CToken::GoNextToken( mFileName, tokenItty, tokens );
+				if( tokenItty->IsIdentifier( EOfIdentifier ) )
+				{
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+					CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+					
+					CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+					propExpr->AddParam( targetObj );
+					theTerm = propExpr;
 				}
 				else
 				{
-					std::string		propName;
-					bool			isStyleQualifiedProperty = false;
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+					if( isStyleQualifiedProperty )
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+				}
+				
+				if( !theTerm )
+				{
+					TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+					// Find it in our list of global properties:
+					int				x = 0;
 					
-					// Check if it could be an object property expression:
-					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+					for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						propName = tokenItty->GetIdentifierText();
-						propName.append( 1, ' ' );
-						
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
-						isStyleQualifiedProperty = true;
-					}
-					
-					size_t			lineNum = tokenItty->mLineNum;
-					propName.append( tokenItty->GetIdentifierText() );
-					CToken::GoNextToken( mFileName, tokenItty, tokens );
-					if( tokenItty->IsIdentifier( EOfIdentifier ) )
-					{
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-						CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-						
-						CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-						propExpr->AddParam( targetObj );
-						theTerm = propExpr;
-					}
-					else
-					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
-						if( isStyleQualifiedProperty )
-							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
-					}
-					
-					if( !theTerm )
-					{
-						TIdentifierSubtype	subType = tokenItty->mSubType;
-			
-						// Find it in our list of global properties:
-						int				x = 0;
-						
-						for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+						if( sGlobalProperties[x].mType == subType )
 						{
-							if( sGlobalProperties[x].mType == subType )
-							{
-								theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
-								CToken::GoNextToken( mFileName, tokenItty, tokens );
-								break;
-							}
+							theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
 						}
 					}
+				}
+				
+				
+				if( !theTerm )
+				{
+					TIdentifierSubtype	subType = tokenItty->mSubType;
+		
+					// Find it in our list of built-in functions:
+					int				x = 0;
 					
-					if( !theTerm )	// Not a global property? Try a container:
+					for( x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
-						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+						if( sBuiltInFunctions[x].mType == subType )
+						{
+							theTerm = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
+						}
 					}
+				}
+				
+				if( !theTerm )	// Not a global property? Try a container:
+				{
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
+					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
 				}
 				break;
 			}
@@ -3076,10 +3322,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					throw std::runtime_error( errMsg.str() );
 				}
 				
-				CLocalVariableRefValueNode*	paramsNode = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			countFunction = new CFunctionCallNode( &parseTree, false, "vcy_list_count", lineNum );
-				countFunction->AddParam( paramsNode );
-				theTerm = countFunction;
+				theTerm = new CFunctionCallNode( &parseTree, false, "paramcount", lineNum );
 				break;
 			}
 			else if( tokenItty->mSubType == EParamIdentifier )

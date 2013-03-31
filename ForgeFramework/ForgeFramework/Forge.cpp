@@ -1,5 +1,5 @@
 //
-//  Forge.c
+//  Forge.cpp
 //  Forge
 //
 //  Created by Uli Kusterer on 09.04.11.
@@ -16,6 +16,11 @@ extern "C" {
 #include "CParseTree.h"
 #include "CCodeBlock.h"
 #include "CChunkPropertyNodeTransformation.h"
+#include "CConcatOperatorNodeTransformation.h"
+#include "CConcatSpaceOperatorNodeTransformation.h"
+
+
+#include <iostream>
 
 using namespace Carlson;
 
@@ -27,7 +32,10 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded()
 	static bool	sAlreadyInitializedThem = false;
 	if( !sAlreadyInitializedThem )
 	{
+		CConcatOperatorNodeTransformation::Initialize();
+		CConcatSpaceOperatorNodeTransformation::Initialize();
 		CChunkPropertyNodeTransformation::Initialize();
+		CChunkPropertyPutNodeTransformation::Initialize();
 		
 		sAlreadyInitializedThem = true;
 	}
@@ -37,7 +45,7 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded()
 char	gLEOLastErrorString[1024] = { 0 };
 
 
-extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename )
+extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID )
 {
 	LEOInitializeNodeTransformationsIfNeeded();
 	
@@ -49,13 +57,20 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		parseTree = new CParseTree;
 		CParser				parser;
 		std::deque<CToken>	tokens = CToken::TokenListFromText( inCode, codeLength );
-		parser.Parse( filename, tokens, *parseTree );
+		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
 		
 		parseTree->Simplify();
+		
+		#if 0
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
+		#if 0
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 		if( parseTree )
 			delete parseTree;
 		parseTree = NULL;
@@ -72,7 +87,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 }
 
 
-extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, const char* filename )
+extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID )
 {
 	LEOInitializeNodeTransformationsIfNeeded();
 	
@@ -84,9 +99,13 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 		parseTree = new CParseTree;
 		CParser				parser;
 		std::deque<CToken>	tokens = CToken::TokenListFromText( inCode, codeLength );
-		parser.ParseCommandOrExpression( filename, tokens, *parseTree );
+		parser.ParseCommandOrExpression( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
 
 		parseTree->Simplify();
+		
+		#if 0
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( std::exception& err )
 	{
@@ -132,7 +151,7 @@ extern "C" const char*	LEOParserGetLastErrorMessage()
 }
 
 
-extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree )
+extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree, uint16_t inFileID )
 {
 	LEOInitializeNodeTransformationsIfNeeded();
 	
@@ -140,13 +159,18 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	
 	try
 	{
-		CCodeBlock			block( inGroup, inScript );
+		CCodeBlock			block( inGroup, inScript, inFileID );
 		
+		((CParseTree*)inTree)->Simplify();
 		((CParseTree*)inTree)->GenerateCode( &block );
 	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
+		
+		#if 0
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		#endif
 	}
 	catch( ... )
 	{

@@ -9,6 +9,7 @@
 
 #include "CWhileLoopNode.h"
 #include "CCodeBlock.h"
+#include "CNodeTransformation.h"
 
 
 namespace Carlson
@@ -41,7 +42,15 @@ void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 
 void	CWhileLoopNode::Simplify()
 {
-	mCondition->Simplify();
+	CValueNode	*	originalNode = mCondition;
+	originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
+	CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
+	if( newNode != originalNode )
+	{
+		assert( dynamic_cast<CValueNode*>(newNode) != NULL );
+		mCondition = (CValueNode*)newNode;
+	}
+
 	CCodeBlockNode::Simplify();
 }
 

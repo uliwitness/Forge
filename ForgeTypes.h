@@ -12,7 +12,10 @@
 #include "LEOInterpreter.h"
 
 
-/* The various built-in identifiers the parser recognizes: */
+/* The various built-in identifiers the parser recognizes:
+	When adding an identifier here, remember to always also add an entry for it
+	to gIdentifierStrings and gIdentifierSynonyms.
+*/
 typedef enum
 {
 	EFunctionIdentifier = 0,
@@ -72,6 +75,7 @@ typedef enum
 	EEntryIdentifier,
 	EParamIdentifier,
 	EParameterIdentifier,
+	EParametersIdentifier,
 	EParamCountIdentifier,
 	EUnsetIdentifier,
 	EIsIdentifier,
@@ -176,6 +180,14 @@ typedef enum
 	EPlayerIdentifier,
 	EMyIdentifier,
 	EVersionIdentifier,
+	ECreateIdentifier,
+	ENewIdentifier,
+	EDebugIdentifier,
+	ECheckpointIdentifier,
+	EDownloadIdentifier,
+	EWhenIdentifier,
+	EDoneIdentifier,
+	EChunkIdentifier,
 	
 	ELastIdentifier_Sentinel	// Must be last. Used for array size and to mean "no system-defined identifier".
 } TIdentifierSubtype;
@@ -198,7 +210,7 @@ typedef enum
 } THostParameterOptional;
 
 
-#define LEO_MAX_HOST_PARAMS		8
+#define LEO_MAX_HOST_PARAMS		15
 
 
 // *** An entry in our global property look-up table:
@@ -207,6 +219,14 @@ struct TGlobalPropertyEntry
 	TIdentifierSubtype		mType;					// The identifier for this property.
 	LEOInstructionID		mSetterInstructionID;	// Instruction for changing this property.
 	LEOInstructionID		mGetterInstructionID;	// Instruction for retrieving this property's value.
+};
+
+
+// *** An entry in our global property look-up table:
+struct TBuiltInFunctionEntry
+{
+	TIdentifierSubtype		mType;			// The identifier for this property.
+	LEOInstructionID		mInstructionID;	// Instruction for this function.
 };
 
 
@@ -219,6 +239,8 @@ struct THostParameterEntry
 	LEOInstructionID		mInstructionID;		// If not INVALID_INSTR2, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
 	uint16_t				mInstructionParam1;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
 	uint32_t				mInstructionParam2;	// If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction.
+	char					mModeRequired;		// If this isn't 0, only parse this if the current mode is this number. The mode can be used to group together certain parameters so they only match when a previous parameter matched.
+	char					mModeToSet;			// If this parameter matches, and this isn't 0, change the current mode to this.
 };
 
 

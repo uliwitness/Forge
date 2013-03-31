@@ -19,6 +19,14 @@
 	needs to know about itself, and ONLY transformations need to know about the
 	other nodes they operate on. Moreover, each transformation can be its own
 	file and only THAT has its dependencies.
+	
+	Finally, you can replace the transformed node with a completely different node,
+	and if we did that in CNode, it would have to know about its container, and
+	would have to delete itself while one of its methods is running, all ugly
+	things to do. So instead, the container of a node calls
+	CNodeTransformationBase::Apply and then gets back the same object (in which
+	case the optimization didn't change the object's type) or a new object
+	(in which it is responsible for deleting the original object).
 */
 
 #include "CNode.h"
@@ -36,9 +44,9 @@ class CNodeTransformationBase
 public:
 	virtual ~CNodeTransformationBase() {};
 
-	virtual void	Simplify_External( CNode *inNode ) = 0;
+	virtual CNode*	Simplify_External( CNode* inNode ) = 0;	// If it doesn't return 'this', caller will delete 'this' and use the optimized value.
 	
-	static void		Apply( CNode* inNode );
+	static CNode*	Apply( CNode* inNode );					// If it doesn't return 'this', caller must delete either 'this' and use the optimized value.
 };
 
 
@@ -56,16 +64,16 @@ class CNodeTransformation : public CNodeTransformationBase
 public:
 	virtual ~CNodeTransformation() {};
 	
-	virtual void	Simplify( c_node_subclass * inNode ) = 0;
+	virtual CNode*	Simplify( c_node_subclass* inNode ) = 0;	// If it doesn't return 'this', caller will delete 'this' and use the optimized value.
 	
-	virtual void	Simplify_External( CNode *inNode )
+	virtual CNode*				Simplify_External( CNode* inNode )			// If it doesn't return 'this', caller will delete 'this' and use the optimized value.
 	{
 		c_node_subclass * subclassPtr = dynamic_cast<c_node_subclass*>(inNode);
 		
 		if( subclassPtr )
-		{
-			Simplify( subclassPtr );
-		}
+			return Simplify( subclassPtr );
+		
+		return inNode;
 	}
 	
 	//static void		Initialize()	{ sNodeTransformations.push_back( new MYCLASSNAME ); };

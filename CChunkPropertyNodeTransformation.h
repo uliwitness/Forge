@@ -8,6 +8,7 @@
 
 #include "CNodeTransformation.h"
 #include "CObjectPropertyNode.h"
+#include "CPutCommandNode.h"
 
 
 namespace Carlson
@@ -17,10 +18,17 @@ namespace Carlson
 class CChunkPropertyNodeTransformation : public CNodeTransformation<CObjectPropertyNode>
 {
 public:
-	virtual void	Simplify( CObjectPropertyNode *inPropNode );
+	virtual CNode*	Simplify( CObjectPropertyNode* inPropNode );
 
 	static void		Initialize()	{ sNodeTransformations.push_back( new CChunkPropertyNodeTransformation ); };
 };
 
+class CChunkPropertyPutNodeTransformation : public CNodeTransformation<CPutCommandNode>
+{
+public:
+	virtual CNode*	Simplify( CPutCommandNode* inPropNode );
+
+	static void		Initialize()	{ sNodeTransformations.push_back( new CChunkPropertyPutNodeTransformation ); };
+};
 
 } // namespace Carlson

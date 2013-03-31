@@ -26,7 +26,7 @@ class CCodeBlock;
 class CCodeBlock
 {
 public:
-	CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript );
+	CCodeBlock( LEOContextGroup * inGroup, LEOScript* inScript, uint16_t inFileID );
 	virtual ~CCodeBlock();
 	
 	void		GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );
@@ -60,7 +60,7 @@ public:
 	
 	void		GenerateAddNumberInstruction( int16_t bpRelativeOffset, LEONumber inNumber );
 	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
-	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID );
+	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID, uint16_t inParam1 = 0, uint32_t inParam2 = 0 );
 	
 	void		GenerateLineMarkerInstruction( uint32_t inLineNum );
 	
@@ -84,6 +84,7 @@ protected:
 	LEOContextGroup*		mGroup;
 	LEOHandler*				mCurrentHandler;
 	size_t					mNumLocals;
+	uint16_t				mFileID;
 };
 
 }

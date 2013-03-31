@@ -33,25 +33,28 @@ void	CMakeChunkRefNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 	CLocalVariableRefValueNode * theVar = dynamic_cast<CLocalVariableRefValueNode*>(*itty);
 	
-	if( !theVar )
+	if( theVar )
+	{
+		int16_t		bpRelativeOffset = theVar->GetBPRelativeOffset();
+		
+		itty++;
+		
+		uint32_t chunkType = (*itty)->GetAsInt();
+		
+		itty++;
+		
+		for( ; itty != mParams.end(); itty++ )
+		{
+			(*itty)->GenerateCode( inCodeBlock );
+		}
+
+		inCodeBlock->GeneratePushChunkRefInstruction( bpRelativeOffset, chunkType );
+	}
+	else
 	{
 		throw std::runtime_error("Can't make chunks of this value.");
 	}
 	
-	int16_t		bpRelativeOffset = theVar->GetBPRelativeOffset();
-	
-	itty++;
-	
-	uint32_t chunkType = (*itty)->GetAsInt();
-	
-	itty++;
-	
-	for( ; itty != mParams.end(); itty++ )
-	{
-		(*itty)->GenerateCode( inCodeBlock );
-	}
-
-	inCodeBlock->GeneratePushChunkRefInstruction( bpRelativeOffset, chunkType );
 }
 
 } // namespace Carlson

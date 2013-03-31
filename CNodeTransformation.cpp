@@ -15,13 +15,19 @@ namespace Carlson
 std::vector<CNodeTransformationBase*>		sNodeTransformations;
 
 
-void	CNodeTransformationBase::Apply( CNode* inNode )
+CNode*	CNodeTransformationBase::Apply( CNode* inNode )
 {
+	CNode	*	currNode = inNode;
 	std::vector<CNodeTransformationBase*>::const_iterator	itty;
 	for( itty = sNodeTransformations.begin(); itty != sNodeTransformations.end(); itty++ )
 	{
-		(*itty)->Simplify_External( inNode );
+		CNode	*	originalNode = currNode;
+		currNode = (*itty)->Simplify_External( originalNode );
+		if( currNode != originalNode )
+			delete originalNode;
 	}
+	
+	return currNode;
 }
 
 }

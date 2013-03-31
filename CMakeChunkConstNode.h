@@ -15,12 +15,17 @@ namespace Carlson
 class CMakeChunkConstNode : public CFunctionCallNode
 {
 public:
-		CMakeChunkConstNode( CParseTree* inTree, size_t inLineNum )
-			: CFunctionCallNode( inTree, false, "MakeChunkConst", inLineNum ) {};
+	CMakeChunkConstNode( CParseTree* inTree, CCodeBlockNodeBase * currFunc, size_t inLineNum )
+		: CFunctionCallNode( inTree, false, "MakeChunkConst", inLineNum ), mCurrFunc(currFunc) {};
 		
 	virtual CValueNode*	Copy();
 
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	
+	virtual CCodeBlockNodeBase*	GetCurrentFunction()	{ return mCurrFunc; };
+
+protected:
+	CCodeBlockNodeBase	*	mCurrFunc;
 };
 
 

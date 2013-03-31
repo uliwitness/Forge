@@ -93,7 +93,8 @@ namespace Carlson
 		"entry",
 		"param",
 		"parameter",
-		"paramCount",
+		"parameters",
+		"paramcount",
 		"unset",
 		"is",
 		"not",
@@ -196,7 +197,15 @@ namespace Carlson
 		"movie",
 		"player",
 		"my",
-		"version"
+		"version",
+		"create",
+		"new",
+		"debug",
+		"checkpoint",
+		"download",
+		"when",
+		"done",
+		"chunk"
 	};
 
 TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
@@ -258,6 +267,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	EEntryIdentifier,
 	EParameterIdentifier,	// EParamIdentifier,
 	EParameterIdentifier,
+	EParametersIdentifier,
 	EParamCountIdentifier,
 	EUnsetIdentifier,
 	EIsIdentifier,
@@ -362,6 +372,15 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	EPlayerIdentifier,
 	EMyIdentifier,
 	EVersionIdentifier,
+	ECreateIdentifier,
+	ENewIdentifier,
+	EDebugIdentifier,
+	ECheckpointIdentifier,
+	EDownloadIdentifier,
+	EWhenIdentifier,
+	EDoneIdentifier,
+	EChunkIdentifier,
+	
 	ELastIdentifier_Sentinel
 };
 
