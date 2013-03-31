@@ -71,7 +71,7 @@ public:
 	static int		mTempCounterSeed;
 	
 public:
-	CVariableEntry( const std::string& realName, bool initWithName = false, bool isParam = false, bool isGlobal = false, bool dontDispose = false )
+	CVariableEntry( const std::string& realName, TVariantType theType, bool initWithName = false, bool isParam = false, bool isGlobal = false, bool dontDispose = false )
 		: mInitWithName( initWithName ), mIsParameter( isParam ), mIsGlobal( isGlobal ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(LONG_MAX) {};
 	CVariableEntry()
 		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mDontDispose( false ), mRealName(), mBPRelativeOffset(LONG_MAX) {};
