@@ -61,7 +61,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		
 		parseTree->Simplify();
 		
-		#if 1
+		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
 	}
@@ -103,7 +103,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 
 		parseTree->Simplify();
 		
-		#if 1
+		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
 	}
@@ -168,7 +168,7 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	{
 		strcpy( gLEOLastErrorString, err.what() );
 		
-		#if 1
+		#if 0
 		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
 		#endif
 	}
