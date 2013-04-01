@@ -18,3 +18,9 @@ void	CNode::Simplify()
 {
 	
 }
+
+
+void	CNode::GenerateCode( CCodeBlock* inCodeBlock )
+{
+
+}
