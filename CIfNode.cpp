@@ -71,7 +71,7 @@ void	CIfNode::Simplify()
 	{
 		originalNode = mElseBlock;
 		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
-		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either 'this', or an optimized copy. We get to keep one and delete the other.
+		newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either 'this', or an optimized copy. We get to keep one and delete the other.
 		if( newNode != originalNode )
 		{
 			assert( dynamic_cast<CCodeBlockNode*>(newNode) != NULL );
