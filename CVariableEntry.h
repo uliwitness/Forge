@@ -73,8 +73,6 @@ public:
 public:
 	CVariableEntry( const std::string& realName, TVariantType theType, bool initWithName = false, bool isParam = false, bool isGlobal = false, bool dontDispose = false )
 		: mInitWithName( initWithName ), mIsParameter( isParam ), mIsGlobal( isGlobal ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(LONG_MAX) {};
-	CVariableEntry( const std::string& realName, const std::string& initCode, bool dontDispose = false, bool initDirectly = false )
-		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mRealName( realName ), mDontDispose(dontDispose), mBPRelativeOffset(LONG_MAX) {};
 	CVariableEntry()
 		: mInitWithName( false ), mIsParameter( false ), mIsGlobal( false ), mDontDispose( false ), mRealName(), mBPRelativeOffset(LONG_MAX) {};
 

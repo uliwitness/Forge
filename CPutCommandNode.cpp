@@ -22,7 +22,6 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	CValueNode					*	destValue = GetParamAtIndex( 1 );
 	CValueNode					*	srcValue = GetParamAtIndex( 0 );
-	CLocalVariableRefValueNode	*	varValue = NULL;
 	CMakeChunkRefNode			*	chunkValue = NULL;
 	CObjectPropertyNode			*	propertyValue = NULL;
 	CGlobalPropertyNode			*	globalPropertyValue = NULL;

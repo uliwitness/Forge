@@ -35,6 +35,9 @@
 typedef struct LEOParseTree	LEOParseTree;	// Private internal data structure representing a parse tree.
 
 
+struct TGlobalPropertyEntry;
+struct THostCommandEntry;
+
 
 // -----------------------------------------------------------------------------
 //	Forge methods:
@@ -47,7 +50,7 @@ void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
 void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree, uint16_t inFileID );
 
-const char*		LEOParserGetLastErrorMessage();	// Call this after LEOParseTreeCreateFromUTF8Characters or LEOScriptCompileAndAddParseTree to detect errors. If it returns NULL, everything was fine.
+const char*		LEOParserGetLastErrorMessage( void );	// Call this after LEOParseTreeCreateFromUTF8Characters or LEOScriptCompileAndAddParseTree to detect errors. If it returns NULL, everything was fine.
 
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 

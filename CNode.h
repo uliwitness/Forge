@@ -45,7 +45,7 @@ public:
 	
 	virtual void	Simplify();	// For optimizing our parse tree before we actually generate code.
 	
-	virtual void	GenerateCode( CCodeBlock* inCodeBlock )						{};	// Generate the actual bytecode.
+	virtual void	GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode.
 	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel ) = 0;
 	

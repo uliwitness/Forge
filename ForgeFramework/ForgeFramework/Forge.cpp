@@ -25,9 +25,10 @@ extern "C" {
 using namespace Carlson;
 
 
+extern "C" void LEOInitializeNodeTransformationsIfNeeded( void );
 
 
-extern "C" void LEOInitializeNodeTransformationsIfNeeded()
+extern "C" void LEOInitializeNodeTransformationsIfNeeded( void )
 {
 	static bool	sAlreadyInitializedThem = false;
 	if( !sAlreadyInitializedThem )

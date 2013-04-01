@@ -274,6 +274,10 @@ struct TObjCTypeConversionEntry	sVariantToObjCMappings[] =
 };
 
 #pragma mark -
+	
+	
+void	PrintStringStream( std::stringstream& sstr );
+
 
 void	PrintStringStream( std::stringstream& sstr )
 {
@@ -1912,19 +1916,19 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	
 	if( tokenItty->IsIdentifier( EResultIdentifier ) )
 	{
-		std::string		realVarName( "result" );
-		std::string		varName( "result" );
-		CreateVariable( varName, realVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		std::string		realResultName( "result" );
+		std::string		resultName( "result" );
+		CreateVariable( resultName, realResultName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, resultName, realResultName );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	else if( tokenItty->IsIdentifier( EDownloadIdentifier ) )
 	{
-		std::string		realVarName( "download" );
-		std::string		varName( "download" );
-		CreateVariable( varName, realVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		std::string		realDVarName( "download" );
+		std::string		dVarName( "download" );
+		CreateVariable( dVarName, realDVarName, initWithName, currFunction );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}

@@ -19,6 +19,12 @@
 namespace Carlson
 {
 
+void	CValueNode::GenerateCode( CCodeBlock* inCodeBlock )
+{
+#pragma unused(inCodeBlock)
+}
+	
+	
 void	CIntValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	inCodeBlock->GeneratePushIntInstruction( (int)mIntValue );
