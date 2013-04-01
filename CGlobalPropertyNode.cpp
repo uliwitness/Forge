@@ -21,7 +21,7 @@ void	CGlobalPropertyNode::DebugPrint( std::ostream& destStream, size_t indentLev
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Global Property \"" << gInstructionNames[mGetterInstructionID] << "\"" << std::endl
+	destStream << indentChars << "Global Property \"" << gInstructions[mGetterInstructionID].name << "\"" << std::endl
 				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;

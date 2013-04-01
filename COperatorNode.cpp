@@ -21,7 +21,7 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << GetDebugNodeName() << " \"" << ((gNumInstructions > mInstructionID) ? gInstructionNames[mInstructionID] : "???") << "\"" << std::endl
+	destStream << indentChars << GetDebugNodeName() << " \"" << ((gNumInstructions > mInstructionID) ? gInstructions[mInstructionID].name : "???") << "\"" << std::endl
 				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;
