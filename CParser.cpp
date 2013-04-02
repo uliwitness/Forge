@@ -1393,10 +1393,10 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	theAddCommand->AddParam( theContainerNode );
 	
 	// With:
-	if( !tokenItty->IsIdentifier( EWithIdentifier ) )
+	if( !tokenItty->IsIdentifier( EWithIdentifier ) && !tokenItty->IsIdentifier( EByIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"with\" here, found "
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"with\" or \"by\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw std::runtime_error( errMsg.str() );
