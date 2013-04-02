@@ -3375,11 +3375,10 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "parameter".
 				
-				CLocalVariableRefValueNode*	paramListVar = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			fcall = new CFunctionCallNode( &parseTree, false, "vcy_list_get", lineNum );
+				COperatorNode*			fcall = new COperatorNode( &parseTree, PARAMETER_KEEPREFS_INSTR, lineNum );
+				fcall->SetInstructionParams( BACK_OF_STACK, 0 );
 				
-				fcall->AddParam( paramListVar );
-				fcall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens ) );
+				fcall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
 
 				theTerm = fcall;
 				break;
