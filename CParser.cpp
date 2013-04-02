@@ -120,9 +120,9 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 
 static TBuiltInFunctionEntry	sBuiltInFunctions[] =
 {
-	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR },
-	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR },
-	{ ELastIdentifier_Sentinel, NULL }
+	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR, BACK_OF_STACK, 0 },
+	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR, 0, 0 },
+	{ ELastIdentifier_Sentinel, NULL, 0, 0 }
 };
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
@@ -3276,8 +3276,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						}
 					}
 				}
-				
-				
+								
 				if( !theTerm )
 				{
 					TIdentifierSubtype	subType = tokenItty->mSubType;
@@ -3289,7 +3288,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						if( sBuiltInFunctions[x].mType == subType )
 						{
-							theTerm = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+							COperatorNode* fcall = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+							fcall->SetInstructionParams( sBuiltInFunctions[x].mParam1, sBuiltInFunctions[x].mParam2 );
+							theTerm = fcall;
 							CToken::GoNextToken( mFileName, tokenItty, tokens );
 							break;
 						}
@@ -3303,43 +3304,28 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				break;
 			}
-			else if( tokenItty->mSubType == EParamCountIdentifier )
-			{
-				bool		hadBrackets = false;
-				size_t		lineNum = tokenItty->mLineNum;
-				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "paramCount".
-				
-				if( tokenItty->IsIdentifier( EOpenBracketOperator ) )
-				{
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
-					if( tokenItty->IsIdentifier( ECloseBracketOperator ) )
-					{
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
-						hadBrackets = true;
-					}
-				}
-					
-				if( !hadBrackets )
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"(\" and \")\" after function name, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
-				}
-				
-				theTerm = new CFunctionCallNode( &parseTree, false, "paramcount", lineNum );
-				break;
-			}
 			else if( tokenItty->mSubType == EParamIdentifier )
 			{
 				size_t		lineNum = tokenItty->mLineNum;
 				
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "param".
 				
-				if( !tokenItty->IsIdentifier( EOpenBracketOperator ) )	// Parse open bracket.
+				bool	hadOpenBracket = false;
+				if( tokenItty->IsIdentifier( EOpenBracketOperator ) )	// Parse open bracket.
 				{
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
+					hadOpenBracket = true;
+				}
+				
+				COperatorNode*			fcall = new COperatorNode( &parseTree, PARAMETER_INSTR, lineNum );
+				fcall->SetInstructionParams( BACK_OF_STACK, 0 );
+				
+				fcall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
+				
+				if( !tokenItty->IsIdentifier( ECloseBracketOperator ) && hadOpenBracket )	// MUST have close bracket.
+				{
+					delete fcall;
+					
 					std::stringstream		errMsg;
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
@@ -3347,24 +3333,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					throw std::runtime_error( errMsg.str() );
 				}
 				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip opening bracket.
-				
-				CLocalVariableRefValueNode*	paramListVar = new CLocalVariableRefValueNode( &parseTree, currFunction, "paramList", "paramList" );
-				CFunctionCallNode*			fcall = new CFunctionCallNode( &parseTree, false, "vcy_list_get", lineNum );
-				
-				fcall->AddParam( paramListVar );
-				fcall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens ) );
-				
-				if( !tokenItty->IsIdentifier( ECloseBracketOperator ) )	// Parse close bracket.
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
-				}
-				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
+				if( hadOpenBracket )
+					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip closing bracket.
 				
 				theTerm = fcall;
 				break;
@@ -3397,6 +3367,33 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			{
 				TIdentifierSubtype	subType = tokenItty->mSubType;
 	
+				if( !theTerm )
+				{
+					// Find it in our list of built-in functions:
+					int				x = 0;
+					
+					for( x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
+					{
+						if( sBuiltInFunctions[x].mType == subType )
+						{
+							COperatorNode* fcall = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+							fcall->SetInstructionParams( sBuiltInFunctions[x].mParam1, sBuiltInFunctions[x].mParam2 );
+							theTerm = fcall;
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							
+							if( tokenItty->IsIdentifier( EOpenBracketOperator ) )
+							{
+								CToken::GoNextToken( mFileName, tokenItty, tokens );
+								if( tokenItty->IsIdentifier( ECloseBracketOperator ) )
+									CToken::GoNextToken( mFileName, tokenItty, tokens );
+								else
+									CToken::GoPrevToken( mFileName, tokenItty, tokens );
+							}
+							break;
+						}
+					}
+				}
+
 				// Find it in our list of global properties:
 				for( int x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 				{

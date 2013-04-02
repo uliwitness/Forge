@@ -227,6 +227,8 @@ struct TBuiltInFunctionEntry
 {
 	TIdentifierSubtype		mType;			// The identifier for this property.
 	LEOInstructionID		mInstructionID;	// Instruction for this function.
+	uint16_t				mParam1;		// Parameter to set on the instruction.
+	uint32_t				mParam2;		// Parameter to set on the instruction.
 };
 
 
