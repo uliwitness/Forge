@@ -17,6 +17,8 @@ extern "C"
 #include "LEOPropertyInstructions.h"
 }
 
+#include <vector>
+
 namespace Carlson
 {
 
@@ -38,6 +40,12 @@ CCodeBlock::~CCodeBlock()
 }
 
 
+static bool CompareBPOffsets( const std::pair<std::string,CVariableEntry> &a, const std::pair<std::string,CVariableEntry> &b )
+{
+	return a.second.mBPRelativeOffset < b.second.mBPRelativeOffset;
+}
+
+
 void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber )
 {
 	// Create the handler:
@@ -47,16 +55,26 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 	else
 		mCurrentHandler = LEOScriptAddFunctionHandlerWithID( mScript, handlerID );
 	
-	// Allocate stack space for our local variables:
+	// Sort all variables in their BP-relative order so we can just push values
+	//	to allocate space and initial values in order:
+	std::map<std::string,CVariableEntry>::const_iterator		itty2;
+	std::vector< std::pair<std::string,CVariableEntry> >		locals;
+	
+	for( itty2 = inLocals.begin(); itty2 != inLocals.end(); itty2++ )
+		locals.push_back( *itty2 );
+	std::sort( locals.begin(), locals.end(), CompareBPOffsets );
+	
+	// Actually generate the code now that we have the proper order:
 	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, mFileID, (uint32_t)lineNumber );
 	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
-	std::map<std::string,CVariableEntry>::const_iterator		itty;
 	mNumLocals = 0;
+	std::vector< std::pair<std::string,CVariableEntry> >::const_iterator		itty;
 	
-	for( itty = inLocals.begin(); itty != inLocals.end(); itty++ )
+	for( itty = locals.begin(); itty != locals.end(); itty++ )
 	{
 		if( itty->second.mBPRelativeOffset != LONG_MAX )
 		{
+			//printf( "%s: %s BP offset %ld\n", inName.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			if( itty->second.mIsGlobal )
 			{
 				size_t	stringIndex = LEOScriptAddString( mScript, itty->second.mRealName.c_str() );
