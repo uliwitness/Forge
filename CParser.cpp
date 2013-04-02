@@ -28,6 +28,9 @@
 #include "CReturnCommandNode.h"
 #include "COperatorNode.h"
 #include "CAddCommandNode.h"
+#include "CSubtractCommandNode.h"
+#include "CMultiplyCommandNode.h"
+#include "CDivideCommandNode.h"
 #include "CLineMarkerNode.h"
 #include "CAssignChunkArrayNode.h"
 #include "CGetArrayItemCountNode.h"
@@ -1349,9 +1352,9 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "SubtractFrom", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CSubtractCommandNode( &parseTree, tokenItty->mLineNum );
 	
-	// Add:
+	// Subtract:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
@@ -1380,7 +1383,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "MultiplyWith", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CMultiplyCommandNode( &parseTree, tokenItty->mLineNum );
 	
 	// Multiply:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1411,7 +1414,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CCommandNode( &parseTree, "DivideBy", tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CDivideCommandNode( &parseTree, tokenItty->mLineNum );
 	
 	// Divide:
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
