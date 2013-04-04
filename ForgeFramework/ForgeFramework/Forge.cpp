@@ -60,6 +60,10 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		std::deque<CToken>	tokens = CToken::TokenListFromText( inCode, codeLength );
 		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
 		
+		#if 0
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
+		
 		parseTree->Simplify();
 		
 		#if 0
@@ -162,8 +166,22 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	{
 		CCodeBlock			block( inGroup, inScript, inFileID );
 		
+		#if 0
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		#endif
+		
 		((CParseTree*)inTree)->Simplify();
+		
+		#if 0
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		#endif
+		
 		((CParseTree*)inTree)->GenerateCode( &block );
+		
+		#if 0
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		LEODebugPrintScript( inGroup, inScript );
+		#endif
 	}
 	catch( std::exception& err )
 	{

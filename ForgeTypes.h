@@ -185,6 +185,7 @@ typedef enum
 	EDebugIdentifier,
 	ECheckpointIdentifier,
 	EDownloadIdentifier,
+	EDownloadsIdentifier,
 	EWhenIdentifier,
 	EDoneIdentifier,
 	EChunkIdentifier,

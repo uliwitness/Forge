@@ -203,6 +203,7 @@ namespace Carlson
 		"debug",
 		"checkpoint",
 		"download",
+		"downloads",
 		"when",
 		"done",
 		"chunk"
@@ -377,6 +378,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	EDebugIdentifier,
 	ECheckpointIdentifier,
 	EDownloadIdentifier,
+	EDownloadsIdentifier,
 	EWhenIdentifier,
 	EDoneIdentifier,
 	EChunkIdentifier,

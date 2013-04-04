@@ -3270,7 +3270,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						if( sGlobalProperties[x].mType == subType )
 						{
-							theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+							theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
 							CToken::GoNextToken( mFileName, tokenItty, tokens );
 							break;
 						}
@@ -3399,7 +3399,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				{
 					if( sGlobalProperties[x].mType == subType )
 					{
-						theTerm = new COperatorNode( &parseTree, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+						theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
 						CToken::GoNextToken( mFileName, tokenItty, tokens );
 						break;
 					}
