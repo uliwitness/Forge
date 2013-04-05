@@ -16,7 +16,7 @@ namespace Carlson
 		
 CValueNode*	CGetChunkPropertyNode::Copy()
 {
-	CGetChunkPropertyNode	*	nodeCopy = new CGetChunkPropertyNode( mParseTree, mLineNum );
+	CGetChunkPropertyNode	*	nodeCopy = new CGetChunkPropertyNode( mParseTree, mSymbolName, mLineNum );
 	
 	std::vector<CValueNode*>::const_iterator	itty;
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
@@ -32,7 +32,7 @@ void	CGetChunkPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::const_iterator	itty = mParams.begin();
 	
-	(*itty)->GenerateCode( inCodeBlock );
+	CValueNode*	target = (*itty);
 	
 	itty++;
 	
@@ -44,6 +44,9 @@ void	CGetChunkPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 	{
 		(*itty)->GenerateCode( inCodeBlock );	
 	}
+	
+	inCodeBlock->GeneratePushStringInstruction( mSymbolName );
+	target->GenerateCode( inCodeBlock );
 
 	inCodeBlock->GeneratePushChunkPropertyInstruction( BACK_OF_STACK, chunkType );
 }

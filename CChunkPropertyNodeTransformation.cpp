@@ -8,7 +8,7 @@
 
 #include "CChunkPropertyNodeTransformation.h"
 #include "CMakeChunkConstNode.h"
-#include "CMakeChunkRefNode.h"
+#include "CGetChunkPropertyNode.h"
 #include "CObjectPropertyNode.h"
 #include "COperatorNode.h"
 #include "LEOInstructions.h"
@@ -27,22 +27,22 @@ CNode*	CChunkPropertyNodeTransformation::Simplify( CObjectPropertyNode* inPropNo
 			parent object to modify that chunk of itself, we can't change the
 			property once we've evaluated the chunk and turned it into a substring.
 			
-			So we detect this case here and replace the constant chunk expression
-			with a chunk reference.
+			So we detect this case here and replace the chunk expression and property expression with a chunk property expression.
 		*/
 		
 		CMakeChunkConstNode	*	constChunkExpr = dynamic_cast<CMakeChunkConstNode*>( inPropNode->GetParamAtIndex(0) );
 		if( constChunkExpr != NULL )
 		{
-			CMakeChunkRefNode	*	chunkRefExpr = new CMakeChunkRefNode( inPropNode->GetParseTree(), constChunkExpr->GetLineNum() );
+			std::string	propName;
+			inPropNode->GetSymbolName( propName );
+			CGetChunkPropertyNode	*	chunkRefExpr = new CGetChunkPropertyNode( inPropNode->GetParseTree(), propName, constChunkExpr->GetLineNum() );
 			for( size_t x = 0; x < constChunkExpr->GetParamCount(); x++ )
 			{
 				CValueNode	*	theParam = constChunkExpr->GetParamAtIndex(x);
 				CValueNode	*	theParamCopy = theParam->Copy();
 				chunkRefExpr->AddParam( theParamCopy );
 			}
-			delete inPropNode->GetParamAtIndex(0);
-			inPropNode->SetParamAtIndex(0, chunkRefExpr);
+			return chunkRefExpr;
 		}
 	}
 	
@@ -55,45 +55,38 @@ CNode*	CChunkPropertyPutNodeTransformation::Simplify( CPutCommandNode* inPutNode
 	if( inPutNode->GetParamCount() >= 2 )
 	{
 		/*
-			Chunks can have properties as well, in which case we have to tell the
-			parent object to modify that chunk of itself, we can't change the
-			property once we've evaluated the chunk and turned it into a substring.
-			
-			So we detect this case here and replace the constant chunk expression
-			with a chunk reference.
+			When a chunk property is used as a destination, we replace the "put"
+			and "get chunk property" instructions with a "set chunk property"
+			instruction.
 		*/
 		
-		CObjectPropertyNode	*	propExpr = dynamic_cast<CObjectPropertyNode*>( inPutNode->GetParamAtIndex(1) );
-		if( propExpr )
+		CGetChunkPropertyNode	*	chunkExpr = dynamic_cast<CGetChunkPropertyNode*>( inPutNode->GetParamAtIndex(1) );
+		if( chunkExpr != NULL )
 		{
-			CMakeChunkRefNode	*	chunkExpr = dynamic_cast<CMakeChunkRefNode*>( propExpr->GetParamAtIndex(0) );
-			if( chunkExpr != NULL )
-			{
-				CIntValueNode	*	chunkTypeVal = dynamic_cast<CIntValueNode*>(chunkExpr->GetParamAtIndex(1));
-				if( !chunkTypeVal )
-					return inPutNode;
+			CIntValueNode	*	chunkTypeVal = dynamic_cast<CIntValueNode*>(chunkExpr->GetParamAtIndex(1));
+			if( !chunkTypeVal )
+				return inPutNode;
 
-				COperatorNode	*	setChunkPropNode = new COperatorNode( inPutNode->GetParseTree(), SET_CHUNK_PROPERTY_INSTR, inPutNode->GetLineNum() );
-				setChunkPropNode->SetInstructionParams( BACK_OF_STACK, chunkTypeVal->GetAsInt() );
+			COperatorNode	*	setChunkPropNode = new COperatorNode( inPutNode->GetParseTree(), SET_CHUNK_PROPERTY_INSTR, inPutNode->GetLineNum() );
+			setChunkPropNode->SetInstructionParams( BACK_OF_STACK, chunkTypeVal->GetAsInt() );
+			
+			for( size_t x = 0; x < chunkExpr->GetParamCount(); x++ )
+			{
+				if( x == 1 )
+					continue;
 				
-				for( size_t x = 0; x < chunkExpr->GetParamCount(); x++ )
-				{
-					if( x == 1 )
-						continue;
-					
-					CValueNode	*	theParam = chunkExpr->GetParamAtIndex(x);
-					CValueNode	*	theParamCopy = theParam->Copy();
-					setChunkPropNode->AddParam( theParamCopy );
-				}
-				
-				setChunkPropNode->AddParam( inPutNode->GetParamAtIndex(0)->Copy() );
-				
-				std::string		propName;
-				propExpr->GetSymbolName( propName );
-				setChunkPropNode->AddParam( new CStringValueNode( inPutNode->GetParseTree(), propName ) );
-				
-				return setChunkPropNode;
+				CValueNode	*	theParam = chunkExpr->GetParamAtIndex(x);
+				CValueNode	*	theParamCopy = theParam->Copy();
+				setChunkPropNode->AddParam( theParamCopy );
 			}
+			
+			setChunkPropNode->AddParam( inPutNode->GetParamAtIndex(0)->Copy() );
+			
+			std::string		propName;
+			chunkExpr->GetSymbolName( propName );
+			setChunkPropNode->AddParam( new CStringValueNode( inPutNode->GetParseTree(), propName ) );
+			
+			return setChunkPropNode;
 		}
 	}
 	

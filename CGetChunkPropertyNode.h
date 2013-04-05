@@ -15,12 +15,15 @@ namespace Carlson
 class CGetChunkPropertyNode : public CFunctionCallNode
 {
 public:
-		CGetChunkPropertyNode( CParseTree* inTree, size_t inLineNum )
-			: CFunctionCallNode( inTree, false, "GetChunkProperty", inLineNum ) {};
+		CGetChunkPropertyNode( CParseTree* inTree, std::string inPropName, size_t inLineNum )
+			: CFunctionCallNode( inTree, false, inPropName, inLineNum ) {};
 		
 	virtual CValueNode*	Copy();
 
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	
+protected:
+	virtual const char*	GetNodeName()		{ return "GetChunkProperty"; };
 };
 
 

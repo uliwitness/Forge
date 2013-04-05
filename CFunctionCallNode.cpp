@@ -35,7 +35,7 @@ void	CFunctionCallNode::DebugPrint( std::ostream& destStream, size_t indentLevel
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "Function Call \"" << mSymbolName << "\"" << std::endl
+	destStream << indentChars << GetNodeName() << " \"" << mSymbolName << "\"" << std::endl
 				<< indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;

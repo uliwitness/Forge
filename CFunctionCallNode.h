@@ -44,6 +44,8 @@ public:
 	virtual size_t		GetLineNum()	{ return mLineNum; };
 
 protected:
+	virtual const char*	GetNodeName()		{ return "Function Call"; };
+	
 	std::string					mSymbolName;
 	bool						mIsCommand;
 	bool						mIsMessagePassing;
