@@ -112,10 +112,10 @@ static TUnaryOperatorEntry	sUnaryOperators[] =
 
 static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 {
-	{ EItemDelIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
-	{ EItemDelimIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
-	{ EItemDelimiterIdentifier, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
-	{ ELastIdentifier_Sentinel, INVALID_INSTR }
+	{ EItemDelIdentifier, ELastIdentifier_Sentinel, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ EItemDelimIdentifier, ELastIdentifier_Sentinel, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ EItemDelimiterIdentifier, ELastIdentifier_Sentinel, SET_ITEMDELIMITER_INSTR, PUSH_ITEMDELIMITER_INSTR },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
 static TBuiltInFunctionEntry	sBuiltInFunctions[] =
@@ -352,8 +352,15 @@ CParser::CParser()
 	// Fix up instruction IDs to account for the ones that were already there:
 	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
 	{
-		newTable[x].mSetterInstructionID += firstGlobalPropertyInstruction;
-		newTable[x].mGetterInstructionID += firstGlobalPropertyInstruction;
+		if( newTable[x].mSetterInstructionID == INVALID_INSTR2 )
+			newTable[x].mSetterInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mSetterInstructionID += firstGlobalPropertyInstruction;
+		
+		if( newTable[x].mGetterInstructionID == INVALID_INSTR2 )
+			newTable[x].mGetterInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mGetterInstructionID += firstGlobalPropertyInstruction;
 	}
 	
 	sGlobalProperties = newTable;
@@ -1937,43 +1944,82 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	
 	// Check if it could be an object property expression:
+	bool			isStyleQualifiedProperty = false;
 	if( !container )
 	{
-		size_t				lineNum = tokenItty->mLineNum;
-		std::string			propName = tokenItty->GetIdentifierText();
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		if( tokenItty->IsIdentifier( EOfIdentifier ) )
+		std::string		propName;
+		
+		// Is it a qualified property?
+		if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 		{
-			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-			CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+			propName = tokenItty->GetIdentifierText();
+			propName.append( 1, ' ' );
 			
-			if( targetObj )
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+			isStyleQualifiedProperty = true;
+		}
+		
+		if( isStyleQualifiedProperty && tokenItty->mType != EIdentifierToken )
+		{
+			isStyleQualifiedProperty = false;
+			CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over style qualifier.
+		}
+		else
+		{
+			size_t			lineNum = tokenItty->mLineNum;
+			propName.append( tokenItty->GetIdentifierText() );
+			CToken::GoNextToken( mFileName, tokenItty, tokens );
+			if( tokenItty->IsIdentifier( EOfIdentifier ) )
 			{
-				CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-				propExpr->AddParam( targetObj );
-				container = propExpr;
+				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+				CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+				
+				if( targetObj )
+				{
+					CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+					propExpr->AddParam( targetObj );
+					container = propExpr;
+				}
+				else
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 			}
 			else
 				CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+			
+			if( !container && isStyleQualifiedProperty )
+				CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over style qualifier.
 		}
-		else
-			CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 	}
+	
 	// Check if it could be a global property expression:
 	if( !container )
 	{
+		TIdentifierSubtype		subType = tokenItty->GetIdentifierSubType();
+		TIdentifierSubtype		qualifierType = ELastIdentifier_Sentinel;
+		
+		if( isStyleQualifiedProperty )
+		{
+			qualifierType = subType;
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "short", "long" or "abbreviated".
+			subType = tokenItty->GetIdentifierSubType();
+		}
+		
 		// Find it in our list of global properties:
 		int				x = 0;
 		
 		for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 		{
-			if( sGlobalProperties[x].mType == tokenItty->GetIdentifierSubType() )
+			if( sGlobalProperties[x].mType == subType && sGlobalProperties[x].mPrefixType == qualifierType )
 			{
-				container = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+				container = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, gIdentifierStrings[subType], tokenItty->mLineNum );
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the property name.
 				break;
 			}
 		}
+		
+		if( !container && isStyleQualifiedProperty )
+			CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over style qualifier.
 	}
 	
 	// Implicit declaration of any old variable:
@@ -3229,7 +3275,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				std::string		propName;
 				bool			isStyleQualifiedProperty = false;
 				
-				// Check if it could be an object property expression:
+				// Is it a qualified property?
 				if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
 					|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 				{
@@ -3240,41 +3286,59 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					isStyleQualifiedProperty = true;
 				}
 				
-				size_t			lineNum = tokenItty->mLineNum;
-				propName.append( tokenItty->GetIdentifierText() );
-				CToken::GoNextToken( mFileName, tokenItty, tokens );
-				if( tokenItty->IsIdentifier( EOfIdentifier ) )
-				{
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-					CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
-					
-					CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-					propExpr->AddParam( targetObj );
-					theTerm = propExpr;
-				}
+				// Check if it could be an object property expression:
+				if( isStyleQualifiedProperty && !tokenItty->mType == EIdentifierToken )
+					isStyleQualifiedProperty = false;
 				else
 				{
-					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
-					if( isStyleQualifiedProperty )
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+					size_t			lineNum = tokenItty->mLineNum;
+					propName.append( tokenItty->GetIdentifierText() );
+					CToken::GoNextToken( mFileName, tokenItty, tokens );
+					if( tokenItty->IsIdentifier( EOfIdentifier ) )
+					{
+						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+						CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+						
+						CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+						propExpr->AddParam( targetObj );
+						theTerm = propExpr;
+					}
+					else
+					{
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+						if( isStyleQualifiedProperty )
+							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+					}
 				}
 				
+				// Check if it could be a global property expression:
 				if( !theTerm )
 				{
 					TIdentifierSubtype	subType = tokenItty->mSubType;
+					TIdentifierSubtype	qualifierType = ELastIdentifier_Sentinel;
 		
+					if( isStyleQualifiedProperty )
+					{
+						CToken::GoNextToken( mFileName, tokenItty, tokens );
+						qualifierType = subType;
+						subType = tokenItty->mSubType;
+					}
+					
 					// Find it in our list of global properties:
 					int				x = 0;
 					
 					for( x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						if( sGlobalProperties[x].mType == subType )
+						if( sGlobalProperties[x].mType == subType && (sGlobalProperties[x].mPrefixType == qualifierType) )
 						{
-							theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+							theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, gIdentifierStrings[subType], tokenItty->mLineNum );
 							CToken::GoNextToken( mFileName, tokenItty, tokens );
 							break;
 						}
 					}
+					
+					if( !theTerm && isStyleQualifiedProperty )
+						CToken::GoPrevToken( mFileName, tokenItty, tokens );
 				}
 								
 				if( !theTerm )
@@ -3304,7 +3368,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				break;
 			}
-			else if( tokenItty->mSubType == EParamIdentifier )
+			else if( tokenItty->mSubType == EParameterIdentifier )
 			{
 				size_t		lineNum = tokenItty->mLineNum;
 				
@@ -3399,7 +3463,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				{
 					if( sGlobalProperties[x].mType == subType )
 					{
-						theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, tokenItty->mLineNum );
+						theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, gIdentifierStrings[subType], tokenItty->mLineNum );
 						CToken::GoNextToken( mFileName, tokenItty, tokens );
 						break;
 					}

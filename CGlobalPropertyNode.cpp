@@ -64,6 +64,14 @@ void	CGlobalPropertyNode::Simplify()
 
 void	CGlobalPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
+	if( mGetterInstructionID == INVALID_INSTR )
+	{
+		std::string	errMsg("You can only change the ");
+		errMsg.append( mPropertyName );
+		errMsg.append( " property, not read it." );
+		throw std::runtime_error(errMsg);
+	}
+		
 	std::vector<CValueNode*>::iterator itty;
 	
 	// Push all params on stack:
@@ -76,6 +84,14 @@ void	CGlobalPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 
 void	CGlobalPropertyNode::GenerateSetterCode( CCodeBlock* inCodeBlock, CValueNode* newValueNode )
 {
+	if( mSetterInstructionID == INVALID_INSTR )
+	{
+		std::string	errMsg("You can not change the ");
+		errMsg.append( mPropertyName );
+		errMsg.append( " property." );
+		throw std::runtime_error(errMsg);
+	}
+
 	std::vector<CValueNode*>::iterator itty;
 	
 	// Push all params on stack:

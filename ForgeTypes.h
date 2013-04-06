@@ -228,6 +228,7 @@ typedef enum
 struct TGlobalPropertyEntry
 {
 	TIdentifierSubtype		mType;					// The identifier for this property.
+	TIdentifierSubtype		mPrefixType;			// One of ELongIdentifier, EShortIdentifier or EAbbreviatedIdentifier for two-word properties. Otherwise, ELastIdentifier_Sentinel.
 	LEOInstructionID		mSetterInstructionID;	// Instruction for changing this property.
 	LEOInstructionID		mGetterInstructionID;	// Instruction for retrieving this property's value.
 };
