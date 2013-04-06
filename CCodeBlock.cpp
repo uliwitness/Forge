@@ -13,7 +13,6 @@ extern "C"
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEOInstructions.h"
-#include "LEOMsgInstructions.h"
 #include "LEOPropertyInstructions.h"
 }
 
@@ -173,18 +172,6 @@ void	CCodeBlock::GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset )
 void	CCodeBlock::GeneratePopValueInstruction()
 {
 	LEOHandlerAddInstruction( mCurrentHandler, POP_VALUE_INSTR, BACK_OF_STACK, 0 );
-}
-
-
-void	CCodeBlock::GeneratePrintValueInstruction()
-{
-	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR +kFirstMsgInstruction, BACK_OF_STACK, 0 );
-}
-
-
-void	CCodeBlock::GeneratePrintVariableInstruction( int16_t bpRelativeOffset )
-{
-	LEOHandlerAddInstruction( mCurrentHandler, PRINT_VALUE_INSTR +kFirstMsgInstruction, (*(uint16_t*)&bpRelativeOffset), 0 );
 }
 
 

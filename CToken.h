@@ -9,7 +9,9 @@
 
 #pragma once
 
+extern "C" {
 #include "ForgeTypes.h"
+}
 #include <deque>
 #include <string>
 

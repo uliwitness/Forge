@@ -12,7 +12,7 @@ extern "C" {
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEORemoteDebugger.h"
-#include "LEOMsgInstructions.h"
+#include "LEOMsgInstructionsGeneric.h"
 #include "LEOInterpreter.h"
 }
 
@@ -124,14 +124,15 @@ int main( int argc, char * const argv[] )
 		parser.Parse( filename, tokens, parseTree );
 		
 		LEOInitInstructionArray();
-		LEOAddInstructionsToInstructionArray( gMsgInstructions, gMsgInstructionNames, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
+		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
 		
-		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0 );
+		uint16_t 			fileID = LEOFileIDForFileName(filename);
+		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
 		LEOContextGroup	*	group = LEOContextGroupCreate();
-		CCodeBlock			block( group, script );
+		CCodeBlock			block( group, script, fileID );
 		
 		parseTree.Simplify();
 		parseTree.GenerateCode( &block );
@@ -162,7 +163,7 @@ int main( int argc, char * const argv[] )
 					{
 						ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
-						LEORemoteDebuggerAddFile( filename, code, script );
+						LEORemoteDebuggerAddFile( code, fileID, script );
 					}
 				}
 				

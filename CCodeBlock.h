@@ -44,9 +44,6 @@ public:
 	void		GeneratePopIntoVariableInstruction( int16_t bpRelativeOffset );	// Maintains references.
 	void		GeneratePopSimpleValueIntoVariableInstruction( int16_t bpRelativeOffset );	// Follows references.
 
-	void		GeneratePrintValueInstruction();
-	void		GeneratePrintVariableInstruction( int16_t bpRelativeOffset );
-
 	void		GenerateAssignParamValueToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum );
 	void		GenerateAssignParamToVariableInstruction( int16_t bpRelativeOffset, uint32_t paramNum );
 	void		GenerateReturnInstruction();

@@ -24,7 +24,6 @@
 #include "CAssignCommandNode.h"
 #include "CPutCommandNode.h"
 #include "CGetParamCommandNode.h"
-#include "CPrintCommandNode.h"
 #include "CReturnCommandNode.h"
 #include "COperatorNode.h"
 #include "CAddCommandNode.h"
@@ -716,6 +715,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 {
 	// Put:
 	CCommandNode*			thePutCommand = NULL;
+	CNode*					resultNode = NULL;
 	size_t					startLine = tokenItty->mLineNum;
 	
 	try {
@@ -727,13 +727,14 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
 		{
-			thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			thePutCommand->AddParam( whatExpression );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 			thePutCommand->AddParam( destContainer );
+			resultNode = thePutCommand;
 		}
 		else if( tokenItty->IsIdentifier( EAfterIdentifier ) )
 		{
@@ -741,12 +742,13 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 			
-			thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
 			concatOperation->AddParam( destContainer->Copy() );
 			concatOperation->AddParam( whatExpression );
 			thePutCommand->AddParam( concatOperation );
 			thePutCommand->AddParam( destContainer );
+			resultNode = thePutCommand;
 		}
 		else if( tokenItty->IsIdentifier( EBeforeIdentifier ) )
 		{
@@ -754,7 +756,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 			
-			thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
 			concatOperation->AddParam( whatExpression );
 			concatOperation->AddParam( destContainer->Copy() );
@@ -763,16 +765,60 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		}
 		else
 		{
-			thePutCommand = new CPrintCommandNode( &parseTree, startLine );
-			thePutCommand->AddParam( whatExpression );
+			// Look for a host command named "put" with exactly 1 parameter & use instruction from that:
+			LEOInstructionID	printInstrID = INVALID_INSTR;
+			uint16_t			param1 = 0;
+			uint32_t			param2 = 0;
+			
+			if( sHostCommands )
+			{
+				for( size_t x = 0; sHostCommands[x].mType != ELastIdentifier_Sentinel; x++ )
+				{
+					if( sHostCommands[x].mType == EPutIdentifier )
+					{
+						printInstrID = sHostCommands[x].mInstructionID;
+						param1 = sHostCommands[x].mInstructionParam1;
+						param2 = sHostCommands[x].mInstructionParam2;
+						if( sHostCommands[x].mParam[0].mType == EHostParamExpression && sHostCommands[x].mParam[1].mType == EHostParam_Sentinel )
+						{
+							if( sHostCommands[x].mParam[0].mInstructionID != INVALID_INSTR )
+							{
+								printInstrID = sHostCommands[x].mParam[0].mInstructionID;
+								param1 = sHostCommands[x].mParam[0].mInstructionParam1;
+								param2 = sHostCommands[x].mParam[0].mInstructionParam2;
+							}
+							break;
+						}
+						else
+							printInstrID = INVALID_INSTR;
+					}
+				}
+			}
+			
+			// Found one?
+			if( printInstrID != INVALID_INSTR )
+			{
+				COperatorNode* opNode = new COperatorNode( &parseTree, printInstrID, startLine );
+				resultNode = opNode;
+				opNode->SetInstructionParams( param1, param2 );
+				opNode->AddParam( whatExpression );
+			}
+			else
+			{
+				std::stringstream		errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"into\", \"before\" or \"after\" here, found "
+										<< tokenItty->GetShortDescription() << ".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw std::runtime_error( errMsg.str() );
+			}
 		}
 		
-		currFunction->AddCommand( thePutCommand );
+		currFunction->AddCommand( resultNode );
 	}
 	catch( ... )
 	{
-		if( thePutCommand )
-			delete thePutCommand;
+		if( resultNode )
+			delete resultNode;
 		
 		throw;
 	}
