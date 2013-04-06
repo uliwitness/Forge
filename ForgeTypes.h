@@ -191,7 +191,9 @@
 	X1(EDownloadsIdentifier,"downloads") \
 	X1(EWhenIdentifier,"when") \
 	X1(EDoneIdentifier,"done") \
-	X1(EChunkIdentifier,"chunk")
+	X1(EChunkIdentifier,"chunk") \
+	X1(EPlatformIdentifier,"platform") \
+	X1(ESystemVersionIdentifier,"systemversion")
 
 
 typedef enum
