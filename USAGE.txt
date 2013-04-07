@@ -19,13 +19,13 @@ HyperTalk script. Currently, the following options are supported:
 --dontrun				Compile the code, but do not actually execute it (this
 						also means the debugger won't have anything to debug).
 
---printinstructions		Dump all bytecode instructions as a sort of pseudo-
-						source-code to stdout.
-
 --printtokens			Dump information on all tokens in the script to stdout.
 
 --printparsetree		Dump a text description of the parse tree matching the
 						given script to stdout.
+
+--printinstructions		Dump all bytecode instructions as a sort of pseudo-
+						source-code to stdout.
 
 --verbose				Dump some additional headings and status messages to
 						stdout.

@@ -104,8 +104,6 @@
 		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile6.hc; sourceTree = "<group>"; };
 		3D1F6C410A81496B00BF477D /* USAGE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAGE.txt; sourceTree = "<group>"; };
-		3D1F6C4A0A814AEC00BF477D /* HYPERTALK.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HYPERTALK.txt; sourceTree = "<group>"; };
-		3D228BF80A91B0440013C2DF /* TODO.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.txt; sourceTree = "<group>"; };
 		3D473B790AD46C0B00B35697 /* testfile3.hc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = testfile3.hc; sourceTree = "<group>"; };
 		3D4E23A80D992FE000CDC3BC /* testfile7.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile7.hc; sourceTree = "<group>"; };
 		3D7298310A7BC89C0065F0AC /* CToken.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CToken.cpp; sourceTree = "<group>"; };
@@ -253,9 +251,7 @@
 		08FB7794FE84155DC02AAC07 /* HyperC */ = {
 			isa = PBXGroup;
 			children = (
-				3D228BF80A91B0440013C2DF /* TODO.txt */,
 				3D1F6C410A81496B00BF477D /* USAGE.txt */,
-				3D1F6C4A0A814AEC00BF477D /* HYPERTALK.txt */,
 				04E0A9720A8ECFDB006A9717 /* testfile.hc */,
 				3DB55B160AC89AE40073C115 /* testfile2.hc */,
 				3D473B790AD46C0B00B35697 /* testfile3.hc */,

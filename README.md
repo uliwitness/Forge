@@ -7,13 +7,13 @@ Forge is a parser for a HyperTalk-like programming language named Hammer. It is 
 How to build
 ------------
 
-To build the sample project (which creates a command-line tool), check out the Leonie repository into the same folder as Forge, and build the Forge Xcode project.
+There's an Xcode project that produces a command-line executable that runs any Hammer script file (.hc) you give it.
 
 
 License
 -------
 
-	Copyright 2003-2012 by Uli Kusterer.
+	Copyright 2003-2013 by Uli Kusterer.
 	
 	This software is provided 'as-is', without any express or implied
 	warranty. In no event will the authors be held liable for any damages
