@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include "CToken.h"
 #include "CParser.h"
-#include "GetFileContents.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -18,6 +17,39 @@ extern "C" {
 
 
 using namespace Carlson;
+
+static char*	GetFileContents( const char* fname )
+{
+	// Open script to run:
+	FILE*	theFile = fopen( fname, "r" );
+	if( !theFile )
+	{
+		printf("ERROR: Can't open file \"%s\".\n", fname);
+		return NULL;
+	}
+	
+	// Find out file length:
+	fseek( theFile, 0, SEEK_END );
+	long	len = ftell( theFile ),
+			readbytes;
+	char*	codeStr = (char*) calloc( len +1, sizeof(char) );
+	
+	// Rewind and read in whole file:
+	fseek( theFile, 0, SEEK_SET );
+	readbytes = fread( codeStr, 1, len, theFile );
+	if( readbytes != len )
+	{
+		free( codeStr );
+		fclose( theFile );
+		printf("ERROR: Couldn't read from file \"%s\" (%ld bytes read).\n",fname,readbytes);
+		return NULL;
+	}
+	codeStr[len] = 0;	// Terminate string.
+	fclose( theFile );
+	
+	return codeStr;
+}
+
 
 int main( int argc, char * const argv[] )
 {
