@@ -193,7 +193,14 @@
 	X1(EDoneIdentifier,"done") \
 	X1(EChunkIdentifier,"chunk") \
 	X1(EPlatformIdentifier,"platform") \
-	X1(ESystemVersionIdentifier,"systemversion")
+	X1(ESystemVersionIdentifier,"systemversion") \
+	X1(EButtonsIdentifier,"buttons") \
+	X1(EFieldsIdentifier,"fields") \
+	X1(EPartsIdentifier,"parts") \
+	X1(EPlayersIdentifier,"players") \
+	X1(ECardsIdentifier,"cards") \
+	X1(EBackgroundsIdentifier,"backgrounds") \
+	X1(EStacksIdentifier,"stacks")
 
 
 typedef enum
@@ -210,6 +217,7 @@ typedef enum {
 	EHostParamImmediateValue = 0,	// Just a value.
 	EHostParamExpression,			// An entire expression, but no label.
 	EHostParamIdentifier,			// An identifier that gets passed as a string.
+	EHostParamInvisibleIdentifier,	// An identifier that is simply used to switch modes, but doesn't cause a parameter.
 	EHostParamLabeledValue,			// A value preceded by an identifier labeling it.
 	EHostParamLabeledExpression,	// An expression preceded by an identifier labeling it.
 	EHostParam_Sentinel				// If this value is specified, this is the last parameter.

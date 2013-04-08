@@ -909,7 +909,8 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 	{
 		for( size_t commandIdx = 0; inHostTable[commandIdx].mType != ELastIdentifier_Sentinel; commandIdx++ )
 		{
-			if( inHostTable[commandIdx].mType == firstIdentifier )
+			THostCommandEntry	*	currCmd = inHostTable +commandIdx;
+			if( currCmd->mType == firstIdentifier )
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				
@@ -1004,12 +1005,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							}
 
 							case EHostParamIdentifier:
+							case EHostParamInvisibleIdentifier:
 							{
 								if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
 									|| tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+									{
+										if( par->mType != EHostParamInvisibleIdentifier )
+											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+									}
 									else
 									{
 										hostCommand->SetInstructionID( par->mInstructionID );
@@ -1021,7 +1026,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								}
 								else if( par->mIsOptional )
 								{
-									if( par->mInstructionID == INVALID_INSTR )
+									if( par->mInstructionID == INVALID_INSTR && par->mType != EHostParamInvisibleIdentifier )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
 								}
 								else
@@ -3249,7 +3254,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				theTerm = new CFunctionCallNode( &parseTree, false, "vcy_fcn_addr", tokenItty->mLineNum );
 				break;
 			}
-			else if( tokenItty->mSubType == ENumberIdentifier || tokenItty->mSubType == ENumIdentifier )		// The identifier "number", i.e. the actual word.
+			else if( tokenItty->mSubType == ENumberIdentifier )		// The identifier "number", i.e. the actual word.
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "number".
 				
@@ -3268,11 +3273,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				TChunkType	typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->GetIdentifierSubType() );
 				if( typeConstant == TChunkTypeInvalid )
 				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a chunk type like \"character\", \"item\", \"word\" or \"line\" here, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Back to 'of'.
+					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Back to 'number'.
+					return ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "items" etc.
 				
