@@ -904,6 +904,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 {
 	CValueNode			*theNode = NULL;
 	TIdentifierSubtype	firstIdentifier = tokenItty->GetIdentifierSubType();
+	long long			identifiersToBacktrack = 0;
 	
 	if( inHostTable != NULL )
 	{
@@ -913,6 +914,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 			if( currCmd->mType == firstIdentifier )
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
+				identifiersToBacktrack++;
 				
 				uint8_t					currMode = '\0';
 				THostCommandEntry*		cmd = inHostTable + commandIdx;
@@ -962,6 +964,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									if( par->mModeToSet != 0 )
 										currMode = par->mModeToSet;
 								}
+								identifiersToBacktrack = -1;
 								break;
 							}
 
@@ -1001,6 +1004,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									if( par->mModeToSet != 0 )
 										currMode = par->mModeToSet;
 								}
+								identifiersToBacktrack = -1;
 								break;
 							}
 
@@ -1023,6 +1027,8 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									CToken::GoNextToken( mFileName, tokenItty, tokens );
 									if( par->mModeToSet != 0 )
 										currMode = par->mModeToSet;
+									if( identifiersToBacktrack >= 0 )
+										identifiersToBacktrack++;
 								}
 								else if( par->mIsOptional )
 								{
@@ -1032,17 +1038,27 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else
 								{
 									delete hostCommand;
-									std::stringstream		errMsg;
-									if( tokenItty != tokens.end() )
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
-															<< tokenItty->GetShortDescription() << "\".";
-									else
+									theNode = NULL;
+									if( identifiersToBacktrack < 0 )
 									{
-										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+										std::stringstream		errMsg;
+										if( tokenItty != tokens.end() )
+											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+																<< tokenItty->GetShortDescription() << "\".";
+										else
+										{
+											--tokenItty;
+											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+										}
+										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										throw std::runtime_error( errMsg.str() );
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									throw std::runtime_error( errMsg.str() );
+									else if( identifiersToBacktrack > 0 )
+									{
+										for( long long x = 0; x < identifiersToBacktrack; x++ )
+											CToken::GoPrevToken( mFileName, tokenItty, tokens );
+										identifiersToBacktrack = -1;
+									}
 								}
 								break;
 							}
@@ -1113,6 +1129,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 									throw std::runtime_error( errMsg.str() );
 								}
+								identifiersToBacktrack = -1;
 								break;
 							}
 							
@@ -1124,7 +1141,27 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 					par++;
 				}
 				
-				break;	// Found a command that matches, stop looping.
+				if( currCmd->mTerminalMode != '\0' && currMode != currCmd->mTerminalMode )
+				{
+					delete hostCommand;
+					theNode = NULL;
+					if( identifiersToBacktrack >= 0 )
+					{
+						for( long long x = 0; x < identifiersToBacktrack; x++ )
+							CToken::GoPrevToken( mFileName, tokenItty, tokens );
+						// Now that we've backtracked, try the next host command.
+					}
+					else
+					{
+						std::stringstream		errMsg;
+						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unexpected  \""
+							<< tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
+						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+						throw std::runtime_error( errMsg.str() );
+					}
+				}
+				else
+					break;	// Found a command that matches, stop looping.
 			}
 		}
 	}
@@ -1966,15 +2003,16 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		return container;
 	}
 	
+	// Some things may be prefixed by 'the':
+	if( tokenItty->IsIdentifier( ETheIdentifier ) )
+		CToken::GoNextToken( mFileName, tokenItty, tokens );
+	
 	// Try to parse a host-specific function (e.g. object descriptor):
 	container = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
 	if( container )
 		return container;
 
 	// Otherwise try to parse a built-in variable:
-	if( tokenItty->IsIdentifier( ETheIdentifier ) )
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-	
 	if( tokenItty->IsIdentifier( EResultIdentifier ) )
 	{
 		std::string		realResultName( "result" );
@@ -3321,42 +3359,47 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "the".
 				
-				std::string		propName;
+				theTerm = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
+				
 				bool			isStyleQualifiedProperty = false;
-				
-				// Is it a qualified property?
-				if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-					|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+				if( !theTerm )
 				{
-					propName = tokenItty->GetIdentifierText();
-					propName.append( 1, ' ' );
+					std::string		propName;
 					
-					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
-					isStyleQualifiedProperty = true;
-				}
-				
-				// Check if it could be an object property expression:
-				if( isStyleQualifiedProperty && !tokenItty->mType == EIdentifierToken )
-					isStyleQualifiedProperty = false;
-				else
-				{
-					size_t			lineNum = tokenItty->mLineNum;
-					propName.append( tokenItty->GetIdentifierText() );
-					CToken::GoNextToken( mFileName, tokenItty, tokens );
-					if( tokenItty->IsIdentifier( EOfIdentifier ) )
+					// Is it a qualified property?
+					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
+						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
 					{
-						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-						CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+						propName = tokenItty->GetIdentifierText();
+						propName.append( 1, ' ' );
 						
-						CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
-						propExpr->AddParam( targetObj );
-						theTerm = propExpr;
+						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Advance past style qualifier.
+						isStyleQualifiedProperty = true;
 					}
+					
+					// Check if it could be an object property expression:
+					if( isStyleQualifiedProperty && !tokenItty->mType == EIdentifierToken )
+						isStyleQualifiedProperty = false;
 					else
 					{
-						CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
-						if( isStyleQualifiedProperty )
-							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+						size_t			lineNum = tokenItty->mLineNum;
+						propName.append( tokenItty->GetIdentifierText() );
+						CToken::GoNextToken( mFileName, tokenItty, tokens );
+						if( tokenItty->IsIdentifier( EOfIdentifier ) )
+						{
+							CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+							CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+							
+							CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
+							propExpr->AddParam( targetObj );
+							theTerm = propExpr;
+						}
+						else
+						{
+							CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+							if( isStyleQualifiedProperty )
+								CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack over what we took for a style qualifier.
+						}
 					}
 				}
 				
