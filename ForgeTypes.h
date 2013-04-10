@@ -181,6 +181,7 @@
 	X1(EPassIdentifier,"pass") \
 	X1(EMovieIdentifier,"movie") \
 	X1(EPlayerIdentifier,"player") \
+	X2(EPlyIdentifier,EPlayerIdentifier,"ply") \
 	X1(EMyIdentifier,"my") \
 	X1(EVersionIdentifier,"version") \
 	X1(ECreateIdentifier,"create") \
@@ -195,11 +196,18 @@
 	X1(EPlatformIdentifier,"platform") \
 	X1(ESystemVersionIdentifier,"systemversion") \
 	X1(EButtonsIdentifier,"buttons") \
+	X2(EBtnsIdentifier,EButtonsIdentifier,"btns") \
 	X1(EFieldsIdentifier,"fields") \
+	X2(EFldsIdentifier,EFieldsIdentifier,"flds") \
 	X1(EPartsIdentifier,"parts") \
 	X1(EPlayersIdentifier,"players") \
+	X2(EPlysIdentifier,EPlayersIdentifier,"plys") \
 	X1(ECardsIdentifier,"cards") \
 	X1(EBackgroundsIdentifier,"backgrounds") \
+	X2(ECdsIdentifier,ECardsIdentifier,"cds") \
+	X2(EBgsIdentifier,EBackgroundsIdentifier,"bgs") \
+	X2(EBkgdsIdentifier,EBackgroundsIdentifier,"bkgds") \
+	X2(EBkgndsIdentifier,EBackgroundsIdentifier,"bkgnds") \
 	X1(EStacksIdentifier,"stacks")
 
 
