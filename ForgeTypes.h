@@ -224,10 +224,12 @@ typedef enum
 typedef enum {
 	EHostParamImmediateValue = 0,	// Just a value.
 	EHostParamExpression,			// An entire expression, but no label.
+	EHostParamContainer,			// A container that something can be put into.
 	EHostParamIdentifier,			// An identifier that gets passed as a string.
 	EHostParamInvisibleIdentifier,	// An identifier that is simply used to switch modes, but doesn't cause a parameter.
 	EHostParamLabeledValue,			// A value preceded by an identifier labeling it.
 	EHostParamLabeledExpression,	// An expression preceded by an identifier labeling it.
+	EHostParamLabeledContainer,		// A container that something can be put into, preceded by an identifier labeling it.
 	EHostParam_Sentinel				// If this value is specified, this is the last parameter.
 } THostParameterType;
 

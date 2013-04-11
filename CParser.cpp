@@ -920,6 +920,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				THostCommandEntry*		cmd = inHostTable + commandIdx;
 				THostParameterEntry*	par = cmd->mParam;
 				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
+				hostCommand->SetInstructionParams( cmd->mInstructionParam1, cmd->mInstructionParam2 );
 				theNode = hostCommand;
 				
 				while( par->mType != EHostParam_Sentinel )
@@ -931,6 +932,46 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamImmediateValue:
 							{
 								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+								if( !term && par->mIsOptional )
+								{
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+								}
+								else if( !term )
+								{
+									delete hostCommand;
+									std::stringstream		errMsg;
+									if( tokenItty != tokens.end() )
+									{
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
+																<< tokenItty->GetShortDescription() << "\".";
+									}
+									else
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									throw std::runtime_error( errMsg.str() );
+								}
+								else
+								{
+									hostCommand->AddParam( term );
+									if( par->mInstructionID != INVALID_INSTR )
+									{
+										hostCommand->SetInstructionID( par->mInstructionID );
+										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+									}
+									if( par->mModeToSet != 0 )
+										currMode = par->mModeToSet;
+								}
+								identifiersToBacktrack = -1;
+								break;
+							}
+
+							case EHostParamContainer:
+							{
+								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
@@ -1065,6 +1106,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 
 							case EHostParamLabeledValue:
 							case EHostParamLabeledExpression:
+							case EHostParamLabeledContainer:
 							{
 								if( tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
@@ -1076,6 +1118,11 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									{
 										term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
 										valType = "expression";
+									}
+									else if( par->mType == EHostParamLabeledContainer )
+									{
+										term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+										valType = "container";
 									}
 									else
 										term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
@@ -2156,15 +2203,6 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EPutIdentifier) )		// put command.
 		ParsePutStatement( parseTree, currFunction, tokenItty, tokens );
-	else if( tokenItty->IsIdentifier(EDeleteIdentifier) )	// delete command.
-	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );
-		
-		CValueNode*	theContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
-		CFunctionCallNode*	theFCall = new CFunctionCallNode( &parseTree, true, "Delete", tokenItty->mLineNum );
-		theFCall->AddParam( theContainer );
-		currFunction->AddCommand( theFCall );
-	}
 	else if( tokenItty->IsIdentifier(EDownloadIdentifier) )
 		ParseDownloadStatement( userHandlerName, parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EReturnIdentifier) )
