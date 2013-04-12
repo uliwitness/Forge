@@ -8,6 +8,7 @@
 #include "CParseTree.h"
 #include "CCodeBlock.h"
 extern "C" {
+#include "Forge.h"
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEORemoteDebugger.h"
@@ -151,12 +152,13 @@ int main( int argc, char * const argv[] )
 				std::cout << "Token: " << currToken->GetDescription() << std::endl;
 		}
 		
+		LEOInitInstructionArray();
+		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
+		LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
+		
 		if( verbose )
 			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree );
-		
-		LEOInitInstructionArray();
-		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
