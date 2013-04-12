@@ -12,7 +12,7 @@ extern "C" {
 #include "LEOScript.h"
 #include "LEOContextGroup.h"
 #include "LEORemoteDebugger.h"
-#include "LEOMsgInstructionsGeneric.h"
+#include "LEOMsgCommandsGeneric.h"
 #include "LEOInterpreter.h"
 }
 
