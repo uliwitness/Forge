@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Uli Kusterer. All rights reserved.
 //
 
-#include "CNodeTransformation.h"
+#include "COperatorNodeTransformation.h"
 #include "COperatorNode.h"
 
 
@@ -14,7 +14,7 @@ namespace Carlson
 {
 
 
-class CConcatSpaceOperatorNodeTransformation : public CNodeTransformation<COperatorNode>
+class CConcatSpaceOperatorNodeTransformation : public COperatorNodeTransformation
 {
 public:
 	virtual CNode*	Simplify( COperatorNode* inPropNode );

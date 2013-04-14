@@ -20,7 +20,7 @@ LEOInstructionID	CConcatSpaceOperatorNodeTransformation::GetInstructionID()
 
 CNode*	CConcatSpaceOperatorNodeTransformation::Simplify( COperatorNode* inOperatorNode )
 {
-	if( inOperatorNode->GetParamCount() >= 2 )
+	if( inOperatorNode->GetParamCount() == 2 )
 	{
 		CValueNode	*	firstParam = dynamic_cast<CValueNode*>( inOperatorNode->GetParamAtIndex(0) );
 		CValueNode	*	secondParam = dynamic_cast<CValueNode*>( inOperatorNode->GetParamAtIndex(1) );
