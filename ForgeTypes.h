@@ -208,7 +208,9 @@
 	X2(EBgsIdentifier,EBackgroundsIdentifier,"bgs") \
 	X2(EBkgdsIdentifier,EBackgroundsIdentifier,"bkgds") \
 	X2(EBkgndsIdentifier,EBackgroundsIdentifier,"bkgnds") \
-	X1(EStacksIdentifier,"stacks")
+	X1(EStacksIdentifier,"stacks") \
+	X1(EPropertyIdentifier,"property") \
+	X2(EPropIdentifier,EPropertyIdentifier,"prop")
 
 
 typedef enum
