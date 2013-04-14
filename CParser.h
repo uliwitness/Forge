@@ -163,7 +163,8 @@ namespace Carlson
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseContainer( bool asPointer, bool initWithName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
-										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+										TIdentifierSubtype inEndToken );
 		CValueNode*	ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseOneLine( std::string& userHandlerName,
@@ -185,7 +186,8 @@ namespace Carlson
 										CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+										TIdentifierSubtype inEndIdentifier );
 		void	OutputExpressionStack( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<std::string>	&terms, std::deque<const char*>	&operators );
 		void	CreateVariable( const std::string& varName, const std::string& realVarName, bool initWithName,
@@ -196,7 +198,7 @@ namespace Carlson
 		CValueNode*	ParseConstantChunkExpression( TChunkType typeConstant, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken );
 		void	ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,

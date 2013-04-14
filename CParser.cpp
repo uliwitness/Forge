@@ -722,7 +722,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// What:
-		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 		
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
@@ -732,7 +732,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			
 			// container:
-			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 			thePutCommand->AddParam( destContainer );
 			resultNode = thePutCommand;
 		}
@@ -740,7 +740,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		{
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 
-			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 			
 			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
@@ -754,7 +754,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		{
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 
-			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 			
 			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
@@ -836,7 +836,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// container:
-		CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+		CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, EToIdentifier );
 		
 		// to:
 		if( !tokenItty->IsIdentifier( EToIdentifier ) )
@@ -850,7 +850,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
 
 		// what:
-		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 		
 		// Just build a put command:
 		thePutCommand = new CPutCommandNode( &parseTree, startLine );
@@ -931,7 +931,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						{
 							case EHostParamImmediateValue:
 							{
-								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
@@ -971,7 +971,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 
 							case EHostParamContainer:
 							{
-								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
@@ -1011,7 +1011,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 
 							case EHostParamExpression:
 							{
-								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
@@ -1116,16 +1116,16 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									const char	*	valType = "term";
 									if( par->mType == EHostParamLabeledExpression )
 									{
-										term = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+										term = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 										valType = "expression";
 									}
 									else if( par->mType == EHostParamLabeledContainer )
 									{
-										term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+										term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 										valType = "container";
 									}
 									else
-										term = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+										term = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 									if( !term )
 									{
 										delete hostCommand;
@@ -1240,7 +1240,7 @@ void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "get".
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	thePutCommand->AddParam( theWhatNode );
 		
 	// Make sure we have an "it":
@@ -1260,7 +1260,7 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theReturnCommand->AddParam( theWhatNode );
 	
 	currFunction->AddCommand( theReturnCommand );
@@ -1278,7 +1278,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theDownloadCommand->AddParam( theWhatNode );
 	
 	// [In]to:
@@ -1293,7 +1293,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
-	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theDownloadCommand->AddParam( theContainerNode );
 	
 	bool		needEndDownload = false;
@@ -1468,7 +1468,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, EToIdentifier );
 	
 	// To:
 	if( !tokenItty->IsIdentifier( EToIdentifier ) )
@@ -1483,7 +1483,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
-	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theAddCommand->AddParam( theContainerNode );
 	theAddCommand->AddParam( theWhatNode );
 	
@@ -1500,7 +1500,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, EFromIdentifier );
 	theAddCommand->AddParam( theWhatNode );
 	
 	// From:
@@ -1515,7 +1515,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
-	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theAddCommand->AddParam( theContainerNode );
 	
 	currFunction->AddCommand( theAddCommand );
@@ -1531,7 +1531,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
-	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, EWithIdentifier );
 	theAddCommand->AddParam( theContainerNode );
 	
 	// With:
@@ -1546,7 +1546,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theAddCommand->AddParam( theWhatNode );
 	
 	currFunction->AddCommand( theAddCommand );
@@ -1562,7 +1562,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Dest:
-	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theContainerNode = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, EByIdentifier );
 	theAddCommand->AddParam( theContainerNode );
 	
 	// By:
@@ -1577,7 +1577,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// What:
-	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	theAddCommand->AddParam( theWhatNode );
 	
 	currFunction->AddCommand( theAddCommand );
@@ -1621,7 +1621,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	
 	// <expression>
 	size_t			currLineNum = tokenItty->mLineNum;
-	CValueNode* theExpressionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode* theExpressionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	
 	// AssignChunkArray( tempName, chunkType, <expression> );
 	std::string		tempName = CVariableEntry::GetNewTempName();
@@ -1705,7 +1705,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		currFunction->AddCommand( whileLoop );
 		
 		// Condition:
-		conditionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		conditionNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 
 		if( doUntil )
 		{
@@ -1751,7 +1751,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// startNum:
-		CValueNode*			startNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*			startNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens, EToIdentifier );
 		
 		LEOInteger			stepSize = 1;
 		LEOInstructionID	compareOp = LESS_THAN_EQUAL_OPERATOR_INSTR;
@@ -1777,7 +1777,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
 		// endNum:
-		CValueNode*		endNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*		endNumExpr = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 		std::string		tempName = CVariableEntry::GetNewTempName();
 		currFunction->AddLocalVar( tempName, tempName, TVariantTypeInt );
 		
@@ -1852,7 +1852,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		currFunction->AddCommand( theAssignCommand );
 		
 		// countNum:
-		CValueNode*		countExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*		countExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 		
 		// [times] ?
 		if( tokenItty->IsIdentifier( ETimesIdentifier ) )
@@ -1895,7 +1895,7 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// Condition:
-	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	ifNode->SetCondition( condition );
 	
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
@@ -1973,7 +1973,7 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// itemNumber:
-	CValueNode*	theIndex = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	theIndex = ParseExpression( parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
 	
 	// of:
 	tokenItty->ExpectIdentifier( mFileName, EOfIdentifier );
@@ -1981,7 +1981,7 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	
 	// container:
 	size_t				containerLineNum = tokenItty->mLineNum;
-	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, true, "GetItemOfListWithKey", containerLineNum );
 	fcall->AddParam( theTarget );
 	fcall->AddParam( theIndex );
@@ -1991,7 +1991,7 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 
 
 CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken )
 {
 	// Try to find chunk type that matches:
 	CValueNode*	container = NULL;
@@ -2106,10 +2106,10 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 			size_t			lineNum = tokenItty->mLineNum;
 			propName.append( tokenItty->GetIdentifierText() );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
-			if( tokenItty->IsIdentifier( EOfIdentifier ) )
+			if( inEndToken != EOfIdentifier && tokenItty->IsIdentifier( EOfIdentifier ) )
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-				CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+				CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 				
 				if( targetObj )
 				{
@@ -2331,7 +2331,7 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 		return;
 	while( !tokenItty->IsIdentifier( identifierToEndOn ) )
 	{
-		CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		CValueNode*		paramExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens, ECommaOperator );
 		if( !paramExpression )
 			return;
 		inFCallToAddTo->AddParam( paramExpression );
@@ -2441,7 +2441,7 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 
 CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty,
-										std::deque<CToken>& tokens )
+										std::deque<CToken>& tokens, TIdentifierSubtype inEndToken )
 {
 	if( tokenItty == tokens.end() )
 		return NULL;
@@ -2454,7 +2454,7 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 									prevPrecedence = 0;
 	LEOInstructionID				opName = INVALID_INSTR;
 	
-	currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+	currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndToken );
 	if( !currArg )
 		return NULL;
 	terms.push_back( currArg );
@@ -2468,7 +2468,7 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 			terms.push_back( collapsedOp );
 		}
 
-		currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+		currArg = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndToken );
 		if( !currArg )
 		{
 			std::stringstream		errMsg;
@@ -2655,7 +2655,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	bool					hadTo = false;
 	
 	// Start offset:
-	CValueNode*	startOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	startOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	CValueNode*	endOffsObj = NULL;
 	
 	size_t		lineNum = tokenItty->mLineNum;
@@ -2666,7 +2666,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"/"through"/"thru".
 		
-		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
 		hadTo = true;
 	}
 	
@@ -2683,7 +2683,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
-	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	
 	// Now output code:
 	CMakeChunkRefNode*	currOperation = new CMakeChunkRefNode( &parseTree, lineNum );
@@ -2708,7 +2708,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	CValueNode*				endOffsObj = NULL;
 	
 	// Start offset:
-	CValueNode*		startOffsObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*		startOffsObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	size_t			lineNum = tokenItty->mLineNum;
 	
 	// (Optional) end offset:
@@ -2717,7 +2717,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	{
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"/"through"/"thru".
 		
-		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
 		hadTo = true;
 	}
 	
@@ -2734,7 +2734,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
-	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+	CValueNode*	targetValObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	
 	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, currFunction, lineNum );
 	currOperation->AddParam( targetValObj );
@@ -3198,7 +3198,8 @@ CValueNode*	CParser::ParseNativeFunctionCallStartingAtParams( std::string& metho
 
 
 CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
-								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								TIdentifierSubtype inEndIdentifier )
 {
 	CValueNode*	theTerm = NULL;
 	
@@ -3253,7 +3254,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				{
 					std::map<std::string,int>::iterator		sysConstItty = sConstantToValueTable.find( tokenItty->GetOriginalIdentifierText() );
 					if( sysConstItty == sConstantToValueTable.end() )	// Not a system constant either? Guess it was a variable name:
-						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 					else
 					{
 						theTerm = new CIntValueNode( &parseTree, sysConstItty->second );
@@ -3368,7 +3369,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				
 				// VALUE:
 				CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, "vcy_chunk_count", tokenItty->mLineNum );
-				CValueNode*			valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+				CValueNode*			valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				
 				fcall->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
 				fcall->AddParam( valueObj );
@@ -3380,7 +3381,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			{
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				
-				theTerm = ParseExpression( parseTree, currFunction, tokenItty, tokens );
+				theTerm = ParseExpression( parseTree, currFunction, tokenItty, tokens, ECloseBracketOperator );
 				
 				if( !tokenItty->IsIdentifier(ECloseBracketOperator) )
 				{
@@ -3423,10 +3424,10 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						size_t			lineNum = tokenItty->mLineNum;
 						propName.append( tokenItty->GetIdentifierText() );
 						CToken::GoNextToken( mFileName, tokenItty, tokens );
-						if( tokenItty->IsIdentifier( EOfIdentifier ) )
+						if( inEndIdentifier != EOfIdentifier && tokenItty->IsIdentifier( EOfIdentifier ) )
 						{
 							CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-							CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens );
+							CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 							
 							CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, propName, lineNum );
 							propExpr->AddParam( targetObj );
@@ -3494,7 +3495,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( !theTerm )	// Not a global property? Try a container:
 				{
 					CToken::GoPrevToken( mFileName, tokenItty, tokens );	// Backtrack so ParseContainer sees "the", too.
-					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				}
 				break;
 			}
@@ -3514,7 +3515,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				COperatorNode*			fcall = new COperatorNode( &parseTree, PARAMETER_INSTR, lineNum );
 				fcall->SetInstructionParams( BACK_OF_STACK, 0 );
 				
-				fcall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
+				fcall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier ) );
 				
 				if( !tokenItty->IsIdentifier( ECloseBracketOperator ) && hadOpenBracket )	// MUST have close bracket.
 				{
@@ -3533,23 +3534,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				theTerm = fcall;
 				break;
 			}
-			else if( tokenItty->mSubType == EParameterIdentifier )
-			{
-				size_t		lineNum = tokenItty->mLineNum;
-				
-				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "parameter".
-				
-				COperatorNode*			fcall = new COperatorNode( &parseTree, PARAMETER_KEEPREFS_INSTR, lineNum );
-				fcall->SetInstructionParams( BACK_OF_STACK, 0 );
-				
-				fcall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
-
-				theTerm = fcall;
-				break;
-			}
 			else if( tokenItty->mSubType == EResultIdentifier || tokenItty->mSubType == ETheIdentifier )
 			{	
-				theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+				theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				break;
 			}
 			else if( tokenItty->mSubType == EOpenSquareBracketOperator )
@@ -3663,11 +3650,11 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip operator token.
 					
 					COperatorNode*	opFCall = new COperatorNode( &parseTree, operatorCommandName, lineNum );
-					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens ) );
+					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier ) );
 					theTerm = opFCall;
 				}
 				else
-					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens );
+					theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 			}
 			break;
 		
