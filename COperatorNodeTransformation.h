@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Uli Kusterer. All rights reserved.
 //
 
+#pragma once
+
 #include "CNodeTransformation.h"
 #include "COperatorNode.h"
 
