@@ -43,6 +43,7 @@
 extern "C" {
 #include "LEOInstructions.h"
 #include "LEOPropertyInstructions.h"
+#include "LEOObjCCallInstructions.h"
 }
 
 #include <iostream>
@@ -71,7 +72,7 @@ std::map<std::string,CObjCMethodEntry>	CParser::sObjCMethodTable;				// Table of
 std::map<std::string,CObjCMethodEntry>	CParser::sCFunctionTable;				// Table of C function name -> types mappings for calling native system calls.
 std::map<std::string,CObjCMethodEntry>	CParser::sCFunctionPointerTable;		// Table of C function pointer type name -> types mappings for generating callback trampolines.
 std::map<std::string,std::string>		CParser::sSynonymToTypeTable;			// Table of C type synonym name -> real name mappings.
-std::map<std::string,int>				CParser::sConstantToValueTable;			// Table of C system constant name -> constant value mappings.
+std::map<std::string,std::string>		CParser::sConstantToValueTable;			// Table of C system constant name -> constant value mappings.
 
 #pragma mark -
 #pragma mark [Operator lookup table]
@@ -306,7 +307,6 @@ const std::string CVariableEntry::GetNewTempName()
 // -----------------------------------------------------------------------------
 
 CParser::CParser()
-	: mUsesObjCCall(false)
 {
 	if( !sGlobalProperties )
 		sGlobalProperties = sDefaultGlobalProperties;
@@ -532,9 +532,9 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "function" 
 		ParseFunctionDefinition( false, tokenItty, tokens, parseTree );
 	}
-	else if( tokenItty->IsIdentifier( EOnIdentifier ) )
+	else if( tokenItty->IsIdentifier( EOnIdentifier ) || tokenItty->IsIdentifier( EWhenIdentifier ) )
 	{
-		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "on" 
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "on"/"when"
 		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EToIdentifier ) )
@@ -2488,154 +2488,135 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 }
 
 
-void	CParser::LoadNativeHeaders()
-{
-//	static bool		objCHeadersLoaded = false;
-//	
-//	if( !objCHeadersLoaded )
-//	{
-//		// System headers (automatically built):
-//		std::string			fwkheaderspath(mSupportFolderPath);
-//		fwkheaderspath.append("/frameworkheaders.hhc");
-//		LoadNativeHeadersFromFile( fwkheaderspath.c_str() );
-//		
-//		/* Headers for our built-in functions:
-//		fwkheaderspath.assign(mSupportFolderPath);
-//		fwkheaderspath.append("/builtinheaders.hhc");
-//		LoadNativeHeadersFromFile( fwkheaderspath.c_str() );*/
-//		
-//		objCHeadersLoaded = true;
-//	}
-}
-
 void	CParser::LoadNativeHeadersFromFile( const char* filepath )
 {
-//	std::ifstream		headerFile(filepath);
-//	char				theCh = 0;
-//	std::string			headerPath;		
-//	std::string			frameworkPath;
-//	
-//	while( theCh != std::ifstream::traits_type::eof() )
-//	{
-//		theCh = headerFile.get();
-//		//std::cout << theCh << std::endl;
-//		
-//		if( theCh == std::ifstream::traits_type::eof() )
-//			break;
-//		
-//		switch( theCh )
-//		{
-//			case '#':	// comment.
-//			case '*':	// class name.
-//			case '<':	// protocol class/category implements.
-//			case '(':	// category name.
-//			case ':':	// superclass.
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//					;	// Do nothing, just swallow characters on this line.
-//				break;
-//			
-//			case '\n':	// Empty line? Just skip.
-//				break;
-//			
-//			case 'F':
-//				frameworkPath.clear();
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//					frameworkPath.append( 1, theCh );
-//				break;
-//
-//			case 'H':
-//				headerPath.clear();
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//					headerPath.append( 1, theCh );
-//				break;
-//			
-//			case '~':
-//			{
-//				std::string		typeStr;
-//				std::string		synonymousStr;
-//				bool			hadComma = false;
-//				
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//				{
-//					if( theCh == ',' )
-//						hadComma = true;
-//					else if( hadComma )
-//						typeStr.append( 1, theCh );
-//					else
-//						synonymousStr.append( 1, theCh );
-//				}
-//				sSynonymToTypeTable[synonymousStr] = typeStr;
-//				break;
-//			}
-//			
-//			case 'e':
-//			{
-//				std::string		constantStr;
-//				std::string		synonymousStr;
-//				bool			hadComma = false;
-//				
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//				{
-//					if( theCh == ',' )
-//						hadComma = true;
-//					else if( hadComma )
-//						constantStr.append( 1, theCh );
-//					else
-//						synonymousStr.append( 1, theCh );
-//				}
-//				sConstantToValueTable[constantStr] = synonymousStr;
-//				break;
-//			}
-//			
-//			case '=':
-//			case '-':
-//			case '+':
-//			case '&':
-//			{
-//				std::string		typesLine;
-//				std::string		selectorStr;
-//				char			nextSwitchChar = ',';
-//				bool			isFunction = (theCh == '=');
-//				bool			isFunctionPtr = (theCh == '&');
-//				
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//				{
-//					switch( nextSwitchChar )
-//					{
-//						case ',':
-//							if( nextSwitchChar == theCh )	// Found comma? We're finished getting selector name. Rest of line goes in types.
-//								nextSwitchChar = '\n';
-//							else
-//								selectorStr.append( 1, theCh );
-//							break;
-//						
-//						case '\n':
-//							typesLine.append( 1, theCh );
-//							break;
-//					}
-//				}
-//				
-//				if( isFunction )
-//					sCFunctionTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
-//				else if( isFunctionPtr )
-//					sCFunctionPointerTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
-//				else
-//					sObjCMethodTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
-//				//std::cout << selectorStr << " = " << typesLine << std::endl;
-//				break;
-//			}
-//			
-//			default:	// unknown.
-//				std::stringstream errMsg;
-//				errMsg << "warning: Ignoring unknown data of type \"" << theCh << "\" in framework headers:" << std::endl;
-//				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
-//					errMsg << theCh;	// Print characters on this line.
-//				errMsg << std::endl;
-//				
-//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//				break;
-//		}
-//	}
+	std::ifstream		headerFile(filepath);
+	char				theCh = 0;
+	std::string			headerPath;		
+	std::string			frameworkPath;
+	size_t				lineNum = 1;
+	
+	while( theCh != std::ifstream::traits_type::eof() )
+	{
+		theCh = headerFile.get();
+		//std::cout << theCh << std::endl;
+		
+		if( theCh == std::ifstream::traits_type::eof() )
+			break;
+		
+		switch( theCh )
+		{
+			case '#':	// comment.
+			case '*':	// class name.
+			case '<':	// protocol class/category implements.
+			case '(':	// category name.
+			case ':':	// superclass.
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+					;	// Do nothing, just swallow characters on this line.
+				break;
+			
+			case '\n':	// Empty line? Just skip.
+				break;
+			
+			case 'F':
+				frameworkPath.clear();
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+					frameworkPath.append( 1, theCh );
+				break;
+
+			case 'H':
+				headerPath.clear();
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+					headerPath.append( 1, theCh );
+				break;
+			
+			case '~':
+			{
+				std::string		typeStr;
+				std::string		synonymousStr;
+				bool			hadComma = false;
+				
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+				{
+					if( theCh == ',' )
+						hadComma = true;
+					else if( hadComma )
+						typeStr.append( 1, theCh );
+					else
+						synonymousStr.append( 1, theCh );
+				}
+				sSynonymToTypeTable[synonymousStr] = typeStr;
+				break;
+			}
+			
+			case 'e':
+			{
+				std::string		constantStr;
+				std::string		synonymousStr;
+				bool			hadComma = false;
+				
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+				{
+					if( theCh == ',' )
+						hadComma = true;
+					else if( hadComma )
+						constantStr.append( 1, theCh );
+					else
+						synonymousStr.append( 1, theCh );
+				}
+				sConstantToValueTable[constantStr] = synonymousStr;
+				break;
+			}
+			
+			case '=':
+			case '-':
+			case '+':
+			case '&':
+			{
+				std::string		typesLine;
+				std::string		selectorStr;
+				char			nextSwitchChar = ',';
+				bool			isFunction = (theCh == '=');
+				bool			isFunctionPtr = (theCh == '&');
+				
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+				{
+					switch( nextSwitchChar )
+					{
+						case ',':
+							if( nextSwitchChar == theCh )	// Found comma? We're finished getting selector name. Rest of line goes in types.
+								nextSwitchChar = '\n';
+							else
+								selectorStr.append( 1, theCh );
+							break;
+						
+						case '\n':
+							typesLine.append( 1, theCh );
+							break;
+					}
+				}
+				
+				if( isFunction )
+					sCFunctionTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
+				else if( isFunctionPtr )
+					sCFunctionPointerTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
+				else
+					sObjCMethodTable[selectorStr] = CObjCMethodEntry( headerPath, frameworkPath, typesLine );
+				//std::cout << selectorStr << " = " << typesLine << std::endl;
+				break;
+			}
+			
+			default:	// unknown.
+				std::stringstream errMsg;
+				errMsg << "warning: Ignoring unknown data of type \"" << theCh << "\" in framework headers:" << std::endl;
+				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+					errMsg << theCh;	// Print characters on this line.
+				errMsg << std::endl;
+				break;
+		}
+		
+		lineNum++;
+	}
 }
 
 
@@ -2752,350 +2733,114 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 	// We parse either a class name or an expression that evaluates to an object
 	// as type "native object", followed by parameters with labels. We build the
 	// method name from that and look up that method in our table of system calls.
-	//
-	// Then we generate conversion code between the parameter variants and our
-	// actual param types, as well as for the return type.
-	//
-	// Also: We set the flag mUsesObjCCall to true and have code that checks it
-	// and includes/links the library for ObjC support elsewhere.
 	
-//	std::stringstream		targetCode;
-//
-//	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip open bracket.
-//	
-//	mUsesObjCCall = true;
-//	
-//	if( tokenItty->IsIdentifier(ELastIdentifier_Sentinel) )	// No reserved word identifier?
-//	{
-//		std::string				className( tokenItty->GetOriginalIdentifierText() );
-//		std::string				varName( "var_" );
-//		varName.append( ToLowerString( className ) );
-//		std::map<std::string,CVariableEntry>::iterator	theContainerItty = theLocals.find( varName );
-//
-//		if( theContainerItty == theLocals.end() )	// No variable of that name? Must be ObjC class name:
-//		{
-//			targetCode << className;
-//			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Move past target token.
-//		}
-//		else	// Otherwise get it out of the expression:
-//		{
-//			std::string		objPrefix, objSuffix, objItselfDummy;
-//			GenerateVariantToObjCTypeCode( "id", objPrefix, objSuffix, objItselfDummy );
-//			
-//			targetCode << objPrefix;
-//			ParseExpression( parseTree, targetCode, tokenItty, tokens );
-//			targetCode << objSuffix;
-//		}
-//	}
-//	else
-//	{
-//		std::string		objPrefix, objSuffix, objItselfDummy;
-//		GenerateVariantToObjCTypeCode( "id", objPrefix, objSuffix, objItselfDummy );
-//		
-//		targetCode << objPrefix;
-//		ParseExpression( parseTree, targetCode, tokenItty, tokens );
-//		targetCode << objSuffix;
-//	}
-//	
-//	if( tokenItty->mType != EIdentifierToken )
-//	{
-//		std::stringstream		errMsg;
-//		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a method name here, found "
-//								<< tokenItty->GetShortDescription() << ".";
-//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//		throw std::runtime_error( errMsg.str() );
-//	}
-//	
-//	int						numParams = 0;
-//	std::stringstream		methodName;
-//	methodName << tokenItty->GetOriginalIdentifierText();
-//	
-//	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip method name.
-//
-//	std::stringstream		paramsCode;	// temp we compose our params in.
-//	std::stringstream		currLabel;	// temp we compose our param labels in.
-//	std::deque<std::string>	params;		
-//	std::deque<std::string>	paramLabels;		
-//
-//	if( tokenItty->IsIdentifier(EColonOperator) )	// Takes params.
-//	{
-//		methodName << ":";
-//		paramLabels.push_back( methodName.str() );
-//		
-//		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon.
-//		ParseExpression( parseTree, paramsCode, tokenItty, tokens );	// Read 1st param that immediately follows method name.
-//		
-//		params.push_back( paramsCode.str() );	// Add to params list.
-//		paramsCode.str( std::string() );		// Clear temp so we can compose next param.
-//		numParams++;
-//		
-//		while( !tokenItty->IsIdentifier(ECloseSquareBracketOperator) )
-//		{
-//			if( tokenItty->mType != EIdentifierToken )
-//			{
-//				std::stringstream		errMsg;
-//				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a parameter label here, found "
-//										<< tokenItty->GetShortDescription() << ".";
-//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//				throw std::runtime_error( errMsg.str() );
-//			}
-//			
-//			currLabel << tokenItty->GetOriginalIdentifierText() << ":";
-//			paramLabels.push_back( currLabel.str() );
-//			methodName << currLabel.str();
-//			currLabel.str( std::string() );		// clear label temp again so we can compose next param.
-//			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip identifier label.
-//			
-//			if( !tokenItty->IsIdentifier( EColonOperator ) )
-//			{
-//				std::stringstream		errMsg;
-//				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected colon after parameter label here, found "
-//										<< tokenItty->GetShortDescription() << ".";
-//				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//				throw std::runtime_error( errMsg.str() );
-//			}
-//			
-//			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon after label.
-//			
-//			ParseExpression( theLocals, paramsCode, tokenItty, tokens );	// Read param value.
-//
-//			params.push_back( paramsCode.str() );	// Add to params list.
-//			paramsCode.str( std::string() );		// Clear temp so we can compose next param.
-//			numParams++;
-//		}
-//	}
-//	
-//	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip close bracket (ECloseSquareBracketOperator).
-//
-//	// Get data types for this method's params and return value:
-//	std::map<std::string,CObjCMethodEntry>::iterator	foundTypes = sObjCMethodTable.find( methodName.str() );
-//	if( foundTypes == sObjCMethodTable.end() )
-//	{
-//		std::stringstream		errMsg;
-//		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Couldn't find definition of Objective C method "
-//								<< methodName.str() << ".";
-//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//		throw std::runtime_error( errMsg.str() );
-//	}
-//	
-//	// Make sure we include the needed headers:
-//	std::deque<std::string>::iterator	needItty;
-//	bool								haveHeader = false;
-//	std::string							hdrName( foundTypes->second.mHeaderName );
-//	for( needItty = mHeadersNeeded.begin(); needItty != mHeadersNeeded.end() && !haveHeader; needItty++ )
-//		haveHeader = needItty->compare( hdrName ) == 0;
-//	if( !haveHeader )
-//		mHeadersNeeded.push_back( hdrName );
-//	
-//	// Make sure we link to the needed frameworks:
-//	haveHeader = false;
-//	hdrName.assign( foundTypes->second.mFrameworkName );
-//	for( needItty = mFrameworksNeeded.begin(); needItty != mFrameworksNeeded.end() && !haveHeader; needItty++ )
-//		haveHeader = needItty->compare( hdrName ) == 0;
-//	if( !haveHeader )
-//		mFrameworksNeeded.push_back( hdrName );
-//	
-//	// Build an array of the types:
-//	std::deque<std::string> typesList;
-//	FillArrayWithComponentsSeparatedBy( foundTypes->second.mMethodSignature.c_str(), ',', typesList );
-//	
-//	// Now generate actual code for a Cocoa method call:
-//	std::deque<std::string>::iterator	typeItty = typesList.begin();
-//	std::string							retValPrefix, retValSuffix;
-//	GenerateObjCTypeToVariantCode( *typeItty, retValPrefix, retValSuffix );
-//	theFunctionBody << retValPrefix;
-//	typeItty++;
-//	theFunctionBody << "[" << targetCode.str();
-//	if( numParams == 0 )
-//		theFunctionBody << " " << methodName.str();
-//	else
-//	{
-//		std::deque<std::string>::iterator	valItty = params.begin();
-//		std::deque<std::string>::iterator	labelItty = paramLabels.begin();
-//		
-//		for( ; valItty != params.end(); valItty++, labelItty++, typeItty++ )
-//		{
-//			std::string	paramPrefix, paramSuffix, paramItself( *valItty );
-//			GenerateVariantToObjCTypeCode( *typeItty, paramPrefix, paramSuffix, paramItself );
-//			theFunctionBody << " " << (*labelItty) << paramPrefix << paramItself << paramSuffix;
-//		}
-//	}
-//	theFunctionBody << "]" << retValSuffix;
+	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip open bracket.
+	
+	COperatorNode	*	methodCall = new COperatorNode( &parseTree, CALL_OBJC_METHOD_INSTR +kFirstObjCCallInstruction, tokenItty->mLineNum );
+	
+	if( tokenItty->IsIdentifier(ELastIdentifier_Sentinel) )	// No reserved word identifier?
+	{
+		std::string				className( tokenItty->GetOriginalIdentifierText() );
+		std::string				varName( "var_" );
+		varName.append( ToLowerString( className ) );
+		std::map<std::string,CVariableEntry>::iterator	theContainerItty = currFunction->GetLocals().find( varName );
 
-	return NULL;
-}
+		if( theContainerItty == currFunction->GetLocals().end() )	// No variable of that name? Must be ObjC class name:
+		{
+			methodCall->AddParam( new CStringValueNode( &parseTree, className ) );
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Move past target token.
+		}
+		else	// Otherwise get it out of the expression:
+			methodCall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel ) );
+	}
+	else
+		methodCall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel ) );
+	
+	methodCall->AddParam( NULL );	// Leave space for method name.
+	methodCall->AddParam( NULL );	// Leave space for method signature.
+	methodCall->AddParam( NULL );	// Leave space for framework name.
+	
+	if( tokenItty->mType != EIdentifierToken )
+	{
+		delete methodCall;
+		
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a method name here, found "
+								<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
+	
+	int						numParams = 0;
+	std::stringstream		methodName;
+	methodName << tokenItty->GetOriginalIdentifierText();
+	
+	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip method name.
 
+	std::stringstream		currLabel;	// temp we compose our param labels in.
 
-void	CParser::GenerateObjCTypeToVariantCode( std::string type, std::string &prefix, std::string &suffix )
-{
-//	// Find out whether this type is a synonym for another -- in that case look for a mapping for the other:
-//	const char*	typeStr = NULL;
-//	std::map<std::string,std::string>::iterator foundSyn = sSynonymToTypeTable.find(type);
-//	if( foundSyn != sSynonymToTypeTable.end() )
-//		typeStr = foundSyn->second.c_str();
-//	else
-//		typeStr = type.c_str();
-//	
-//	// Find a mapping entry for this type:
-//	int		x;
-//	for( x = 0; sObjCToVariantMappings[x].mType[0] != '\0'; x++ )
-//	{
-//		if( strcmp(sObjCToVariantMappings[x].mType,typeStr) == 0 )
-//		{
-//			prefix.assign( sObjCToVariantMappings[x].mPrefix );
-//			suffix.assign( sObjCToVariantMappings[x].mSuffix );
-//			
-//			if( sObjCToVariantMappings[x].mUsesObjC )
-//				mUsesObjCCall = true;
-//			return;
-//		}
-//	}
-//	
-//	// None found?
-//	if( type.at( type.length()-1 ) == '*' )				// If it's some kind of pointer, return the raw pointer as an opaque "object":
-//	{
-//		prefix.assign( "CVariant( (void*) " );
-//		suffix.assign( ")" );
-//	}
-//	else if( type.rfind("Ref") == type.length() -3 )	// If it's some kind of opaque reference, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function receives unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Ref.
-//		prefix.assign( "CVariant( (void*) " );
-//		suffix.assign( ")" );
-//	}
-//	else if( type.rfind("Ptr") == type.length() -3 )	// If it's some kind of data pointer, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function receives unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Ptr.
-//		prefix.assign( "CVariant( (void*) " );
-//		suffix.assign( ")" );
-//	}
-//	else if( type.rfind("Handle") == type.length() -6 )	// If it's some kind of data handle, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function receives unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Handle.
-//		prefix.assign( "CVariant( (void*) " );
-//		suffix.assign( ")" );
-//	}
-//	else	// Otherwise, fail:
-//	{
-//		std::stringstream		errMsg;
-//		errMsg << mFileName << ":0: error: Don't know what to do with data of type \""
-//								<< type << "\".";
-//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-//		throw std::runtime_error( errMsg.str() );
-//	}
-}
+	if( tokenItty->IsIdentifier(EColonOperator) )	// Takes params.
+	{
+		methodName << ":";
+		
+		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon.
+		
+		CValueNode	*	currParam = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );	// Read 1st param that immediately follows method name.
+		methodCall->AddParam( currParam );
+		numParams++;
+		
+		while( !tokenItty->IsIdentifier(ECloseSquareBracketOperator) )
+		{
+			if( tokenItty->mType != EIdentifierToken )
+			{
+				std::stringstream		errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a parameter label here, found "
+										<< tokenItty->GetShortDescription() << ".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw std::runtime_error( errMsg.str() );
+			}
+			
+			methodName << tokenItty->GetOriginalIdentifierText() << ":";
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip identifier label.
+			
+			if( !tokenItty->IsIdentifier( EColonOperator ) )
+			{
+				std::stringstream		errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected colon after parameter label here, found "
+										<< tokenItty->GetShortDescription() << ".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw std::runtime_error( errMsg.str() );
+			}
+			
+			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon after label.
+			
+			currParam = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );	// Read param value.
+			methodCall->AddParam( currParam );
+			numParams++;
+		}
+	}
+	
+	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip close bracket (ECloseSquareBracketOperator).
 
-
-void	CParser::GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue )
-{
-//	// Find out whether this type is a synonym for another -- in that case look for a mapping for the other:
-//	const char*	typeStr = type.c_str();
-//	std::map<std::string,std::string>::iterator foundSyn;
-//	while( true )	// Loop until we find the actual base type in case the synonym is for another synonym.
-//	{
-//		foundSyn = sSynonymToTypeTable.find(typeStr);
-//		if( foundSyn == sSynonymToTypeTable.end() )
-//			break;
-//		typeStr = foundSyn->second.c_str();
-//	}
-//	
-//	int		x;
-//	for( x = 0; sVariantToObjCMappings[x].mType[0] != '\0'; x++ )
-//	{
-//		if( strcmp(sVariantToObjCMappings[x].mType,typeStr) == 0 )
-//		{
-//			if( foundSyn != sSynonymToTypeTable.end() )	// Had a synonym? Typecast, just in case it wasn't an exact match (like our case of treating enums as ints).
-//			{
-//				prefix.assign( "(" );
-//				prefix.append( type );
-//				prefix.append( ") " );
-//				prefix.append( sVariantToObjCMappings[x].mPrefix );
-//			}
-//			else
-//				prefix.assign( sVariantToObjCMappings[x].mPrefix );
-//			suffix.assign( sVariantToObjCMappings[x].mSuffix );
-//			
-//			if( sVariantToObjCMappings[x].mUsesObjC )
-//				mUsesObjCCall = true;
-//			return;
-//		}
-//	}
-//	
-//	// None found?
-//	
-//	// First, try ProcPtr:
-//	std::map<std::string,CObjCMethodEntry>::iterator	foundProcPtr;
-//	foundProcPtr = sCFunctionPointerTable.find( type );
-//	if( foundProcPtr != sCFunctionPointerTable.end() )
-//	{
-//		const char*	handlerIDPrefix = "CVariant( (void*) ";
-//		const char*	handlerIDSuffix = " )";
-//		std::string	handlerName( ioValue );
-//		if( handlerName.find(handlerIDPrefix) != 0 )
-//		{
-//			std::stringstream		errMsg;
-//			errMsg << mFileName << ":0: error: expected a handler ID here, but what I got can't be made into a \""
-//									<< type << "\".";
-//			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-//			throw std::runtime_error( errMsg.str() );
-//		}
-//		handlerName.erase(0,strlen(handlerIDPrefix));
-//		size_t	expectedPos = handlerName.length() -strlen(handlerIDSuffix);
-//		if( handlerName.rfind(handlerIDSuffix) != expectedPos )
-//		{
-//			std::stringstream		errMsg;
-//			errMsg << mFileName << ":0: error: expected a handler ID here, but what I got can't be made into a \""
-//									<< type << "\".";
-//			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-//			throw std::runtime_error( errMsg.str() );
-//		}
-//		handlerName.erase(expectedPos,strlen(handlerIDSuffix));
-//		
-//		// Add a trampoline function that does parameter/result conversion to the header:
-//		CreateHandlerTrampolineForFunction( handlerName, type, foundProcPtr->second.mMethodSignature.c_str(), mHeaderString, ioValue );
-//		
-//		prefix.assign("");
-//		suffix.assign("");
-//	}
-//	else if( type.at( type.length()-1 ) == '*' )		// If it's some kind of pointer, store the raw pointer as an opaque "object":
-//	{
-//		prefix.assign( "((" );
-//		prefix.append( type );
-//		prefix.append( ")(" );
-//		suffix.assign( ").GetAsNativeObject())" );
-//	}
-//	else if( type.rfind("Ref") == type.length() -3 )	// If it's some kind of opaque reference, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function returns unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Ref.
-//		prefix.assign( "((" );
-//		prefix.append( type );
-//		prefix.append( ")(" );
-//		suffix.assign( ").GetAsNativeObject())" );
-//	}
-//	else if( type.rfind("Ptr") == type.length() -3 )	// If it's some kind of data pointer, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function returns unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Ptr.
-//		prefix.assign( "((" );
-//		prefix.append( type );
-//		prefix.append( ")(" );
-//		suffix.assign( ").GetAsNativeObject())" );
-//	}
-//	else if( type.rfind("Handle") == type.length() -6 )	// If it's some kind of data handle, return the raw pointer as an opaque "object":
-//	{
-//		std::cout << ":0: warning: Function returns unknown type \"" << type << "\", treating it as a void*." << std::endl;	// Warn user in case this type wasn't a MacOS-style Handle.
-//		prefix.assign( "((" );
-//		prefix.append( type );
-//		prefix.append( ")(" );
-//		suffix.assign( ").GetAsNativeObject())" );
-//	}
-//	else	// Otherwise, fail:
-//	{
-//		std::stringstream		errMsg;
-//		errMsg << mFileName << ":0: error: Don't know how to convert to data of type \""
-//								<< type << "\".";
-//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-//		throw std::runtime_error( errMsg.str() );
-//	}
+	// Get data types for this method's params and return value:
+	std::map<std::string,CObjCMethodEntry>::iterator	foundTypes = sObjCMethodTable.find( methodName.str() );
+	if( foundTypes == sObjCMethodTable.end() )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Couldn't find definition of Objective C method "
+								<< methodName.str() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw std::runtime_error( errMsg.str() );
+	}
+	
+	// Fill out the info we accumulated parsing the parameters:
+	methodCall->SetParamAtIndex( 1, new CStringValueNode( &parseTree, methodName.str() ) );
+	methodCall->SetParamAtIndex( 2, new CStringValueNode( &parseTree, foundTypes->second.mMethodSignature ) );
+	methodCall->SetParamAtIndex( 3, new CStringValueNode( &parseTree, foundTypes->second.mFrameworkName ) );
+	
+	methodCall->SetInstructionParams( numParams, 0 );
+	
+	return methodCall;
 }
 
 
@@ -3252,12 +2997,12 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				theTerm = ParseFunctionCall( parseTree, currFunction, false, tokenItty, tokens );
 				if( !theTerm ) 
 				{
-					std::map<std::string,int>::iterator		sysConstItty = sConstantToValueTable.find( tokenItty->GetOriginalIdentifierText() );
+					std::map<std::string,std::string>::iterator		sysConstItty = sConstantToValueTable.find( tokenItty->GetOriginalIdentifierText() );
 					if( sysConstItty == sConstantToValueTable.end() )	// Not a system constant either? Guess it was a variable name:
 						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 					else
 					{
-						theTerm = new CIntValueNode( &parseTree, sysConstItty->second );
+						theTerm = new CStringValueNode( &parseTree, sysConstItty->second );
 						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the identifier for the constant we just parsed.
 					}
 				}
@@ -3705,74 +3450,74 @@ void	CParser::CreateHandlerTrampolineForFunction( const std::string &handlerName
 														const char* typesStr,
 														std::stringstream& theCode, std::string &outTrampolineName )
 {
-	// Build an array of the types:
-	std::deque<std::string> typesList;
-	
-	FillArrayWithComponentsSeparatedBy( typesStr, ',', typesList );
-	
-	outTrampolineName.assign("Trampoline_");
-	outTrampolineName.append(procPtrName);
-	outTrampolineName.append("_");
-	outTrampolineName.append(handlerName);
-	
-	// Generate method name and param signature:
-	theCode << "#ifndef GUARD_" << outTrampolineName << std::endl;
-	theCode << "#define GUARD_" << outTrampolineName << "\t1" << std::endl;
-	theCode << "const CVariant\t" << handlerName << "( CVariant& paramList );" << std::endl;
-	theCode << typesList[0] << "\t" << outTrampolineName << "( ";
-	std::deque<std::string>::iterator itty = typesList.begin();
-	int			x = 1;
-	bool		isFirst = true;
-	itty++;
-	while( itty != typesList.end() )
-	{
-		if( isFirst )
-			isFirst = false;
-		else
-			theCode << ", ";
-		theCode << *itty << " param" << x++;
-		
-		itty++;
-	}
-	theCode << " )" << std::endl << "{" << std::endl;
-	theCode << "\tCVariant	temp1( TVariantTypeList );" << std::endl;
-	
-	// Generate translation code that calls our handler:
-	itty = typesList.begin();
-	
-	theCode << "\t";
-	if( !itty->compare( "void" ) == 0 )
-		theCode << "CVariant\tresult = ";
-	theCode << handlerName << "( temp1.MakeList()";
-	
-		// Do each param:
-	itty++;
-	isFirst = true;
-	x = 1;
-	while( itty != typesList.end() )
-	{
-		std::string		parPrefix, parSuffix;
-		theCode << ".Append( ";
-		
-		GenerateObjCTypeToVariantCode( *itty, parPrefix, parSuffix );
-		theCode << parPrefix << "param" << x++ << parSuffix << " )";
-		
-		itty++;
-	}
-
-	theCode << " );" << std::endl;
-	
-	// Return value:
-	if( typesList[0].compare("void") != 0 )
-	{
-		std::string		resultPrefix, resultSuffix, resultItself("result");
-		theCode << "\treturn ";
-		GenerateVariantToObjCTypeCode( typesList[0], resultPrefix, resultSuffix, resultItself );
-		theCode << resultPrefix << resultItself << resultSuffix << ";" << std::endl;
-	}
-	
-	theCode << "}" << std::endl
-			<< "#endif /*GUARD_" << outTrampolineName << "*/" << std::endl; 
+//	// Build an array of the types:
+//	std::deque<std::string> typesList;
+//	
+//	FillArrayWithComponentsSeparatedBy( typesStr, ',', typesList );
+//	
+//	outTrampolineName.assign("Trampoline_");
+//	outTrampolineName.append(procPtrName);
+//	outTrampolineName.append("_");
+//	outTrampolineName.append(handlerName);
+//	
+//	// Generate method name and param signature:
+//	theCode << "#ifndef GUARD_" << outTrampolineName << std::endl;
+//	theCode << "#define GUARD_" << outTrampolineName << "\t1" << std::endl;
+//	theCode << "const CVariant\t" << handlerName << "( CVariant& paramList );" << std::endl;
+//	theCode << typesList[0] << "\t" << outTrampolineName << "( ";
+//	std::deque<std::string>::iterator itty = typesList.begin();
+//	int			x = 1;
+//	bool		isFirst = true;
+//	itty++;
+//	while( itty != typesList.end() )
+//	{
+//		if( isFirst )
+//			isFirst = false;
+//		else
+//			theCode << ", ";
+//		theCode << *itty << " param" << x++;
+//		
+//		itty++;
+//	}
+//	theCode << " )" << std::endl << "{" << std::endl;
+//	theCode << "\tCVariant	temp1( TVariantTypeList );" << std::endl;
+//	
+//	// Generate translation code that calls our handler:
+//	itty = typesList.begin();
+//	
+//	theCode << "\t";
+//	if( !itty->compare( "void" ) == 0 )
+//		theCode << "CVariant\tresult = ";
+//	theCode << handlerName << "( temp1.MakeList()";
+//	
+//		// Do each param:
+//	itty++;
+//	isFirst = true;
+//	x = 1;
+//	while( itty != typesList.end() )
+//	{
+//		std::string		parPrefix, parSuffix;
+//		theCode << ".Append( ";
+//		
+//		GenerateObjCTypeToVariantCode( *itty, parPrefix, parSuffix );
+//		theCode << parPrefix << "param" << x++ << parSuffix << " )";
+//		
+//		itty++;
+//	}
+//
+//	theCode << " );" << std::endl;
+//	
+//	// Return value:
+//	if( typesList[0].compare("void") != 0 )
+//	{
+//		std::string		resultPrefix, resultSuffix, resultItself("result");
+//		theCode << "\treturn ";
+//		GenerateVariantToObjCTypeCode( typesList[0], resultPrefix, resultSuffix, resultItself );
+//		theCode << resultPrefix << resultItself << resultSuffix << ";" << std::endl;
+//	}
+//	
+//	theCode << "}" << std::endl
+//			<< "#endif /*GUARD_" << outTrampolineName << "*/" << std::endl; 
 }
 
 } // Namespace Carlson.

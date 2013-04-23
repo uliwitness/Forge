@@ -106,7 +106,6 @@ namespace Carlson
 		std::map<std::string,CVariableEntry>	mGlobals;	// List of globals so we can declare them.
 		std::string					mFirstHandlerName;			// Name of the function implementing the first handler we parse (can be used by templates as main entry point).
 		bool						mFirstHandlerIsFunction;	// TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
-		bool						mUsesObjCCall;				// Flag that gets set if we need to include the ObjC-support library.
 		const char*					mFileName;					// Name of file being parsed right now.
 		const char*					mSupportFolderPath;			// Path to folder with support files.
 		std::vector<CMessageEntry>	mMessages;					// Errors and warnings.
@@ -116,7 +115,7 @@ namespace Carlson
 		static std::map<std::string,CObjCMethodEntry>	sCFunctionTable;		// Populated from frameworkheaders.hhc file.
 		static std::map<std::string,CObjCMethodEntry>	sCFunctionPointerTable;	// Populated from frameworkheaders.hhc file.
 		static std::map<std::string,std::string>		sSynonymToTypeTable;	// Populated from frameworkheaders.hhc file.
-		static std::map<std::string,int>				sConstantToValueTable;	// Populated from frameworkheaders.hhc file.
+		static std::map<std::string,std::string>		sConstantToValueTable;	// Populated from frameworkheaders.hhc file.
 		
 	public:
 		CParser();
@@ -215,7 +214,6 @@ namespace Carlson
 		
 		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators );
 		
-		bool		GetUsesObjCCall()									{ return mUsesObjCCall; };
 		std::string	GetFirstHandlerName()								{ return mFirstHandlerName; };
 		const char*	GetSupportFolderPath()								{ return mSupportFolderPath; };
 		void		SetSupportFolderPath( const char* spfp )			{ mSupportFolderPath = spfp; };
@@ -223,8 +221,8 @@ namespace Carlson
 		void		GenerateObjCTypeToVariantCode( std::string type, std::string &prefix, std::string &suffix );
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
 		void		LoadNativeHeaders();
-		void		LoadNativeHeadersFromFile( const char* filepath );
 		
+		static void		LoadNativeHeadersFromFile( const char* filepath );
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );

@@ -25,6 +25,7 @@
 #include "LEOHandlerID.h"
 #include "LEOPropertyInstructions.h"
 #include "LEODownloadInstructions.h"
+#include "LEOObjCCallInstructions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -55,3 +56,5 @@ void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* i
 
 void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+
+void	LEOLoadNativeHeadersFromFile( const char* filepath );

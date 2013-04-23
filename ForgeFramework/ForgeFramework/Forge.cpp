@@ -255,3 +255,22 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 }
 
 
+extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
+{
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		CParser::LoadNativeHeadersFromFile( filepath );
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+

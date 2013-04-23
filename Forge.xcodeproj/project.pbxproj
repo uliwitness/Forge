@@ -30,6 +30,7 @@
 		5523FE9813426067009D8EF1 /* testfile11.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCECD312C8F11200D76F6B /* testfile11.hc */; };
 		5523FE991342606B009D8EF1 /* testfile12.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55BF65DC12D936C000C2FDC3 /* testfile12.hc */; };
 		5523FE9A13426074009D8EF1 /* testfile10.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCEC0012C8DD0E00D76F6B /* testfile10.hc */; };
+		5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 5538246417274659007785D8 /* LEOObjCCallInstructions.c */; };
 		556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 556FA4521718AA7500A108E5 /* UnitTest.hc */; };
 		556FA4561718AED200A108E5 /* LEOMsgCommandsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */; };
 		558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */; };
@@ -136,6 +137,8 @@
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF32CaseTables.h; path = Leonie/generic/UTF32CaseTables.h; sourceTree = "<group>"; };
+		5538246417274659007785D8 /* LEOObjCCallInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOObjCCallInstructions.c; path = Leonie/generic/LEOObjCCallInstructions.c; sourceTree = "<group>"; };
+		5538246517274659007785D8 /* LEOObjCCallInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOObjCCallInstructions.h; path = Leonie/generic/LEOObjCCallInstructions.h; sourceTree = "<group>"; };
 		556FA4521718AA7500A108E5 /* UnitTest.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UnitTest.hc; sourceTree = "<group>"; };
 		556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOMsgCommandsGeneric.c; sourceTree = "<group>"; };
 		556FA4551718AED200A108E5 /* LEOMsgCommandsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEOMsgCommandsGeneric.h; sourceTree = "<group>"; };
@@ -437,6 +440,8 @@
 				55AAC0781710B1B1008441AF /* LEOPropertyInstructions.c */,
 				55AAC07F1710B21D008441AF /* LEODownloadInstructions.h */,
 				55AAC07E1710B21C008441AF /* LEODownloadInstructions.c */,
+				5538246517274659007785D8 /* LEOObjCCallInstructions.h */,
+				5538246417274659007785D8 /* LEOObjCCallInstructions.c */,
 			);
 			name = Leonie;
 			sourceTree = "<group>";
@@ -544,6 +549,7 @@
 				55AAC07D1710B1E6008441AF /* CDownloadCommandNode.cpp in Sources */,
 				55AAC0801710B21D008441AF /* LEODownloadInstructions.c in Sources */,
 				556FA4561718AED200A108E5 /* LEOMsgCommandsGeneric.c in Sources */,
+				5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
