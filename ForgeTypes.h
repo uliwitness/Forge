@@ -210,7 +210,8 @@
 	X2(EBkgndsIdentifier,EBackgroundsIdentifier,"bkgnds") \
 	X1(EStacksIdentifier,"stacks") \
 	X1(EPropertyIdentifier,"property") \
-	X2(EPropIdentifier,EPropertyIdentifier,"prop")
+	X2(EPropIdentifier,EPropertyIdentifier,"prop") \
+	X1(EPlayIdentifier,"play")
 
 
 typedef enum
