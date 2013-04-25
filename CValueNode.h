@@ -187,6 +187,9 @@ public:
 	};
 	
 	long					GetBPRelativeOffset();
+	
+	std::string				GetVarName()		{ return mVarName; };
+	std::string				GetRealVarName()	{ return mRealVarName; };
 
 protected:
 	std::string				mVarName;

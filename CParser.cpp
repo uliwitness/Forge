@@ -1010,6 +1010,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							}
 
 							case EHostParamExpression:
+							case EHostParamExpressionOrIdentifiersTillLineEnd:
 							{
 								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
@@ -1036,6 +1037,21 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								}
 								else
 								{
+									// We parsed an expression, but only got an unquoted literal (variable) and that's not the end of the line? AND we're doing an identifier list?
+									if( par->mType == EHostParamExpressionOrIdentifiersTillLineEnd && dynamic_cast<CLocalVariableRefValueNode*>(term) && tokenItty != tokens.end() && !tokenItty->IsIdentifier( ENewlineOperator ) )
+									{
+										std::string		theStr = ((CLocalVariableRefValueNode*)term)->GetRealVarName();
+										delete term;
+										term = NULL;
+										for( ; tokenItty != tokens.end() && tokenItty->mType == EIdentifierToken; tokenItty++ )
+										{
+											theStr.append( 1, ' ' );
+											theStr.append( tokenItty->GetIdentifierText() );
+										}
+										
+										term = new CStringValueNode( &parseTree, theStr );
+									}
+
 									hostCommand->AddParam( term );
 									if( par->mInstructionID != INVALID_INSTR )
 									{
@@ -1114,7 +1130,8 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									
 									CValueNode	*	term = NULL;
 									const char	*	valType = "term";
-									if( par->mType == EHostParamLabeledExpression )
+									if( par->mType == EHostParamLabeledExpression
+										|| par->mType == EHostParamExpressionOrIdentifiersTillLineEnd )
 									{
 										term = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 										valType = "expression";

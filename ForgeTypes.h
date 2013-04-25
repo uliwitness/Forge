@@ -233,6 +233,7 @@ typedef enum {
 	EHostParamLabeledValue,			// A value preceded by an identifier labeling it.
 	EHostParamLabeledExpression,	// An expression preceded by an identifier labeling it.
 	EHostParamLabeledContainer,		// A container that something can be put into, preceded by an identifier labeling it.
+	EHostParamExpressionOrIdentifiersTillLineEnd,	// Either an expression, or a bunch of unquoted string literals. Used e.g. for 'play' command's melody.
 	EHostParam_Sentinel				// If this value is specified, this is the last parameter.
 } THostParameterType;
 
