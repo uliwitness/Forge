@@ -6,6 +6,15 @@
 //  Copyright 2011 The Void Software. All rights reserved.
 //
 
+/*!
+	@header Forge
+	
+	This is the public C API people who mainly want to use Hammer in a host
+	application can use to parse and compile scripts, and register host-specific
+	commands, functions and properties. For the actual C++ implementation of the
+	parser, see the CParser class.
+*/
+
 // -----------------------------------------------------------------------------
 //	Headers:
 // -----------------------------------------------------------------------------
@@ -32,7 +41,8 @@
 //	Data types:
 // -----------------------------------------------------------------------------
 
-typedef struct LEOParseTree	LEOParseTree;	// Private internal data structure representing a parse tree.
+/*! LEOParseTree is a private, internal data structure representing a parse tree. */
+typedef struct LEOParseTree	LEOParseTree;
 
 
 struct TGlobalPropertyEntry;
@@ -43,18 +53,43 @@ struct THostCommandEntry;
 //	Forge methods:
 // -----------------------------------------------------------------------------
 
+/*! Create an abstract syntax tree from the given script text specified by <tt>inCode</tt>
+	and <tt>codeLength</tt>. You can then call <tt>LEOScriptCompileAndAddParseTree</tt> to fill a <tt>LEOScript</tt> with the corresponding byte code. Once you are done with the parse tree, call <tt>LEOCleanUpParseTree</tt> to free the memory associated with it. Provide a file name (or other unique display name that debuggers should show to the user on script errors) for <tt>inFileID</tt> by calling <tt>LEOFileIDForFileName</tt>. */
 LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID );
+
+/*! Create an abstract syntax tree from the given program fragment specified by <tt>inCode</tt>
+	and <tt>codeLength</tt>. You can then call <tt>LEOScriptCompileAndAddParseTree</tt> to fill a <tt>LEOScript</tt> with the corresponding byte code. This is used for evaluating a few commands, for example in the message box. Once you are done with the parse tree, call <tt>LEOCleanUpParseTree</tt> to free the memory associated with it. Provide a file name (or other unique display name that debuggers should show to the user on script errors) for <tt>inFileID</tt> by calling <tt>LEOFileIDForFileName</tt>. */
 LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID );
 
+/*! Free the memory for a parse tree created by <tt>LEOParseTreeCreateFromUTF8Characters</tt> or <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt>. */
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
+/*! Take a parse tree created by <tt>LEOParseTreeCreateFromUTF8Characters</tt> or <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt> and compile it into Leonie bytecode. The given script, <tt>inScript</tt> will be filled with the command and function handlers, strings etc. defined in the script. Handler IDs will be generated in the given context group. Provide the same file ID in <tt>inFileID</tt> that you generated using <tt>LEOFileIDForFileName</tt> when you created the parse tree. */
 void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree, uint16_t inFileID );
 
-const char*		LEOParserGetLastErrorMessage( void );	// Call this after LEOParseTreeCreateFromUTF8Characters or LEOScriptCompileAndAddParseTree to detect errors. If it returns NULL, everything was fine.
+/*! Call this after each call to <tt>LEOParseTreeCreateFromUTF8Characters</tt>, <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt> and <tt>LEOScriptCompileAndAddParseTree</tt> to detect errors. If it returns NULL, everything was fine. */
+const char*		LEOParserGetLastErrorMessage( void );	
 
+/*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 
+/*! Register the syntax and the corresponding instructions for host-specific commands in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
+
+	You must have registered all instructions referenced here using the same call to
+	<tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of
+	the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>.
+	
+	If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+
+/*! Register the syntax and the corresponding instructions for host-specific functions in <tt>inEntries</tt> with the Forge parser (anything that can be a term in an expression, really, it doesn't have to be a function in the traditional sense.). The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
+
+	You must have registered all instructions referenced here using the same call to
+	<tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the
+	first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>.
+	
+	If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 
+/*! Load syntax for 'native calls' (i.e. native operating system APIs as you would call them from C, Objective C, C# or Pascal) from the specified .hhc header file, so the functions and methods in it become available to the parser as if they were handlers (just that they can return pointers and you might have to manage memory handed into or returned from them). */
 void	LEOLoadNativeHeadersFromFile( const char* filepath );

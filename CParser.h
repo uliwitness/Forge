@@ -7,6 +7,16 @@
  *
  */
 
+/*!
+	@header CParser (Private)
+	
+	The actual parser for the Hammer programming language is called Forge, and
+	is implemented mainly by the CParser C++ class. See the Forge.h header for
+	the minimalist public C API people who mainly want to use Hammer in a host
+	application can use to parse and compile scripts, and register host-specific
+	commands, functions and properties.
+*/
+
 #pragma once
 
 #include <deque>
