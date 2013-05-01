@@ -200,6 +200,7 @@
 	X2(EPlyIdentifier,EPlayerIdentifier,"ply") \
 	X1(EMyIdentifier,"my") \
 	X1(EVersionIdentifier,"version") \
+	X1(EMachineIdentifier,"machine") \
 	X1(ECreateIdentifier,"create") \
 	X1(ENewIdentifier,"new") \
 	X1(EDebugIdentifier,"debug") \
@@ -211,6 +212,7 @@
 	X1(EChunkIdentifier,"chunk") \
 	X1(EPlatformIdentifier,"platform") \
 	X1(ESystemVersionIdentifier,"systemversion") \
+	X1(EPhysicalMemoryIdentifier,"physicalmemory") \
 	X1(EButtonsIdentifier,"buttons") \
 	X2(EBtnsIdentifier,EButtonsIdentifier,"btns") \
 	X1(EFieldsIdentifier,"fields") \
