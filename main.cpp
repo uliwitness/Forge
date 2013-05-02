@@ -189,7 +189,7 @@ int main( int argc, char * const argv[] )
 			else
 			{
 				LEOContext		ctx;
-				LEOInitContext( &ctx, group );
+				LEOInitContext( &ctx, group, NULL, NULL );
 				
 				if( debuggerOn )
 				{
