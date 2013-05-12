@@ -26,6 +26,9 @@ namespace Carlson
 		EIdentifierToken,
 		ENumberToken,
 		ECommentPseudoToken,
+		EMultilineCommentPseudoToken,
+		ECurlyStringPseudoToken,
+		EGuillemotsStringPseudoToken,
 		ELastToken_Sentinel
 	} TTokenType;
 

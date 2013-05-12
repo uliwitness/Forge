@@ -29,7 +29,10 @@ namespace Carlson
 		"EStringToken",
 		"EIdentifierToken",
 		"ENumberToken",
-		"***ECommentPseudoToken"
+		"***ECommentPseudoToken",
+		"***EMultilineCommentPseudoToken",
+		"***ECurlyStringPseudoToken",
+		"***EGuillemotsStringPseudoToken"
 	};
 
 #pragma mark Token identifier strings
@@ -99,6 +102,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		std::string			currText;
 		std::deque<CToken>	tokenList;
 		size_t				currLineNum = 1;
+		int					currNestingDepth = 0;	// Nesting depth for nestable quotes.
 		
 		while( x < len )
 		{
@@ -121,6 +125,16 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currType = EStringToken;
 						currStartOffs = newX;
 					}
+					if( currCh == 0x201C )	// “
+					{
+						currType = ECurlyStringPseudoToken;
+						currStartOffs = newX;
+					}
+					else if( currCh == 0x00AB )	// «
+					{
+						currType = EGuillemotsStringPseudoToken;
+						currStartOffs = newX;
+					}
 					else if( isdigit( currCh ) )
 					{
 						currType = ENumberToken;
@@ -129,6 +143,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					}
 					else if( currCh == '-' && nextCh == '-' )
 						currType = ECommentPseudoToken;
+					else if( currCh == '(' && nextCh == '*' )
+						currType = EMultilineCommentPseudoToken;
 					else
 					{
 						char		opstr[2] = { 0, 0 };
@@ -156,6 +172,16 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						tokenList.push_back( CToken( EIdentifierToken, ENewlineOperator, x, currLineNum, std::string("\n") ) );
 						currText.clear();
 						currType = EInvalidToken;
+						currStartOffs = newX;
+					}
+					break;
+				
+				case EMultilineCommentPseudoToken:
+					if( currCh == '*' && nextCh == ')' )
+					{
+						currText.clear();
+						currType = EInvalidToken;
+						newX++;
 						currStartOffs = newX;
 					}
 					break;
@@ -235,6 +261,56 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currText.clear();
 						currStartOffs = x;
 						currType = EInvalidToken;
+					}
+					else
+						currText.append( str +x, newX -x );
+					break;
+				
+				case ECurlyStringPseudoToken:
+					if( currCh == 0x201C )	// “ Another open quote? Nest!
+					{
+						currNestingDepth++;
+						currText.append( str +x, newX -x );
+					}
+					else if( currCh == 0x201D )	// ”
+					{
+						if( currNestingDepth > 0 )	// Nested closing quote? Un-nest.
+						{
+							currNestingDepth--;
+							currText.append( str +x, newX -x );
+						}
+						else	// Final closing quote? End string.
+						{
+							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+							currText.clear();
+							currStartOffs = x;
+							currType = EInvalidToken;
+						}
+					}
+					else
+						currText.append( str +x, newX -x );
+					break;
+				
+				case EGuillemotsStringPseudoToken:
+					if( currCh == 0x00AB )	// « Another open quote? Nest!
+					{
+						currNestingDepth++;
+						currText.append( str +x, newX -x );
+					}
+					else if( currCh == 0x00BB )	// » 
+					{
+						if( currNestingDepth > 0 )	// Nested closing quote? Un-nest.
+						{
+							currNestingDepth--;
+							currText.append( str +x, newX -x );
+						}
+						else	// Final closing quote? End string.
+						{
+							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+							currText.clear();
+							currStartOffs = x;
+							currType = EInvalidToken;
+						}
 					}
 					else
 						currText.append( str +x, newX -x );
