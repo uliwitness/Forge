@@ -88,6 +88,10 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 		instructionID = NUM_TO_HEX_INSTR;
 	else if( mSymbolName.compare( "hextonum" ) == 0 )
 		instructionID = HEX_TO_NUM_INSTR;
+	else if( mSymbolName.compare( "numtobinary" ) == 0 )
+		instructionID = NUM_TO_BINARY_INSTR;
+	else if( mSymbolName.compare( "binarytonum" ) == 0 )
+		instructionID = BINARY_TO_NUM_INSTR;
 	else if( mSymbolName.compare( "paramcount" ) == 0 )
 		instructionID = PARAMETER_COUNT_INSTR;
 	
