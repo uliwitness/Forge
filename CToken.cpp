@@ -125,7 +125,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currType = EStringToken;
 						currStartOffs = newX;
 					}
-					if( currCh == 0x201C )	// “
+					else if( currCh == 0x201C )	// “
 					{
 						currType = ECurlyStringPseudoToken;
 						currStartOffs = newX;
