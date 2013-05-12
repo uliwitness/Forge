@@ -15,6 +15,9 @@ extern "C" {
 #include "LEOMsgCommandsGeneric.h"
 #include "LEOInterpreter.h"
 }
+#include "CConcatOperatorNodeTransformation.h"
+#include "CConcatSpaceOperatorNodeTransformation.h"
+#include "CChunkPropertyNodeTransformation.h"
 
 
 using namespace Carlson;
@@ -61,7 +64,8 @@ int main( int argc, char * const argv[] )
 				printInstructions = false,
 				printTokens = false,
 				printParseTree = false,
-				verbose = false;
+				verbose = false,
+				doOptimize = true;
 	
 	int			fnameIdx = 0;
 	for( int x = 1; x < argc; )
@@ -109,6 +113,8 @@ int main( int argc, char * const argv[] )
 				messageName = argv[x+1];
 				x++;
 			}
+			else if( strcmp( argv[x], "--dont-optimize" ) == 0 )
+				doOptimize = false;
 			else
 			{
 				std::cerr << "Unknown option \"" << argv[x] << "\"." << std::endl;
@@ -153,6 +159,14 @@ int main( int argc, char * const argv[] )
 		}
 		
 		LEOInitInstructionArray();
+		
+		if( doOptimize )
+		{
+			CConcatOperatorNodeTransformation::Initialize();
+			CConcatSpaceOperatorNodeTransformation::Initialize();
+			CChunkPropertyNodeTransformation::Initialize();
+		}
+		
 		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
 		
