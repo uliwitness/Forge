@@ -73,6 +73,12 @@ const char*		LEOParserGetLastErrorMessage( void );
 /*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 
+
+/*! Register the built-in function names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstBuiltInFunctionInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
+
+void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstBuiltInFunctionInstruction );
+
+
 /*! Register the syntax and the corresponding instructions for host-specific commands in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
 
 	You must have registered all instructions referenced here using the same call to
@@ -93,3 +99,7 @@ void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntri
 
 /*! Load syntax for 'native calls' (i.e. native operating system APIs as you would call them from C, Objective C, C# or Pascal) from the specified .hhc header file, so the functions and methods in it become available to the parser as if they were handlers (just that they can return pointers and you might have to manage memory handed into or returned from them). */
 void	LEOLoadNativeHeadersFromFile( const char* filepath );
+
+
+/*! Since loading the headers for 'native calls' (i.e. native operating system APIs as you would call them from C, Objective C, C# or Pascal) may take a while, this callback is provided, which gets called the first time Forge needs to parse a native call, so you can lazily load the headers only when a script actually uses native calls and not incur the overhead otherwise. */
+void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );

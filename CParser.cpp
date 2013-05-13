@@ -73,6 +73,7 @@ std::map<std::string,CObjCMethodEntry>	CParser::sCFunctionTable;				// Table of 
 std::map<std::string,CObjCMethodEntry>	CParser::sCFunctionPointerTable;		// Table of C function pointer type name -> types mappings for generating callback trampolines.
 std::map<std::string,std::string>		CParser::sSynonymToTypeTable;			// Table of C type synonym name -> real name mappings.
 std::map<std::string,std::string>		CParser::sConstantToValueTable;			// Table of C system constant name -> constant value mappings.
+LEOFirstNativeCallCallbackPtr			CParser::sFirstNativeCallCallback = NULL;
 
 #pragma mark -
 #pragma mark [Operator lookup table]
@@ -118,7 +119,7 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
-static TBuiltInFunctionEntry	sBuiltInFunctions[] =
+static TBuiltInFunctionEntry	sDefaultBuiltInFunctions[] =
 {
 	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR, BACK_OF_STACK, 0 },
 	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR, 0, 0 },
@@ -130,6 +131,8 @@ static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 static THostCommandEntry*		sHostCommands = NULL;
 
 static THostCommandEntry*		sHostFunctions = NULL;
+
+static TBuiltInFunctionEntry*	sBuiltInFunctions = NULL;
 
 
 #pragma mark [Chunk type lookup table]
@@ -310,11 +313,61 @@ CParser::CParser()
 {
 	if( !sGlobalProperties )
 		sGlobalProperties = sDefaultGlobalProperties;
+	if( !sBuiltInFunctions )
+		sBuiltInFunctions = sDefaultBuiltInFunctions;
 }
 
 
 // -----------------------------------------------------------------------------
-//	AddGlobalProperties:
+//	AddBuiltInFunctionsAndOffsetInstructions:
+//		Add additional global properties to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
+{
+	if( !sBuiltInFunctions )
+		sBuiltInFunctions = sDefaultBuiltInFunctions;
+	
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	for( size_t x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
+		numOldEntries++;
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+		numNewEntries++;
+	
+	TBuiltInFunctionEntry*	newTable = NULL;
+	if( sBuiltInFunctions == sDefaultBuiltInFunctions )
+	{
+		newTable = (TBuiltInFunctionEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TBuiltInFunctionEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of built-in functions." );
+		memmove( newTable, sBuiltInFunctions, numOldEntries *sizeof(TBuiltInFunctionEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TBuiltInFunctionEntry) );
+	}
+	else
+	{
+		newTable = (TBuiltInFunctionEntry*) realloc( sBuiltInFunctions, (numOldEntries +numNewEntries +1) * sizeof(TBuiltInFunctionEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TBuiltInFunctionEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		if( newTable[x].mInstructionID == INVALID_INSTR2 )
+			newTable[x].mInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mInstructionID += firstGlobalPropertyInstruction;
+	}
+	
+	sBuiltInFunctions = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddGlobalPropertiesAndOffsetInstructions:
 //		Add additional global properties to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
@@ -367,7 +420,7 @@ CParser::CParser()
 
 
 // -----------------------------------------------------------------------------
-//	AddHostCommands:
+//	AddHostCommandsAndOffsetInstructions:
 //		Add additional commands to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
@@ -420,7 +473,7 @@ CParser::CParser()
 
 
 // -----------------------------------------------------------------------------
-//	AddHostCommands:
+//	AddHostFunctionsAndOffsetInstructions:
 //		Add additional commands to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
@@ -2146,7 +2199,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	
 	// Check if it could be a global property expression:
-	if( !container )
+	if( !container && sGlobalProperties )
 	{
 		TIdentifierSubtype		subType = tokenItty->GetIdentifierSubType();
 		TIdentifierSubtype		qualifierType = ELastIdentifier_Sentinel;
@@ -2637,6 +2690,12 @@ void	CParser::LoadNativeHeadersFromFile( const char* filepath )
 }
 
 
+void	CParser::SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback )
+{
+	sFirstNativeCallCallback = inCallback;
+}
+
+
 // This parses an *editable* chunk expression that is a CVariant. This is a
 //	little more complex and dangerous, as it simply points to the target value.
 //	If you can, use the more efficient call for constant (i.e. non-changeable)
@@ -2747,6 +2806,13 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
+	if( sFirstNativeCallCallback )
+	{
+		LEOFirstNativeCallCallbackPtr	callback = sFirstNativeCallCallback;
+		sFirstNativeCallCallback = NULL;
+		callback();
+	}
+	
 	// We parse either a class name or an expression that evaluates to an object
 	// as type "native object", followed by parameters with labels. We build the
 	// method name from that and look up that method in our table of system calls.
@@ -3205,7 +3271,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				
 				// Check if it could be a global property expression:
-				if( !theTerm )
+				if( !theTerm && sGlobalProperties )
 				{
 					TIdentifierSubtype	subType = tokenItty->mSubType;
 					TIdentifierSubtype	qualifierType = ELastIdentifier_Sentinel;
@@ -3234,7 +3300,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						CToken::GoPrevToken( mFileName, tokenItty, tokens );
 				}
 								
-				if( !theTerm )
+				if( !theTerm && sBuiltInFunctions )
 				{
 					TIdentifierSubtype	subType = tokenItty->mSubType;
 		
@@ -3310,7 +3376,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			{
 				TIdentifierSubtype	subType = tokenItty->mSubType;
 	
-				if( !theTerm )
+				if( !theTerm && sBuiltInFunctions )
 				{
 					// Find it in our list of built-in functions:
 					int				x = 0;
@@ -3336,15 +3402,18 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						}
 					}
 				}
-
-				// Find it in our list of global properties:
-				for( int x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
+				
+				if( !theTerm && sGlobalProperties )
 				{
-					if( sGlobalProperties[x].mType == subType )
+					// Find it in our list of global properties:
+					for( int x = 0; sGlobalProperties[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, gIdentifierStrings[subType], tokenItty->mLineNum );
-						CToken::GoNextToken( mFileName, tokenItty, tokens );
-						break;
+						if( sGlobalProperties[x].mType == subType )
+						{
+							theTerm = new CGlobalPropertyNode( &parseTree, sGlobalProperties[x].mSetterInstructionID, sGlobalProperties[x].mGetterInstructionID, gIdentifierStrings[subType], tokenItty->mLineNum );
+							CToken::GoNextToken( mFileName, tokenItty, tokens );
+							break;
+						}
 					}
 				}
 				

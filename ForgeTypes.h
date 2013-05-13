@@ -316,4 +316,9 @@ struct THostCommandEntry
 	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	//! These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
 };
 
+
+
+typedef void	(*LEOFirstNativeCallCallbackPtr)( void );
+
+
 #endif /*FORGE_TYPES_H*/

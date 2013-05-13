@@ -126,6 +126,7 @@ namespace Carlson
 		static std::map<std::string,CObjCMethodEntry>	sCFunctionPointerTable;	// Populated from frameworkheaders.hhc file.
 		static std::map<std::string,std::string>		sSynonymToTypeTable;	// Populated from frameworkheaders.hhc file.
 		static std::map<std::string,std::string>		sConstantToValueTable;	// Populated from frameworkheaders.hhc file.
+		static LEOFirstNativeCallCallbackPtr			sFirstNativeCallCallback;
 		
 	public:
 		CParser();
@@ -233,6 +234,8 @@ namespace Carlson
 		void		LoadNativeHeaders();
 		
 		static void		LoadNativeHeadersFromFile( const char* filepath );
+		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );
+		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );

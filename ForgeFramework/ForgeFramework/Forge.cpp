@@ -198,6 +198,25 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 }
 
 
+extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	
+	try
+	{
+		CParser::CParser::AddBuiltInFunctionsAndOffsetInstructions( inEntries, firstGlobalPropertyInstruction );
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
 extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;
@@ -273,4 +292,9 @@ extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 	}
 }
 
+
+extern "C" void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback )
+{
+	CParser::SetFirstNativeCallCallback( inCallback );
+}
 
