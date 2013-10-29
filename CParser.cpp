@@ -3245,7 +3245,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					}
 					
 					// Check if it could be an object property expression:
-					if( isStyleQualifiedProperty && !tokenItty->mType == EIdentifierToken )
+					if( isStyleQualifiedProperty && tokenItty->mType != EIdentifierToken )
 						isStyleQualifiedProperty = false;
 					else
 					{
