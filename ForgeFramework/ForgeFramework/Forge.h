@@ -41,7 +41,10 @@
 //	Data types:
 // -----------------------------------------------------------------------------
 
-/*! LEOParseTree is a private, internal data structure representing a parse tree. */
+/*! LEOParseTree is a private, internal data structure representing a parse tree,
+	i.e. it is a representation of a script's code in a more easily machine
+	processible form than plain text. Internally it is equivalent to the
+	CParseTree C++ class, but do not rely on that from your host application. */
 typedef struct LEOParseTree	LEOParseTree;
 
 
