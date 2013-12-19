@@ -44,6 +44,8 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded( void )
 
 
 char	gLEOLastErrorString[1024] = { 0 };
+size_t	gLEOLastErrorOffset = SIZE_T_MAX;
+size_t	gLEOLastErrorLineNum = SIZE_T_MAX;
 
 
 extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID )
@@ -52,6 +54,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
@@ -69,6 +73,18 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+		#if 0
+		parseTree->DebugPrint( std::cout, 0 );
+		#endif
+		if( parseTree )
+			delete parseTree;
+		parseTree = NULL;
 	}
 	catch( std::exception& err )
 	{
@@ -98,6 +114,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
@@ -111,6 +129,15 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+		if( parseTree )
+			delete parseTree;
+		parseTree = NULL;
 	}
 	catch( std::exception& err )
 	{
@@ -156,11 +183,25 @@ extern "C" const char*	LEOParserGetLastErrorMessage()
 }
 
 
+extern "C" size_t	LEOParserGetLastErrorLineNum()
+{
+	return gLEOLastErrorLineNum;
+}
+
+
+extern "C" size_t	LEOParserGetLastErrorOffset()
+{
+	return gLEOLastErrorOffset;
+}
+
+
 extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* inGroup, LEOParseTree* inTree, uint16_t inFileID )
 {
 	LEOInitializeNodeTransformationsIfNeeded();
 	
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
@@ -183,6 +224,16 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 		LEODebugPrintScript( inGroup, inScript );
 		#endif
 	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+		
+		#if 0
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+		#endif
+	}
 	catch( std::exception& err )
 	{
 		strcpy( gLEOLastErrorString, err.what() );
@@ -201,10 +252,18 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
 		CParser::CParser::AddBuiltInFunctionsAndOffsetInstructions( inEntries, firstGlobalPropertyInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
@@ -220,10 +279,18 @@ extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunc
 extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
 		CParser::AddGlobalPropertiesAndOffsetInstructions( inEntries, firstGlobalPropertyInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
@@ -239,10 +306,18 @@ extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPrope
 extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
 {
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
 		CParser::AddHostCommandsAndOffsetInstructions( inEntries, firstHostCommandInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
@@ -258,10 +333,18 @@ extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntr
 extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostFunctionInstruction )
 {
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
 		CParser::AddHostFunctionsAndOffsetInstructions( inEntries, firstHostFunctionInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
@@ -277,10 +360,18 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 {
 	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
 	
 	try
 	{
 		CParser::LoadNativeHeadersFromFile( filepath );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{

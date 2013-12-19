@@ -93,6 +93,18 @@ void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* in
 */
 const char*		LEOParserGetLastErrorMessage( void );	
 
+/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the line in the script an error occurred on. If this returns SIZE_T_MAX, no line number information is available.
+	@seealso //leo_ref/c/func/LEOParserGetLastErrorMessage	LEOParserGetLastErrorMessage
+	@seealso //leo_ref/c/func/LEOParserGetLastErrorOffset	LEOParserGetLastErrorOffset
+*/
+size_t		LEOParserGetLastErrorLineNum( void );
+
+/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the character offset in the script an error occurred on. If this returns SIZE_T_MAX, no offset is available. Character offset information is usually only available for errors that happen early on in parsing. If you can't get an offset, you may want to try calling <tt>LEOParserGetLastErrorLineNum</tt>, which will often still at least be able to give you the line number for an error.
+	@seealso //leo_ref/c/func/LEOParserGetLastErrorMessage	LEOParserGetLastErrorMessage
+	@seealso //leo_ref/c/func/LEOParserGetLastErrorLineNum	LEOParserGetLastErrorLineNum
+*/
+size_t		LEOParserGetLastErrorOffset( void );
+
 /*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 
