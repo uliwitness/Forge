@@ -1992,6 +1992,8 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 		needEndIf = false;
 	}
 	
+	std::deque<CToken>::iterator	beforeLineEnd = tokenItty;	// Remember position before line end in case there's no 'else'. We need to leave a line break for ParseOneLine() to parse.
+
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2017,6 +2019,8 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 			needEndIf = false;
 		}
 	}
+	else if( needEndIf == false )
+		tokenItty = beforeLineEnd;	// Leave a return at the end of the line (which the code above skipped) so ParseOneLine() can detect we're really at the end of the line.
 	
 	// End If:
 	if( needEndIf && tokenItty->IsIdentifier( EEndIdentifier ) )
@@ -2034,6 +2038,8 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 	}
 	
 	currFunction->AddCommand( ifNode );	// TODO: delete ifNode on exceptions above, and condition before it's added to ifNode etc.
+	
+	// We leave the last line break after the 'end if' in the token stream so ParseOneLine() can parse it.
 }
 
 
