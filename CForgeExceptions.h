@@ -18,7 +18,7 @@ namespace Carlson
 class CForgeParseError : public std::runtime_error
 {
 public:
-	CForgeParseError( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_T_MAX, long inErrorCode = 0 ) throw() : std::runtime_error(inWhatMsg), mLineNum(inLineNum) {};
+	CForgeParseError( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_T_MAX, long inErrorCode = 0 ) throw() : std::runtime_error(inWhatMsg), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
 	~CForgeParseError() throw() {};
 	
 	size_t		GetLineNum()	{ return mLineNum; };
