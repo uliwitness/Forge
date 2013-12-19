@@ -84,7 +84,7 @@ CNode*	CChunkPropertyPutNodeTransformation::Simplify( CPutCommandNode* inPutNode
 			
 			std::string		propName;
 			chunkExpr->GetSymbolName( propName );
-			setChunkPropNode->AddParam( new CStringValueNode( inPutNode->GetParseTree(), propName ) );
+			setChunkPropNode->AddParam( new CStringValueNode( inPutNode->GetParseTree(), propName, inPutNode->GetLineNum() ) );
 			
 			return setChunkPropNode;
 		}

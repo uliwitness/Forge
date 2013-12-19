@@ -32,6 +32,7 @@
 		5523FE9A13426074009D8EF1 /* testfile10.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCEC0012C8DD0E00D76F6B /* testfile10.hc */; };
 		5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 5538246417274659007785D8 /* LEOObjCCallInstructions.c */; };
 		554DC30D1863670C00B514E3 /* testfile13.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554DC30C186366F100B514E3 /* testfile13.hc */; };
+		554DC317186390FE00B514E3 /* CForgeExceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 554DC315186390FE00B514E3 /* CForgeExceptions.cpp */; };
 		556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 556FA4521718AA7500A108E5 /* UnitTest.hc */; };
 		556FA4561718AED200A108E5 /* LEOMsgCommandsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */; };
 		558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */; };
@@ -142,6 +143,8 @@
 		5538246417274659007785D8 /* LEOObjCCallInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOObjCCallInstructions.c; path = Leonie/generic/LEOObjCCallInstructions.c; sourceTree = "<group>"; };
 		5538246517274659007785D8 /* LEOObjCCallInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOObjCCallInstructions.h; path = Leonie/generic/LEOObjCCallInstructions.h; sourceTree = "<group>"; };
 		554DC30C186366F100B514E3 /* testfile13.hc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testfile13.hc; sourceTree = "<group>"; };
+		554DC315186390FE00B514E3 /* CForgeExceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CForgeExceptions.cpp; sourceTree = "<group>"; };
+		554DC316186390FE00B514E3 /* CForgeExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CForgeExceptions.h; sourceTree = "<group>"; };
 		556FA4521718AA7500A108E5 /* UnitTest.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UnitTest.hc; sourceTree = "<group>"; };
 		556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOMsgCommandsGeneric.c; sourceTree = "<group>"; };
 		556FA4551718AED200A108E5 /* LEOMsgCommandsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEOMsgCommandsGeneric.h; sourceTree = "<group>"; };
@@ -303,6 +306,8 @@
 				55E8060B1366249C006F1287 /* ForgeTypes.h */,
 				55E8060E136624D6006F1287 /* Forge.h */,
 				55E8060D136624D6006F1287 /* Forge.cpp */,
+				554DC316186390FE00B514E3 /* CForgeExceptions.h */,
+				554DC315186390FE00B514E3 /* CForgeExceptions.cpp */,
 				3DAE6D2F0BF29A8A00946F2F /* Parse Tree */,
 				55C72BFE127DD31600CF0F16 /* Leonie */,
 			);
@@ -554,6 +559,7 @@
 				55AAC0771710B10E008441AF /* CGetChunkPropertyNode.cpp in Sources */,
 				55AAC07A1710B1B1008441AF /* LEOPropertyInstructions.c in Sources */,
 				55AAC07D1710B1E6008441AF /* CDownloadCommandNode.cpp in Sources */,
+				554DC317186390FE00B514E3 /* CForgeExceptions.cpp in Sources */,
 				55AAC0801710B21D008441AF /* LEODownloadInstructions.c in Sources */,
 				556FA4561718AED200A108E5 /* LEOMsgCommandsGeneric.c in Sources */,
 				5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */,

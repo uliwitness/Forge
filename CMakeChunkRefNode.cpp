@@ -8,6 +8,7 @@
 
 #include "CMakeChunkRefNode.h"
 #include "CCodeBlock.h"
+#include "CForgeExceptions.h"
 
 
 namespace Carlson
@@ -52,7 +53,7 @@ void	CMakeChunkRefNode::GenerateCode( CCodeBlock* inCodeBlock )
 	}
 	else
 	{
-		throw std::runtime_error("Can't make chunks of this value.");
+		throw CForgeParseError("Can't make chunks of this value.",mLineNum);
 	}
 	
 }

@@ -23,7 +23,7 @@ class CObjectPropertyNode : public CValueNode
 {
 public:
 	CObjectPropertyNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum )
-		: CValueNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
+		: CValueNode(inTree,inLineNum), mSymbolName(inSymbolName) {};
 	virtual ~CObjectPropertyNode() {};
 	
 	virtual void		GetSymbolName( std::string& outSymbolName )		{ outSymbolName = mSymbolName; };
@@ -42,7 +42,6 @@ public:
 protected:
 	std::string					mSymbolName;
 	std::vector<CValueNode*>	mParams;
-	size_t						mLineNum;
 };
 
 }

@@ -30,7 +30,7 @@ CNode*	CConcatOperatorNodeTransformation::Simplify( COperatorNode* inOperatorNod
 			std::string	secondParamStr = secondParam->GetAsString();
 			std::string	newString = firstParamStr;
 			newString.append( secondParamStr );
-			return new CStringValueNode( inOperatorNode->GetParseTree(), newString );
+			return new CStringValueNode( inOperatorNode->GetParseTree(), newString, inOperatorNode->GetLineNum() );
 		}
 	}
 	

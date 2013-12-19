@@ -23,7 +23,7 @@ void	CGetParamCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	if(( varValue = dynamic_cast<CLocalVariableRefValueNode*>(destValue) ))
 		inCodeBlock->GenerateAssignParamToVariableInstruction( varValue->GetBPRelativeOffset(), paramIdx->GetAsInt() );
 	else
-		throw std::runtime_error("Can't assign to this value.");
+		throw CForgeParseError("Can't assign to this value.",mLineNum);
 }
 
 } // namespace Carlson

@@ -25,7 +25,7 @@ class CGlobalPropertyNode : public CValueNode
 {
 public:
 	CGlobalPropertyNode( CParseTree* inTree, LEOInstructionID inSetterInstructionID, LEOInstructionID inGetterInstructionID, const std::string& propName, size_t inLineNum )
-		: CValueNode(inTree), mSetterInstructionID(inSetterInstructionID), mGetterInstructionID(inGetterInstructionID), mPropertyName(propName), mLineNum(inLineNum) {};
+		: CValueNode(inTree,inLineNum), mSetterInstructionID(inSetterInstructionID), mGetterInstructionID(inGetterInstructionID), mPropertyName(propName) {};
 	virtual ~CGlobalPropertyNode() {};
 	
 	virtual size_t			GetParamCount()									{ return mParams.size(); };
@@ -44,7 +44,6 @@ protected:
 	LEOInstructionID			mGetterInstructionID;
 	std::vector<CValueNode*>	mParams;
 	std::string					mPropertyName;
-	size_t						mLineNum;
 };
 
 }

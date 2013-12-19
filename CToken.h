@@ -84,6 +84,7 @@ namespace Carlson
 		const std::string	GetIdentifierText() const;			// Lowercased and otherwise normalised for easier compares.
 		TIdentifierSubtype	GetIdentifierSubType() const;		// Like mSubType, but throws if this isn't an identifier.
 		const std::string	GetOriginalIdentifierText() const;	// Original string as entered by user.
+		size_t				GetOffset() const { return mOffset; };
 	
 	public:
 		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

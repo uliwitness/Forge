@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include "UTF8UTF32Utilities.h"
+#include "CForgeExceptions.h"
 
 
 namespace Carlson
@@ -396,7 +397,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	TIdentifierSubtype	CToken::GetIdentifierSubType() const
 	{
 		if( mType != EIdentifierToken )
-			throw std::runtime_error( "Expected identifier here." );
+			throw CForgeParseError( "Expected identifier here.", mLineNum, mOffset );
 		
 		return gIdentifierSynonyms[mSubType];
 	}
@@ -404,7 +405,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	const std::string	CToken::GetIdentifierText() const
 	{
 		if( mType != EIdentifierToken )
-			throw std::runtime_error( "Expected identifier here." );
+			throw CForgeParseError( "Expected identifier here.", mLineNum, mOffset );
 		
 		if( mSubType == ELastIdentifier_Sentinel )
 			return ToLowerString(mStringValue);
@@ -415,7 +416,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	const std::string	CToken::GetOriginalIdentifierText() const
 	{
 		if( mType != EIdentifierToken )
-			throw std::runtime_error( "Expected identifier here." );
+			throw CForgeParseError( "Expected identifier here.", mLineNum, mOffset );
 		
 		return mStringValue;
 	}
@@ -538,7 +539,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		{
 			std::stringstream	errMsg;
 			errMsg << fname << ":" << tokenItty->mLineNum << ": error: Premature end of file.";
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		else
 			tokenItty++;
@@ -551,7 +552,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		{
 			std::stringstream	errMsg;
 			errMsg << fname << ":" << tokenItty->mLineNum << ": error: Parser backtracking beyond start of file.";
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		else
 			tokenItty--;
@@ -572,7 +573,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			errMsg << gIdentifierStrings[mSubType];
 			errMsg << GetShortDescription() << "\".";
 			
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), mLineNum, mOffset );
 		}
 	}
 

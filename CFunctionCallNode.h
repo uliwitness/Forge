@@ -23,7 +23,7 @@ class CFunctionCallNode : public CValueNode
 {
 public:
 	CFunctionCallNode( CParseTree* inTree, bool isCommand, const std::string& inSymbolName, size_t inLineNum )
-		: CValueNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum), mIsCommand(isCommand) {};
+		: CValueNode(inTree,inLineNum), mSymbolName(inSymbolName), mIsCommand(isCommand) {};
 	virtual ~CFunctionCallNode() {};
 	
 	virtual void		GetSymbolName( std::string& outSymbolName )		{ outSymbolName = mSymbolName; };
@@ -40,8 +40,6 @@ public:
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void		SetIsMessagePassing( bool inState )	{ mIsMessagePassing = inState; };
-	
-	virtual size_t		GetLineNum()	{ return mLineNum; };
 
 protected:
 	virtual const char*	GetNodeName()		{ return "Function Call"; };
@@ -50,7 +48,6 @@ protected:
 	bool						mIsCommand;
 	bool						mIsMessagePassing;
 	std::vector<CValueNode*>	mParams;
-	size_t						mLineNum;
 };
 
 }

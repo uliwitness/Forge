@@ -39,6 +39,7 @@
 #include "CObjectPropertyNode.h"
 #include "CGlobalPropertyNode.h"
 #include "CDownloadCommandNode.h"
+#include "CForgeExceptions.h"
 
 extern "C" {
 #include "LEOInstructions.h"
@@ -152,47 +153,47 @@ static TChunkTypeEntry	sChunkTypes[] =
 // Constant identifier and actual code to generate the value:
 struct TConstantEntry	sConstants[] =
 {
-	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true ) },
-	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false ) },
-	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("") ) },
-	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(",") ) },
-	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":") ) },
-	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r") ) },
-	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n") ) },
-	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0") ) },
-	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\"") ) },
-	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r") ) },
-	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n") ) },
-	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" ") ) },
-	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t") ) },
-	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI ) },
-	{ { EBarnIdentifier, EDoorIdentifier, EOpenIdentifier }, new CStringValueNode( NULL, std::string("barn door open") ) },
-	{ { EBarnIdentifier, EDoorIdentifier, ECloseIdentifier }, new CStringValueNode( NULL, std::string("barn door close") ) },
-	{ { EIrisIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris open") ) },
-	{ { EIrisIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris close") ) },
-	{ { EPushIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push up") ) },
-	{ { EPushIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push down") ) },
-	{ { EPushIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push left") ) },
-	{ { EPushIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push right") ) },
-	{ { EScrollIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll up") ) },
-	{ { EScrollIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll down") ) },
-	{ { EScrollIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll left") ) },
-	{ { EScrollIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll right") ) },
-	{ { EShrinkIdentifier, EToIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("shrink to top") ) },
-	{ { EShrinkIdentifier, EToIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("shrink to center") ) },
-	{ { EShrinkIdentifier, EToIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("shrink to bottom") ) },
-	{ { EStretchIdentifier, EFromIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("stretch from top") ) },
-	{ { EStretchIdentifier, EFromIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("stretch from center") ) },
-	{ { EStretchIdentifier, EFromIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("stretch from bottom") ) },
-	{ { EVenetianIdentifier, EBlindsIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("venetian blinds") ) },
-	{ { EWipeIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe up") ) },
-	{ { EWipeIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe down") ) },
-	{ { EWipeIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe left") ) },
-	{ { EWipeIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe right") ) },
-	{ { EZoomIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom close") ) },
-	{ { EZoomIdentifier, EInIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom in") ) },
-	{ { EZoomIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom open") ) },
-	{ { EZoomIdentifier, EOutIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom out") ) },
+	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_T_MAX ) },
+	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_T_MAX ) },
+	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(""), SIZE_T_MAX ) },
+	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(","), SIZE_T_MAX ) },
+	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":"), SIZE_T_MAX ) },
+	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ) },
+	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ) },
+	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0"), SIZE_T_MAX ) },
+	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\""), SIZE_T_MAX ) },
+	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ) },
+	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ) },
+	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ) },
+	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ) },
+	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ) },
+	{ { EBarnIdentifier, EDoorIdentifier, EOpenIdentifier }, new CStringValueNode( NULL, std::string("barn door open"), SIZE_T_MAX ) },
+	{ { EBarnIdentifier, EDoorIdentifier, ECloseIdentifier }, new CStringValueNode( NULL, std::string("barn door close"), SIZE_T_MAX ) },
+	{ { EIrisIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris open"), SIZE_T_MAX ) },
+	{ { EIrisIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris close"), SIZE_T_MAX ) },
+	{ { EPushIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push up"), SIZE_T_MAX ) },
+	{ { EPushIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push down"), SIZE_T_MAX ) },
+	{ { EPushIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push left"), SIZE_T_MAX ) },
+	{ { EPushIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push right"), SIZE_T_MAX ) },
+	{ { EScrollIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll up"), SIZE_T_MAX ) },
+	{ { EScrollIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll down"), SIZE_T_MAX ) },
+	{ { EScrollIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll left"), SIZE_T_MAX ) },
+	{ { EScrollIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll right"), SIZE_T_MAX ) },
+	{ { EShrinkIdentifier, EToIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("shrink to top"), SIZE_T_MAX ) },
+	{ { EShrinkIdentifier, EToIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("shrink to center"), SIZE_T_MAX ) },
+	{ { EShrinkIdentifier, EToIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("shrink to bottom"), SIZE_T_MAX ) },
+	{ { EStretchIdentifier, EFromIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("stretch from top"), SIZE_T_MAX ) },
+	{ { EStretchIdentifier, EFromIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("stretch from center"), SIZE_T_MAX ) },
+	{ { EStretchIdentifier, EFromIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("stretch from bottom"), SIZE_T_MAX ) },
+	{ { EVenetianIdentifier, EBlindsIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("venetian blinds"), SIZE_T_MAX ) },
+	{ { EWipeIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe up"), SIZE_T_MAX ) },
+	{ { EWipeIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe down"), SIZE_T_MAX ) },
+	{ { EWipeIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe left"), SIZE_T_MAX ) },
+	{ { EWipeIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe right"), SIZE_T_MAX ) },
+	{ { EZoomIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom close"), SIZE_T_MAX ) },
+	{ { EZoomIdentifier, EInIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom in"), SIZE_T_MAX ) },
+	{ { EZoomIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom open"), SIZE_T_MAX ) },
+	{ { EZoomIdentifier, EOutIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom out"), SIZE_T_MAX ) },
 	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL }
 };
 
@@ -646,8 +647,8 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		std::string	varName("var_");
 		varName.append( realVarName );
 		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
-		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, varName, realVarName) );
-		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, currParamIdx++ ) );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, varName, realVarName, tokenItty->mLineNum) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, currParamIdx++, tokenItty->mLineNum ) );
 		currFunctionNode->AddCommand( theVarCopyCommand );
 		
 		currFunctionNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
@@ -661,7 +662,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 									<< tokenItty->GetShortDescription() << ".";
 			
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -719,7 +720,7 @@ void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* cur
 		std::stringstream		errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can only pass messages in command or function handlers.";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	
 	if( theFunction->GetIsCommand() )
@@ -756,7 +757,7 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	else
 	{
 		theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
-		theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "result", "result") );
+		theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "result", "result", tokenItty->mLineNum) );
 		theVarAssignCommand->AddParam( currFunctionCall );
 	}
 	currFunction->AddCommand( theVarAssignCommand );
@@ -862,7 +863,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"into\", \"before\" or \"after\" here, found "
 										<< tokenItty->GetShortDescription() << ".";
 				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw std::runtime_error( errMsg.str() );
+				CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 			}
 		}
 		
@@ -898,7 +899,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"to\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
 
@@ -944,7 +945,7 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected handler call here, found \""
 							<< tokenItty->GetShortDescription() << "\".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	else
 		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
@@ -988,7 +989,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else if( !term )
 								{
@@ -1005,7 +1006,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									throw std::runtime_error( errMsg.str() );
+									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
 								{
@@ -1028,7 +1029,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else if( !term )
 								{
@@ -1045,7 +1046,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									throw std::runtime_error( errMsg.str() );
+									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
 								{
@@ -1069,7 +1070,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								if( !term && par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else if( !term )
 								{
@@ -1086,7 +1087,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									throw std::runtime_error( errMsg.str() );
+									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
 								{
@@ -1102,7 +1103,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											theStr.append( tokenItty->GetIdentifierText() );
 										}
 										
-										term = new CStringValueNode( &parseTree, theStr );
+										term = new CStringValueNode( &parseTree, theStr, tokenItty->mLineNum );
 									}
 
 									hostCommand->AddParam( term );
@@ -1127,7 +1128,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									if( par->mInstructionID == INVALID_INSTR )
 									{
 										if( par->mType != EHostParamInvisibleIdentifier )
-											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription() ) );
+											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription(), tokenItty->mLineNum ) );
 									}
 									else
 									{
@@ -1143,7 +1144,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR && par->mType != EHostParamInvisibleIdentifier )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else
 								{
@@ -1161,7 +1162,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-										throw std::runtime_error( errMsg.str() );
+										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 									else if( identifiersToBacktrack > 0 )
 									{
@@ -1211,7 +1212,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-										throw std::runtime_error( errMsg.str() );
+										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 									else
 									{
@@ -1227,7 +1228,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								}
 								else if( par->mIsOptional )
 								{
-									hostCommand->AddParam( new CStringValueNode( &parseTree, "" ) );
+									hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else
 								{
@@ -1244,7 +1245,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									throw std::runtime_error( errMsg.str() );
+									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								identifiersToBacktrack = -1;
 								break;
@@ -1274,7 +1275,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unexpected  \""
 							<< tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
 						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						throw std::runtime_error( errMsg.str() );
+						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 					}
 				}
 				else
@@ -1315,7 +1316,7 @@ void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		
 	// Make sure we have an "it":
 	CreateVariable( "var_it", "it", false, currFunction );
-	thePutCommand->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, "var_it", "it" ) );
+	thePutCommand->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, "var_it", "it", tokenItty->mLineNum ) );
 	
 	currFunction->AddCommand( thePutCommand );
 }
@@ -1358,7 +1359,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"into\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1389,7 +1390,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"each chunk\" after \"for\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1399,7 +1400,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"chunk\" after \"for each\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -1413,8 +1414,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		std::string	realVarName( "download" );
 		std::string	varName("download");
 		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
-		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, progressNode, varName, realVarName) );
-		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, progressNode, varName, realVarName, tokenItty->mLineNum) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0, tokenItty->mLineNum ) );
 		progressNode->AddCommand( theVarCopyCommand );
 		
 		progressNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
@@ -1449,7 +1450,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"done\" after \"when\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -1463,8 +1464,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		std::string	realVarName( "download" );
 		std::string	varName("download");
 		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
-		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, completionNode, varName, realVarName) );
-		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0 ) );
+		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, completionNode, varName, realVarName, tokenItty->mLineNum) );
+		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0, tokenItty->mLineNum ) );
 		completionNode->AddCommand( theVarCopyCommand );
 		
 		completionNode->AddLocalVar( varName, realVarName, TVariantTypeEmptyString, false, true, false );	// Create param var and mark as parameter in variable list.
@@ -1497,7 +1498,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end download\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -1508,7 +1509,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"download\" after \"end\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -1524,7 +1525,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << expectations << " here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 }
 
@@ -1548,7 +1549,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1580,7 +1581,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1611,7 +1612,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"with\" or \"by\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1642,7 +1643,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"by\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1666,7 +1667,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected chunk type identifier here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip chunk type.
 	
@@ -1685,7 +1686,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" or \"in\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -1699,21 +1700,21 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	std::string		tempMaxCountName = CVariableEntry::GetNewTempName();
 	
 	CCommandNode*			theVarChunkListCommand = new CAssignChunkArrayNode( &parseTree, currLineNum );
-	theVarChunkListCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-	theVarChunkListCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant) );
+	theVarChunkListCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
+	theVarChunkListCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant, currLineNum) );
 	theVarChunkListCommand->AddParam( theExpressionNode );
 	currFunction->AddCommand( theVarChunkListCommand );
 	
 	// tempCounterName = 1;
 	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
-	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 1) );
+	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, currLineNum) );
+	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 1, currLineNum) );
 	currFunction->AddCommand( theVarAssignCommand );
 	
 	// tempMaxCountName = GetArrayItemCount( tempName );
 	CGetArrayItemCountNode*	currFunctionCall = new CGetArrayItemCountNode( &parseTree, currLineNum);
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
-	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName, currLineNum) );
+	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	currFunction->AddCommand( currFunctionCall );
 	
 	// while( tempCounterName <= tempMaxCountName )
@@ -1721,14 +1722,14 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	currFunction->AddCommand( whileLoop );
 	COperatorNode	*	opNode = new COperatorNode( &parseTree, LESS_THAN_EQUAL_OPERATOR_INSTR, currLineNum );
 	whileLoop->SetCondition( opNode );
-	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName) );
+	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, currLineNum) );
+	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName, currLineNum) );
 	
 	// counterVarName = GetArrayItem( tempName, tempCounterName );
 	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, currLineNum );
-	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
-	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, currLineNum) );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, currLineNum) );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	whileLoop->AddCommand( getItemNode );
 	
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
@@ -1738,8 +1739,8 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	
 	// tempCounterName += 1;	-- increment loop counter.
 	CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
-	theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName) );
-	theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1) );
+	theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, tokenItty->mLineNum) );
+	theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1, tokenItty->mLineNum) );
 	whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
 	
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1749,7 +1750,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end repeat\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );
 }
@@ -1815,7 +1816,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" or \"=\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -1842,7 +1843,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" or \"through\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -1855,20 +1856,20 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// tempName = startNum;
 		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theAssignCommand->AddParam( startNumExpr );
 		currFunction->AddCommand( theAssignCommand );
 		
 		// while( tempName <= endNum )
 		COperatorNode*	theComparison = new COperatorNode( &parseTree, compareOp, conditionLineNum );
-		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theComparison->AddParam( endNumExpr );
 		whileLoop->SetCondition( theComparison );
 		
 		// counterVarName = tempName;
 		theAssignCommand = new CPutCommandNode( &parseTree, conditionLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName) );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, conditionLineNum) );
 		whileLoop->AddCommand( theAssignCommand );
 		
 		do
@@ -1889,8 +1890,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// tempName += 1;
 		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
-		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, stepSize) );
+		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, tokenItty->mLineNum) );
+		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, stepSize, tokenItty->mLineNum) );
 		whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
 		
 		currFunction->AddCommand( whileLoop );
@@ -1917,8 +1918,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		// tempName = 0;
 		std::string			tempName = CVariableEntry::GetNewTempName();
 		CCommandNode*		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
-		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 0) );
+		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
+		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 0, tokenItty->mLineNum) );
 		currFunction->AddCommand( theAssignCommand );
 		
 		// countNum:
@@ -1933,7 +1934,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// while( tempName < countExpression )
 		COperatorNode*	theComparison = new COperatorNode( &parseTree, LESS_THAN_OPERATOR_INSTR, conditionLineNum );
-		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
+		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
 
@@ -1944,8 +1945,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		// tempName += 1;
 		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
-		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName) );
-		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1) );
+		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, tokenItty->mLineNum) );
+		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1, tokenItty->mLineNum) );
 		whileLoop->AddCommand( theIncrementOperation );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -2032,7 +2033,7 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2119,7 +2120,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( !container && currFunction->LocalVariableExists( varName ) )
 	{
 		CreateVariable( varName, realVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2141,7 +2142,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		std::string		realResultName( "result" );
 		std::string		resultName( "result" );
 		CreateVariable( resultName, realResultName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, resultName, realResultName );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, resultName, realResultName, tokenItty->mLineNum );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2150,7 +2151,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		std::string		realDVarName( "download" );
 		std::string		dVarName( "download" );
 		CreateVariable( dVarName, realDVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName, tokenItty->mLineNum );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2238,7 +2239,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	if( !container )
 	{
 		CreateVariable( varName, realVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName );
+		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
 		
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2298,7 +2299,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		{
 			CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
 			currFunction->AddCommand( theReturnCommand );
-			theReturnCommand->AddParam( new CStringValueNode(&parseTree, "") );
+			theReturnCommand->AddParam( new CStringValueNode(&parseTree, "", tokenItty->mLineNum) );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		else
@@ -2307,7 +2308,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"exit repeat\" or \"exit " << userHandlerName << "\", found "
 					<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 	}
 	else if( tokenItty->IsIdentifier(ENextIdentifier) )
@@ -2325,7 +2326,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"next repeat\", found "
 					<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 	}
 	else if( tokenItty->IsIdentifier(ERepeatIdentifier) )
@@ -2358,7 +2359,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected end of line, found "
 					<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 			
 		while( tokenItty->IsIdentifier(ENewlineOperator) )
@@ -2389,7 +2390,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
@@ -2423,7 +2424,7 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma here, found \""
 									<< tokenItty->GetShortDescription() << "\".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		CToken::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2550,7 +2551,7 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":0: error: Expected term here, found end of script.";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		terms.push_back( currArg );
 		currArg = NULL;
@@ -2742,7 +2743,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -2751,7 +2752,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	// Now output code:
 	CMakeChunkRefNode*	currOperation = new CMakeChunkRefNode( &parseTree, lineNum );
 	currOperation->AddParam( targetValObj );
-	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
+	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant, tokenItty->mLineNum ) );
 	currOperation->AddParam( startOffsObj );
 	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj->Copy() );
 	
@@ -2793,7 +2794,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -2801,7 +2802,7 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	
 	CMakeChunkConstNode*	currOperation = new CMakeChunkConstNode( &parseTree, currFunction, lineNum );
 	currOperation->AddParam( targetValObj );
-	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
+	currOperation->AddParam( new CIntValueNode( &parseTree, typeConstant, tokenItty->mLineNum ) );
 	currOperation->AddParam( startOffsObj );
 	currOperation->AddParam( hadTo ? endOffsObj : startOffsObj );
 
@@ -2836,7 +2837,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 
 		if( theContainerItty == currFunction->GetLocals().end() )	// No variable of that name? Must be ObjC class name:
 		{
-			methodCall->AddParam( new CStringValueNode( &parseTree, className ) );
+			methodCall->AddParam( new CStringValueNode( &parseTree, className, tokenItty->mLineNum ) );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Move past target token.
 		}
 		else	// Otherwise get it out of the expression:
@@ -2857,7 +2858,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a method name here, found "
 								<< tokenItty->GetShortDescription() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	
 	int						numParams = 0;
@@ -2886,7 +2887,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a parameter label here, found "
 										<< tokenItty->GetShortDescription() << ".";
 				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw std::runtime_error( errMsg.str() );
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 			}
 			
 			methodName << tokenItty->GetOriginalIdentifierText() << ":";
@@ -2898,7 +2899,7 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected colon after parameter label here, found "
 										<< tokenItty->GetShortDescription() << ".";
 				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw std::runtime_error( errMsg.str() );
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 			}
 			
 			CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon after label.
@@ -2919,13 +2920,13 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Couldn't find definition of Objective C method "
 								<< methodName.str() << ".";
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw std::runtime_error( errMsg.str() );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	
 	// Fill out the info we accumulated parsing the parameters:
-	methodCall->SetParamAtIndex( 1, new CStringValueNode( &parseTree, methodName.str() ) );
-	methodCall->SetParamAtIndex( 2, new CStringValueNode( &parseTree, foundTypes->second.mMethodSignature ) );
-	methodCall->SetParamAtIndex( 3, new CStringValueNode( &parseTree, foundTypes->second.mFrameworkName ) );
+	methodCall->SetParamAtIndex( 1, new CStringValueNode( &parseTree, methodName.str(), tokenItty->mLineNum ) );
+	methodCall->SetParamAtIndex( 2, new CStringValueNode( &parseTree, foundTypes->second.mMethodSignature, tokenItty->mLineNum ) );
+	methodCall->SetParamAtIndex( 3, new CStringValueNode( &parseTree, foundTypes->second.mFrameworkName, tokenItty->mLineNum ) );
 	
 	methodCall->SetInstructionParams( numParams, 0 );
 	
@@ -2977,7 +2978,7 @@ CValueNode*	CParser::ParseNativeFunctionCallStartingAtParams( std::string& metho
 //		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket after parameter list, found "
 //					<< tokenItty->GetShortDescription() << ".";
 //		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//		throw std::runtime_error( errMsg.str() );
+//		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 //	}
 //	
 //	CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip close bracket (ECloseSquareBracketOperator).
@@ -3044,7 +3045,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	{
 		case EStringToken:
 		{
-			theTerm = new CStringValueNode( &parseTree, tokenItty->mStringValue );
+			theTerm = new CStringValueNode( &parseTree, tokenItty->mStringValue, tokenItty->mLineNum );
 			CToken::GoNextToken( mFileName, tokenItty, tokens );
 			break;
 		}
@@ -3065,18 +3066,18 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					char*				endPtr = NULL;
 					double				theNum = strtod( numStr.str().c_str(), &endPtr );
 					
-					theTerm = new CFloatValueNode( &parseTree, theNum );
+					theTerm = new CFloatValueNode( &parseTree, theNum, tokenItty->mLineNum );
 					
 					CToken::GoNextToken( mFileName, tokenItty, tokens );
 				}
 				else	// Backtrack, that period was something else:
 				{
 					CToken::GoPrevToken( mFileName, tokenItty, tokens );
-					theTerm = new CIntValueNode( &parseTree, theNumber );
+					theTerm = new CIntValueNode( &parseTree, theNumber, tokenItty->mLineNum );
 				}
 			}
 			else
-				theTerm = new CIntValueNode( &parseTree, theNumber );
+				theTerm = new CIntValueNode( &parseTree, theNumber, tokenItty->mLineNum );
 			break;
 		}
 
@@ -3091,7 +3092,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 					else
 					{
-						theTerm = new CStringValueNode( &parseTree, sysConstItty->second );
+						theTerm = new CStringValueNode( &parseTree, sysConstItty->second, tokenItty->mLineNum );
 						CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip the identifier for the constant we just parsed.
 					}
 				}
@@ -3118,7 +3119,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 				
@@ -3140,7 +3141,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
 												<< tokenItty->GetShortDescription() << ".";
 						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						throw std::runtime_error( errMsg.str() );
+						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 					}
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
 				}
@@ -3153,7 +3154,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
 												<< tokenItty->GetShortDescription() << ".";
 						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						throw std::runtime_error( errMsg.str() );
+						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 					}
 					CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
 				}
@@ -3176,7 +3177,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 				
@@ -3197,7 +3198,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 				
@@ -3205,7 +3206,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, "vcy_chunk_count", tokenItty->mLineNum );
 				CValueNode*			valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				
-				fcall->AddParam( new CIntValueNode( &parseTree, typeConstant ) );
+				fcall->AddParam( new CIntValueNode( &parseTree, typeConstant, tokenItty->mLineNum ) );
 				fcall->AddParam( valueObj );
 				
 				theTerm = fcall;
@@ -3223,7 +3224,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket here, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 				}
 				CToken::GoNextToken( mFileName, tokenItty, tokens );
 				break;
@@ -3359,7 +3360,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw std::runtime_error( errMsg.str() );
+					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 				}
 				
 				if( hadOpenBracket )
@@ -3468,6 +3469,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( constantValue )	// Found constant of that name!
 				{
 					theTerm = constantValue->Copy();
+					theTerm->SetLineNum( tokenItty->mLineNum );
 					CToken::GoNextToken( mFileName, tokenItty, tokens );
 					break;
 				}
@@ -3501,7 +3503,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a term here, found \""
 									<< tokenItty->GetShortDescription() << "\".";
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw std::runtime_error( errMsg.str() );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 			break;
 		}
 	}

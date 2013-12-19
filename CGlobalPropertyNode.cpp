@@ -12,6 +12,7 @@
 #include "CCodeBlock.h"
 #include "CNodeTransformation.h"
 #include "LEOInstructions.h"
+#include "CForgeExceptions.h"
 
 
 namespace Carlson
@@ -69,7 +70,7 @@ void	CGlobalPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 		std::string	errMsg("You can only change the ");
 		errMsg.append( mPropertyName );
 		errMsg.append( " property, not read it." );
-		throw std::runtime_error(errMsg);
+		throw CForgeParseError(errMsg,mLineNum);
 	}
 		
 	std::vector<CValueNode*>::iterator itty;
@@ -89,7 +90,7 @@ void	CGlobalPropertyNode::GenerateSetterCode( CCodeBlock* inCodeBlock, CValueNod
 		std::string	errMsg("You can not change the ");
 		errMsg.append( mPropertyName );
 		errMsg.append( " property." );
-		throw std::runtime_error(errMsg);
+		throw CForgeParseError(errMsg,mLineNum);
 	}
 
 	std::vector<CValueNode*>::iterator itty;

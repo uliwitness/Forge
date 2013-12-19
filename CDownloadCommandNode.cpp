@@ -21,8 +21,8 @@ void	CDownloadCommandNode::EnsureBlockNameParamsAreSet()
 {
 	if( !mBlockNamesAdded )
 	{
-		AddParam( new CStringValueNode( mParseTree, mProgressBlockName) );
-		AddParam( new CStringValueNode( mParseTree, mCompletionBlockName) );
+		AddParam( new CStringValueNode( mParseTree, mProgressBlockName, GetLineNum() ) );
+		AddParam( new CStringValueNode( mParseTree, mCompletionBlockName, GetLineNum() ) );
 		mBlockNamesAdded = true;
 	}
 }
