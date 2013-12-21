@@ -230,8 +230,9 @@
 	X1(EPropertyIdentifier,"property") \
 	X2(EPropIdentifier,EPropertyIdentifier,"prop") \
 	X1(ETargetIdentifier,"target") \
-	X1(EPlayIdentifier,"play")
-
+	X1(EPlayIdentifier,"play") \
+	X1(ETimerIdentifier,"timer") \
+	X1(ETimersIdentifier,"timers")
 
 typedef enum
 {
