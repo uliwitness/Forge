@@ -232,7 +232,9 @@
 	X1(ETargetIdentifier,"target") \
 	X1(EPlayIdentifier,"play") \
 	X1(ETimerIdentifier,"timer") \
-	X1(ETimersIdentifier,"timers")
+	X1(ETimersIdentifier,"timers") \
+	X1(EStartIdentifier,"start") \
+	X1(EStopIdentifier,"stop")
 
 typedef enum
 {
