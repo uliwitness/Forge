@@ -95,7 +95,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		return ELastIdentifier_Sentinel;
 	}
 	
-	std::deque<CToken>	CToken::TokenListFromText( const char* str, size_t len )
+	std::deque<CToken>	CTokenizer::TokenListFromText( const char* str, size_t len )
 	{
 		size_t				x = 0,
 							currStartOffs = 0;
@@ -150,7 +150,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					{
 						char		opstr[2] = { 0, 0 };
 						opstr[0] = currCh;
-						TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+						TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 						if( subtype != ELastIdentifier_Sentinel )
 						{
 							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
@@ -212,7 +212,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						{
 							char		opstr[2] = { 0, 0 };
 							opstr[0] = currCh;
-							TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+							TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 							if( subtype != ELastIdentifier_Sentinel )
 							{
 								tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
@@ -235,11 +235,11 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					bool	endThisToken = (currCh == ' ' || currCh == '\t' || currCh == '\n' || currCh == '\r');
 					char	opstr[2] = { 0, 0 };
 					opstr[0] = currCh;
-					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-');
 					if( endThisToken )
 					{
-						tokenList.push_back( CToken( EIdentifierToken, IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
+						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
 						currType = EInvalidToken;
 						
 						if( currCh == '-' && nextCh == '-' )	// Comment!
@@ -334,7 +334,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			char*	endPtr = NULL;
 			if( currType == ENumberToken )
 				num = strtol( currText.c_str(), &endPtr, 10 );
-			tokenList.push_back( CToken( currType, IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, num ) );
+			tokenList.push_back( CToken( currType, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, num ) );
 		}
 		
 		return tokenList;
@@ -533,7 +533,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	}
 
 
-	void	CToken::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+	void	CTokenizer::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 	{
 		if( tokenItty == tokens.end() )
 		{
@@ -546,7 +546,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	}
 	
 	
-	void	CToken::GoPrevToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+	void	CTokenizer::GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 	{
 		if( tokenItty == tokens.begin() )
 		{

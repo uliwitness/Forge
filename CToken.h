@@ -43,7 +43,6 @@ namespace Carlson
 		static const CToken&		KNewlineToken;	
 	
 	public:
-		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
 		static TIdentifierSubtype	IdentifierTypeFromText( const char* str );
 	
 	// Instance:
@@ -85,13 +84,17 @@ namespace Carlson
 		TIdentifierSubtype	GetIdentifierSubType() const;		// Like mSubType, but throws if this isn't an identifier.
 		const std::string	GetOriginalIdentifierText() const;	// Original string as entered by user.
 		size_t				GetOffset() const { return mOffset; };
+	};
 	
+	class CTokenizer
+	{
 	public:
+		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
+
 		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		static void	GoPrevToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 	};
 
-
 	std::string	ToLowerString( const std::string& str );
-
+	
 }	/* namespace Carlson */

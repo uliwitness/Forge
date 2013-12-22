@@ -10,6 +10,7 @@
 #define __Forge__CForgeExceptions__
 
 #include <stdexcept>
+#include <climits>
 
 
 namespace Carlson

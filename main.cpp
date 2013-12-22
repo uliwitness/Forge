@@ -151,7 +151,7 @@ int main( int argc, char * const argv[] )
 		
 		if( verbose )
 			std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
-		tokens = CToken::TokenListFromText( code, strlen(code) );
+		tokens = CTokenizer::TokenListFromText( code, strlen(code) );
 		if( printTokens )
 		{
 			for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )

@@ -234,7 +234,11 @@
 	X1(ETimerIdentifier,"timer") \
 	X1(ETimersIdentifier,"timers") \
 	X1(EStartIdentifier,"start") \
-	X1(EStopIdentifier,"stop")
+	X1(EStopIdentifier,"stop") \
+	X1(EBoxIdentifier,"box") \
+	X1(EMsgIdentifier,"msg") \
+	X1(EShowIdentifier,"show") \
+	X1(EHideIdentifier,"hide")
 
 typedef enum
 {
