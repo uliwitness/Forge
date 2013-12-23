@@ -34,8 +34,8 @@ public:
 	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );	// Calls PrepareToExitFunction.
 	void		GenerateFunctionCallInstruction( bool isCommand, bool isMessagePassing, const std::string& inName );
 	
-	void		GeneratePushIntInstruction( int inNumber );
-	void		GeneratePushFloatInstruction( float inNumber );
+	void		GeneratePushIntInstruction( int inNumber, LEOUnit inUnit );
+	void		GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit );
 	void		GeneratePushBoolInstruction( bool inBoolean );
 	void		GeneratePushStringInstruction( const std::string& inString );
 	void		GeneratePushVariableInstruction( int16_t bpRelativeOffset );

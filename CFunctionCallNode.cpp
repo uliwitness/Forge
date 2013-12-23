@@ -114,7 +114,7 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 			(*itty)->GenerateCode( inCodeBlock );
 		
 		size_t		numParams = mParams.size();
-		inCodeBlock->GeneratePushIntInstruction( (int)numParams );
+		inCodeBlock->GeneratePushIntInstruction( (int)numParams, kLEOUnitNone );
 		
 		// *** Call ***
 		inCodeBlock->GenerateFunctionCallInstruction( mIsCommand, mIsMessagePassing, mSymbolName );

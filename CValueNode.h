@@ -16,6 +16,7 @@
 #include "CNode.h"
 #include <math.h>
 #include "CForgeExceptions.h"
+#include "LEOValue.h"
 
 
 namespace Carlson
@@ -52,16 +53,30 @@ protected:
 	size_t		mLineNum;
 };
 
-class CIntValueNode : public CValueNode
+
+class CNumericValueNodeBase : public CValueNode
 {
 public:
-	CIntValueNode( CParseTree* inTree, long n, size_t inLineNum ) : CValueNode(inTree,inLineNum), mIntValue(n) {};
+	CNumericValueNodeBase( CParseTree* inTree, size_t inLineNum ) : CValueNode(inTree,inLineNum), mUnit(kLEOUnitNone) {};
+	
+	virtual void	SetUnit( LEOUnit inUnit )	{ mUnit = inUnit; };
+	virtual LEOUnit	GetUnit()					{ return mUnit; };
+	
+protected:
+	LEOUnit		mUnit;
+};
+
+
+class CIntValueNode : public CNumericValueNodeBase
+{
+public:
+	CIntValueNode( CParseTree* inTree, long n, size_t inLineNum ) : CNumericValueNodeBase(inTree,inLineNum), mIntValue(n) {};
 	
 	virtual void			GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 
 	virtual bool			IsConstant()	{ return true; };
 
-	virtual CIntValueNode*	Copy()			{ return new CIntValueNode( mParseTree, mIntValue, mLineNum ); };
+	virtual CIntValueNode*	Copy()			{ CIntValueNode* theNode = new CIntValueNode( mParseTree, mIntValue, mLineNum ); theNode->SetUnit(GetUnit()); return theNode; };
 
 	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -73,23 +88,23 @@ public:
 	virtual int				GetAsInt()		{ return (int)mIntValue; };
 	virtual long			GetAsLong()		{ return mIntValue; };
 	virtual float			GetAsFloat()	{ return mIntValue; };
-	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%ld", mIntValue); return std::string( numStr ); };
+	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%ld%s", mIntValue, gUnitLabels[mUnit]); return std::string( numStr ); };
 	
 protected:
 	long		mIntValue;
 };
 
 
-class CFloatValueNode : public CValueNode
+class CFloatValueNode : public CNumericValueNodeBase
 {
 public:
-	CFloatValueNode( CParseTree* inTree, float n, size_t inLineNum ) : CValueNode(inTree,inLineNum), mFloatValue(n) {};
+	CFloatValueNode( CParseTree* inTree, float n, size_t inLineNum ) : CNumericValueNodeBase(inTree,inLineNum), mFloatValue(n) {};
 	
 	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 
 	virtual bool				IsConstant()		{ return true; };
 
-	virtual CFloatValueNode*	Copy()		{ return new CFloatValueNode( mParseTree, mFloatValue, mLineNum ); };
+	virtual CFloatValueNode*	Copy()		{ CFloatValueNode* theNode = new CFloatValueNode( mParseTree, mFloatValue, mLineNum ); theNode->SetUnit(GetUnit()); return theNode; };
 
 	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
 	{
@@ -107,7 +122,7 @@ public:
 			throw CForgeParseError( "Can't make floating point number into integer.", GetLineNum() );
 		return 0.0;
 	};
-	virtual std::string			GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%f", mFloatValue); return std::string( numStr ); };
+	virtual std::string			GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%f%s", mFloatValue,gUnitLabels[mUnit]); return std::string( numStr ); };
 
 protected:
 	float		mFloatValue;

@@ -27,13 +27,13 @@ void	CValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 void	CIntValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GeneratePushIntInstruction( (int)mIntValue );
+	inCodeBlock->GeneratePushIntInstruction( (int)mIntValue, mUnit );
 }
 
 
 void	CFloatValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GeneratePushFloatInstruction( mFloatValue );
+	inCodeBlock->GeneratePushFloatInstruction( mFloatValue, mUnit );
 }
 
 

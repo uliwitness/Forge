@@ -236,9 +236,26 @@
 	X1(EStartIdentifier,"start") \
 	X1(EStopIdentifier,"stop") \
 	X1(EBoxIdentifier,"box") \
-	X1(EMsgIdentifier,"msg") \
+	X2(EMsgIdentifier,EMessageIdentifier,"msg") \
 	X1(EShowIdentifier,"show") \
-	X1(EHideIdentifier,"hide")
+	X1(EHideIdentifier,"hide") \
+	X1(EWaitIdentifier,"wait") \
+	X1(ETickIdentifier,"tick") \
+	X1(ETicksIdentifier,"ticks") \
+	X1(ESecondIdentifier,"second") \
+	X1(ESecondsIdentifier,"seconds") \
+	X1(EMinuteIdentifier,"minute") \
+	X1(EMinutesIdentifier,"minutes") \
+	X1(EHourIdentifier,"hour") \
+	X1(EHoursIdentifier,"hours") \
+	X1(EKilobyteIdentifier,"kilobyte") \
+	X1(EKilobytesIdentifier,"kilobytes") \
+	X1(EMegabyteIdentifier,"megabyte") \
+	X1(EMegabytesIdentifier,"megabytes") \
+	X1(EGigabyteIdentifier,"gigabyte") \
+	X1(EGigabytesIdentifier,"gigabytes") \
+	X1(ETerabyteIdentifier,"terabyte") \
+	X1(ETerabytesIdentifier,"terabytes")
 
 typedef enum
 {

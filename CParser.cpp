@@ -135,6 +135,14 @@ static THostCommandEntry*		sHostFunctions = NULL;
 
 static TBuiltInFunctionEntry*	sBuiltInFunctions = NULL;
 
+static TIdentifierSubtype		sUnitIdentifiers[] =
+{
+#define X4(constName,stringSuffix,identifierSubtype,unitGroup)	identifierSubtype,
+	LEO_UNITS
+#undef X4
+
+};
+
 
 #pragma mark [Chunk type lookup table]
 // Chunk expression start token -> Chunk type constant (as string for code generation):
@@ -3078,6 +3086,17 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			}
 			else
 				theTerm = new CIntValueNode( &parseTree, theNumber, tokenItty->mLineNum );
+			
+			// If there's a unit after this number, apply that unit to the term:
+			for( int x = 1; x < kLEOUnit_Last; x++ )
+			{
+				if( tokenItty->IsIdentifier(sUnitIdentifiers[x]) )
+				{
+					((CNumericValueNodeBase*)theTerm)->SetUnit(x);
+					CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+					break;
+				}
+			}
 			break;
 		}
 

@@ -126,15 +126,15 @@ void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, bool isMessage
 }
 
 
-void	CCodeBlock::GeneratePushIntInstruction( int inNumber )
+void	CCodeBlock::GeneratePushIntInstruction( int inNumber, LEOUnit inUnit )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, PUSH_INTEGER_INSTR, 0, (*(uint32_t*)&inNumber) );
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_INTEGER_INSTR, inUnit, (*(uint32_t*)&inNumber) );
 }
 
 
-void	CCodeBlock::GeneratePushFloatInstruction( float inNumber )
+void	CCodeBlock::GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, PUSH_NUMBER_INSTR, 0, (*(uint32_t*)&inNumber) );
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_NUMBER_INSTR, inUnit, (*(uint32_t*)&inNumber) );
 }
 
 
