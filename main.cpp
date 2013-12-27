@@ -226,7 +226,7 @@ int main( int argc, char * const argv[] )
 					paramCount++;
 				}
 
-				LEOPushIntegerOnStack( &ctx, paramCount );	// Parameter count.
+				LEOPushIntegerOnStack( &ctx, paramCount, kLEOUnitNone );	// Parameter count.
 				
 				LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
 				LEORunInContext( theHandler->instructions, &ctx );
