@@ -37,6 +37,11 @@
 #include "LEOObjCCallInstructions.h"
 
 
+#if __cplusplus
+extern "C" {
+#endif
+
+
 // -----------------------------------------------------------------------------
 //	Data types:
 // -----------------------------------------------------------------------------
@@ -142,3 +147,7 @@ void	LEOLoadNativeHeadersFromFile( const char* filepath );
 	@seealso //leo_ref/c/func/LEOLoadNativeHeadersFromFile	LEOLoadNativeHeadersFromFile
 */
 void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );
+
+#if __cplusplus
+}
+#endif
