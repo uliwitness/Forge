@@ -47,7 +47,7 @@ public:
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
-	virtual size_t		GetLineNum()	{ return mLineNum; };
+	virtual size_t		GetLineNum() const	{ return mLineNum; };
 	
 protected:
 	std::string					mSymbolName;

@@ -126,14 +126,25 @@ void	CCodeBlock::GenerateFunctionCallInstruction( bool isCommand, bool isMessage
 }
 
 
+void	CCodeBlock::GenerateParseErrorInstruction( std::string errMsg, std::string inFileName, size_t inLine, size_t inOffset )
+{
+	uint16_t	fileID = LEOFileIDForFileName( inFileName.c_str() );
+	size_t		errorIndex = LEOScriptAddSyntaxError( mScript, errMsg.c_str(), fileID, inLine, inOffset );
+	assert( errorIndex <= UINT32_MAX );
+	LEOHandlerAddInstruction( mCurrentHandler, PARSE_ERROR_INSTR, 0, (*(uint32_t*)&errorIndex) );
+}
+
+
 void	CCodeBlock::GeneratePushIntInstruction( int inNumber, LEOUnit inUnit )
 {
+	assert( sizeof(inNumber) <= sizeof(uint32_t) );
 	LEOHandlerAddInstruction( mCurrentHandler, PUSH_INTEGER_INSTR, inUnit, (*(uint32_t*)&inNumber) );
 }
 
 
 void	CCodeBlock::GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit )
 {
+	assert( sizeof(inNumber) <= sizeof(uint32_t) );
 	LEOHandlerAddInstruction( mCurrentHandler, PUSH_NUMBER_INSTR, inUnit, (*(uint32_t*)&inNumber) );
 }
 
@@ -147,6 +158,7 @@ void	CCodeBlock::GeneratePushBoolInstruction( bool inBoolean )
 void	CCodeBlock::GeneratePushStringInstruction( const std::string& inString )
 {
 	size_t	stringIndex = LEOScriptAddString( mScript, inString.c_str() );
+	assert( stringIndex <= UINT32_MAX );
 	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
 }
 

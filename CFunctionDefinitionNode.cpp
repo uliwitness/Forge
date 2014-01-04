@@ -17,7 +17,7 @@ namespace Carlson
 
 CFunctionDefinitionNode::~CFunctionDefinitionNode()
 {
-	
+	printf("poof.\n");
 }
 
 

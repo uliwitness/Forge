@@ -33,6 +33,7 @@ public:
 	void		PrepareToExitFunction( size_t lineNumber );
 	void		GenerateFunctionEpilogForName( bool isCommand, const std::string& inName, const std::map<std::string,CVariableEntry>& inLocals, size_t lineNumber );	// Calls PrepareToExitFunction.
 	void		GenerateFunctionCallInstruction( bool isCommand, bool isMessagePassing, const std::string& inName );
+	void		GenerateParseErrorInstruction( std::string errMsg, std::string inFileName, size_t inLine, size_t inOffset );
 	
 	void		GeneratePushIntInstruction( int inNumber, LEOUnit inUnit );
 	void		GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit );

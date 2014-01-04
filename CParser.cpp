@@ -39,6 +39,7 @@
 #include "CObjectPropertyNode.h"
 #include "CGlobalPropertyNode.h"
 #include "CDownloadCommandNode.h"
+#include "CParseErrorCommandNode.h"
 #include "CForgeExceptions.h"
 
 extern "C" {
@@ -551,7 +552,19 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 	
 	while( tokenItty != tokens.end() )
 	{
-		ParseTopLevelConstruct( tokenItty, tokens, parseTree );
+		try
+		{
+			ParseTopLevelConstruct( tokenItty, tokens, parseTree );
+		}
+		catch( const CForgeParseErrorProcessed& err )
+		{
+			// Message has already been pushed, just try to find the next handler start or so.
+		}
+		catch( const CForgeParseError& err )
+		{
+			mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+			throw;	// Re-throw, don't really know how to postpone this error until runtime.
+		}
 	}
 }
 
@@ -677,10 +690,21 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	
 	while( tokenItty->IsIdentifier( ENewlineOperator ) )
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-
-	size_t		endLineNum = fcnLineNum;
-	ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
-	currFunctionNode->SetEndLineNum( endLineNum );
+	
+	try
+	{
+		size_t		endLineNum = fcnLineNum;
+		ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
+		currFunctionNode->SetEndLineNum( endLineNum );
+	}
+	catch( const CForgeParseError& err )
+	{
+		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+		
+		currFunctionNode->AddCommand( new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+		
+		throw CForgeParseErrorProcessed( err );
+	}
 }
 
 
