@@ -13,7 +13,7 @@ There's an Xcode project that produces a command-line executable that runs any H
 License
 -------
 
-	Copyright 2003-2013 by Uli Kusterer.
+	Copyright 2003-2014 by Uli Kusterer.
 	
 	This software is provided 'as-is', without any express or implied
 	warranty. In no event will the authors be held liable for any damages
