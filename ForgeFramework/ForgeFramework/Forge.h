@@ -15,6 +15,9 @@
 	parser, see the CParser class.
 */
 
+#ifndef FORGE_H
+#define FORGE_H
+
 // -----------------------------------------------------------------------------
 //	Headers:
 // -----------------------------------------------------------------------------
@@ -151,3 +154,5 @@ void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );
 #if __cplusplus
 }
 #endif
+
+#endif /*FORGE_H*/
