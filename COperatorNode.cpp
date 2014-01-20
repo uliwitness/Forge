@@ -12,6 +12,7 @@
 #include "CCodeBlock.h"
 #include "LEOInstructions.h"
 #include "CNodeTransformation.h"
+#include <iostream>
 
 
 namespace Carlson
@@ -28,7 +29,11 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 	
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 	{
-		(*itty)->DebugPrint( destStream, indentLevel +1 );
+		CValueNode*	node = (*itty);
+		if( node )
+			node->DebugPrint( destStream, indentLevel +1 );
+		else
+			destStream << indentChars << "\t(null)" << std::endl;
 	}
 	
 	destStream << indentChars << "}" << std::endl;
@@ -74,6 +79,8 @@ void	COperatorNode::Simplify()
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 	{
 		CValueNode	*	originalNode = *itty;
+		if( originalNode == NULL )
+			DebugPrint( std::cerr, 0 );
 		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
 		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
 		if( newNode != originalNode )
