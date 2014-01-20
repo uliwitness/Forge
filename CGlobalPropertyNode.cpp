@@ -63,6 +63,21 @@ void	CGlobalPropertyNode::Simplify()
 }
 
 
+CValueNode*	CGlobalPropertyNode::Copy()
+{
+	CGlobalPropertyNode	*	nodeCopy = new CGlobalPropertyNode( mParseTree, mSetterInstructionID, mGetterInstructionID, mPropertyName, mLineNum );
+	
+	std::vector<CValueNode*>::const_iterator	itty;
+	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
+	{
+		nodeCopy->AddParam( (*itty)->Copy() );
+	}
+	
+	return nodeCopy;
+}
+
+
+
 void	CGlobalPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	if( mGetterInstructionID == INVALID_INSTR )

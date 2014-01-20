@@ -39,6 +39,8 @@ public:
 	virtual void			GenerateCode( CCodeBlock* inCodeBlock );
 	virtual void			GenerateSetterCode( CCodeBlock* inCodeBlock, CValueNode* newValueNode );
 
+	virtual CValueNode*		Copy();
+
 protected:
 	LEOInstructionID			mSetterInstructionID;
 	LEOInstructionID			mGetterInstructionID;
