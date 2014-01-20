@@ -588,23 +588,29 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator, true );	// Parse one line as an expression wrapped in a "return" statement.
 		currFunctionNode->SetEndLineNum( endLineNum );
 		
-		if( tokenItty != tokens.end() )	// Didn't parse all of it? Wasn't an expression! :-S
-			throw std::runtime_error("Try parsing a command.");
-		
-		if( mFirstHandlerName.length() == 0 )
+		if( tokenItty != tokens.end() )	// Didn't parse all of it? Guess it wasn't a command :-S
 		{
-			mFirstHandlerName = handlerName;
-			mFirstHandlerIsFunction = false;
+			if( currFunctionNode )
+				delete currFunctionNode;	// Throw all of this away.
+			tryCommand = true;	// Try parsing a command below.
 		}
+		else	// Parsed all of it! Good, add it to our script properly:
+		{
+			if( mFirstHandlerName.length() == 0 )
+			{
+				mFirstHandlerName = handlerName;
+				mFirstHandlerIsFunction = false;
+			}
 
-		parseTree.AddNode( currFunctionNode );
-		tryCommand = false;
+			parseTree.AddNode( currFunctionNode );
+			tryCommand = false;
+		}
 	}
-	catch( const std::exception& err )
+	catch( const std::exception& err )	// Error? Guess it wasn't an expression after all.
 	{
 		if( currFunctionNode )
-			delete currFunctionNode;
-		tryCommand = true;
+			delete currFunctionNode;	// Throw any previous parse progress away.
+		tryCommand = true;	// Try parsing a command below.
 	}
 	
 	if( tryCommand )
