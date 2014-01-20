@@ -571,26 +571,65 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 
 void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
-	std::deque<CToken>::iterator	tokenItty = tokens.begin();
-	std::string						handlerName( ":run" );
-	mFileName = fname;
-	
-	if( mFirstHandlerName.length() == 0 )
+	bool						tryCommand = true;
+	CFunctionDefinitionNode*	currFunctionNode = NULL;
+	try
 	{
-		mFirstHandlerName = handlerName;
-		mFirstHandlerIsFunction = false;
+		std::deque<CToken>::iterator	tokenItty = tokens.begin();
+		std::string						handlerName( ":run" );
+		mFileName = fname;
+		
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		
+		// Make built-in system variables so they get declared below like other local vars:
+		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+		
+		size_t		endLineNum = 1;
+		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator, true );	// Parse one line as an expression wrapped in a "return" statement.
+		currFunctionNode->SetEndLineNum( endLineNum );
+		
+		if( tokenItty != tokens.end() )	// Didn't parse all of it? Wasn't an expression! :-S
+			throw std::runtime_error("Try parsing a command.");
+		
+		if( mFirstHandlerName.length() == 0 )
+		{
+			mFirstHandlerName = handlerName;
+			mFirstHandlerIsFunction = false;
+		}
+
+		parseTree.AddNode( currFunctionNode );
+		tryCommand = false;
 	}
-
-	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
-	parseTree.AddNode( currFunctionNode );
+	catch( const std::exception& err )
+	{
+		if( currFunctionNode )
+			delete currFunctionNode;
+		tryCommand = true;
+	}
 	
-	// Make built-in system variables so they get declared below like other local vars:
-	currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+	if( tryCommand )
+	{
+		std::deque<CToken>::iterator	tokenItty = tokens.begin();
+		std::string						handlerName( ":run" );
+		
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		
+		// Make built-in system variables so they get declared below like other local vars:
+		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
 
-	size_t		endLineNum = 1;
-	ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
-	currFunctionNode->SetEndLineNum( endLineNum );
+		size_t		endLineNum = 1;
+		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
+		currFunctionNode->SetEndLineNum( endLineNum );
+		
+		mFileName = fname;
+		if( mFirstHandlerName.length() == 0 )
+		{
+			mFirstHandlerName = handlerName;
+			mFirstHandlerIsFunction = false;
+		}
+
+		parseTree.AddNode( currFunctionNode );
+	}
 }
 
 
@@ -2403,16 +2442,28 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 void	CParser::ParseFunctionBody( std::string& userHandlerName,
 									CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
-								    size_t *outEndLineNum, TIdentifierSubtype endIdentifier )
+								    size_t *outEndLineNum, TIdentifierSubtype endIdentifier, bool parseFirstLineAsReturnExpression )
 {
-	while( tokenItty != tokens.end()
-			&& !tokenItty->IsIdentifier( endIdentifier ) )	// Sub-constructs will swallow their own "end XXX" instructions, so we can exit the loop. Either it's our "end", or it's unbalanced.
+	if( parseFirstLineAsReturnExpression )
 	{
-		ParseOneLine( userHandlerName, parseTree, currFunction, tokenItty, tokens );
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		
+		CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, endIdentifier );
+		theReturnCommand->AddParam( theWhatNode );
+		
+		currFunction->AddCommand( theReturnCommand );
 	}
-	
-	if( tokenItty != tokens.end() )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	else
+	{
+		while( tokenItty != tokens.end()
+				&& !tokenItty->IsIdentifier( endIdentifier ) )	// Sub-constructs will swallow their own "end XXX" instructions, so we can exit the loop. Either it's our "end", or it's unbalanced.
+		{
+			ParseOneLine( userHandlerName, parseTree, currFunction, tokenItty, tokens );
+		}
+		
+		if( tokenItty != tokens.end() )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	}
 	
 	if( endIdentifier == EEndIdentifier && tokenItty != tokens.end() )
 	{
