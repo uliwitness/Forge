@@ -755,7 +755,7 @@ void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* cur
 		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
 	
-	if( theFunction->GetIsCommand() )
+	if( theFunction->IsCommand() )
 		ParseHandlerCall( parseTree, currFunction, true, tokenItty, tokens );
 	else
 	{

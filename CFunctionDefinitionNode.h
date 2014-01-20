@@ -45,7 +45,7 @@ public:
 	void			SetEndLineNum( size_t inEndLineNum )	{ mEndLineNum = inEndLineNum; };	// Line number of function's "end" marker, so we can indicate end to the debugger.
 	
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return this; };
-	bool			GetIsCommand()									{ return mIsCommand; };
+	bool			IsCommand()										{ return mIsCommand; };
 	
 protected:
 	std::string								mName;
