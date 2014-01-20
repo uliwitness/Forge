@@ -109,8 +109,7 @@ void	CCodeBlock::GenerateFunctionEpilogForName( bool isCommand, const std::strin
 	PrepareToExitFunction( lineNumber );
 	
 	// Make sure we return an empty result, even if there's no return statement at the end of the handler:
-	size_t	emptyStringIndex = LEOScriptAddString( mScript, "" );
-	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)emptyStringIndex );
+	GeneratePushUnsetValueInstruction();
 	GenerateSetReturnValueInstruction();
 	LEOHandlerAddInstruction( mCurrentHandler, RETURN_FROM_HANDLER_INSTR, BACK_OF_STACK, 0 );	// Make sure we return from this handler even if there's no explicit return statement.
 	
@@ -160,6 +159,12 @@ void	CCodeBlock::GeneratePushStringInstruction( const std::string& inString )
 	size_t	stringIndex = LEOScriptAddString( mScript, inString.c_str() );
 	assert( stringIndex <= UINT32_MAX );
 	LEOHandlerAddInstruction( mCurrentHandler, PUSH_STR_FROM_TABLE_INSTR, 0, (uint32_t)stringIndex );
+}
+
+
+void	CCodeBlock::GeneratePushUnsetValueInstruction()
+{
+	LEOHandlerAddInstruction( mCurrentHandler, PUSH_UNSET_VALUE_INSTR, 0, 0 );
 }
 
 

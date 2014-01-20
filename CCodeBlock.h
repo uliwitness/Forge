@@ -39,6 +39,7 @@ public:
 	void		GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit );
 	void		GeneratePushBoolInstruction( bool inBoolean );
 	void		GeneratePushStringInstruction( const std::string& inString );
+	void		GeneratePushUnsetValueInstruction();
 	void		GeneratePushVariableInstruction( int16_t bpRelativeOffset );
 
 	void		GeneratePopValueInstruction();

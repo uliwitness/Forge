@@ -107,7 +107,7 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 	{
 		std::vector<CValueNode*>::reverse_iterator itty;
 		
-		inCodeBlock->GeneratePushStringInstruction( "" );	// Reserve space for the result.
+		inCodeBlock->GeneratePushUnsetValueInstruction();	// Reserve space for the result.
 		
 		// Push all params on stack (in reverse order!):
 		for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
