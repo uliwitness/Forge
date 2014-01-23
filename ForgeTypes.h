@@ -255,7 +255,8 @@
 	X1(EGigabyteIdentifier,"gigabyte") \
 	X1(EGigabytesIdentifier,"gigabytes") \
 	X1(ETerabyteIdentifier,"terabyte") \
-	X1(ETerabytesIdentifier,"terabytes")
+	X1(ETerabytesIdentifier,"terabytes") \
+	X1(ESoundIdentifier,"sound")
 
 typedef enum
 {
