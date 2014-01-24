@@ -2452,7 +2452,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 {
 	if( parseFirstLineAsReturnExpression )
 	{
-		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, (tokenItty != tokens.end()) ? tokenItty->mLineNum : 1 );
 		
 		CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, endIdentifier );
 		theReturnCommand->AddParam( theWhatNode );
