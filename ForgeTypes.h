@@ -42,6 +42,7 @@
 	X1(EMinusOperator,"-") \
 	X1(EMultiplyOperator,"*") \
 	X1(EDivideOperator,"/") \
+	X1(EDivideSymbolOperator,"÷") \
 	X1(ENewlineOperator,"\n")	/* A line break in the file. */ \
 	X1(ELessThanOperator,"<") \
 	X1(EGreaterThanOperator,">") \
@@ -141,9 +142,9 @@
 	X1(EPrivateIdentifier,"private") \
 	X1(EPublicIdentifier,"public") \
 	X1(EDoubleAmpersandPseudoOperator,"&&") \
-	X1(ENotEqualPseudoOperator,"is not") \
-	X1(ELessThanEqualPseudoOperator,"<=") \
-	X1(EGreaterThanEqualPseudoOperator,">=") \
+	X1(ENotEqualOperator,"≠") \
+	X1(ELessThanEqualOperator,"≤") \
+	X1(EGreaterThanEqualOperator,"≥") \
 	X2(EThruIdentifier,EThroughIdentifier,"thru") \
 	X1(EThroughIdentifier,"through") \
 	X1(EInIdentifier,"in") \
