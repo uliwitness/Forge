@@ -257,7 +257,11 @@
 	X1(EGigabytesIdentifier,"gigabytes") \
 	X1(ETerabyteIdentifier,"terabyte") \
 	X1(ETerabytesIdentifier,"terabytes") \
-	X1(ESoundIdentifier,"sound")
+	X1(ESoundIdentifier,"sound") \
+	X1(EEditBackgroundIdentifier,"editbackground") \
+	X2(EEditBkgndIdentifier,EEditBackgroundIdentifier,"editbkgnd") \
+	X2(EEditBkgdIdentifier,EEditBackgroundIdentifier,"editbkgd") \
+	X2(EEditBgIdentifier,EEditBackgroundIdentifier,"editbg")
 
 typedef enum
 {
