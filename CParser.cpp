@@ -1057,8 +1057,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
 				hostCommand->SetInstructionParams( cmd->mInstructionParam1, cmd->mInstructionParam2 );
 				theNode = hostCommand;
+				bool	abortThisCommand = false;
 				
-				while( par->mType != EHostParam_Sentinel )
+				while( par->mType != EHostParam_Sentinel && !abortThisCommand )
 				{
 					if( par->mModeRequired == '\0' || par->mModeRequired == currMode )
 					{
@@ -1075,6 +1076,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( !term )
 								{
 									delete hostCommand;
+									hostCommand = NULL;
+									theNode = NULL;
+									abortThisCommand = true;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
@@ -1115,6 +1119,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( !term )
 								{
 									delete hostCommand;
+									hostCommand = NULL;
+									theNode = NULL;
+									abortThisCommand = true;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
@@ -1156,6 +1163,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( !term )
 								{
 									delete hostCommand;
+									hostCommand = NULL;
+									theNode = NULL;
+									abortThisCommand = true;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
@@ -1225,12 +1235,14 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else if( par->mIsOptional )
 								{
 									if( par->mInstructionID == INVALID_INSTR && par->mType != EHostParamInvisibleIdentifier )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", (tokenItty != tokens.end()) ? tokenItty->mLineNum  : 0) );
 								}
 								else
 								{
 									delete hostCommand;
+									hostCommand = NULL;
 									theNode = NULL;
+									abortThisCommand = true;
 									if( identifiersToBacktrack < 0 )
 									{
 										std::stringstream		errMsg;
@@ -1281,6 +1293,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									if( !term )
 									{
 										delete hostCommand;
+										hostCommand = NULL;
+										theNode = NULL;
+										abortThisCommand = true;
 										std::stringstream		errMsg;
 										if( tokenItty != tokens.end() )
 										{
@@ -1314,6 +1329,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								else
 								{
 									delete hostCommand;
+									hostCommand = NULL;
+									theNode = NULL;
+									abortThisCommand = true;
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
