@@ -1362,6 +1362,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				{
 					delete hostCommand;
 					theNode = NULL;
+					hostCommand = NULL;
 					if( identifiersToBacktrack >= 0 )
 					{
 						for( long long x = 0; x < identifiersToBacktrack; x++ )
