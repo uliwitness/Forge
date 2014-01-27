@@ -262,7 +262,9 @@
 	X2(EEditBkgndIdentifier,EEditBackgroundIdentifier,"editbkgnd") \
 	X2(EEditBkgdIdentifier,EEditBackgroundIdentifier,"editbkgd") \
 	X2(EEditBgIdentifier,EEditBackgroundIdentifier,"editbg") \
-	X1(EWatcherIdentifier,"watcher")
+	X1(EWatcherIdentifier,"watcher") \
+	X1(EChooseIdentifier,"choose") \
+	X1(EToolIdentifier,"tool")
 
 typedef enum
 {
