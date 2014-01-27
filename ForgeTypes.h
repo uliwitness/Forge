@@ -264,7 +264,11 @@
 	X2(EEditBgIdentifier,EEditBackgroundIdentifier,"editbg") \
 	X1(EWatcherIdentifier,"watcher") \
 	X1(EChooseIdentifier,"choose") \
-	X1(EToolIdentifier,"tool")
+	X1(EToolIdentifier,"tool") \
+	X1(EWindowIdentifier,"window") \
+	X2(EWdIdentifier,EWindowIdentifier,"wd") \
+	X2(EWindIdentifier,EWindowIdentifier,"wind")
+
 
 typedef enum
 {
