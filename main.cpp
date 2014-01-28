@@ -202,38 +202,37 @@ int main( int argc, char * const argv[] )
 			}
 			else
 			{
-				LEOContext		ctx;
-				LEOInitContext( &ctx, group, NULL, NULL );
+				LEOContext	*	ctx = LEOContextCreate( group, NULL, NULL );
 				
 				if( debuggerOn )
 				{
 					if( LEOInitRemoteDebugger( debuggerHost ) )
 					{
-						ctx.preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
+						ctx->preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
 						LEORemoteDebuggerAddFile( code, fileID, script );
 					}
 				}
 				
-				LEOPushEmptyValueOnStack( &ctx );	// Reserve space for return value.
+				LEOPushEmptyValueOnStack( ctx );	// Reserve space for return value.
 				
 				// Push params on stack in reverse order:
 				LEOInteger	paramCount = 0;
 				
 				for( int x = (argc -1); x > fnameIdx; x-- )
 				{
-					LEOPushStringValueOnStack( &ctx, argv[x], strlen(argv[x]) );
+					LEOPushStringValueOnStack( ctx, argv[x], strlen(argv[x]) );
 					paramCount++;
 				}
 
-				LEOPushIntegerOnStack( &ctx, paramCount, kLEOUnitNone );	// Parameter count.
+				LEOPushIntegerOnStack( ctx, paramCount, kLEOUnitNone );	// Parameter count.
 				
-				LEOContextPushHandlerScriptReturnAddressAndBasePtr( &ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
-				LEORunInContext( theHandler->instructions, &ctx );
-				if( ctx.errMsg[0] != 0 )
-					printf("ERROR: %s\n", ctx.errMsg );
+				LEOContextPushHandlerScriptReturnAddressAndBasePtr( ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
+				LEORunInContext( theHandler->instructions, ctx );
+				if( ctx->errMsg[0] != 0 )
+					printf("ERROR: %s\n", ctx->errMsg );
 				
-				LEOCleanUpContext( &ctx );
+				LEOContextRelease( ctx );
 			}
 		}
 		
