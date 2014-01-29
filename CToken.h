@@ -21,11 +21,11 @@ namespace Carlson
 
 	typedef enum
 	{
-		EInvalidToken = 0,
+		EWhitespaceToken = 0,
 		EStringToken,
 		EIdentifierToken,
 		ENumberToken,
-		ECommentPseudoToken,
+		ECommentToken,
 		EMultilineCommentPseudoToken,
 		ECurlyStringPseudoToken,
 		EGuillemotsStringPseudoToken,
@@ -91,8 +91,8 @@ namespace Carlson
 	public:
 		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
 
-		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments = true, bool skipWhitespace = true );
+		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments = true, bool skipWhitespace = true );
 	};
 
 	std::string	ToLowerString( const std::string& str );

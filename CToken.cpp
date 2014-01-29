@@ -26,11 +26,11 @@ namespace Carlson
 
 	const char*		gTokenTypeStrings[ELastToken_Sentinel] =
 	{
-		"EInvalidToken",
+		"EWhitespaceToken",
 		"EStringToken",
 		"EIdentifierToken",
 		"ENumberToken",
-		"***ECommentPseudoToken",
+		"ECommentToken",
 		"***EMultilineCommentPseudoToken",
 		"***ECurlyStringPseudoToken",
 		"***EGuillemotsStringPseudoToken"
@@ -99,7 +99,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	{
 		size_t				x = 0,
 							currStartOffs = 0;
-		TTokenType			currType = EInvalidToken;	// We're in whitespace.
+		TTokenType			currType = EWhitespaceToken;	// We're in whitespace.
 		std::string			currText;
 		std::deque<CToken>	tokenList;
 		size_t				currLineNum = 1;
@@ -114,13 +114,16 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			
 			switch( currType )
 			{
-				case EInvalidToken:
+				case EWhitespaceToken:
 					if( currCh == ' ' || currCh == '\t' )
 					{
-						currStartOffs = x;
+						currText.append( str +x, newX -x );
 						x = newX;
 						continue;
 					}
+					if( currText.length() > 0 )
+						tokenList.push_back( CToken( EWhitespaceToken, ELastIdentifier_Sentinel, x, currLineNum, currText ) );
+					currText.clear();
 					if( currCh == '\"' )
 					{
 						currType = EStringToken;
@@ -143,9 +146,15 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currText.append( str +x, newX -x );
 					}
 					else if( currCh == '-' && nextCh == '-' )
-						currType = ECommentPseudoToken;
+					{
+						currType = ECommentToken;
+						currStartOffs = nextNewX;
+					}
 					else if( currCh == '(' && nextCh == '*' )
+					{
 						currType = EMultilineCommentPseudoToken;
+						currStartOffs = nextNewX;
+					}
 					else
 					{
 						char		opstr[2] = { 0, 0 };
@@ -155,7 +164,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						{
 							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
 							currText.clear();
-							currType = EInvalidToken;
+							currType = EWhitespaceToken;
 							currStartOffs = x;
 						}
 						else
@@ -167,24 +176,29 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					}
 					break;
 				
-				case ECommentPseudoToken:
+				case ECommentToken:
 					if( currCh == '\n' || currCh == '\r' )
 					{
 						tokenList.push_back( CToken( EIdentifierToken, ENewlineOperator, x, currLineNum, std::string("\n") ) );
 						currText.clear();
-						currType = EInvalidToken;
+						currType = EWhitespaceToken;
 						currStartOffs = newX;
 					}
+					else
+						currText.append( str +x, newX -x );
 					break;
 				
 				case EMultilineCommentPseudoToken:
 					if( currCh == '*' && nextCh == ')' )
 					{
+						tokenList.push_back( CToken( ECommentToken, ELastIdentifier_Sentinel, x, currLineNum, std::string("\n") ) );
 						currText.clear();
-						currType = EInvalidToken;
+						currType = EWhitespaceToken;
 						newX++;
 						currStartOffs = newX;
 					}
+					else
+						currText.append( str +x, newX -x );
 					break;
 				
 				case ENumberToken:
@@ -196,7 +210,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						long	num = strtol( currText.c_str(), &endPtr, 10 );
 						tokenList.push_back( CToken( ENumberToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, num ) );
 						currText.clear();
-						currType = EInvalidToken;
+						currType = EWhitespaceToken;
 						
 						if( currCh == '\"' )
 						{
@@ -206,7 +220,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 						else if( currCh == '-' && nextCh == '-' )
 						{
-							currType = ECommentPseudoToken;
+							currType = ECommentToken;
 						}
 						else if( currCh != ' ' && currCh != '\t' )
 						{
@@ -217,7 +231,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							{
 								tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
 								currText.clear();
-								currType = EInvalidToken;
+								currType = EWhitespaceToken;
 								currStartOffs = x;
 							}
 							else
@@ -240,15 +254,29 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					if( endThisToken )
 					{
 						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
-						currType = EInvalidToken;
-						
-						if( currCh == '-' && nextCh == '-' )	// Comment!
-							currType = ECommentPseudoToken;
-						else if( subtype != ELastIdentifier_Sentinel )
-							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
-						
 						currText.clear();
 						currStartOffs = x;
+						
+						if( currCh == ' ' || currCh == '\t' )
+						{
+							currType = EWhitespaceToken;
+							currText.append( str +x, newX -x );
+						}
+						else if( currCh == '-' && nextCh == '-' )	// Comment!
+						{
+							currType = ECommentToken;
+							currStartOffs = nextNewX;
+						}
+						else if( currCh == '(' && nextCh == '*' )	// Multiline comment!
+						{
+							currType = EMultilineCommentPseudoToken;
+							currStartOffs = nextNewX;
+						}
+						else if( subtype != ELastIdentifier_Sentinel )
+						{
+							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
+							currType = EWhitespaceToken;
+						}
 					}
 					else
 						currText.append( str +x, newX -x );
@@ -261,7 +289,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
 						currText.clear();
 						currStartOffs = x;
-						currType = EInvalidToken;
+						currType = EWhitespaceToken;
 					}
 					else
 						currText.append( str +x, newX -x );
@@ -285,7 +313,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
 							currText.clear();
 							currStartOffs = x;
-							currType = EInvalidToken;
+							currType = EWhitespaceToken;
 						}
 					}
 					else
@@ -310,7 +338,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
 							currText.clear();
 							currStartOffs = x;
-							currType = EInvalidToken;
+							currType = EWhitespaceToken;
 						}
 					}
 					else
@@ -328,14 +356,11 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			x = newX;
 		}
 		
-		if( currType != EInvalidToken )	// We have an unfinished token waiting to be ended!
-		{
-			long	num = 0;
-			char*	endPtr = NULL;
-			if( currType == ENumberToken )
-				num = strtol( currText.c_str(), &endPtr, 10 );
-			tokenList.push_back( CToken( currType, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, num ) );
-		}
+		long	num = 0;
+		char*	endPtr = NULL;
+		if( currType == ENumberToken )
+			num = strtol( currText.c_str(), &endPtr, 10 );
+		tokenList.push_back( CToken( currType, (currType == EIdentifierToken) ? CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ) : ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, num ) );
 		
 		return tokenList;
 	}
@@ -344,17 +369,27 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	{
 		char		numstr[256];
 		std::string	str( gTokenTypeStrings[mType] );
-		if( mSubType == ELastIdentifier_Sentinel )
+		if( mType == EStringToken )
 		{
 			str.append( ", \"" );
 			str.append( mStringValue );
 			str.append( "\"" );
 		}
+		else if( mSubType == ELastIdentifier_Sentinel )
+		{
+			str.append( ", \'" );
+			str.append( mStringValue );
+			str.append( "\'" );
+		}
+		else if( mSubType == ENewlineOperator )
+		{
+			str.append(", <newline>");
+		}
 		else
 		{
-			str.append( ", '" );
+			str.append( ", [" );
 			str.append( gIdentifierStrings[mSubType] );
-			str.append( "'" );
+			str.append( "]" );
 		}
 		sprintf( numstr,", %lu", (unsigned long) mLineNum );
 		str.append( numstr );
@@ -533,29 +568,37 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	}
 
 
-	void	CTokenizer::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+	void	CTokenizer::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments, bool skipWhitespace )
 	{
+		if( tokenItty != tokens.end() )
+			tokenItty++;
+		
+		while( tokenItty != tokens.end() && ((skipWhitespace && tokenItty->mType == EWhitespaceToken) || (skipComments && tokenItty->mType == ECommentToken)) )
+			tokenItty++;
+		
 		if( tokenItty == tokens.end() )
 		{
 			std::stringstream	errMsg;
 			errMsg << fname << ":" << tokenItty->mLineNum << ": error: Premature end of file.";
 			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
-		else
-			tokenItty++;
 	}
 	
 	
-	void	CTokenizer::GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+	void	CTokenizer::GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments, bool skipWhitespace )
 	{
+		if( tokenItty != tokens.begin() )
+			tokenItty--;
+		
+		while( tokenItty != tokens.begin() && ((skipWhitespace && tokenItty->mType == EWhitespaceToken) || (skipComments && tokenItty->mType == ECommentToken)) )
+			tokenItty--;
+		
 		if( tokenItty == tokens.begin() )
 		{
 			std::stringstream	errMsg;
 			errMsg << fname << ":" << tokenItty->mLineNum << ": error: Parser backtracking beyond start of file.";
 			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
-		else
-			tokenItty--;
 	}
 
 	void	CToken::ExpectIdentifier( const std::string& inFileName, TIdentifierSubtype subType, TIdentifierSubtype precedingIdent )

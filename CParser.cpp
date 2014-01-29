@@ -581,8 +581,16 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	}
 	else if( tokenItty->IsIdentifier( EToIdentifier ) )
 	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to" 
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"
 		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
+	}
+	else if( tokenItty->IsIdentifier( ENotesIdentifier ) || tokenItty->IsIdentifier( ENoteIdentifier ) )
+	{
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "notes"
+		if( tokenItty->IsIdentifier(EColonOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip ":" after "notes".
+		
+		ParseDocumentation( tokenItty, tokens, parseTree );
 	}
 	else
 	{
@@ -673,6 +681,35 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		throw CForgeParseErrorProcessed( err );
 	}
 }
+
+
+void	CParser::ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+{
+	while( tokenItty->IsIdentifier(ENewlineOperator) )
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	
+	std::string	docsText;
+	
+	while( true )
+	{
+		if( tokenItty == tokens.end() )
+			break;
+		if( tokenItty->IsIdentifier( EOnIdentifier) || tokenItty->IsIdentifier( EFunctionIdentifier) || tokenItty->IsIdentifier( EWhenIdentifier) || tokenItty->IsIdentifier( EToIdentifier) )
+			break;
+		if( docsText.size() > 0 && docsText[docsText.length()-1] != '\n' )
+			docsText.append(1,' ');
+		docsText.append( tokenItty->GetOriginalIdentifierText() );
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		while( tokenItty != tokens.end() && tokenItty->IsIdentifier(ENewlineOperator) )
+		{
+			docsText.append(1,'\n');
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		}
+	}
+	
+	printf("Found docs: \"%s\"\n",docsText.c_str());
+}
+
 
 
 CValueNode	*	CParser::ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
