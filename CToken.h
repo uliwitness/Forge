@@ -91,7 +91,7 @@ namespace Carlson
 	public:
 		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
 
-		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments = true, bool skipWhitespace = true );
+		static bool	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments = true, bool skipWhitespace = true, bool throwOnOverrun = true );
 		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments = true, bool skipWhitespace = true );
 	};
 

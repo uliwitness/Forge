@@ -567,7 +567,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		;
 	else if( tokenItty->IsIdentifier( ENewlineOperator ) )
 	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens, true, true, false );	// Skip the newline.
 	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{

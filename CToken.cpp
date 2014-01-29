@@ -568,7 +568,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	}
 
 
-	void	CTokenizer::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments, bool skipWhitespace )
+	bool	CTokenizer::GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, bool skipComments, bool skipWhitespace, bool throwOnOverrun )
 	{
 		if( tokenItty != tokens.end() )
 			tokenItty++;
@@ -578,10 +578,15 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		
 		if( tokenItty == tokens.end() )
 		{
-			std::stringstream	errMsg;
-			errMsg << fname << ":" << tokenItty->mLineNum << ": error: Premature end of file.";
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			if( throwOnOverrun )
+			{
+				std::stringstream	errMsg;
+				errMsg << fname << ":" << tokenItty->mLineNum << ": error: Premature end of file.";
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			}
+			return false;
 		}
+		return true;
 	}
 	
 	
