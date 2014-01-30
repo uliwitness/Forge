@@ -267,7 +267,9 @@
 	X1(EToolIdentifier,"tool") \
 	X1(EWindowIdentifier,"window") \
 	X2(EWdIdentifier,EWindowIdentifier,"wd") \
-	X2(EWindIdentifier,EWindowIdentifier,"wind")
+	X2(EWindIdentifier,EWindowIdentifier,"wind") \
+	X1(EBrowserIdentifier,"browser") \
+	X1(EBrowsersIdentifier,"browsers")
 
 
 typedef enum

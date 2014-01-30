@@ -957,7 +957,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 {
 	CValueNode			*theNode = NULL;
 	TIdentifierSubtype	firstIdentifier = tokenItty->GetIdentifierSubType();
-	long long			identifiersToBacktrack = 0;
 	
 	if( inHostTable != NULL )
 	{
@@ -966,6 +965,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 			THostCommandEntry	*	currCmd = inHostTable +commandIdx;
 			if( currCmd->mType == firstIdentifier )
 			{
+				long long			identifiersToBacktrack = 0;
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				identifiersToBacktrack++;
 				
@@ -1157,12 +1157,13 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								}
 								else
 								{
-									delete hostCommand;
-									hostCommand = NULL;
-									theNode = NULL;
 									abortThisCommand = true;
 									if( identifiersToBacktrack < 0 )
 									{
+										delete hostCommand;
+										hostCommand = NULL;
+										theNode = NULL;
+										
 										std::stringstream		errMsg;
 										if( tokenItty != tokens.end() )
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
@@ -1174,12 +1175,6 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-									}
-									else if( identifiersToBacktrack > 0 )
-									{
-										for( long long x = 0; x < identifiersToBacktrack; x++ )
-											CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
-										identifiersToBacktrack = -1;
 									}
 								}
 								break;
@@ -1222,7 +1217,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										}
 										else
 										{
-											--tokenItty;
+											CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
@@ -1265,6 +1260,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								identifiersToBacktrack = -1;
+								currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								break;
 							}
 							
@@ -1278,9 +1274,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				
 				if( currCmd->mTerminalMode != '\0' && currMode != currCmd->mTerminalMode )
 				{
-					delete hostCommand;
-					theNode = NULL;
-					hostCommand = NULL;
+					if( hostCommand )	// Should have one by now, so if none, backtracked.
+					{
+						delete hostCommand;
+						theNode = NULL;
+						hostCommand = NULL;
+					}
 					if( identifiersToBacktrack >= 0 )
 					{
 						for( long long x = 0; x < identifiersToBacktrack; x++ )
