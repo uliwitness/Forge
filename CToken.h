@@ -52,10 +52,10 @@ namespace Carlson
 		size_t					mOffset;		// Position of this token in text.
 		size_t					mLineNum;		// Line where this token is in the text.
 		std::string				mStringValue;	// String representation of this token.
-		long					mNumberValue;	// Number representation of this token.
+		long long				mNumberValue;	// Number representation of this token.
 		
 	public:
-		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string str, long n = 0 )
+		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string str, long long n = 0 )
 			: mStringValue(str)
 		{
 			mType = type;

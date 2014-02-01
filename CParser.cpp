@@ -3087,7 +3087,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 
 		case ENumberToken:	// Any number (integer). We fake floats by parsing an integer/period-operator/integer sequence.
 		{
-			long					theNumber = tokenItty->mNumberValue;
+			long long		theNumber = tokenItty->mNumberValue;
 			
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			
