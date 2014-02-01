@@ -29,7 +29,7 @@ $directions =
 $frameworks = array_slice( $_SERVER['argv'], 1 );	// Remove name of executable.
 if( sizeof($frameworks) == 0 )	// No other params? Fallback!
 {
-	$frameworks = array( "CoreFoundation", "ApplicationServices", "Carbon", "Foundation", "AppKit", "WebKit", "AddressBook", "QTKit", "ScreenSaver" );
+	$frameworks = array( "CoreFoundation", "ApplicationServices", "Carbon", "Foundation", "AppKit", "WebKit", "AddressBook", "QTKit", "ScreenSaver", "AVFoundation", "QuartzCore", "AVKit", "EventKit" );
 	echo "note: No frameworks specified. Using defaults.\n";
 }
 
@@ -183,17 +183,16 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 
 	// Build our honkin' huge regexp that finds classes and categories and returns
 	//	their methods and ivars as one string:
-	//	FIX ME! This can't cope with classes that have no superclass (like NSObject and NSProxy) right now!
 	$re_classname = "([A-Za-z0-9_]*)";
 	$re_whitespace = "([ \t\r\n]*)";
-	$re_catname = "(\(([A-Za-z0-9_]+)\))";
+	$re_catname = "(\([ ]*([A-Za-z0-9_]*)[ ]*\))";
 	$re_colonandsuper = "([:]$re_whitespace([A-Za-z0-9_]+))";
 	$re_proto = "([A-Za-z0-9_]*)";
 	$re_additionalproto = "($re_whitespace,$re_whitespace$re_proto)";
 	$re_protocols = "(<$re_whitespace$re_proto$re_additionalproto*$re_whitespace>$re_whitespace){0,1}";
 	$re_super = "($re_colonandsuper$re_whitespace$re_protocols)";
 	$re_cat = "($re_catname$re_whitespace$re_protocols)";
-	$re_superorcatname = "($re_super|$re_cat)";
+	$re_superorcatname = "($re_super|$re_cat|$re_protocols)";
 	$re_allchars_nocurly = "!$&'%\\\\?|~\]\[+\-*\/\(\)#a-zA-Z0-9\n\r\t^ @;,_:<>=.\"";
 	$re_allchars = "$re_allchars_nocurly{}";
 	$re_methodsnstuff = "([$re_allchars]*?)";
@@ -224,7 +223,7 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 	{
 		// "Outside" info:
 		$output .= "*".$treffer[2][$y]."\n";	// Class name.
-		if( trim( $treffer[21][$y] ) != "" )	// Is a category on that class?
+		if( trim( $treffer[20][$y] ) != "" )	// Is a category on that class?
 		{
 			$output .= "(".$treffer[21][$y]."\n";	// Remember category name.
 			$protos = $treffer[23][$y];				// Remember what protocols it implements (this is in a different place in the results dictionary than for classes).
@@ -232,9 +231,9 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 		else	// Otherwise it's a class.
 		{
 			$output .= ":".$treffer[8][$y]."\n";	
-			$protos = $treffer[10][$y];
+			$protos = $treffer[34][$y];
 		}
-		$methodstr = $treffer[33][$y];
+		$methodstr = $treffer[42][$y];
 		if( trim( $protos ) != "" )
 		{
 			$protos = str_replace(" ","",$protos);
