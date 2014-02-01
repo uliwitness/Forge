@@ -668,7 +668,8 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	{
 		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 		
-		currFunctionNode->AddCommand( new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+		CParseErrorCommandNode	*	theErrorCmd = new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() );
+		currFunctionNode->AddCommand( theErrorCmd );
 		
 		throw CForgeParseErrorProcessed( err );
 	}
@@ -1258,9 +1259,9 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								}
 								identifiersToBacktrack = -1;
-								currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								break;
 							}
 							
