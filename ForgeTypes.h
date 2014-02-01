@@ -269,7 +269,8 @@
 	X2(EWdIdentifier,EWindowIdentifier,"wd") \
 	X2(EWindIdentifier,EWindowIdentifier,"wind") \
 	X1(EBrowserIdentifier,"browser") \
-	X1(EBrowsersIdentifier,"browsers")
+	X1(EBrowsersIdentifier,"browsers") \
+	X1(EPopupIdentifier,"popup")
 
 
 typedef enum
