@@ -2687,23 +2687,50 @@ void	CParser::LoadNativeHeadersFromFile( const char* filepath )
 			{
 				std::string		typesLine;
 				std::string		selectorStr;
-				char			nextSwitchChar = ',';
+				std::string		currType;
 				bool			isFunction = (theCh == '=');
 				bool			isFunctionPtr = (theCh == '&');
+				bool			isInMethodName = true;
+				bool			doneWithLine = false;
 				
-				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+				while(  !doneWithLine && (theCh = headerFile.get()) != std::ifstream::traits_type::eof() )
 				{
-					switch( nextSwitchChar )
+					switch( theCh )
 					{
 						case ',':
-							if( nextSwitchChar == theCh )	// Found comma? We're finished getting selector name. Rest of line goes in types.
-								nextSwitchChar = '\n';
+							if( isInMethodName )	// Found comma? We're finished getting selector name. Rest of line goes in types.
+								isInMethodName = false;
 							else
-								selectorStr.append( 1, theCh );
+							{
+								std::map<std::string,std::string>::const_iterator foundSynonym;
+								while( (foundSynonym = sSynonymToTypeTable.find(currType)) != sSynonymToTypeTable.end() )
+								{
+									currType = foundSynonym->second;
+								}
+								typesLine.append( currType );
+								typesLine.append( 1, ',' );
+								currType.clear();
+							}
 							break;
 						
 						case '\n':
-							typesLine.append( 1, theCh );
+						{
+							std::map<std::string,std::string>::const_iterator foundSynonym;
+							while( (foundSynonym = sSynonymToTypeTable.find(currType)) != sSynonymToTypeTable.end() )
+							{
+								currType = foundSynonym->second;
+							}
+							typesLine.append( currType );
+							currType.clear();
+							doneWithLine = true;
+							break;
+						}
+						
+						default:
+							if( isInMethodName )
+								selectorStr.append( 1, theCh );
+							else
+								currType.append( 1, theCh );
 							break;
 					}
 				}

@@ -35,6 +35,14 @@ if( sizeof($frameworks) == 0 )	// No other params? Fallback!
 
 $frameworkheaders = array();
 
+// Include some standard runtime files:
+$codestr .= "#pragma HEADERIMPORT FRAMEWORK: \"\"\n";
+$codestr .= "#import <objc/NSObjCRuntime.h>\n";
+$codestr .= "#import <stdio.h>\n";
+$codestr .= "#import <stddef.h>\n";
+$codestr .= "#import <string.h>\n";
+$codestr .= "#import <stdint.h>\n";
+
 // Actually generate a minimal application that imports all the frameworks:
 echo "note: Preparing framework".(sizeof($frameworks) > 1 ? "s" : "").": ";
 
@@ -134,15 +142,16 @@ while( strlen($headerstr) > 0 )
 		$nextframework = strlen($headerstr);
 	$currheaderstr = substr( $headerstr, $fmwknameend +1, $nextframework -$fmwknameend -1 );
 	$currheaderstr = removeCommentsAndPreprocessorJunk($currheaderstr);
-	$output .= "F".$currfmwkname."\nH".$frameworkheaders[$fmwkNum++]."\n".parseHeadersFromString( $currheaderstr, $currfmwkname );
+	$output .= "F".$currfmwkname."\nH".$frameworkheaders[$fmwkNum++]."\n";
 	if( $currfmwkname == "Carbon" )
 	{
 		//$output .= "~UInt32,unsigned long\n~SInt32,long\n~UInt16,unsigned short\n~SInt16,short\n~UInt8,unsigned charn~SInt8,char\n";
 	}
-	$output .= parseFunctionsFromString( $currheaderstr, $currfmwkname );
-	$output .= parseProcPtrsFromString( $currheaderstr, $currfmwkname );
 	$output .= parseTypedefsFromString( $currheaderstr, $currfmwkname );
 	$output .= parseEnumTypedefsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseProcPtrsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseFunctionsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseHeadersFromString( $currheaderstr, $currfmwkname );
 	//echo "#pragma mark $currfmwkname\n$currheaderstr\n";
 	$startpos = $nextframework + strlen($pattern);
 	$len = strlen($headerstr) -$nextframework -strlen($pattern);
@@ -510,7 +519,7 @@ function parseTypedefsFromString( $headerstr, $currfmwkname )
 
 	$output = "";
 	$treffer = array();
-	$fullregexp = "/typedef[ \t\n\r]([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*;/";
+	$fullregexp = "/typedef[ \t\n\r](((un){0,1}signed[ \t]*){0,1}[A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*;/";
 	$matchcount = preg_match_all( $fullregexp, $headerstr, $treffer );
 	if( $matchcount == 0 )
 		return "";
@@ -519,7 +528,7 @@ function parseTypedefsFromString( $headerstr, $currfmwkname )
 	for( $x = 0; $x < sizeof($treffer[0]); $x++ )
 	{
 		$oldname = $treffer[1][$x];
-		$newname = $treffer[3][$x];
+		$newname = $treffer[5][$x];
 		
 		if( isset($knowntypes[$oldname]) )
 			$output .= $knowntypes[$oldname][0].$newname.$knowntypes[$oldname][1];
