@@ -77,6 +77,10 @@ std::map<std::string,std::string>		CParser::sSynonymToTypeTable;			// Table of C
 std::map<std::string,std::string>		CParser::sConstantToValueTable;			// Table of C system constant name -> constant value mappings.
 LEOFirstNativeCallCallbackPtr			CParser::sFirstNativeCallCallback = NULL;
 
+
+static CFunctionDefinitionNode*			sLastErrorFunction = NULL;
+
+
 #pragma mark -
 #pragma mark [Operator lookup table]
 // LOOKUP TABLES:
@@ -484,10 +488,13 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 		}
 		catch( const CForgeParseError& err )
 		{
+			sLastErrorFunction = NULL;
 			mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 			throw;	// Re-throw, don't really know how to postpone this error until runtime.
 		}
 	}
+	
+	sLastErrorFunction = NULL;
 }
 
 
@@ -608,9 +615,13 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	std::string								userHandlerName( tokenItty->GetIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
-	size_t									fcnLineNum = 0;
+	size_t									fcnLineNum = tokenItty->mLineNum;
 	
-	fcnLineNum = tokenItty->mLineNum;
+	if( sLastErrorFunction )	// Last function had an error and never ended?
+	{
+		sLastErrorFunction->SetEndLineNum(fcnLineNum);	// We're now parsing a new function, so make sure we undo its indentation in the code formatter.
+		sLastErrorFunction = NULL;	// All good now.
+	}
 	
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 
@@ -667,6 +678,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	}
 	catch( const CForgeParseError& err )
 	{
+		sLastErrorFunction = currFunctionNode;
 		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 		
 		CParseErrorCommandNode	*	theErrorCmd = new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() );

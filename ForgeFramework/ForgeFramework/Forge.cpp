@@ -196,7 +196,8 @@ extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTre
 		if( handler )
 		{
 			if( handler->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1) );
-			if( handler->GetEndLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1) );
+			if( handler->GetEndLineNum() > 0 )
+				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1) );
 		}
 		CWhileLoopNode*	loop = dynamic_cast<CWhileLoopNode*>(currNode);
 		if( loop )
@@ -257,6 +258,8 @@ extern "C" void	LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, cons
 	{
 		if( code[x] == '\n' || code[x] == '\r' )
 		{
+			if( startOfLine )	// the previous line was empty?
+				currIndent += GetIndentChangeForLine( inTable, lineNum );	// Don't miss any indent changes in it.
 			currText.append( 1, code[x] );
 			lineNum++;
 			startOfLine = true;
