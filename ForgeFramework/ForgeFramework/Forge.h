@@ -94,6 +94,8 @@ void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
 LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTree* inTree );
 
+void				LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition );
+
 void				LEOCleanUpLineIndentTable( LEOLineIndentTable* inTable );
 
 

@@ -661,6 +661,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	try
 	{
 		size_t		endLineNum = fcnLineNum;
+		currFunctionNode->SetCommandsLineNum( tokenItty->mLineNum );
 		ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
 		currFunctionNode->SetEndLineNum( endLineNum );
 	}

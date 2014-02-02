@@ -19,6 +19,9 @@ extern "C" {
 #include "CConcatOperatorNodeTransformation.h"
 #include "CConcatSpaceOperatorNodeTransformation.h"
 #include "CFunctionDefinitionNode.h"
+#include "CWhileLoopNode.h"
+#include "CIfNode.h"
+#include "CDownloadCommandNode.h"
 
 
 #include <iostream>
@@ -192,14 +195,97 @@ extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTre
 		CFunctionDefinitionNode*	handler = dynamic_cast<CFunctionDefinitionNode*>(currNode);
 		if( handler )
 		{
-			if( handler->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetLineNum(), 1) );
+			if( handler->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1) );
 			if( handler->GetEndLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1) );
 		}
-		
+		CWhileLoopNode*	loop = dynamic_cast<CWhileLoopNode*>(currNode);
+		if( loop )
+		{
+			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 1) );
+			if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1) );
+			if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1) );
+		}
+		CIfNode*	conditional = dynamic_cast<CIfNode*>(currNode);
+		if( loop )
+		{
+			if( conditional->GetIfCommandsLineNum() > 0 && conditional->GetThenLineNum() != conditional->GetIfCommandsLineNum() )
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1) );
+			if( conditional->GetElseLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetThenLineNum() )
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseLineNum(), -1) );
+			if( conditional->GetElseCommandsLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetElseCommandsLineNum() )
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseCommandsLineNum(), 1) );
+			if( conditional->GetEndIfLineNum() > 0 )
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetEndIfLineNum(), -1) );
+		}
+		CDownloadCommandNode*	download = dynamic_cast<CDownloadCommandNode*>(currNode);
+		if( download )
+		{
+			
+		}
 	});
+	
+	for( auto currEntry : *lineIndentTable )
+	{
+		printf("line %zu indent %d\n", currEntry.mLineNum, currEntry.mIndentChange );
+	}
 	
 	return (LEOLineIndentTable*)lineIndentTable;
 }
+
+
+static int	GetIndentChangeForLine( LEOLineIndentTable* inTable, size_t inLineNum )
+{
+	for( auto currEntry : *(std::vector<CLineNumEntry>*)inTable )
+	{
+		if( currEntry.mLineNum == inLineNum )
+			return currEntry.mIndentChange;
+	}
+	
+	return 0;
+}
+
+
+extern "C" void	LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition )
+{
+	std::string		currText;
+	size_t			lineNum = 1;
+	size_t			indentCharsSkipped = 0;
+	size_t			currIndent = 0;
+	bool			startOfLine = true;
+	
+	for( size_t x = 0; x < codeLen; x++ )
+	{
+		if( code[x] == '\n' || code[x] == '\r' )
+		{
+			currText.append( 1, code[x] );
+			lineNum++;
+			startOfLine = true;
+			indentCharsSkipped = 0;
+			continue;
+		}
+		
+		if( startOfLine && (code[x] == '\t' || code[x] == ' ') )	// Skip any old indentation at start of line.
+		{
+			indentCharsSkipped++;
+			continue;
+		}
+		else if( startOfLine )	// Actual text in line starts? Now get in our indentation!
+		{
+			startOfLine = false;
+			currIndent += GetIndentChangeForLine( inTable, lineNum );
+			if( *ioCursorPosition >= x )
+				*ioCursorPosition += currIndent -indentCharsSkipped;
+			currText.append( currIndent, '\t' );
+		}
+		
+		currText.append( 1, code[x] );
+	}
+	
+	*outLength = currText.size();
+	*outText = (char*) malloc( (*outLength) +1 );
+	memmove( *outText, currText.c_str(), (*outLength) +1 );
+}
+
 
 
 extern "C" void		LEOCleanUpLineIndentTable( LEOLineIndentTable* inTable )

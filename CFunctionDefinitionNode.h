@@ -44,6 +44,8 @@ public:
 	
 	void			SetEndLineNum( size_t inEndLineNum )	{ mEndLineNum = inEndLineNum; };	// Line number of function's "end" marker, so we can indicate end to the debugger.
 	size_t			GetEndLineNum()							{ return mEndLineNum; };
+	void			SetCommandsLineNum( size_t n )			{ mCommandsLineNum = n; };
+	size_t			GetCommandsLineNum()					{ return mCommandsLineNum; };
 	
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return this; };
 	bool			IsCommand()										{ return mIsCommand; };
@@ -53,6 +55,7 @@ protected:
 	bool									mIsCommand;
 	size_t									mLineNum;
 	size_t									mEndLineNum;
+	size_t									mCommandsLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
 	size_t									mLocalVariableCount;
 	std::map<std::string,CVariableEntry>	mGlobals;

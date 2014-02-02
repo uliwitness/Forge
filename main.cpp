@@ -64,6 +64,7 @@ int main( int argc, char * const argv[] )
 				printInstructions = false,
 				printTokens = false,
 				printParseTree = false,
+				printIndented = false,
 				verbose = false,
 				doOptimize = true;
 	
@@ -98,6 +99,10 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
 			{
 				printParseTree = true;
+			}
+			else if( strcmp( argv[x], "--printindented" ) == 0 )
+			{
+				printIndented = true;
 			}
 			else if( strcmp( argv[x], "--verbose" ) == 0 )
 			{
@@ -176,6 +181,20 @@ int main( int argc, char * const argv[] )
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
+		
+		if( printIndented )
+		{
+			if( verbose )
+				std::cout << "Indenting file \"" << filename << "\"..." << std::endl;
+			LEOLineIndentTable*	lit = LEOLineIndentTableCreateForParseTree( (LEOParseTree*) &parseTree );
+			char*	theText = NULL;
+			size_t	theLength = 0;
+			size_t	cursorPos = 0;
+			LEOLineIndentTableApplyToText( lit, code, strlen(code), &theText, &theLength, &cursorPos );
+			printf( "%s\n", theText );
+			free( theText );
+			LEOCleanUpLineIndentTable( lit );
+		}
 		
 		uint16_t 			fileID = LEOFileIDForFileName(filename);
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
