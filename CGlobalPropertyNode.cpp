@@ -63,6 +63,15 @@ void	CGlobalPropertyNode::Simplify()
 }
 
 
+void	CGlobalPropertyNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currParam : mParams )
+		currParam->Visit( visitorBlock );
+	
+	CValueNode::Visit( visitorBlock );
+}
+
+
 CValueNode*	CGlobalPropertyNode::Copy()
 {
 	CGlobalPropertyNode	*	nodeCopy = new CGlobalPropertyNode( mParseTree, mSetterInstructionID, mGetterInstructionID, mPropertyName, mLineNum );

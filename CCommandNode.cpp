@@ -62,6 +62,15 @@ void	CCommandNode::Simplify()
 }
 
 
+void	CCommandNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currParam : mParams )
+		currParam->Visit( visitorBlock );
+	
+	CNode::Visit( visitorBlock );
+}
+
+
 void	CCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::iterator itty;

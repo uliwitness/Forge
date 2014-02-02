@@ -103,4 +103,14 @@ void	COperatorNode::GenerateCode( CCodeBlock* inCodeBlock )
 	inCodeBlock->GenerateOperatorInstruction( mInstructionID, mInstructionParam1, mInstructionParam2 );
 }
 
+
+void	COperatorNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currParam : mParams )
+		currParam->Visit(visitorBlock);
+	
+	CValueNode::Visit( visitorBlock );
+}
+
+
 } // namespace Carlson

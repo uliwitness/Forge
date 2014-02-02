@@ -55,6 +55,14 @@ void	CWhileLoopNode::Simplify()
 }
 
 
+void	CWhileLoopNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	mCondition->Visit(visitorBlock);
+	
+	CCodeBlockNode::Visit(visitorBlock);
+}
+
+
 void	CWhileLoopNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);

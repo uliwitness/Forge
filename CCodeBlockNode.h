@@ -48,11 +48,13 @@ public:
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
 	virtual void	Simplify();
+	virtual void	Visit( std::function<void(CNode*)> visitorBlock );
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
 
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return NULL; };
+	size_t			GetLineNum()	{ return mLineNum; };
 	
 protected:
 	size_t									mLineNum;

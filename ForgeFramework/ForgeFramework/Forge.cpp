@@ -18,6 +18,7 @@ extern "C" {
 #include "CChunkPropertyNodeTransformation.h"
 #include "CConcatOperatorNodeTransformation.h"
 #include "CConcatSpaceOperatorNodeTransformation.h"
+#include "CFunctionDefinitionNode.h"
 
 
 #include <iostream>
@@ -173,6 +174,39 @@ extern "C" void		LEOCleanUpParseTree( LEOParseTree* inTree )
 		printf( "Internal error in LEOFreeParseTree.\n" );
 	}
 }
+
+
+struct CLineNumEntry
+{
+	CLineNumEntry( size_t ln = 0, int ic = 0 )	{ mLineNum = ln; mIndentChange = ic; };
+	size_t	mLineNum;
+	int		mIndentChange;
+};
+
+
+extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTree* inTree )
+{
+	std::vector<CLineNumEntry>*	lineIndentTable = new std::vector<CLineNumEntry>;
+	((CParseTree*)inTree)->Visit( [lineIndentTable]( CNode* currNode )
+	{
+		CFunctionDefinitionNode*	handler = dynamic_cast<CFunctionDefinitionNode*>(currNode);
+		if( handler )
+		{
+			if( handler->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetLineNum(), 1) );
+			if( handler->GetEndLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1) );
+		}
+		
+	});
+	
+	return (LEOLineIndentTable*)lineIndentTable;
+}
+
+
+extern "C" void		LEOCleanUpLineIndentTable( LEOLineIndentTable* inTable )
+{
+	delete (std::vector<CLineNumEntry>*)inTable;
+}
+
 
 
 extern "C" const char*	LEOParserGetLastErrorMessage()

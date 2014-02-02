@@ -40,6 +40,7 @@ public:
 
 	virtual void		Simplify();
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
+	virtual void		Visit( std::function<void(CNode*)> visitorBlock );
 	
 	virtual void		SetInstructionID( LEOInstructionID inID )					{ mInstructionID = inID; };
 	virtual LEOInstructionID	GetInstructionID()									{ return mInstructionID; };

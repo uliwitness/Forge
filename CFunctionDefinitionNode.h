@@ -43,6 +43,7 @@ public:
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 	void			SetEndLineNum( size_t inEndLineNum )	{ mEndLineNum = inEndLineNum; };	// Line number of function's "end" marker, so we can indicate end to the debugger.
+	size_t			GetEndLineNum()							{ return mEndLineNum; };
 	
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return this; };
 	bool			IsCommand()										{ return mIsCommand; };

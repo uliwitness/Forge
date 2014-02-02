@@ -51,6 +51,15 @@ void	CParseTree::Simplify()
 }
 
 
+void	CParseTree::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currNode : mNodes )
+	{
+		currNode->Visit(visitorBlock);
+	}
+}
+
+
 void	CParseTree::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::deque<CNode*>::iterator itty;

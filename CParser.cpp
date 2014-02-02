@@ -1400,6 +1400,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 	// For each chunk:
 	if( tokenItty->IsIdentifier( EForIdentifier ) )
 	{
+		theDownloadCommand->SetProgressLineNum( tokenItty->mLineNum );
+		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 		if( !tokenItty->IsIdentifier(EEachIdentifier) )
@@ -1444,13 +1446,20 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
+			bool	firstTime = true;
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
 			{
+				if( firstTime )
+				{
+					firstTime = false;
+					theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
+				}
 				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
 			}
 		}
 		else
 		{
+			theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens, true );
 		}
 		
@@ -1460,6 +1469,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 	// when done:
 	if( tokenItty->IsIdentifier( EWhenIdentifier ) )
 	{
+		theDownloadCommand->SetCompletionLineNum( tokenItty->mLineNum );
+
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 		if( !tokenItty->IsIdentifier(EDoneIdentifier) )
@@ -1494,13 +1505,20 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
+			bool	firstTime = true;
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 			{
+				if( firstTime )
+				{
+					firstTime = false;
+					theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
+				}
 				ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens );
 			}
 		}
 		else
 		{
+			theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens, true );
 		}
 		
@@ -1509,6 +1527,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 	
 	if( needEndDownload )
 	{
+		theDownloadCommand->SetEndDownloadLineNum( tokenItty->mLineNum );
+
 		if( !tokenItty->IsIdentifier(EEndIdentifier) )
 		{
 			std::stringstream		errMsg;
@@ -1531,6 +1551,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
+	else
+		theDownloadCommand->SetEndDownloadLineNum( tokenItty->mLineNum );
 	
 	if( !tokenItty->IsIdentifier(ENewlineOperator) )
 	{
@@ -1750,8 +1772,14 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	whileLoop->AddCommand( getItemNode );
 	
+	bool	firstTime = true;
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 	{
+		if( firstTime )
+		{
+			firstTime = false;
+			whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
+		}
 		ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 	}
 	
@@ -1770,6 +1798,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
+	whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 }
 
@@ -1806,13 +1835,20 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		whileLoop->SetCondition( conditionNode );
 		
 		// Commands:
+		bool	firstTime = true;
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
+			if( firstTime )
+			{
+				firstTime = false;
+				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
+			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	else if( tokenItty->IsIdentifier( EWithIdentifier ) )	// With:
@@ -1890,6 +1926,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, conditionLineNum) );
 		whileLoop->AddCommand( theAssignCommand );
 		
+		bool	firstTime = true;
 		do
 		{
 			// If there is no command to repeat, we don't want to parse the
@@ -1902,6 +1939,11 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			if( tokenItty == tokens.end() || tokenItty->IsIdentifier( EEndIdentifier ) )
 				break;
 			
+			if( firstTime )
+			{
+				firstTime = false;
+				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
+			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 		while( true );
@@ -1916,6 +1958,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	else
@@ -1955,9 +1998,15 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
-
+		
+		bool	firstTime = true;
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
+			if( firstTime )
+			{
+				firstTime = true;
+				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
+			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 		
@@ -1969,6 +2018,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 }
@@ -1979,85 +2029,110 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 {
 	size_t			conditionLineNum = tokenItty->mLineNum;
 	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, currFunction );
-	
-	// If:
-	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Condition:
-	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
-	ifNode->SetCondition( condition );
-	
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Then:
-	tokenItty->ExpectIdentifier( mFileName, EThenIdentifier );
-	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	bool	needEndIf = true;
-	
-	if( tokenItty->IsIdentifier( ENewlineOperator ) )
+	try
 	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		// Commands:
-		while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EElseIdentifier ) )
-		{
-			ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens );
-		}
-	}
-	else
-	{
-		ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens, true );
-		needEndIf = false;
-	}
-	
-	std::deque<CToken>::iterator	beforeLineEnd = tokenItty;	// Remember position before line end in case there's no 'else'. We need to leave a line break for ParseOneLine() to parse.
-
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Else:
-	if( tokenItty->IsIdentifier( EElseIdentifier ) )	// It's an "else"! Parse another block!
-	{
-		CCodeBlockNode*		elseNode = ifNode->CreateElseBlock( tokenItty->mLineNum );
-		
+		// If:
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
-		if( tokenItty->IsIdentifier(ENewlineOperator) )	// Followed by a newline! Multi-line if!
+		// Condition:
+		CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+		ifNode->SetCondition( condition );
+		
+		while( tokenItty->IsIdentifier(ENewlineOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		// Then:
+		tokenItty->ExpectIdentifier( mFileName, EThenIdentifier );
+		ifNode->SetThenLineNum( tokenItty->mLineNum );
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		bool	needEndIf = true;
+		
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
 		{
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+			// Commands:
+			bool firstTime = true;
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EElseIdentifier ) )
 			{
-				ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens );
+				if( firstTime )
+				{
+					firstTime = false;
+					ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
+				}
+				ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens );
 			}
-			needEndIf = true;
 		}
 		else
 		{
-			ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens, true );	// Don't swallow return.
+			ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
+			ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens, true );
 			needEndIf = false;
 		}
-	}
-	else if( needEndIf == false )
-		tokenItty = beforeLineEnd;	// Leave a return at the end of the line (which the code above skipped) so ParseOneLine() can detect we're really at the end of the line.
-	
-	// End If:
-	if( needEndIf && tokenItty->IsIdentifier( EEndIdentifier ) )
-	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		if( !tokenItty->IsIdentifier(EIfIdentifier) )
+		
+		std::deque<CToken>::iterator	beforeLineEnd = tokenItty;	// Remember position before line end in case there's no 'else'. We need to leave a line break for ParseOneLine() to parse.
+
+		while( tokenItty->IsIdentifier(ENewlineOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		// Else:
+		if( tokenItty->IsIdentifier( EElseIdentifier ) )	// It's an "else"! Parse another block!
 		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ifNode->SetElseLineNum( tokenItty->mLineNum );
+			CCodeBlockNode*		elseNode = ifNode->CreateElseBlock( tokenItty->mLineNum );
+			
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			
+			if( tokenItty->IsIdentifier(ENewlineOperator) )	// Followed by a newline! Multi-line if!
+			{
+				bool	firstTime = true;
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+				{
+					if( firstTime )
+					{
+						firstTime = false;
+						ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
+					}
+					ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens );
+				}
+				needEndIf = true;
+			}
+			else
+			{
+				ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
+				ifNode->SetEndIfLineNum( tokenItty->mLineNum );
+				ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens, true );	// Don't swallow return.
+				needEndIf = false;
+			}
 		}
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		else if( needEndIf == false )
+			tokenItty = beforeLineEnd;	// Leave a return at the end of the line (which the code above skipped) so ParseOneLine() can detect we're really at the end of the line.
+		
+		// End If:
+		if( needEndIf && tokenItty->IsIdentifier( EEndIdentifier ) )
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			if( !tokenItty->IsIdentifier(EIfIdentifier) )
+			{
+				std::stringstream		errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
+										<< tokenItty->GetShortDescription() << ".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			}
+			ifNode->SetEndIfLineNum( tokenItty->mLineNum );
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		}
+	}
+	catch( ... )
+	{
+		delete ifNode;
+		throw;
 	}
 	
-	currFunction->AddCommand( ifNode );	// TODO: delete ifNode on exceptions above, and condition before it's added to ifNode etc.
-	
+	currFunction->AddCommand( ifNode );
+		
 	// We leave the last line break after the 'end if' in the token stream so ParseOneLine() can parse it.
 }
 

@@ -37,6 +37,7 @@ public:
 	virtual size_t	GetLineNum()						{ return mLineNum; };
 	virtual void	SetLineNum( size_t inLineNum )		{ mLineNum = inLineNum; };
 
+	virtual void	Visit( std::function<void(CNode*)> visitorBlock )	{ visitorBlock(this); };
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 		
 	virtual bool	IsConstant()		{ return false; };

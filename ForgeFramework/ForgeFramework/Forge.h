@@ -56,6 +56,9 @@ extern "C" {
 typedef struct LEOParseTree	LEOParseTree;
 
 
+typedef struct LEOLineIndentTable LEOLineIndentTable;
+
+
 struct TGlobalPropertyEntry;
 struct THostCommandEntry;
 
@@ -87,6 +90,12 @@ LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const 
 	@seealso //leo_ref/c/func/LEOParseTreeCreateFromUTF8Characters	LEOParseTreeCreateFromUTF8Characters
 	@seealso //leo_ref/c/func/LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters */
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
+
+
+LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTree* inTree );
+
+void				LEOCleanUpLineIndentTable( LEOLineIndentTable* inTable );
+
 
 /*! Take a parse tree created by <tt>LEOParseTreeCreateFromUTF8Characters</tt> or <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt> and compile it into Leonie bytecode. The given script, <tt>inScript</tt> will be filled with the command and function handlers, strings etc. defined in the script. Handler IDs will be generated in the given context group. Provide the same file ID in <tt>inFileID</tt> that you generated using <tt>LEOFileIDForFileName</tt> when you created the parse tree.
 	@seealso //leo_ref/c/func/LEOParseTreeCreateFromUTF8Characters	LEOParseTreeCreateFromUTF8Characters
