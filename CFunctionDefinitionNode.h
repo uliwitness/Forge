@@ -20,8 +20,8 @@ class CCommandNode;
 class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
-	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, size_t inLineNum )
-		: CCodeBlockNodeBase( inTree, inLineNum ), mName( inName ), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
+	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, const std::string& userHandlerName, size_t inLineNum )
+		: CCodeBlockNodeBase( inTree, inLineNum ), mName( inName ), mUserHandlerName(userHandlerName), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
 	{
 		
 	};
@@ -47,11 +47,13 @@ public:
 	void			SetCommandsLineNum( size_t n )			{ mCommandsLineNum = n; };
 	size_t			GetCommandsLineNum()					{ return mCommandsLineNum; };
 	
-	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return this; };
-	bool			IsCommand()										{ return mIsCommand; };
+	virtual CCodeBlockNodeBase*	GetContainingFunction()		{ return this; };
+	bool						IsCommand()					{ return mIsCommand; };
+	const std::string&			GetUserHandlerName()		{ return mUserHandlerName; };
 	
 protected:
 	std::string								mName;
+	std::string								mUserHandlerName;
 	bool									mIsCommand;
 	size_t									mLineNum;
 	size_t									mEndLineNum;

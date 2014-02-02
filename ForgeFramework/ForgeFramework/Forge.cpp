@@ -181,13 +181,15 @@ extern "C" void		LEOCleanUpParseTree( LEOParseTree* inTree )
 
 struct CLineNumEntry
 {
-	CLineNumEntry( size_t ln = 0, int ic = 0 )	{ mLineNum = ln; mIndentChange = ic; };
-	size_t	mLineNum;
-	int		mIndentChange;
+	CLineNumEntry( size_t ln = 0, int ic = 0, const std::string& hn = "", bool isc = false ) : mLineNum(ln), mIndentChange(ic),mHandlerName(hn), mIsCommand(isc) {};
+	size_t		mLineNum;		// Line number this indent change is at.
+	int			mIndentChange;	// Amount of inset (+ive) or outset (-ive) to apply to this line and all following it.
+	std::string	mHandlerName;	// If this is the start of a handler, its name, otherwise an empty string.
+	bool		mIsCommand;		// If mHandlerName is not empty, whether this is a command or function message handler.
 };
 
 
-extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTree* inTree )
+extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseTree* inTree )
 {
 	std::vector<CLineNumEntry>*	lineIndentTable = new std::vector<CLineNumEntry>;
 	((CParseTree*)inTree)->Visit( [lineIndentTable]( CNode* currNode )
@@ -195,28 +197,31 @@ extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTre
 		CFunctionDefinitionNode*	handler = dynamic_cast<CFunctionDefinitionNode*>(currNode);
 		if( handler )
 		{
-			if( handler->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1) );
+			if( handler->GetLineNum() > 0 )
+				lineIndentTable->push_back( CLineNumEntry(handler->GetLineNum(), 0, handler->GetUserHandlerName(), handler->IsCommand() ) );
+			if( handler->GetCommandsLineNum() > 0 )
+				lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1 ) );
 			if( handler->GetEndLineNum() > 0 )
-				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1) );
+				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1, "", false) );
 		}
 		CWhileLoopNode*	loop = dynamic_cast<CWhileLoopNode*>(currNode);
 		if( loop )
 		{
-			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 1) );
-			if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1) );
-			if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1) );
+			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 1, "", false) );
+			if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1, "", false) );
+			if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1, "", false) );
 		}
 		CIfNode*	conditional = dynamic_cast<CIfNode*>(currNode);
 		if( loop )
 		{
 			if( conditional->GetIfCommandsLineNum() > 0 && conditional->GetThenLineNum() != conditional->GetIfCommandsLineNum() )
-				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1) );
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1, "", false) );
 			if( conditional->GetElseLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetThenLineNum() )
-				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseLineNum(), -1) );
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseLineNum(), -1, "", false) );
 			if( conditional->GetElseCommandsLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetElseCommandsLineNum() )
-				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseCommandsLineNum(), 1) );
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseCommandsLineNum(), 1, "", false) );
 			if( conditional->GetEndIfLineNum() > 0 )
-				lineIndentTable->push_back( CLineNumEntry(conditional->GetEndIfLineNum(), -1) );
+				lineIndentTable->push_back( CLineNumEntry(conditional->GetEndIfLineNum(), -1, "", false) );
 		}
 		CDownloadCommandNode*	download = dynamic_cast<CDownloadCommandNode*>(currNode);
 		if( download )
@@ -225,16 +230,18 @@ extern "C" LEOLineIndentTable*	LEOLineIndentTableCreateForParseTree( LEOParseTre
 		}
 	});
 	
+	#if 0
 	for( auto currEntry : *lineIndentTable )
 	{
 		printf("line %zu indent %d\n", currEntry.mLineNum, currEntry.mIndentChange );
 	}
+	#endif
 	
-	return (LEOLineIndentTable*)lineIndentTable;
+	return (LEODisplayInfoTable*)lineIndentTable;
 }
 
 
-static int	GetIndentChangeForLine( LEOLineIndentTable* inTable, size_t inLineNum )
+static int	GetIndentChangeForLine( LEODisplayInfoTable* inTable, size_t inLineNum )
 {
 	for( auto currEntry : *(std::vector<CLineNumEntry>*)inTable )
 	{
@@ -246,7 +253,7 @@ static int	GetIndentChangeForLine( LEOLineIndentTable* inTable, size_t inLineNum
 }
 
 
-extern "C" void	LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition )
+extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition )
 {
 	std::string		currText;
 	size_t			lineNum = 1;
@@ -277,7 +284,10 @@ extern "C" void	LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, cons
 			startOfLine = false;
 			currIndent += GetIndentChangeForLine( inTable, lineNum );
 			if( *ioCursorPosition >= x )
-				*ioCursorPosition += currIndent -indentCharsSkipped;
+			{
+				long		diff = currIndent -indentCharsSkipped;
+				*ioCursorPosition += diff;
+			}
 			currText.append( currIndent, '\t' );
 		}
 		
@@ -290,8 +300,30 @@ extern "C" void	LEOLineIndentTableApplyToText( LEOLineIndentTable* inTable, cons
 }
 
 
+extern "C" void LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsCommand )
+{
+	size_t		x = 0;
+	for( auto currEntry : *(std::vector<CLineNumEntry>*)inTable )
+	{
+		if( currEntry.mHandlerName.length() > 0 )
+		{
+			if( inIndex == x )
+			{
+				*outName = currEntry.mHandlerName.c_str();
+				*outLine = currEntry.mLineNum;
+				*outIsCommand = currEntry.mIsCommand;
+				return;
+			}
+			x++;
+		}
+	}
+	
+	*outName = NULL;
+	*outLine = 0;
+}
 
-extern "C" void		LEOCleanUpLineIndentTable( LEOLineIndentTable* inTable )
+
+extern "C" void		LEOCleanUpDisplayInfoTable( LEODisplayInfoTable* inTable )
 {
 	delete (std::vector<CLineNumEntry>*)inTable;
 }

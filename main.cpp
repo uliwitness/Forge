@@ -186,14 +186,25 @@ int main( int argc, char * const argv[] )
 		{
 			if( verbose )
 				std::cout << "Indenting file \"" << filename << "\"..." << std::endl;
-			LEOLineIndentTable*	lit = LEOLineIndentTableCreateForParseTree( (LEOParseTree*) &parseTree );
+			LEODisplayInfoTable*	lit = LEODisplayInfoTableCreateForParseTree( (LEOParseTree*) &parseTree );
 			char*	theText = NULL;
 			size_t	theLength = 0;
-			size_t	cursorPos = 0;
-			LEOLineIndentTableApplyToText( lit, code, strlen(code), &theText, &theLength, &cursorPos );
-			printf( "%s\n", theText );
+			size_t	cursorPos = 202;
+			LEODisplayInfoTableApplyToText( lit, code, strlen(code), &theText, &theLength, &cursorPos );
+			std::cout << theText << std::endl;
 			free( theText );
-			LEOCleanUpLineIndentTable( lit );
+			const char*		currName = "";
+			size_t			currLine = 0;
+			bool			isCommand = false;
+			size_t			x = 0;
+			while( true )
+			{
+				LEODisplayInfoTableGetHandlerInfoAtIndex( lit, x++, &currName, &currLine, &isCommand );
+				if( !currName )
+					break;
+				std::cout << (isCommand ? "[C] " : "[F] ") << currName << " (Line " << currLine << ")" << std::endl;
+			}
+			LEOCleanUpDisplayInfoTable( lit );
 		}
 		
 		uint16_t 			fileID = LEOFileIDForFileName(filename);

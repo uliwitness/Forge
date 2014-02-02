@@ -508,7 +508,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::string						handlerName( ":run" );
 		mFileName = fname;
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -547,7 +547,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::deque<CToken>::iterator	tokenItty = tokens.begin();
 		std::string						handlerName( ":run" );
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -612,7 +612,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
 	std::string								handlerName( tokenItty->GetIdentifierText() );
-	std::string								userHandlerName( tokenItty->GetIdentifierText() );
+	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
 	size_t									fcnLineNum = tokenItty->mLineNum;
@@ -632,7 +632,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	}
 	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, fcnLineNum );
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
