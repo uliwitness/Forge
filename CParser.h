@@ -237,6 +237,8 @@ namespace Carlson
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
 		void		LoadNativeHeaders();
 		
+		const std::vector<CMessageEntry>&	GetMessages()	{ return mMessages; };
+		
 		static void		LoadNativeHeadersFromFile( const char* filepath );
 		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );
 		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction );

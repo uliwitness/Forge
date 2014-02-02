@@ -47,9 +47,10 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded( void )
 }
 
 
-char	gLEOLastErrorString[1024] = { 0 };
-size_t	gLEOLastErrorOffset = SIZE_T_MAX;
-size_t	gLEOLastErrorLineNum = SIZE_T_MAX;
+char						gLEOLastErrorString[1024] = { 0 };
+size_t						gLEOLastErrorOffset = SIZE_T_MAX;
+size_t						gLEOLastErrorLineNum = SIZE_T_MAX;
+std::vector<CMessageEntry>	gMessages;
 
 
 extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID )
@@ -67,6 +68,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		CParser				parser;
 		std::deque<CToken>	tokens = CTokenizer::TokenListFromText( inCode, codeLength );
 		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
+		
+		gMessages.assign( parser.GetMessages().begin(), parser.GetMessages().end() );
 		
 		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
@@ -542,5 +545,19 @@ extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 extern "C" void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback )
 {
 	CParser::SetFirstNativeCallCallback( inCallback );
+}
+
+
+extern "C" void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset )
+{
+	if( inIndex >= gMessages.size() )
+	{
+		*outErrMsg = NULL;
+		return;
+	}
+	
+	*outErrMsg = gMessages[inIndex].mMessage.c_str();
+	*outLineNum = gMessages[inIndex].mLineNum;
+	*outLineNum = gMessages[inIndex].mOffset;
 }
 

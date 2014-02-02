@@ -160,6 +160,13 @@ size_t		LEOParserGetLastErrorLineNum( void );
 */
 size_t		LEOParserGetLastErrorOffset( void );
 
+
+/*! The Forge parser tries to behave very lenient regarding errors. So often, when it encounters a parse error,
+	it will simply generate a PARSE_ERROR_INSTR instruction and abort the current handler, trying to find the
+	next handler in the script. That way, if you have an error in a mouseDown handler, your mouseUp handler will
+	still execute. This function gets an error from this list of non-fatal errors. */
+void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset );
+
 /*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 
