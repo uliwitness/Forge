@@ -612,7 +612,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
 	std::string								handlerName( tokenItty->GetIdentifierText() );
-	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
+	std::string								userHandlerName( tokenItty->GetIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
 	size_t									fcnLineNum = tokenItty->mLineNum;
