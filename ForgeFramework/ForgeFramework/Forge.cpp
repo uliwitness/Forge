@@ -229,11 +229,36 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 		CDownloadCommandNode*	download = dynamic_cast<CDownloadCommandNode*>(currNode);
 		if( download )
 		{
-			
+			bool	didProgressIndent = false;
+			if( download->GetProgressCommandsLineNum() != 0	// Have progress block.
+				&& download->GetProgressCommandsLineNum() != download->GetProgressLineNum() ) // It's not on the same line as the 'for each chunk'?
+			{
+				lineIndentTable->push_back( CLineNumEntry(download->GetProgressCommandsLineNum(), 1) );
+				didProgressIndent = true;
+			}
+			if( download->GetCompletionLineNum() != 0	// Have completion block.
+				&& download->GetCompletionLineNum() != download->GetLineNum()	// It's not on the first line.
+				&& download->GetCompletionLineNum() > download->GetProgressLineNum()	// There was a progress block above it, but not on same line with it.
+				&& didProgressIndent )	// And it was multi-line.
+			{
+				lineIndentTable->push_back( CLineNumEntry(download->GetCompletionLineNum(), -1) );
+			}
+			if( download->GetCompletionCommandsLineNum() != 0	// Have completion block.
+				&& download->GetCompletionCommandsLineNum() != download->GetCompletionLineNum() )	// Not on same line as 'when done'?
+			{
+				lineIndentTable->push_back( CLineNumEntry(download->GetCompletionCommandsLineNum(), 1) );
+			}
+			if( download->GetEndDownloadLineNum() != 0	// Didn't error b/c there's no end?
+				&& download->GetEndDownloadLineNum() != download->GetCompletionLineNum()	// We didn't have a one-line completion block
+				&& download->GetEndDownloadLineNum() != download->GetProgressLineNum() )	// Nor one-line progress block.
+			{
+				lineIndentTable->push_back( CLineNumEntry(download->GetEndDownloadLineNum(), -1) );
+			}
 		}
 	});
 	
 	#if 0
+	printf("====================\n");
 	for( auto currEntry : *lineIndentTable )
 	{
 		printf("line %zu indent %d\n", currEntry.mLineNum, currEntry.mIndentChange );
