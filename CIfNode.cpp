@@ -85,7 +85,8 @@ void	CIfNode::Visit( std::function<void(CNode*)> visitorBlock )
 {
 	mCondition->Visit(visitorBlock);
 	
-	mElseBlock->Visit(visitorBlock);
+	if( mElseBlock )
+		mElseBlock->Visit(visitorBlock);
 	
 	CCodeBlockNode::Visit( visitorBlock );
 }
