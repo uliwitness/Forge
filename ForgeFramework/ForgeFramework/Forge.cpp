@@ -269,7 +269,12 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 		if( code[x] == '\n' || code[x] == '\r' )
 		{
 			if( startOfLine )	// the previous line was empty?
-				currIndent += GetIndentChangeForLine( inTable, lineNum );	// Don't miss any indent changes in it.
+			{
+				// Don't miss any indent changes in it:
+				int	idChange = GetIndentChangeForLine( inTable, lineNum );
+				if( idChange > 0 || ((unsigned)abs(idChange)) <= currIndent )
+					currIndent += idChange;
+			}
 			currText.append( 1, code[x] );
 			lineNum++;
 			startOfLine = true;
@@ -285,8 +290,9 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 		else if( startOfLine )	// Actual text in line starts? Now get in our indentation!
 		{
 			startOfLine = false;
-			currIndent += GetIndentChangeForLine( inTable, lineNum );
-			if( *ioCursorPosition >= x )
+			int	idChange = GetIndentChangeForLine( inTable, lineNum );
+			if( idChange > 0 || ((unsigned)abs(idChange)) <= currIndent )
+				currIndent += idChange;
 			{
 				long		diff = currIndent -indentCharsSkipped;
 				*ioCursorPosition += diff;
