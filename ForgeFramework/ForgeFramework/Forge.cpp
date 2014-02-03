@@ -215,7 +215,7 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 			if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1, "", false) );
 		}
 		CIfNode*	conditional = dynamic_cast<CIfNode*>(currNode);
-		if( loop )
+		if( conditional )
 		{
 			if( conditional->GetIfCommandsLineNum() > 0 && conditional->GetThenLineNum() != conditional->GetIfCommandsLineNum() )
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1, "", false) );
