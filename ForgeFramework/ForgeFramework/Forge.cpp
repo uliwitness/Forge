@@ -281,7 +281,7 @@ static int	GetIndentChangeForLine( LEODisplayInfoTable* inTable, size_t inLineNu
 }
 
 
-extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition )
+extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition, size_t *ioCursorEndPosition )
 {
 	std::string		currText;
 	size_t			lineNum = 1;
@@ -318,9 +318,15 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 			int	idChange = GetIndentChangeForLine( inTable, lineNum );
 			if( idChange > 0 || ((unsigned)abs(idChange)) <= currIndent )
 				currIndent += idChange;
+			if( ioCursorPosition && *ioCursorPosition >= x )
 			{
 				long		diff = currIndent -indentCharsSkipped;
 				*ioCursorPosition += diff;
+			}
+			if( ioCursorEndPosition && *ioCursorEndPosition >= x )
+			{
+				long		diff = currIndent -indentCharsSkipped;
+				*ioCursorEndPosition += diff;
 			}
 			currText.append( currIndent, '\t' );
 		}

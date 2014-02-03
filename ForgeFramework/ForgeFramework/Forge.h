@@ -118,10 +118,11 @@ LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseTree* inTree
 	@param	outLength			The number of actual text (exclusing the terminating NUL character) in outText.
 	@param	ioCursorPosition	On input, the current offset of the text insertion mark in the script. On output, this will
 								have been adjusted for any added/removed characters, so it stays in the same place as far
-								as the user is concerned.
+								as the user is concerned. You can pass NULL here if you don't need it.
+	@param	ioCursorEndPosition	Same as ioCursorEndPosition, intended for holding the end of a selection range.
 
 	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
-void				LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char* code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition );
+void				LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char* code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition, size_t *ioCursorEndPosition );
 
 /*! Return information about a particular handler in this script, such as its name, type, and what line
 	in the script it starts on. Indexes start at 0. If there are no more handlers in the display info
