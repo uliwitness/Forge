@@ -189,8 +189,7 @@ int main( int argc, char * const argv[] )
 			LEODisplayInfoTable*	lit = LEODisplayInfoTableCreateForParseTree( (LEOParseTree*) &parseTree );
 			char*	theText = NULL;
 			size_t	theLength = 0;
-			size_t	cursorPos = 202;
-			LEODisplayInfoTableApplyToText( lit, code, strlen(code), &theText, &theLength, &cursorPos );
+			LEODisplayInfoTableApplyToText( lit, code, strlen(code), &theText, &theLength, NULL, NULL );
 			std::cout << theText << std::endl;
 			free( theText );
 			const char*		currName = "";
