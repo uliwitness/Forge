@@ -221,9 +221,12 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1, "", false) );
 			if( conditional->GetElseLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetThenLineNum() )
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseLineNum(), -1, "", false) );
-			if( conditional->GetElseCommandsLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetElseCommandsLineNum() )
+			if( conditional->GetElseCommandsLineNum() > 0	// We have an else.
+				&& conditional->GetElseLineNum() != conditional->GetElseCommandsLineNum()	// It's not a one-line else
+				&& conditional->GetElseCommandsLineNum() != conditional->GetEndIfLineNum() )	// It's not an empty else immediately followed by an "end if".
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseCommandsLineNum(), 1, "", false) );
-			if( conditional->GetEndIfLineNum() > 0 )
+			if( conditional->GetEndIfLineNum() > 0
+				&& conditional->GetElseCommandsLineNum() != conditional->GetEndIfLineNum() )
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetEndIfLineNum(), -1, "", false) );
 		}
 		CDownloadCommandNode*	download = dynamic_cast<CDownloadCommandNode*>(currNode);
@@ -299,6 +302,7 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 				int	idChange = GetIndentChangeForLine( inTable, lineNum );
 				if( idChange > 0 || ((unsigned)abs(idChange)) <= currIndent )
 					currIndent += idChange;
+				currText.append( currIndent, '\t' );
 			}
 			currText.append( 1, code[x] );
 			lineNum++;

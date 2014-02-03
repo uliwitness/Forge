@@ -1461,14 +1461,9 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
-			bool	firstTime = true;
+			theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
 			{
-				if( firstTime )
-				{
-					firstTime = false;
-					theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
-				}
 				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
 			}
 			beforeReturnPos = tokenItty;
@@ -1526,14 +1521,9 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
-			bool	firstTime = true;
+			theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 			{
-				if( firstTime )
-				{
-					firstTime = false;
-					theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
-				}
 				ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens );
 			}
 		}
@@ -1796,14 +1786,9 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	whileLoop->AddCommand( getItemNode );
 	
-	bool	firstTime = true;
+	whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 	{
-		if( firstTime )
-		{
-			firstTime = false;
-			whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
-		}
 		ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 	}
 	
@@ -1859,14 +1844,9 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		whileLoop->SetCondition( conditionNode );
 		
 		// Commands:
-		bool	firstTime = true;
+		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
-			if( firstTime )
-			{
-				firstTime = false;
-				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
-			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 
@@ -1950,24 +1930,19 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, conditionLineNum) );
 		whileLoop->AddCommand( theAssignCommand );
 		
-		bool	firstTime = true;
 		do
 		{
 			// If there is no command to repeat, we don't want to parse the
 			//	"end" statement as a handler call named "end", so we need to
 			//	make sure we eliminate that case beforehand.
 			
+			whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 			while( tokenItty != tokens.end() && tokenItty->IsIdentifier( ENewlineOperator) )
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			
 			if( tokenItty == tokens.end() || tokenItty->IsIdentifier( EEndIdentifier ) )
 				break;
 			
-			if( firstTime )
-			{
-				firstTime = false;
-				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
-			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 		while( true );
@@ -2023,14 +1998,9 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
 		
-		bool	firstTime = true;
+		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
-			if( firstTime )
-			{
-				firstTime = true;
-				whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
-			}
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
 		}
 		
@@ -2076,14 +2046,9 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 		{
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			// Commands:
-			bool firstTime = true;
+			ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EElseIdentifier ) )
 			{
-				if( firstTime )
-				{
-					firstTime = false;
-					ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
-				}
 				ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens );
 			}
 		}
@@ -2109,15 +2074,12 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 			
 			if( tokenItty->IsIdentifier(ENewlineOperator) )	// Followed by a newline! Multi-line if!
 			{
-				bool	firstTime = true;
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
+				while( tokenItty->IsIdentifier(ENewlineOperator) )
+					CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 				{
-					if( firstTime )
-					{
-						firstTime = false;
-						ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
-					}
 					ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens );
 				}
 				needEndIf = true;
