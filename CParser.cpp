@@ -1410,6 +1410,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
 	}
 	
+	std::deque<CToken>::iterator	beforeReturnPos;
+	
 	// For each chunk:
 	if( tokenItty->IsIdentifier( EForIdentifier ) )
 	{
@@ -1469,15 +1471,21 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 				}
 				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
 			}
+			beforeReturnPos = tokenItty;
 		}
 		else
 		{
 			theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens, true );
+			beforeReturnPos = tokenItty;
+			if( tokenItty->IsIdentifier(ENewlineOperator) )
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		
 		haveProgressBlock = true;
 	}
+	else
+		beforeReturnPos = tokenItty;
 	
 	// when done:
 	if( tokenItty->IsIdentifier( EWhenIdentifier ) )
@@ -1531,12 +1539,15 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		}
 		else
 		{
+			needEndDownload = false;	// The previous guy may have wanted an 'end'. She gets the 'when done' clause instead.
 			theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens, true );
 		}
 		
 		haveCompletionBlock = true;
 	}
+	else
+		tokenItty = beforeReturnPos;
 	
 	if( needEndDownload )
 	{
