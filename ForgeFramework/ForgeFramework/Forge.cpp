@@ -217,9 +217,12 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 		CIfNode*	conditional = dynamic_cast<CIfNode*>(currNode);
 		if( conditional )
 		{
-			if( conditional->GetIfCommandsLineNum() > 0 && conditional->GetThenLineNum() != conditional->GetIfCommandsLineNum() )
+			if( conditional->GetIfCommandsLineNum() > 0 && conditional->GetThenLineNum() != conditional->GetIfCommandsLineNum() && conditional->GetCommandsCount() != 0 )
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetIfCommandsLineNum(), 1, "", false) );
-			if( conditional->GetElseLineNum() > 0 && conditional->GetElseLineNum() != conditional->GetThenLineNum() )
+			if( conditional->GetElseLineNum() > 0 // Have an else block
+				&& conditional->GetElseLineNum() != conditional->GetThenLineNum()	// Not on same line as the "then".
+				&& conditional->GetLineNum() != conditional->GetIfCommandsLineNum()
+				&& conditional->GetCommandsCount() != 0 )	// There wasn't a one-line-if before this else.
 				lineIndentTable->push_back( CLineNumEntry(conditional->GetElseLineNum(), -1, "", false) );
 			if( conditional->GetElseCommandsLineNum() > 0	// We have an else.
 				&& conditional->GetElseLineNum() != conditional->GetElseCommandsLineNum()	// It's not a one-line else

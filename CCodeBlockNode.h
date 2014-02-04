@@ -32,6 +32,7 @@ public:
 	virtual ~CCodeBlockNodeBase();
 	
 	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); mParseTree->NodeWasAdded( inCmd ); };	// Function node now owns this command and will delete it!
+	virtual size_t	GetCommandsCount()	{ return mCommands.size(); };
 	
 	virtual void	AddLocalVar( const std::string& inName, const std::string& inUserName,
 									TVariantType theType, bool initWithName = false,
