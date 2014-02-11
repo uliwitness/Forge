@@ -58,7 +58,7 @@ extern "C" {
 using namespace Carlson;
 
 
-#define DEBUG_HOST_ENTITIES			1
+#define DEBUG_HOST_ENTITIES			0
 #define ADJUST_LINE_NUM(a,b)
 
 
@@ -1068,11 +1068,15 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR )
+									{
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+									}
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1089,6 +1093,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
@@ -1100,8 +1105,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
@@ -1113,11 +1122,13 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1134,6 +1145,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
@@ -1141,6 +1153,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									// We parsed an expression, but only got an unquoted literal (variable) and that's not the end of the line? AND we're doing an identifier list?
 									if( par->mType == EHostParamExpressionOrIdentifiersTillLineEnd && dynamic_cast<CLocalVariableRefValueNode*>(term) && tokenItty != tokens.end() && !tokenItty->IsIdentifier( ENewlineOperator ) )
 									{
+										HE_PRINT("\t\tIdentifiers till line end.\n");
 										std::string		theStr = ((CLocalVariableRefValueNode*)term)->GetRealVarName();
 										delete term;
 										term = NULL;
@@ -1160,8 +1173,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
@@ -1169,33 +1186,50 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamIdentifier:
 							case EHostParamInvisibleIdentifier:
 							{
-								HE_PRINT("\tIdentifier\n");
+								if( par->mIdentifierType == ELastIdentifier_Sentinel )
+									HE_PRINT("\tAny Identifier\n");
+								else
+									HE_PRINT("\tIdentifier \"%s\"\n", gIdentifierStrings[par->mIdentifierType]);
 								if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
 									|| tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
 									{
 										if( par->mType != EHostParamInvisibleIdentifier )
+										{
+											HE_PRINT("\t\tAdding identifier with this string.\n");
 											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription(), tokenItty->mLineNum ) );
+										}
+										else
+											HE_PRINT("\t\tInvisibble identifier accepted.\n");
 									}
 									else
 									{
+										HE_PRINT("\t\tSetting instruction %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2 );
 										hostCommand->SetInstructionID( par->mInstructionID );
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 									if( identifiersToBacktrack >= 0 )
 										identifiersToBacktrack++;
 								}
 								else if( par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR && par->mType != EHostParamInvisibleIdentifier )
+									{
+										HE_PRINT("\t\tSetting empty string parameter.\n");
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", (tokenItty != tokens.end()) ? tokenItty->mLineNum  : 0) );
+									}
 								}
 								else
 								{
+									HE_PRINT("\t\tNot found.\n");
 									abortThisCommand = true;
 									if( identifiersToBacktrack < 0 )
 									{
@@ -1213,6 +1247,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 								}
@@ -1223,7 +1258,23 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamLabeledExpression:
 							case EHostParamLabeledContainer:
 							{
-								HE_PRINT("\tLabeled\n");
+								if( par->mIdentifierType == ELastIdentifier_Sentinel )
+									HE_PRINT("\tAny Identifier + ");
+								else
+									HE_PRINT("\tIdentifier \"%s\" +", gIdentifierStrings[par->mIdentifierType]);
+								if( par->mType == EHostParamLabeledExpression
+									|| par->mType == EHostParamExpressionOrIdentifiersTillLineEnd )
+								{
+									HE_PRINT("expression\n");
+								}
+								else if( par->mType == EHostParamLabeledContainer )
+								{
+									HE_PRINT("container\n");
+								}
+								else
+								{
+									HE_PRINT("term\n");
+								}
 								if( tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -1242,9 +1293,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										valType = "container";
 									}
 									else
+									{
 										term = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+									}
 									if( !term )
 									{
+										HE_PRINT("\t\tNot Found.\n");
 										delete hostCommand;
 										hostCommand = NULL;
 										theNode = NULL;
@@ -1261,22 +1315,29 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 									else
 									{
+										HE_PRINT("\t\tFound.\n");
 										hostCommand->AddParam( term );
 										if( par->mInstructionID != INVALID_INSTR )
 										{
+											HE_PRINT("\t\tSetting instruction %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2 );
 											hostCommand->SetInstructionID( par->mInstructionID );
 											hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 										}
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
 								else if( par->mIsOptional )
 								{
+									HE_PRINT("\t\tSetting empty string parameter.\n");
 									hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else
@@ -1297,6 +1358,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								}
