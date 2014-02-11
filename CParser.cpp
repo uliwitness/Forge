@@ -58,6 +58,7 @@ extern "C" {
 using namespace Carlson;
 
 
+#define DEBUG_HOST_ENTITIES			1
 #define ADJUST_LINE_NUM(a,b)
 
 
@@ -965,6 +966,13 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 }
 
 
+#if DEBUG_HOST_ENTITIES
+#define HE_PRINT(args...)	printf(args)
+#else
+#define HE_PRINT(...)		do{}while(0)
+#endif
+
+
 CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 									THostCommandEntry* inHostTable )
@@ -979,6 +987,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 			THostCommandEntry	*	currCmd = inHostTable +commandIdx;
 			if( currCmd->mType == firstIdentifier )
 			{
+				HE_PRINT("First identifier match: \"%s\"\n", tokenItty->GetOriginalIdentifierText().c_str());
 				long long			identifiersToBacktrack = 0;
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				identifiersToBacktrack++;
@@ -999,14 +1008,20 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						{
 							case EHostParamImmediateValue:
 							{
+								HE_PRINT("\tImmediate value\n");
 								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found\n");
 									if( par->mInstructionID == INVALID_INSTR )
+									{
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+										HE_PRINT("\t\tAdding empty string because no instruction has been set to otherwise indicate this value isn't there.\n");
+									}
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1023,25 +1038,33 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
 								{
+									HE_PRINT("\t\tFound a term\n");
 									hostCommand->AddParam( term );
 									if( par->mInstructionID != INVALID_INSTR )
 									{
+										HE_PRINT("\t\tChanging instruction type to %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2);
 										hostCommand->SetInstructionID( par->mInstructionID );
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
 
 							case EHostParamContainer:
 							{
+								HE_PRINT("\tContainer\n");
 								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
@@ -1086,6 +1109,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamExpression:
 							case EHostParamExpressionOrIdentifiersTillLineEnd:
 							{
+								HE_PRINT("\tExpression\n");
 								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
@@ -1145,6 +1169,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamIdentifier:
 							case EHostParamInvisibleIdentifier:
 							{
+								HE_PRINT("\tIdentifier\n");
 								if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
 									|| tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
@@ -1198,6 +1223,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamLabeledExpression:
 							case EHostParamLabeledContainer:
 							{
+								HE_PRINT("\tLabeled\n");
 								if( tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -1279,15 +1305,19 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							}
 							
 							case EHostParam_Sentinel:
+								HE_PRINT("\tEnd of param list\n");
 								break;
 						}
 					}
+					else
+						HE_PRINT("\tSkipping, mode '%c' doesn't match '%c'\n", currMode, par->mModeRequired);
 					
 					par++;
 				}
 				
 				if( currCmd->mTerminalMode != '\0' && currMode != currCmd->mTerminalMode )
 				{
+					HE_PRINT("\tDidn't encounter end mode\n");
 					if( hostCommand )	// Should have one by now, so if none, backtracked.
 					{
 						delete hostCommand;
@@ -1296,6 +1326,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 					}
 					if( identifiersToBacktrack >= 0 )
 					{
+						HE_PRINT("\t\tBacktracking %lld\n",identifiersToBacktrack);
 						for( long long x = 0; x < identifiersToBacktrack; x++ )
 							CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
 						// Now that we've backtracked, try the next host command.
@@ -1306,11 +1337,15 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unexpected  \""
 							<< tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
 						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+						HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 					}
 				}
 				else
+				{
+					HE_PRINT("\tFOUND A MATCH.\n");
 					break;	// Found a command that matches, stop looping.
+				}
 			}
 		}
 	}
