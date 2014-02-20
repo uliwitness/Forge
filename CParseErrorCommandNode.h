@@ -15,7 +15,7 @@ namespace Carlson
 class CParseErrorCommandNode : public CCommandNode
 {
 public:
-	CParseErrorCommandNode( CParseTree* inTree, const std::string inErrorMessage, const std::string inFileName, size_t inLineNum, size_t inOffset )
+	CParseErrorCommandNode( CParseTree* inTree, const std::string& inErrorMessage, const std::string& inFileName, size_t inLineNum, size_t inOffset )
 	: CCommandNode( inTree, "parseError", inLineNum ), mFileName(inFileName), mErrorMessage(inErrorMessage), mOffset(inOffset) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );

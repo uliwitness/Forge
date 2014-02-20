@@ -55,7 +55,7 @@ namespace Carlson
 		long long				mNumberValue;	// Number representation of this token.
 		
 	public:
-		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string str, long long n = 0 )
+		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string& str, long long n = 0 )
 			: mStringValue(str)
 		{
 			mType = type;
