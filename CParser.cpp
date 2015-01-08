@@ -595,7 +595,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	else
 	{
 		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping " << tokenItty->GetShortDescription();
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping \"" << tokenItty->GetShortDescription() << "\".";
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Just skip it, whatever it may be.
 		while( !tokenItty->IsIdentifier( ENewlineOperator ) && tokenItty != tokens.end() )	// Now skip until the end of the line.
