@@ -349,8 +349,8 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 
 extern "C" void LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsCommand )
 {
-	size_t		x = 0;
-	for( auto currEntry : *(std::vector<CLineNumEntry>*)inTable )
+	size_t			x = 0;
+	for( CLineNumEntry& currEntry : *(std::vector<CLineNumEntry>*)inTable )
 	{
 		if( currEntry.mHandlerName.length() > 0 )
 		{
