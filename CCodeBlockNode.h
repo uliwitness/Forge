@@ -32,6 +32,7 @@ public:
 	virtual ~CCodeBlockNodeBase();
 	
 	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); mParseTree->NodeWasAdded( inCmd ); };	// Function node now owns this command and will delete it!
+	virtual size_t	GetCommandsCount()	{ return mCommands.size(); };
 	
 	virtual void	AddLocalVar( const std::string& inName, const std::string& inUserName,
 									TVariantType theType, bool initWithName = false,
@@ -48,11 +49,13 @@ public:
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 
 	virtual void	Simplify();
+	virtual void	Visit( std::function<void(CNode*)> visitorBlock );
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
 
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return NULL; };
+	size_t			GetLineNum()	{ return mLineNum; };
 	
 protected:
 	size_t									mLineNum;

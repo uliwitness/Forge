@@ -58,6 +58,7 @@ extern "C" {
 using namespace Carlson;
 
 
+#define DEBUG_HOST_ENTITIES			0
 #define ADJUST_LINE_NUM(a,b)
 
 
@@ -76,6 +77,10 @@ std::map<std::string,CObjCMethodEntry>	CParser::sCFunctionPointerTable;		// Tabl
 std::map<std::string,std::string>		CParser::sSynonymToTypeTable;			// Table of C type synonym name -> real name mappings.
 std::map<std::string,std::string>		CParser::sConstantToValueTable;			// Table of C system constant name -> constant value mappings.
 LEOFirstNativeCallCallbackPtr			CParser::sFirstNativeCallCallback = NULL;
+
+
+static CFunctionDefinitionNode*			sLastErrorFunction = NULL;
+
 
 #pragma mark -
 #pragma mark [Operator lookup table]
@@ -484,10 +489,13 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 		}
 		catch( const CForgeParseError& err )
 		{
+			sLastErrorFunction = NULL;
 			mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 			throw;	// Re-throw, don't really know how to postpone this error until runtime.
 		}
 	}
+	
+	sLastErrorFunction = NULL;
 }
 
 
@@ -501,7 +509,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::string						handlerName( ":run" );
 		mFileName = fname;
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -540,7 +548,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::deque<CToken>::iterator	tokenItty = tokens.begin();
 		std::string						handlerName( ":run" );
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -595,10 +603,10 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	else
 	{
 		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping " << tokenItty->GetShortDescription();
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping \"" << tokenItty->GetShortDescription() << "\".";
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Just skip it, whatever it may be.
-		while( !tokenItty->IsIdentifier( ENewlineOperator ) )	// Now skip until the end of the line.
+		while( !tokenItty->IsIdentifier( ENewlineOperator ) && tokenItty != tokens.end() )	// Now skip until the end of the line.
 		{
 			errMsg << " " << tokenItty->GetShortDescription();
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -616,9 +624,13 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	std::string								userHandlerName( tokenItty->GetIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
-	size_t									fcnLineNum = 0;
+	size_t									fcnLineNum = tokenItty->mLineNum;
 	
-	fcnLineNum = tokenItty->mLineNum;
+	if( sLastErrorFunction )	// Last function had an error and never ended?
+	{
+		sLastErrorFunction->SetEndLineNum(fcnLineNum);	// We're now parsing a new function, so make sure we undo its indentation in the code formatter.
+		sLastErrorFunction = NULL;	// All good now.
+	}
 	
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 
@@ -629,7 +641,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	}
 	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, fcnLineNum );
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum );
 	parseTree.AddNode( currFunctionNode );
 	
 	// Make built-in system variables so they get declared below like other local vars:
@@ -669,14 +681,19 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	try
 	{
 		size_t		endLineNum = fcnLineNum;
+		currFunctionNode->SetCommandsLineNum( tokenItty->mLineNum );
 		ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
 		currFunctionNode->SetEndLineNum( endLineNum );
 	}
 	catch( const CForgeParseError& err )
 	{
+		sLastErrorFunction = currFunctionNode;
 		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 		
-		currFunctionNode->AddCommand( new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+		printf( "Deferring error to runtime: %s\n", err.what() );
+		
+		CParseErrorCommandNode	*	theErrorCmd = new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() );
+		currFunctionNode->AddCommand( theErrorCmd );
 		
 		throw CForgeParseErrorProcessed( err );
 	}
@@ -988,6 +1005,13 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 }
 
 
+#if DEBUG_HOST_ENTITIES
+#define HE_PRINT(args...)	printf(args)
+#else
+#define HE_PRINT(...)		do{}while(0)
+#endif
+
+
 CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 									THostCommandEntry* inHostTable )
@@ -1002,6 +1026,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 			THostCommandEntry	*	currCmd = inHostTable +commandIdx;
 			if( currCmd->mType == firstIdentifier )
 			{
+				HE_PRINT("First identifier match: \"%s\"\n", tokenItty->GetOriginalIdentifierText().c_str());
 				long long			identifiersToBacktrack = 0;
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				identifiersToBacktrack++;
@@ -1022,14 +1047,20 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						{
 							case EHostParamImmediateValue:
 							{
+								HE_PRINT("\tImmediate value\n");
 								CValueNode	*	term = ParseTerm( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found\n");
 									if( par->mInstructionID == INVALID_INSTR )
+									{
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+										HE_PRINT("\t\tAdding empty string because no instruction has been set to otherwise indicate this value isn't there.\n");
+									}
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1046,33 +1077,45 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
 								{
+									HE_PRINT("\t\tFound a term\n");
 									hostCommand->AddParam( term );
 									if( par->mInstructionID != INVALID_INSTR )
 									{
+										HE_PRINT("\t\tChanging instruction type to %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2);
 										hostCommand->SetInstructionID( par->mInstructionID );
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
 
 							case EHostParamContainer:
 							{
+								HE_PRINT("\tContainer\n");
 								CValueNode	*	term = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR )
+									{
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+									}
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1089,6 +1132,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
@@ -1100,8 +1144,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
@@ -1109,14 +1157,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamExpression:
 							case EHostParamExpressionOrIdentifiersTillLineEnd:
 							{
+								HE_PRINT("\tExpression\n");
 								CValueNode	*	term = ParseExpression( parseTree, currFunction, tokenItty, tokens, par->mIdentifierType );
 								if( !term && par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR )
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else if( !term )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									delete hostCommand;
 									hostCommand = NULL;
 									theNode = NULL;
@@ -1133,6 +1184,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 								}
 								else
@@ -1140,6 +1192,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									// We parsed an expression, but only got an unquoted literal (variable) and that's not the end of the line? AND we're doing an identifier list?
 									if( par->mType == EHostParamExpressionOrIdentifiersTillLineEnd && dynamic_cast<CLocalVariableRefValueNode*>(term) && tokenItty != tokens.end() && !tokenItty->IsIdentifier( ENewlineOperator ) )
 									{
+										HE_PRINT("\t\tIdentifiers till line end.\n");
 										std::string		theStr = ((CLocalVariableRefValueNode*)term)->GetRealVarName();
 										delete term;
 										term = NULL;
@@ -1159,8 +1212,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}
@@ -1168,32 +1225,50 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamIdentifier:
 							case EHostParamInvisibleIdentifier:
 							{
+								if( par->mIdentifierType == ELastIdentifier_Sentinel )
+									HE_PRINT("\tAny Identifier\n");
+								else
+									HE_PRINT("\tIdentifier \"%s\"\n", gIdentifierStrings[par->mIdentifierType]);
 								if( (tokenItty->mType == EIdentifierToken && par->mIdentifierType == ELastIdentifier_Sentinel)
 									|| tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									if( par->mInstructionID == INVALID_INSTR )
 									{
 										if( par->mType != EHostParamInvisibleIdentifier )
+										{
+											HE_PRINT("\t\tAdding identifier with this string.\n");
 											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription(), tokenItty->mLineNum ) );
+										}
+										else
+											HE_PRINT("\t\tInvisibble identifier accepted.\n");
 									}
 									else
 									{
+										HE_PRINT("\t\tSetting instruction %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2 );
 										hostCommand->SetInstructionID( par->mInstructionID );
 										hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 									}
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 									if( identifiersToBacktrack >= 0 )
 										identifiersToBacktrack++;
 								}
 								else if( par->mIsOptional )
 								{
+									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR && par->mType != EHostParamInvisibleIdentifier )
+									{
+										HE_PRINT("\t\tSetting empty string parameter.\n");
 										hostCommand->AddParam( new CStringValueNode( &parseTree, "", (tokenItty != tokens.end()) ? tokenItty->mLineNum  : 0) );
+									}
 								}
 								else
 								{
+									HE_PRINT("\t\tNot found.\n");
 									abortThisCommand = true;
 									if( identifiersToBacktrack < 0 )
 									{
@@ -1211,6 +1286,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 								}
@@ -1221,6 +1297,23 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 							case EHostParamLabeledExpression:
 							case EHostParamLabeledContainer:
 							{
+								if( par->mIdentifierType == ELastIdentifier_Sentinel )
+									HE_PRINT("\tAny Identifier + ");
+								else
+									HE_PRINT("\tIdentifier \"%s\" +", gIdentifierStrings[par->mIdentifierType]);
+								if( par->mType == EHostParamLabeledExpression
+									|| par->mType == EHostParamExpressionOrIdentifiersTillLineEnd )
+								{
+									HE_PRINT("expression\n");
+								}
+								else if( par->mType == EHostParamLabeledContainer )
+								{
+									HE_PRINT("container\n");
+								}
+								else
+								{
+									HE_PRINT("term\n");
+								}
 								if( tokenItty->IsIdentifier(par->mIdentifierType) )
 								{
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -1239,9 +1332,12 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										valType = "container";
 									}
 									else
+									{
 										term = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+									}
 									if( !term )
 									{
+										HE_PRINT("\t\tNot Found.\n");
 										delete hostCommand;
 										hostCommand = NULL;
 										theNode = NULL;
@@ -1258,22 +1354,29 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
 										}
 										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									}
 									else
 									{
+										HE_PRINT("\t\tFound.\n");
 										hostCommand->AddParam( term );
 										if( par->mInstructionID != INVALID_INSTR )
 										{
+											HE_PRINT("\t\tSetting instruction %d (%d,%d)\n", par->mInstructionID, par->mInstructionParam1, par->mInstructionParam2 );
 											hostCommand->SetInstructionID( par->mInstructionID );
 											hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
 										}
 									}
 									if( par->mModeToSet != 0 )
+									{
+										HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
 										currMode = par->mModeToSet;
+									}
 								}
 								else if( par->mIsOptional )
 								{
+									HE_PRINT("\t\tSetting empty string parameter.\n");
 									hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
 								}
 								else
@@ -1294,23 +1397,28 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 									}
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								}
 								identifiersToBacktrack = -1;
-								currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								break;
 							}
 							
 							case EHostParam_Sentinel:
+								HE_PRINT("\tEnd of param list\n");
 								break;
 						}
 					}
+					else
+						HE_PRINT("\tSkipping, mode '%c' doesn't match '%c'\n", currMode, par->mModeRequired);
 					
 					par++;
 				}
 				
 				if( currCmd->mTerminalMode != '\0' && currMode != currCmd->mTerminalMode )
 				{
+					HE_PRINT("\tDidn't encounter end mode\n");
 					if( hostCommand )	// Should have one by now, so if none, backtracked.
 					{
 						delete hostCommand;
@@ -1319,6 +1427,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 					}
 					if( identifiersToBacktrack >= 0 )
 					{
+						HE_PRINT("\t\tBacktracking %lld\n",identifiersToBacktrack);
 						for( long long x = 0; x < identifiersToBacktrack; x++ )
 							CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
 						// Now that we've backtracked, try the next host command.
@@ -1329,11 +1438,15 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unexpected  \""
 							<< tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
 						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+						HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 					}
 				}
 				else
+				{
+					HE_PRINT("\tFOUND A MATCH.\n");
 					break;	// Found a command that matches, stop looping.
+				}
 			}
 		}
 	}
@@ -1433,9 +1546,13 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
 	}
 	
+	std::deque<CToken>::iterator	beforeReturnPos;
+	
 	// For each chunk:
 	if( tokenItty->IsIdentifier( EForIdentifier ) )
 	{
+		theDownloadCommand->SetProgressLineNum( tokenItty->mLineNum );
+		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 		if( !tokenItty->IsIdentifier(EEachIdentifier) )
@@ -1480,22 +1597,32 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
+			theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EWhenIdentifier ) )
 			{
 				ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens );
 			}
+			beforeReturnPos = tokenItty;
 		}
 		else
 		{
+			theDownloadCommand->SetProgressCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, progressNode, tokenItty, tokens, true );
+			beforeReturnPos = tokenItty;
+			if( tokenItty->IsIdentifier(ENewlineOperator) )
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		
 		haveProgressBlock = true;
 	}
+	else
+		beforeReturnPos = tokenItty;
 	
 	// when done:
 	if( tokenItty->IsIdentifier( EWhenIdentifier ) )
 	{
+		theDownloadCommand->SetCompletionLineNum( tokenItty->mLineNum );
+
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 		if( !tokenItty->IsIdentifier(EDoneIdentifier) )
@@ -1530,6 +1657,7 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 			needEndDownload = true;
 			
 			// Commands:
+			theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
 			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 			{
 				ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens );
@@ -1537,14 +1665,20 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		}
 		else
 		{
+			needEndDownload = false;	// The previous guy may have wanted an 'end'. She gets the 'when done' clause instead.
+			theDownloadCommand->SetCompletionCommandsLineNum( tokenItty->mLineNum );
 			ParseOneLine( userHandlerName, parseTree, completionNode, tokenItty, tokens, true );
 		}
 		
 		haveCompletionBlock = true;
 	}
+	else
+		tokenItty = beforeReturnPos;
 	
 	if( needEndDownload )
 	{
+		theDownloadCommand->SetEndDownloadLineNum( tokenItty->mLineNum );
+
 		if( !tokenItty->IsIdentifier(EEndIdentifier) )
 		{
 			std::stringstream		errMsg;
@@ -1567,6 +1701,8 @@ void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& 
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
+	else
+		theDownloadCommand->SetEndDownloadLineNum( tokenItty->mLineNum );
 	
 	if( !tokenItty->IsIdentifier(ENewlineOperator) )
 	{
@@ -1786,6 +1922,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	whileLoop->AddCommand( getItemNode );
 	
+	whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 	{
 		ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
@@ -1806,6 +1943,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 	}
+	whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 }
 
@@ -1842,6 +1980,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		whileLoop->SetCondition( conditionNode );
 		
 		// Commands:
+		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
@@ -1849,6 +1988,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	else if( tokenItty->IsIdentifier( EWithIdentifier ) )	// With:
@@ -1932,6 +2072,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 			//	"end" statement as a handler call named "end", so we need to
 			//	make sure we eliminate that case beforehand.
 			
+			whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 			while( tokenItty != tokens.end() && tokenItty->IsIdentifier( ENewlineOperator) )
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			
@@ -1952,6 +2093,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	else
@@ -1991,7 +2133,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
-
+		
+		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
@@ -2005,6 +2148,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 }
@@ -2015,85 +2159,102 @@ void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseT
 {
 	size_t			conditionLineNum = tokenItty->mLineNum;
 	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, currFunction );
-	
-	// If:
-	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Condition:
-	CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
-	ifNode->SetCondition( condition );
-	
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Then:
-	tokenItty->ExpectIdentifier( mFileName, EThenIdentifier );
-	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	bool	needEndIf = true;
-	
-	if( tokenItty->IsIdentifier( ENewlineOperator ) )
+	try
 	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		// Commands:
-		while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EElseIdentifier ) )
-		{
-			ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens );
-		}
-	}
-	else
-	{
-		ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens, true );
-		needEndIf = false;
-	}
-	
-	std::deque<CToken>::iterator	beforeLineEnd = tokenItty;	// Remember position before line end in case there's no 'else'. We need to leave a line break for ParseOneLine() to parse.
-
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	// Else:
-	if( tokenItty->IsIdentifier( EElseIdentifier ) )	// It's an "else"! Parse another block!
-	{
-		CCodeBlockNode*		elseNode = ifNode->CreateElseBlock( tokenItty->mLineNum );
-		
+		// If:
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
-		if( tokenItty->IsIdentifier(ENewlineOperator) )	// Followed by a newline! Multi-line if!
+		// Condition:
+		CValueNode*			condition = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+		ifNode->SetCondition( condition );
+		
+		while( tokenItty->IsIdentifier(ENewlineOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		// Then:
+		tokenItty->ExpectIdentifier( mFileName, EThenIdentifier );
+		ifNode->SetThenLineNum( tokenItty->mLineNum );
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		bool	needEndIf = true;
+		
+		if( tokenItty->IsIdentifier( ENewlineOperator ) )
 		{
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-			while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+			// Commands:
+			ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
+			while( !tokenItty->IsIdentifier( EEndIdentifier ) && !tokenItty->IsIdentifier( EElseIdentifier ) )
 			{
-				ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens );
+				ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens );
 			}
-			needEndIf = true;
 		}
 		else
 		{
-			ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens, true );	// Don't swallow return.
+			ifNode->SetIfCommandsLineNum( tokenItty->mLineNum );
+			ParseOneLine( userHandlerName, parseTree, ifNode, tokenItty, tokens, true );
 			needEndIf = false;
 		}
-	}
-	else if( needEndIf == false )
-		tokenItty = beforeLineEnd;	// Leave a return at the end of the line (which the code above skipped) so ParseOneLine() can detect we're really at the end of the line.
-	
-	// End If:
-	if( needEndIf && tokenItty->IsIdentifier( EEndIdentifier ) )
-	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		if( !tokenItty->IsIdentifier(EIfIdentifier) )
+		
+		std::deque<CToken>::iterator	beforeLineEnd = tokenItty;	// Remember position before line end in case there's no 'else'. We need to leave a line break for ParseOneLine() to parse.
+
+		while( tokenItty->IsIdentifier(ENewlineOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		// Else:
+		if( tokenItty->IsIdentifier( EElseIdentifier ) )	// It's an "else"! Parse another block!
 		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ifNode->SetElseLineNum( tokenItty->mLineNum );
+			CCodeBlockNode*		elseNode = ifNode->CreateElseBlock( tokenItty->mLineNum );
+			
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			
+			if( tokenItty->IsIdentifier(ENewlineOperator) )	// Followed by a newline! Multi-line if!
+			{
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
+				while( tokenItty->IsIdentifier(ENewlineOperator) )
+					CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				while( !tokenItty->IsIdentifier( EEndIdentifier ) )
+				{
+					ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens );
+				}
+				needEndIf = true;
+			}
+			else
+			{
+				ifNode->SetElseCommandsLineNum( tokenItty->mLineNum );
+				ifNode->SetEndIfLineNum( tokenItty->mLineNum );
+				ParseOneLine( userHandlerName, parseTree, elseNode, tokenItty, tokens, true );	// Don't swallow return.
+				needEndIf = false;
+			}
 		}
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		else if( needEndIf == false )
+			tokenItty = beforeLineEnd;	// Leave a return at the end of the line (which the code above skipped) so ParseOneLine() can detect we're really at the end of the line.
+		
+		// End If:
+		if( needEndIf && tokenItty->IsIdentifier( EEndIdentifier ) )
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			if( !tokenItty->IsIdentifier(EIfIdentifier) )
+			{
+				std::stringstream		errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
+										<< tokenItty->GetShortDescription() << ".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			}
+			ifNode->SetEndIfLineNum( tokenItty->mLineNum );
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		}
+	}
+	catch( ... )
+	{
+		delete ifNode;
+		throw;
 	}
 	
-	currFunction->AddCommand( ifNode );	// TODO: delete ifNode on exceptions above, and condition before it's added to ifNode etc.
-	
+	currFunction->AddCommand( ifNode );
+		
 	// We leave the last line break after the 'end if' in the token stream so ParseOneLine() can parse it.
 }
 
@@ -2723,23 +2884,50 @@ void	CParser::LoadNativeHeadersFromFile( const char* filepath )
 			{
 				std::string		typesLine;
 				std::string		selectorStr;
-				char			nextSwitchChar = ',';
+				std::string		currType;
 				bool			isFunction = (theCh == '=');
 				bool			isFunctionPtr = (theCh == '&');
+				bool			isInMethodName = true;
+				bool			doneWithLine = false;
 				
-				while( (theCh = headerFile.get()) != std::ifstream::traits_type::eof() && theCh != '\n' )
+				while(  !doneWithLine && (theCh = headerFile.get()) != std::ifstream::traits_type::eof() )
 				{
-					switch( nextSwitchChar )
+					switch( theCh )
 					{
 						case ',':
-							if( nextSwitchChar == theCh )	// Found comma? We're finished getting selector name. Rest of line goes in types.
-								nextSwitchChar = '\n';
+							if( isInMethodName )	// Found comma? We're finished getting selector name. Rest of line goes in types.
+								isInMethodName = false;
 							else
-								selectorStr.append( 1, theCh );
+							{
+								std::map<std::string,std::string>::const_iterator foundSynonym;
+								while( (foundSynonym = sSynonymToTypeTable.find(currType)) != sSynonymToTypeTable.end() )
+								{
+									currType = foundSynonym->second;
+								}
+								typesLine.append( currType );
+								typesLine.append( 1, ',' );
+								currType.clear();
+							}
 							break;
 						
 						case '\n':
-							typesLine.append( 1, theCh );
+						{
+							std::map<std::string,std::string>::const_iterator foundSynonym;
+							while( (foundSynonym = sSynonymToTypeTable.find(currType)) != sSynonymToTypeTable.end() )
+							{
+								currType = foundSynonym->second;
+							}
+							typesLine.append( currType );
+							currType.clear();
+							doneWithLine = true;
+							break;
+						}
+						
+						default:
+							if( isInMethodName )
+								selectorStr.append( 1, theCh );
+							else
+								currType.append( 1, theCh );
 							break;
 					}
 				}
@@ -3123,7 +3311,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 
 		case ENumberToken:	// Any number (integer). We fake floats by parsing an integer/period-operator/integer sequence.
 		{
-			long					theNumber = tokenItty->mNumberValue;
+			long long		theNumber = tokenItty->mNumberValue;
 			
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			

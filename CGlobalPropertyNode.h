@@ -38,6 +38,7 @@ public:
 	virtual void			Simplify();
 	virtual void			GenerateCode( CCodeBlock* inCodeBlock );
 	virtual void			GenerateSetterCode( CCodeBlock* inCodeBlock, CValueNode* newValueNode );
+	virtual void			Visit( std::function<void(CNode*)> visitorBlock );
 
 	virtual CValueNode*		Copy();
 

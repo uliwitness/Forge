@@ -19,4 +19,21 @@ void	CParseErrorCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	inCodeBlock->GenerateParseErrorInstruction( mErrorMessage, mFileName, mLineNum, mOffset );
 }
 
+
+void	CParseErrorCommandNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
+{
+	INDENT_PREPARE(indentLevel);
+	
+	destStream << indentChars << "Command \"" << mSymbolName << "\"" << std::endl
+				<< indentChars << "{" << std::endl;
+	
+	destStream << indentChars << "\t" << mFileName << ":" << mLineNum;
+	if( mOffset != SIZE_T_MAX )
+		destStream << ":" << mOffset;
+	destStream << ": " << mErrorMessage << std::endl;
+		
+	destStream << indentChars << "}" << std::endl;
+}
+
+
 } // namespace Carlson

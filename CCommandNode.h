@@ -45,6 +45,7 @@ public:
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );
 	
 	virtual void		Simplify();
+	virtual void		Visit( std::function<void(CNode*)> visitorBlock );
 	virtual void		GenerateCode( CCodeBlock* inCodeBlock );
 	
 	virtual size_t		GetLineNum() const	{ return mLineNum; };

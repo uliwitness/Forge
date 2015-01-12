@@ -130,4 +130,14 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 	}
 }
 
+
+void	CFunctionCallNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currParam : mParams )
+		currParam->Visit( visitorBlock );
+	
+	CValueNode::Visit( visitorBlock );
+}
+
+
 } // namespace Carlson

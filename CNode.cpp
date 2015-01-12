@@ -14,6 +14,12 @@
 using namespace Carlson;
 
 
+void	CNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	visitorBlock( this );
+}
+
+
 void	CNode::Simplify()
 {
 	

@@ -76,6 +76,15 @@ void	CObjectPropertyNode::Simplify()
 }
 
 
+void	CObjectPropertyNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currParam : mParams )
+		currParam->Visit(visitorBlock);
+	
+	CValueNode::Visit( visitorBlock );
+}
+
+
 void	CObjectPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CValueNode*>::reverse_iterator itty;

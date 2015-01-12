@@ -56,6 +56,9 @@ extern "C" {
 typedef struct LEOParseTree	LEOParseTree;
 
 
+typedef struct LEODisplayInfoTable LEODisplayInfoTable;
+
+
 struct TGlobalPropertyEntry;
 struct THostCommandEntry;
 
@@ -88,6 +91,51 @@ LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const 
 	@seealso //leo_ref/c/func/LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters */
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
+
+/*! Extract information from the parse tree that is of interest for displaying the script in an editor.
+	This includes information on which line cause indentation to change as well as a list of handlers
+	and what line in the script they start at for quick navigation.
+	@seealso //leo_ref/c/func/LEOCleanUpDisplayInfoTable	LEOCleanUpDisplayInfoTable
+	@seealso //leo_ref/c/func/LEODisplayInfoTableApplyToText	LEODisplayInfoTableApplyToText
+	@seealso //leo_ref/c/func/LEODisplayInfoTableGetHandlerInfoAtIndex	LEODisplayInfoTableGetHandlerInfoAtIndex
+	@seealso //leo_ref/c/func/LEOParseTreeCreateFromUTF8Characters	LEOParseTreeCreateFromUTF8Characters */
+LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseTree* inTree );
+
+/*! Reformat the given script text (which must be the same text that was passed to
+	LEOParseTreeCreateFromUTF8Characters() to generate the parse tree from which this display info table
+	was generated), adjusting its indentation to indicate the structure of the script (i.e. which commands
+	belong to which handler, and where a handler starts or ends), and the places where the parser encountered
+	errors.
+	@param	inTable				A display info table created from a parse tree for the same text as provided in the
+								<tt>code</tt> pointer.
+	@param	code				The script to be indented.
+	@param	codeLen				The length of text in <tt>code</tt>, not including any terminating NUL character it may have.
+								The script text may contain NUL characters, which will be treated as regular characters.
+	@param	outText				A block of text of length outLength +1. The additional character is a NUL character that
+								is added for the caller's convenience. Treating a script as a C-string is not recommended,
+								as scripts may contain user-entered NUL characters. The returned text block is created using
+								malloc() and it is the caller's responsibility to call free() on it when done.
+	@param	outLength			The number of actual text (exclusing the terminating NUL character) in outText.
+	@param	ioCursorPosition	On input, the current offset of the text insertion mark in the script. On output, this will
+								have been adjusted for any added/removed characters, so it stays in the same place as far
+								as the user is concerned. You can pass NULL here if you don't need it.
+	@param	ioCursorEndPosition	Same as ioCursorEndPosition, intended for holding the end of a selection range.
+
+	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
+void				LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char* code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition, size_t *ioCursorEndPosition );
+
+/*! Return information about a particular handler in this script, such as its name, type, and what line
+	in the script it starts on. Indexes start at 0. If there are no more handlers in the display info
+	table, this sets outName to NULL. The char* pointers returned in outName are owned by the display
+	info table. Do not try to free() them.
+	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
+void				LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsCommand );
+
+/*! Free the memory occupied by this display info table.
+	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
+void				LEOCleanUpDisplayInfoTable( LEODisplayInfoTable* inTable );
+
+
 /*! Take a parse tree created by <tt>LEOParseTreeCreateFromUTF8Characters</tt> or <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt> and compile it into Leonie bytecode. The given script, <tt>inScript</tt> will be filled with the command and function handlers, strings etc. defined in the script. Handler IDs will be generated in the given context group. Provide the same file ID in <tt>inFileID</tt> that you generated using <tt>LEOFileIDForFileName</tt> when you created the parse tree.
 	@seealso //leo_ref/c/func/LEOParseTreeCreateFromUTF8Characters	LEOParseTreeCreateFromUTF8Characters
 	@seealso //leo_ref/c/func/LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters
@@ -112,6 +160,13 @@ size_t		LEOParserGetLastErrorLineNum( void );
 	@seealso //leo_ref/c/func/LEOParserGetLastErrorLineNum	LEOParserGetLastErrorLineNum
 */
 size_t		LEOParserGetLastErrorOffset( void );
+
+
+/*! The Forge parser tries to behave very lenient regarding errors. So often, when it encounters a parse error,
+	it will simply generate a PARSE_ERROR_INSTR instruction and abort the current handler, trying to find the
+	next handler in the script. That way, if you have an error in a mouseDown handler, your mouseUp handler will
+	still execute. This function gets an error from this list of non-fatal errors. */
+void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset );
 
 /*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );

@@ -81,6 +81,17 @@ void	CIfNode::Simplify()
 }
 
 
+void	CIfNode::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	mCondition->Visit(visitorBlock);
+	
+	if( mElseBlock )
+		mElseBlock->Visit(visitorBlock);
+	
+	CCodeBlockNode::Visit( visitorBlock );
+}
+
+
 void	CIfNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);

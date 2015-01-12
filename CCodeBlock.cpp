@@ -141,6 +141,24 @@ void	CCodeBlock::GeneratePushIntInstruction( int inNumber, LEOUnit inUnit )
 }
 
 
+void	CCodeBlock::GeneratePushIntInstruction( int64_t inNumber, LEOUnit inUnit )
+{
+	if( inNumber < INT32_MIN || inNumber > INT32_MAX )
+	{
+		uint64_t	theNum = (uint64_t)inNumber;
+		uint32_t	firstHalf = (theNum & 0xffffffff00000000) >> 32;
+		uint32_t	secondHalf = theNum & 0x00000000ffffffff;
+		LEOHandlerAddInstruction( mCurrentHandler, PUSH_INTEGER_START_INSTR, inUnit, firstHalf );
+		LEOHandlerAddInstruction( mCurrentHandler, ASSIGN_INTEGER_END_INSTR, inUnit, secondHalf );
+	}
+	else
+	{
+		int32_t		theShortInt = (int32_t)inNumber;
+		LEOHandlerAddInstruction( mCurrentHandler, PUSH_INTEGER_INSTR, inUnit, (uint32_t)theShortInt );
+	}
+}
+
+
 void	CCodeBlock::GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit )
 {
 	assert( sizeof(inNumber) <= sizeof(uint32_t) );

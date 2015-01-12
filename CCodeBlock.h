@@ -36,6 +36,7 @@ public:
 	void		GenerateParseErrorInstruction( std::string errMsg, std::string inFileName, size_t inLine, size_t inOffset );
 	
 	void		GeneratePushIntInstruction( int inNumber, LEOUnit inUnit );
+	void		GeneratePushIntInstruction( long long inNumber, LEOUnit inUnit );
 	void		GeneratePushFloatInstruction( float inNumber, LEOUnit inUnit );
 	void		GeneratePushBoolInstruction( bool inBoolean );
 	void		GeneratePushStringInstruction( const std::string& inString );

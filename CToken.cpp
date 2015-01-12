@@ -206,8 +206,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currText.append( str +x, newX -x );
 					else
 					{
-						char*	endPtr = NULL;
-						long	num = strtol( currText.c_str(), &endPtr, 10 );
+						char*		endPtr = NULL;
+						long long	num = strtoll( currText.c_str(), &endPtr, 10 );
 						tokenList.push_back( CToken( ENumberToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, num ) );
 						currText.clear();
 						currType = EWhitespaceToken;
@@ -395,7 +395,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		str.append( numstr );
 		sprintf( numstr,", %lu", (unsigned long) mOffset );
 		str.append( numstr );
-		sprintf( numstr,", %ld", mNumberValue );
+		sprintf( numstr,", %lld", mNumberValue );
 		str.append( numstr );
 		
 		return str;
@@ -406,7 +406,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		if( mType == ENumberToken )
 		{
 			char		numstr[256];
-			sprintf( numstr,"%ld", mNumberValue );
+			sprintf( numstr,"%lld", mNumberValue );
 			return std::string(numstr);
 		}
 		else if( mType == EStringToken )
@@ -618,7 +618,6 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			errMsg << "\" here, found \"";
 			if( precedingIdent != ELastIdentifier_Sentinel )
 				errMsg << gIdentifierStrings[precedingIdent] << " ";
-			errMsg << gIdentifierStrings[mSubType];
 			errMsg << GetShortDescription() << "\".";
 			
 			throw CForgeParseError( errMsg.str(), mLineNum, mOffset );

@@ -44,6 +44,7 @@ public:
 	virtual ~CNode() {};
 	
 	virtual void	Simplify();	// For optimizing our parse tree before we actually generate code.
+	virtual void	Visit( std::function<void(CNode*)> visitorBlock );
 	
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode.
 	

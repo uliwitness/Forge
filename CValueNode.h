@@ -37,6 +37,7 @@ public:
 	virtual size_t	GetLineNum()						{ return mLineNum; };
 	virtual void	SetLineNum( size_t inLineNum )		{ mLineNum = inLineNum; };
 
+	virtual void	Visit( std::function<void(CNode*)> visitorBlock )	{ visitorBlock(this); };
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 		
 	virtual bool	IsConstant()		{ return false; };
@@ -70,7 +71,7 @@ protected:
 class CIntValueNode : public CNumericValueNodeBase
 {
 public:
-	CIntValueNode( CParseTree* inTree, long n, size_t inLineNum ) : CNumericValueNodeBase(inTree,inLineNum), mIntValue(n) {};
+	CIntValueNode( CParseTree* inTree, long long n, size_t inLineNum ) : CNumericValueNodeBase(inTree,inLineNum), mIntValue(n) {};
 	
 	virtual void			GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
 
@@ -86,12 +87,13 @@ public:
 	};
 
 	virtual int				GetAsInt()		{ return (int)mIntValue; };
-	virtual long			GetAsLong()		{ return mIntValue; };
+	virtual long			GetAsLong()		{ return (long)mIntValue; };
+	virtual long long		GetAsLongLong()	{ return mIntValue; };
 	virtual float			GetAsFloat()	{ return mIntValue; };
-	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%ld%s", mIntValue, gUnitLabels[mUnit]); return std::string( numStr ); };
+	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%lld%s", mIntValue, gUnitLabels[mUnit]); return std::string( numStr ); };
 	
 protected:
-	long		mIntValue;
+	long long		mIntValue;
 };
 
 

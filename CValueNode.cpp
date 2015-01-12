@@ -27,7 +27,7 @@ void	CValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 void	CIntValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GeneratePushIntInstruction( (int)mIntValue, mUnit );
+	inCodeBlock->GeneratePushIntInstruction( mIntValue, mUnit );
 }
 
 

@@ -29,11 +29,19 @@ $directions =
 $frameworks = array_slice( $_SERVER['argv'], 1 );	// Remove name of executable.
 if( sizeof($frameworks) == 0 )	// No other params? Fallback!
 {
-	$frameworks = array( "CoreFoundation", "ApplicationServices", "Carbon", "Foundation", "AppKit", "WebKit", "AddressBook", "QTKit", "ScreenSaver" );
+	$frameworks = array( "CoreFoundation", "ApplicationServices", "Carbon", "Foundation", "AppKit", "WebKit", "AddressBook", "QTKit", "ScreenSaver", "AVFoundation", "QuartzCore", "AVKit", "EventKit" );
 	echo "note: No frameworks specified. Using defaults.\n";
 }
 
 $frameworkheaders = array();
+
+// Include some standard runtime files:
+$codestr .= "#pragma HEADERIMPORT FRAMEWORK: \"\"\n";
+$codestr .= "#import <objc/NSObjCRuntime.h>\n";
+$codestr .= "#import <stdio.h>\n";
+$codestr .= "#import <stddef.h>\n";
+$codestr .= "#import <string.h>\n";
+$codestr .= "#import <stdint.h>\n";
 
 // Actually generate a minimal application that imports all the frameworks:
 echo "note: Preparing framework".(sizeof($frameworks) > 1 ? "s" : "").": ";
@@ -134,15 +142,16 @@ while( strlen($headerstr) > 0 )
 		$nextframework = strlen($headerstr);
 	$currheaderstr = substr( $headerstr, $fmwknameend +1, $nextframework -$fmwknameend -1 );
 	$currheaderstr = removeCommentsAndPreprocessorJunk($currheaderstr);
-	$output .= "F".$currfmwkname."\nH".$frameworkheaders[$fmwkNum++]."\n".parseHeadersFromString( $currheaderstr, $currfmwkname );
+	$output .= "F".$currfmwkname."\nH".$frameworkheaders[$fmwkNum++]."\n";
 	if( $currfmwkname == "Carbon" )
 	{
 		//$output .= "~UInt32,unsigned long\n~SInt32,long\n~UInt16,unsigned short\n~SInt16,short\n~UInt8,unsigned charn~SInt8,char\n";
 	}
-	$output .= parseFunctionsFromString( $currheaderstr, $currfmwkname );
-	$output .= parseProcPtrsFromString( $currheaderstr, $currfmwkname );
 	$output .= parseTypedefsFromString( $currheaderstr, $currfmwkname );
 	$output .= parseEnumTypedefsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseProcPtrsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseFunctionsFromString( $currheaderstr, $currfmwkname );
+	$output .= parseHeadersFromString( $currheaderstr, $currfmwkname );
 	//echo "#pragma mark $currfmwkname\n$currheaderstr\n";
 	$startpos = $nextframework + strlen($pattern);
 	$len = strlen($headerstr) -$nextframework -strlen($pattern);
@@ -183,17 +192,16 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 
 	// Build our honkin' huge regexp that finds classes and categories and returns
 	//	their methods and ivars as one string:
-	//	FIX ME! This can't cope with classes that have no superclass (like NSObject and NSProxy) right now!
 	$re_classname = "([A-Za-z0-9_]*)";
 	$re_whitespace = "([ \t\r\n]*)";
-	$re_catname = "(\(([A-Za-z0-9_]+)\))";
+	$re_catname = "(\([ ]*([A-Za-z0-9_]*)[ ]*\))";
 	$re_colonandsuper = "([:]$re_whitespace([A-Za-z0-9_]+))";
 	$re_proto = "([A-Za-z0-9_]*)";
 	$re_additionalproto = "($re_whitespace,$re_whitespace$re_proto)";
 	$re_protocols = "(<$re_whitespace$re_proto$re_additionalproto*$re_whitespace>$re_whitespace){0,1}";
 	$re_super = "($re_colonandsuper$re_whitespace$re_protocols)";
 	$re_cat = "($re_catname$re_whitespace$re_protocols)";
-	$re_superorcatname = "($re_super|$re_cat)";
+	$re_superorcatname = "($re_super|$re_cat|$re_protocols)";
 	$re_allchars_nocurly = "!$&'%\\\\?|~\]\[+\-*\/\(\)#a-zA-Z0-9\n\r\t^ @;,_:<>=.\"";
 	$re_allchars = "$re_allchars_nocurly{}";
 	$re_methodsnstuff = "([$re_allchars]*?)";
@@ -224,7 +232,7 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 	{
 		// "Outside" info:
 		$output .= "*".$treffer[2][$y]."\n";	// Class name.
-		if( trim( $treffer[21][$y] ) != "" )	// Is a category on that class?
+		if( trim( $treffer[20][$y] ) != "" )	// Is a category on that class?
 		{
 			$output .= "(".$treffer[21][$y]."\n";	// Remember category name.
 			$protos = $treffer[23][$y];				// Remember what protocols it implements (this is in a different place in the results dictionary than for classes).
@@ -232,9 +240,9 @@ function parseHeadersFromString( $headerstr, $currfmwkname )
 		else	// Otherwise it's a class.
 		{
 			$output .= ":".$treffer[8][$y]."\n";	
-			$protos = $treffer[10][$y];
+			$protos = $treffer[34][$y];
 		}
-		$methodstr = $treffer[33][$y];
+		$methodstr = $treffer[42][$y];
 		if( trim( $protos ) != "" )
 		{
 			$protos = str_replace(" ","",$protos);
@@ -511,7 +519,7 @@ function parseTypedefsFromString( $headerstr, $currfmwkname )
 
 	$output = "";
 	$treffer = array();
-	$fullregexp = "/typedef[ \t\n\r]([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*;/";
+	$fullregexp = "/typedef[ \t\n\r](((un){0,1}signed[ \t]*){0,1}[A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*([A-Za-z_]([A-Za-z_0-9]*))[ \t\n\r]*;/";
 	$matchcount = preg_match_all( $fullregexp, $headerstr, $treffer );
 	if( $matchcount == 0 )
 		return "";
@@ -520,7 +528,7 @@ function parseTypedefsFromString( $headerstr, $currfmwkname )
 	for( $x = 0; $x < sizeof($treffer[0]); $x++ )
 	{
 		$oldname = $treffer[1][$x];
-		$newname = $treffer[3][$x];
+		$newname = $treffer[5][$x];
 		
 		if( isset($knowntypes[$oldname]) )
 			$output .= $knowntypes[$oldname][0].$newname.$knowntypes[$oldname][1];

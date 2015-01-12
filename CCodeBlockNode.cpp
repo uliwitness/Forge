@@ -65,6 +65,15 @@ void	CCodeBlockNodeBase::Simplify()
 }
 
 
+void	CCodeBlockNodeBase::Visit( std::function<void(CNode*)> visitorBlock )
+{
+	for( auto currCommand : mCommands )
+		currCommand->Visit( visitorBlock );
+	
+	CNode::Visit( visitorBlock );
+}
+
+
 void	CCodeBlockNodeBase::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	std::vector<CNode*>::iterator itty;

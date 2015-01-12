@@ -64,6 +64,7 @@ int main( int argc, char * const argv[] )
 				printInstructions = false,
 				printTokens = false,
 				printParseTree = false,
+				printIndented = false,
 				verbose = false,
 				doOptimize = true;
 	
@@ -98,6 +99,10 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
 			{
 				printParseTree = true;
+			}
+			else if( strcmp( argv[x], "--printindented" ) == 0 )
+			{
+				printIndented = true;
 			}
 			else if( strcmp( argv[x], "--verbose" ) == 0 )
 			{
@@ -176,6 +181,30 @@ int main( int argc, char * const argv[] )
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
+		
+		if( printIndented )
+		{
+			if( verbose )
+				std::cout << "Indenting file \"" << filename << "\"..." << std::endl;
+			LEODisplayInfoTable*	lit = LEODisplayInfoTableCreateForParseTree( (LEOParseTree*) &parseTree );
+			char*	theText = NULL;
+			size_t	theLength = 0;
+			LEODisplayInfoTableApplyToText( lit, code, strlen(code), &theText, &theLength, NULL, NULL );
+			std::cout << theText << std::endl;
+			free( theText );
+			const char*		currName = "";
+			size_t			currLine = 0;
+			bool			isCommand = false;
+			size_t			x = 0;
+			while( true )
+			{
+				LEODisplayInfoTableGetHandlerInfoAtIndex( lit, x++, &currName, &currLine, &isCommand );
+				if( !currName )
+					break;
+				std::cout << (isCommand ? "[C] " : "[F] ") << currName << " (Line " << currLine << ")" << std::endl;
+			}
+			LEOCleanUpDisplayInfoTable( lit );
+		}
 		
 		uint16_t 			fileID = LEOFileIDForFileName(filename);
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
