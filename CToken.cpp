@@ -570,7 +570,6 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			errMsg << "\" here, found \"";
 			if( precedingIdent != ELastIdentifier_Sentinel )
 				errMsg << gIdentifierStrings[precedingIdent] << " ";
-			errMsg << gIdentifierStrings[mSubType];
 			errMsg << GetShortDescription() << "\".";
 			
 			throw CForgeParseError( errMsg.str(), mLineNum, mOffset );
