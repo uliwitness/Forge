@@ -682,6 +682,8 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		sLastErrorFunction = currFunctionNode;
 		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 		
+		printf( "Deferring error to runtime: %s\n", err.what() );
+		
 		CParseErrorCommandNode	*	theErrorCmd = new CParseErrorCommandNode( &parseTree, err.what(), mFileName, err.GetLineNum(), err.GetOffset() );
 		currFunctionNode->AddCommand( theErrorCmd );
 		
