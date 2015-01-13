@@ -58,7 +58,7 @@ extern "C" {
 using namespace Carlson;
 
 
-#define DEBUG_HOST_ENTITIES			0
+#define DEBUG_HOST_ENTITIES			1
 #define ADJUST_LINE_NUM(a,b)
 
 
@@ -468,7 +468,7 @@ CParser::CParser()
 //		the proper parse tree.
 // -----------------------------------------------------------------------------
 
-void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree )
+void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText )
 {
 	// -------------------------------------------------------------------------
 	// First recursively parse our script for top-level constructs:
@@ -481,7 +481,7 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 	{
 		try
 		{
-			ParseTopLevelConstruct( tokenItty, tokens, parseTree );
+			ParseTopLevelConstruct( tokenItty, tokens, parseTree, scriptText );
 		}
 		catch( const CForgeParseErrorProcessed& err )
 		{
@@ -569,12 +569,13 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 }
 
 
-void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText )
 {
 	if( tokenItty == tokens.end() )
-		;
+		printf("End of tokens.\n");
 	else if( tokenItty->IsIdentifier( ENewlineOperator ) )
 	{
+		printf("Skipping newline.\n");
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
 	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
@@ -592,6 +593,14 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to" 
 		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
 	}
+	else if( tokenItty->IsIdentifier( ENotesIdentifier ) || tokenItty->IsIdentifier( ENoteIdentifier ) )
+	{
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "notes"
+		if( tokenItty->IsIdentifier(EColonOperator) )
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip ":" after "notes".
+		
+		ParseDocumentation( tokenItty, tokens, parseTree, scriptText );
+	}
 	else
 	{
 		std::stringstream errMsg;
@@ -606,6 +615,43 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		errMsg << "." << std::endl;
 		
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+	}
+}
+
+
+void	CParser::ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText )
+{
+	while( tokenItty->IsIdentifier(ENewlineOperator) )
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	
+	size_t	startOffs = 0,
+			endOffs = 0;
+	if( tokenItty != tokens.end() )
+		startOffs = startOffs = tokenItty->mOffset;
+	
+	while( true )
+	{
+		if( tokenItty == tokens.end() )
+		{
+			break;
+		}
+		endOffs = tokenItty->mOffset;
+		if( tokenItty->IsIdentifier( EOnIdentifier) || tokenItty->IsIdentifier( EFunctionIdentifier) || tokenItty->IsIdentifier( EWhenIdentifier) || tokenItty->IsIdentifier( EToIdentifier) )
+		{
+			break;
+		}
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		while( tokenItty != tokens.end() && tokenItty->IsIdentifier(ENewlineOperator) )
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		}
+	}
+	
+	if( startOffs < endOffs )
+	{
+		std::string	docsText( scriptText +startOffs, endOffs - startOffs );
+		
+		printf("Found docs: \"%s\"\n",docsText.c_str());
 	}
 }
 

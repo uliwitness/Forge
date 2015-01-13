@@ -67,7 +67,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		parseTree = new CParseTree;
 		CParser				parser;
 		std::deque<CToken>	tokens = CTokenizer::TokenListFromText( inCode, codeLength );
-		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
+		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree, inCode );
 		
 		gMessages.assign( parser.GetMessages().begin(), parser.GetMessages().end() );
 		

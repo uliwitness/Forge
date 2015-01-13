@@ -134,10 +134,11 @@ namespace Carlson
 	public:
 		CParser();
 		
-		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );
+		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );	// Generates a handler named ":run"
 		
-		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
+		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
+		void	ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
 		CValueNode	*	ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
