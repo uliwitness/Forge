@@ -3300,6 +3300,58 @@ CValueNode*	CParser::ParseNativeFunctionCallStartingAtParams( std::string& metho
 }
 
 
+CValueNode* CParser::ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								TIdentifierSubtype inEndIdentifier)
+{
+	if( tokenItty != tokens.end() && tokenItty->IsIdentifier(EColonOperator) && inEndIdentifier != EColonOperator )
+	{
+		size_t	numPairs = 1;
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		
+		CValueNode	*	theParam = theTerm;
+		COperatorNode*	theOperation = new COperatorNode( &parseTree, PUSH_ARRAY_CONSTANT_INSTR, theTerm->GetLineNum() );
+		theOperation->AddParam( theParam );	// Push first key on stack.
+		theParam = ParseTerm( parseTree, currFunction, tokenItty, tokens, EColonOperator );
+		if( !theParam )
+		{
+			delete theOperation;
+			CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);	// Backtrack over colon operator.
+			return theTerm;
+		}
+		theOperation->AddParam( theParam );	// Push first value on stack.
+		
+		while( tokenItty != tokens.end() && (tokenItty->mType == EStringToken || tokenItty->mType == EIdentifierToken || tokenItty->mType == ENumberToken) )
+		{
+			theParam = new CStringValueNode( &parseTree, tokenItty->mStringValue, tokenItty->mLineNum );
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			// +++ Check whether the key is a floating point number here (which is tokenized to {integer, period operator, integer}) and optionally generate a key string matching the entire float here.
+			if( tokenItty == tokens.end() || !tokenItty->IsIdentifier(EColonOperator) )	// Not a key followed by a colon and another value?
+			{
+				delete theParam;
+				theParam = NULL;
+				CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);	// Backtrack over what we thought was another key.
+				break;	// Hit end of list.
+			}
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			theOperation->AddParam( theParam );
+			theParam = ParseTerm( parseTree, currFunction, tokenItty, tokens, EColonOperator );
+			if( !theParam )	// No value after colon?
+			{
+				CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);	// Backtrack over the colon.
+				CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);	// Backtrack over what we thought was another key.
+				break;	// Hit end of list.
+			}
+			theOperation->AddParam( theParam );
+			numPairs++;
+		}
+		theOperation->SetInstructionParams( numPairs, 0 );
+		theTerm = theOperation;
+	}
+	return theTerm;
+}
+
+
 CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								TIdentifierSubtype inEndIdentifier )
@@ -3315,7 +3367,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		{
 			theTerm = new CStringValueNode( &parseTree, tokenItty->mStringValue, tokenItty->mLineNum );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-			break;
+			theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
+			break;	// Exit our switch.
 		}
 
 		case ENumberToken:	// Any number (integer). We fake floats by parsing an integer/period-operator/integer sequence.
@@ -3345,7 +3398,10 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 			}
 			else
+			{
 				theTerm = new CIntValueNode( &parseTree, theNumber, tokenItty->mLineNum );
+			}
+			theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 			
 			// If there's a unit after this number, apply that unit to the term:
 			for( int x = 1; x < kLEOUnit_Last; x++ )
@@ -3373,6 +3429,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						theTerm = new CStringValueNode( &parseTree, sysConstItty->second, tokenItty->mLineNum );
 						CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the identifier for the constant we just parsed.
+						theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 					}
 				}
 				

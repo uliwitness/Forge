@@ -203,6 +203,9 @@ namespace Carlson
 		CValueNode*	ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 										TIdentifierSubtype inEndIdentifier );
+		CValueNode*	ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								TIdentifierSubtype inEndIdentifier);	// Returns theTerm if it didn't find an array definition after this potential key in theTerm.
 		void	OutputExpressionStack( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<std::string>	&terms, std::deque<const char*>	&operators );
 		void	CreateVariable( const std::string& varName, const std::string& realVarName, bool initWithName,
