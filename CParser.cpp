@@ -3429,8 +3429,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						theTerm = new CStringValueNode( &parseTree, sysConstItty->second, tokenItty->mLineNum );
 						CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the identifier for the constant we just parsed.
-						theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 					}
+					theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 				}
 				
 				break;	// Exit our switch.
