@@ -3693,7 +3693,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					delete fcall;
 					
 					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: excpected \"(\" after function name, found "
+					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"(\" after function name, found "
 											<< tokenItty->GetShortDescription() << ".";
 					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
