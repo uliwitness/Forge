@@ -230,6 +230,8 @@ namespace Carlson
 		void	CreateHandlerTrampolineForFunction( const std::string &handlerName, const std::string& procPtrName,
 														const char* typesStr,
 														std::stringstream& theCode, std::string &outTrampolineName );
+		CValueNode*	ParseColumnRowExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken );
 		
 		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators );
 		

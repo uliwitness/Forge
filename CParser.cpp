@@ -2291,6 +2291,109 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 }
 
 
+/*
+	Parse a row <r> of column <c> of field <f>, column <c> of row <r> of field <f>, or
+	column <c> of field <f> expression.
+*/
+
+CValueNode*	CParser::ParseColumnRowExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken )
+{
+	CValueNode*	columnIndex = NULL;
+	CValueNode*	rowIndex = NULL;
+	size_t		lineNo = tokenItty->mLineNum;
+	bool		justHadAnOf = false;
+	
+	try
+	{
+		while( columnIndex == NULL || rowIndex == NULL )
+		{
+			if( tokenItty == tokens.end() )
+				break;
+			
+			if( tokenItty->IsIdentifier( EColumnIdentifier ) && columnIndex == NULL )
+			{
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				
+				justHadAnOf = false;
+				
+				columnIndex = ParseTerm(parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
+			}
+			else if( tokenItty->IsIdentifier( ERowIdentifier ) && rowIndex == NULL )
+			{
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				
+				justHadAnOf = false;
+
+				rowIndex = ParseTerm(parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
+			}
+			else if( tokenItty->IsIdentifier( EOfIdentifier ) || tokenItty->IsIdentifier( EInIdentifier ) )
+			{
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+				
+				justHadAnOf = true;
+			}
+			else if( columnIndex != NULL )
+			{
+				break;
+			}
+		}
+	}
+	catch( ... )
+	{
+		if( columnIndex )
+			delete columnIndex;
+		if( rowIndex )
+			delete rowIndex;
+		throw;
+	}
+	
+	if( justHadAnOf )	// Don't swallow the "of" token if we didn't have a "row" or "column" follow it, we need it for the object of which we're getting row/column.
+	{
+		CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
+	}
+	else if( !tokenItty->IsIdentifier( EOfIdentifier ) && !tokenItty->IsIdentifier( EInIdentifier ) )
+	{
+		if( columnIndex )
+			delete columnIndex;
+		if( rowIndex )
+			delete rowIndex;
+		return NULL;
+	}
+	
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+	
+	// Generate a property name like "column 2" or "column 2 row 1":
+	COperatorNode	*	concat1Op = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, lineNo );
+	concat1Op->AddParam( new CStringValueNode( &parseTree, "column ", lineNo ) );
+	concat1Op->AddParam( columnIndex );
+	COperatorNode	*	concat2Op = NULL;
+	if( rowIndex )
+	{
+		concat2Op = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, lineNo );
+		concat2Op->AddParam( new CStringValueNode( &parseTree, " row ", lineNo ) );
+		concat2Op->AddParam( rowIndex );
+	}
+	COperatorNode	*	concat3Op = NULL;
+	if( concat2Op )
+	{
+		concat3Op = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, lineNo );
+		concat3Op->AddParam( concat1Op );
+		concat3Op->AddParam( concat2Op );
+	}
+
+	// Object of which we get the property:
+	CValueNode	*	object = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndToken );
+	
+	// Generate a property <p> of object <o> expression:
+	CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, std::string(""), tokenItty->mLineNum );
+	propExpr->AddParam( object );
+	propExpr->AddParam( concat3Op ? concat3Op : concat1Op );
+	
+	return propExpr;
+}
+
+
 CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken )
 {
@@ -2335,6 +2438,11 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		COperatorNode*		hostCommand = new COperatorNode( &parseTree, kFirstPropertyInstruction +PUSH_ME_INSTR, tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		return hostCommand;
+	}
+	else if( tokenItty->mSubType == ERowIdentifier
+			|| tokenItty->mSubType == EColumnIdentifier )
+	{	
+		return ParseColumnRowExpression( parseTree, currFunction, tokenItty, tokens, inEndToken );
 	}
 	
 	// If we know we have a variable of that name, choose that:
@@ -3713,6 +3821,12 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			else if( tokenItty->mSubType == EOpenSquareBracketOperator )
 			{	
 				theTerm = ParseObjCMethodCall( parseTree, currFunction, tokenItty, tokens );
+				break;
+			}
+			else if( tokenItty->mSubType == ERowIdentifier
+					|| tokenItty->mSubType == EColumnIdentifier )
+			{	
+				theTerm = ParseColumnRowExpression( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				break;
 			}
 			else
