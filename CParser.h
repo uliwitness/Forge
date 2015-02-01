@@ -41,7 +41,7 @@ namespace Carlson
 	class CCodeBlockNodeBase;
 	class CFunctionCallNode;
 	
-	// *** An entry in our operator look-up table:
+	//! An entry in our operator look-up table.
 	struct TOperatorEntry
 	{
 		TIdentifierSubtype		mType;				// The identifier for this operator.
@@ -51,14 +51,14 @@ namespace Carlson
 		TIdentifierSubtype		mTypeToReturn;		// The identifier to return for this operator.
 	};
 	
-	// *** An entry in our unary operator look-up table:
+	//! An entry in our unary operator look-up table.
 	struct TUnaryOperatorEntry
 	{
 		TIdentifierSubtype		mType;				// The identifier for this operator.
 		LEOInstructionID		mInstructionID;		// Instruction that implements this operator.
 	};
 	
-	// *** An entry in our chunk type look-up table:
+	//! An entry in our chunk type look-up table.
 	struct TChunkTypeEntry
 	{
 		TIdentifierSubtype		mType;						// The identifier for this chunk.
@@ -66,7 +66,7 @@ namespace Carlson
 		TChunkType				mChunkTypeConstant;			// Constant to pass to get a range of this chunk type.
 	};
 	
-	// *** An entry in our constant look-up table:
+	//! An entry in our constant look-up table.
 	#define MAX_CONSTANT_IDENTS		3
 	struct TConstantEntry
 	{
@@ -74,7 +74,7 @@ namespace Carlson
 		CValueNode*				mValue;	// TVariant holding this constant.
 	};
 	
-	// *** an entry in our ObjC -> Variant or Variant -> ObjC type conversion mapping tables:
+	//! An entry in our ObjC -> Variant or Variant -> ObjC type conversion mapping tables. (no longer used, needs to be ported from old source code generator)
 	struct TObjCTypeConversionEntry
 	{
 		const char*				mType;			// Type to map from or to.
@@ -83,7 +83,7 @@ namespace Carlson
 		bool					mUsesObjC;		// TRUE if this code needs us to pull in ObjC.
 	};
 	
-	// *** an entry in our table of ObjC methods we know how to call:
+	//! An entry in our table of ObjC methods we know how to call.
 	class CObjCMethodEntry
 	{
 	public:
@@ -96,7 +96,8 @@ namespace Carlson
 		std::string				mMethodSignature;	// The return and parameter types of the method.
 	};
 	
-	class CMessageEntry	// warning/error
+	//! Warning/error that the script editor can show in-line or in some asynchronous place.
+	class CMessageEntry
 	{
 	public:
 		std::string		mMessage;
@@ -110,32 +111,35 @@ namespace Carlson
 	};
 	
 	// -------------------------------------------------------------------------
-	//	MAIN CLASS:
-	// -------------------------------------------------------------------------
+	/*!
+		@class CParser
+		The object that keeps all state while parsing a token stream and
+		generates a CParseTree from it.
+	*/
 	
 	class CParser
 	{
 	protected:
-		std::map<std::string,CVariableEntry>	mGlobals;	// List of globals so we can declare them.
-		std::string					mFirstHandlerName;			// Name of the function implementing the first handler we parse (can be used by templates as main entry point).
-		bool						mFirstHandlerIsFunction;	// TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
-		const char*					mFileName;					// Name of file being parsed right now.
-		const char*					mSupportFolderPath;			// Path to folder with support files.
-		std::vector<CMessageEntry>	mMessages;					// Errors and warnings.
+		std::map<std::string,CVariableEntry>	mGlobals;	//!< List of globals so we can declare them.
+		std::string					mFirstHandlerName;			//!< Name of the function implementing the first handler we parse (can be used by templates as main entry point).
+		bool						mFirstHandlerIsFunction;	//!< TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
+		const char*					mFileName;					//!< Name of file being parsed right now.
+		const char*					mSupportFolderPath;			//!< Path to folder with support files.
+		std::vector<CMessageEntry>	mMessages;					//!< Errors and warnings.
 		
 	protected:
-		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		// Populated from frameworkheaders.hhc file.
-		static std::map<std::string,CObjCMethodEntry>	sCFunctionTable;		// Populated from frameworkheaders.hhc file.
-		static std::map<std::string,CObjCMethodEntry>	sCFunctionPointerTable;	// Populated from frameworkheaders.hhc file.
-		static std::map<std::string,std::string>		sSynonymToTypeTable;	// Populated from frameworkheaders.hhc file.
-		static std::map<std::string,std::string>		sConstantToValueTable;	// Populated from frameworkheaders.hhc file.
+		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		//!< Populated from frameworkheaders.hhc file.
+		static std::map<std::string,CObjCMethodEntry>	sCFunctionTable;		//!< Populated from frameworkheaders.hhc file.
+		static std::map<std::string,CObjCMethodEntry>	sCFunctionPointerTable;	//!< Populated from frameworkheaders.hhc file.
+		static std::map<std::string,std::string>		sSynonymToTypeTable;	//!< Populated from frameworkheaders.hhc file.
+		static std::map<std::string,std::string>		sConstantToValueTable;	//!< Populated from frameworkheaders.hhc file.
 		static LEOFirstNativeCallCallbackPtr			sFirstNativeCallCallback;
 		
 	public:
 		CParser();
 		
-		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
-		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );	// Generates a handler named ":run"
+		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );	//!< Parse a complete script consisting of handlers etc.
+		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );	//!< Generates a handler named ":run" that returns the given expression.
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
@@ -205,7 +209,7 @@ namespace Carlson
 										TIdentifierSubtype inEndIdentifier );
 		CValueNode*	ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
-								TIdentifierSubtype inEndIdentifier);	// Returns theTerm if it didn't find an array definition after this potential key in theTerm.
+								TIdentifierSubtype inEndIdentifier);	//!< Returns theTerm if it didn't find an array definition after this potential key in theTerm.
 		void	OutputExpressionStack( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<std::string>	&terms, std::deque<const char*>	&operators );
 		void	CreateVariable( const std::string& varName, const std::string& realVarName, bool initWithName,
@@ -245,9 +249,10 @@ namespace Carlson
 		
 		const std::vector<CMessageEntry>&	GetMessages()	{ return mMessages; };
 		
-		static void		LoadNativeHeadersFromFile( const char* filepath );
-		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );
-		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction );
+	// statics:
+		static void		LoadNativeHeadersFromFile( const char* filepath );	//!< Used to load OS-native API signatures and names from the frameworkheaders.hhc file.
+		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );	//!< Callback to be invoked when the user actually triggers execution of the first OS-native API. Allows lazy-loading some parts of the system headers.
+		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstBuiltInFunctionInstruction );	//!< Register functions that take no params and can be called as "foo()" or "the foo" and map them to a bunch of instructions previously registered.
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );

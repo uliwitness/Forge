@@ -257,7 +257,7 @@ CParser::CParser()
 
 // -----------------------------------------------------------------------------
 //	AddBuiltInFunctionsAndOffsetInstructions:
-//		Add additional global properties to the ones the parser understands.
+//		Add additional global functions to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
 /*static*/ void	CParser::AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
