@@ -37,8 +37,17 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	{
 		std::string		propName;
 		propertyValue->GetSymbolName(propName);
-		inCodeBlock->GeneratePushStringInstruction( propName );
-		propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
+		if( propName.length() > 0 )
+		{
+			inCodeBlock->GeneratePushStringInstruction( propName );
+		
+			propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
+		}
+		else
+		{
+			propertyValue->GetParamAtIndex( 1 )->GenerateCode( inCodeBlock );
+			propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
+		}
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateSetPropertyOfObjectInstruction();

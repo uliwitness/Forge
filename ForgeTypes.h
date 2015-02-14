@@ -272,7 +272,10 @@
 	X1(EBrowsersIdentifier,"browsers") \
 	X1(EPopupIdentifier,"popup") \
 	X1(ENoteIdentifier,"note") \
-	X1(ENotesIdentifier,"notes")
+	X1(ENotesIdentifier,"notes") \
+	X1(ERowIdentifier,"row") \
+	X1(EColumnIdentifier,"column") \
+	X1(EBackIdentifier,"back")
 
 
 typedef enum

@@ -90,7 +90,9 @@ void	CObjectPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 	std::vector<CValueNode*>::reverse_iterator itty;
 	
 	// Push all params on stack (in reverse order!):
-	inCodeBlock->GeneratePushStringInstruction( mSymbolName );
+	if( mSymbolName.length() != 0 )
+		inCodeBlock->GeneratePushStringInstruction( mSymbolName );
+	
 	for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
 		(*itty)->GenerateCode( inCodeBlock );
 	
