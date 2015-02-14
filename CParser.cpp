@@ -58,7 +58,7 @@ extern "C" {
 using namespace Carlson;
 
 
-#define DEBUG_HOST_ENTITIES			1
+#define DEBUG_HOST_ENTITIES			0
 #define ADJUST_LINE_NUM(a,b)
 
 
