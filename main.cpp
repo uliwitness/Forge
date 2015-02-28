@@ -177,7 +177,7 @@ int main( int argc, char * const argv[] )
 		
 		if( verbose )
 			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
-		parser.Parse( filename, tokens, parseTree );
+		parser.Parse( filename, tokens, parseTree, code );
 		
 		if( printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
