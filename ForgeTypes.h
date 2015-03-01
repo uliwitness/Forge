@@ -234,6 +234,10 @@
 	X1(EPlayIdentifier,"play") \
 	X1(ETimerIdentifier,"timer") \
 	X1(ETimersIdentifier,"timers") \
+	X1(EGraphicIdentifier,"graphic") \
+	X2(EGrcIdentifier,EGraphicIdentifier,"grc") \
+	X1(EGraphicsIdentifier,"graphics") \
+	X2(EGrcsIdentifier,EGraphicsIdentifier,"grcs") \
 	X1(EStartIdentifier,"start") \
 	X1(EStopIdentifier,"stop") \
 	X1(EBoxIdentifier,"box") \
