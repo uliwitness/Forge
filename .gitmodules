@@ -1,4 +1,3 @@
 [submodule "Leonie"]
 	path = Leonie
-	url = git@github.com:uliwitness/Leonie.git
-	fetchRecurseSubmodules = true
+	url = https://uliwitness@github.com/uliwitness/Leonie.git
