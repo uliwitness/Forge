@@ -10,10 +10,14 @@
 #include "CToken.h"
 #include <stdexcept>
 #include <ios>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include "UTF8UTF32Utilities.h"
 #include "CForgeExceptions.h"
+
+
+#define VERBOSE_TOKEN_PARSING		0
 
 
 namespace Carlson
@@ -543,6 +547,13 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		}
 		else
 			tokenItty++;
+		
+		#if VERBOSE_TOKEN_PARSING
+		if( tokenItty == tokens.end() )
+			std::cout << "Advanced to: <no more tokens>" << std::endl;
+		else
+			std::cout << "Advanced to: " << tokenItty->GetShortDescription() << std::endl;
+		#endif
 	}
 	
 	
@@ -556,6 +567,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		}
 		else
 			tokenItty--;
+		
+		#if VERBOSE_TOKEN_PARSING
+		std::cout << "Reversed to: " << tokenItty->GetShortDescription() << std::endl;
+		#endif
 	}
 
 	void	CToken::ExpectIdentifier( const std::string& inFileName, TIdentifierSubtype subType, TIdentifierSubtype precedingIdent )
