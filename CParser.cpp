@@ -2445,23 +2445,25 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		return ParseColumnRowExpression( parseTree, currFunction, tokenItty, tokens, inEndToken );
 	}
 	
-	// If we know we have a variable of that name, choose that:
 	std::string		realVarName( tokenItty->GetIdentifierText() );
 	std::string		varName( "var_" );
 	varName.append( realVarName );
-	if( !container && currFunction->LocalVariableExists( varName ) )
-	{
-		CreateVariable( varName, realVarName, initWithName, currFunction );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
-		
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		
-		return container;
-	}
 	
 	// Some things may be prefixed by 'the':
 	if( tokenItty->IsIdentifier( ETheIdentifier ) )
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	else	// Otherwise, if we know we have a variable of that name, choose that:
+	{
+		if( !container && currFunction->LocalVariableExists( varName ) )
+		{
+			CreateVariable( varName, realVarName, initWithName, currFunction );
+			container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
+			
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			
+			return container;
+		}
+	}
 	
 	// Try to parse a host-specific function (e.g. object descriptor):
 	container = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
