@@ -156,16 +156,13 @@ static TIdentifierSubtype		sUnitIdentifiers[] =
 
 #pragma mark [Chunk type lookup table]
 // Chunk expression start token -> Chunk type constant (as string for code generation):
-static TChunkTypeEntry	sChunkTypes[] =
+static TChunkTypeEntry	sChunkTypes[TChunkType_Count] =
 {
-	{ EByteIdentifier, EBytesIdentifier, TChunkTypeByte },
-	{ ECharIdentifier, ECharsIdentifier, TChunkTypeCharacter },
-	{ ECharacterIdentifier, ECharactersIdentifier, TChunkTypeCharacter },
-	{ ELineIdentifier, ELinesIdentifier, TChunkTypeLine },
-	{ EItemIdentifier, EItemsIdentifier, TChunkTypeItem },
-	{ EWordIdentifier, EWordsIdentifier, TChunkTypeWord },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, TChunkTypeInvalid }
+#define X5(type,subordinateType,singularIdentifierSubtype,pluralIdentifierSubtype)  { singularIdentifierSubtype, pluralIdentifierSubtype, type },
+    LEO_CHUNKTYPES
+#undef X5
 };
+
 
 #pragma mark [Constant lookup table]
 // Constant identifier and actual code to generate the value:
@@ -3111,7 +3108,7 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 		endOffsObj = ParseExpression( parseTree, currFunction, tokenItty, tokens, EOfIdentifier );
 		hadTo = true;
 	}
-	
+    
 	// Target value:
 	if( !tokenItty->IsIdentifier( EOfIdentifier ) )
 	{
@@ -3318,7 +3315,7 @@ TChunkType	CParser::GetChunkTypeNameFromIdentifierSubtype( TIdentifierSubtype id
 	TChunkType	foundType = TChunkTypeInvalid;
 	int			x = 0;
 	
-	for( x = 0; sChunkTypes[x].mType != ELastIdentifier_Sentinel; x++ )
+	for( x = 0; x < TChunkType_Count; x++ )
 	{
 		if( identifierToCheck == sChunkTypes[x].mType || identifierToCheck == sChunkTypes[x].mPluralType )
 			foundType = sChunkTypes[x].mChunkTypeConstant;

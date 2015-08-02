@@ -48,16 +48,24 @@ typedef enum TPutOperationType
 	TPutOperationTypePrint			// put x
 } TPutOperationType;
 
+//X5(type,subordinateType,singularIdentifierSubtype,pluralIdentifierSubtype)
+#define LEO_CHUNKTYPES      X5(TChunkTypeInvalid,TChunkTypeInvalid,ELastIdentifier_Sentinel,ELastIdentifier_Sentinel) \
+                            X5(TChunkTypeByte,TChunkTypeInvalid,EByteIdentifier,EBytesIdentifier) \
+                            X5(TChunkTypeCharacter,TChunkTypeInvalid,ECharacterIdentifier,ECharactersIdentifier) \
+                            X5(TChunkTypeItem,TChunkTypeInvalid,EItemIdentifier,EItemsIdentifier) \
+                            X5(TChunkTypeLine,TChunkTypeInvalid,ELineIdentifier,ELinesIdentifier) \
+                            X5(TChunkTypeWord,TChunkTypeInvalid,EWordIdentifier,EWordsIdentifier) \
+//                            X5(TChunkTypeRow,TChunkTypeColumn,ERowIdentifier,ERowsIdentifier) \
+//                            X5(TChunkTypeColumn,TChunkTypeRow,EColumnIdentifier,EColumnsIdentifier)
+
 
 // The chunk types we currently support:
 typedef enum TChunkType	// Keep this same as LEOChunkType:
 {
-	TChunkTypeInvalid = 0,
-	TChunkTypeByte,
-	TChunkTypeCharacter,
-	TChunkTypeItem,
-	TChunkTypeLine,
-	TChunkTypeWord
+#define X5(type,subordinateType,singularIdentifierSubtype,pluralIdentifierSubtype)  type,
+    LEO_CHUNKTYPES
+#undef X5
+    TChunkType_Count // Number of chunk types
 } TChunkType;
 
 class CVariableEntry

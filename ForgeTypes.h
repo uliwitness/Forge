@@ -279,6 +279,10 @@
 	X1(ENotesIdentifier,"notes") \
 	X1(ERowIdentifier,"row") \
 	X1(EColumnIdentifier,"column") \
+	X1(ERowsIdentifier,"rows") \
+	X1(EColumnsIdentifier,"columns") \
+	X2(EColIdentifier,EColumnIdentifier,"col") \
+	X2(EColsIdentifier,EColumnsIdentifier,"cols") \
 	X1(EBackIdentifier,"back")
 
 
