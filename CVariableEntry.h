@@ -55,8 +55,8 @@ typedef enum TPutOperationType
                             X5(TChunkTypeItem,TChunkTypeInvalid,EItemIdentifier,EItemsIdentifier) \
                             X5(TChunkTypeLine,TChunkTypeInvalid,ELineIdentifier,ELinesIdentifier) \
                             X5(TChunkTypeWord,TChunkTypeInvalid,EWordIdentifier,EWordsIdentifier) \
-//                            X5(TChunkTypeRow,TChunkTypeColumn,ERowIdentifier,ERowsIdentifier) \
-//                            X5(TChunkTypeColumn,TChunkTypeRow,EColumnIdentifier,EColumnsIdentifier)
+                            X5(TChunkTypeRow,TChunkTypeColumn,ERowIdentifier,ERowsIdentifier) \
+                            X5(TChunkTypeColumn,TChunkTypeRow,EColumnIdentifier,EColumnsIdentifier)
 
 
 // The chunk types we currently support:
