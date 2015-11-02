@@ -46,7 +46,7 @@ class CForgeParseErrorProcessed : public CForgeParseError
 public:
 	CForgeParseErrorProcessed( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_T_MAX, TForgeErrorCode inErrorCode = EForgeErrorCode_None )
 		: CForgeParseError( inWhatMsg, inLineNum, inOffset, inErrorCode )	{};
-	CForgeParseErrorProcessed( const CForgeParseError& inError ) : CForgeParseError( std::string(inError.what()), mLineNum, mOffset, mErrorCode ) {};
+	CForgeParseErrorProcessed( const CForgeParseError& inError ) : CForgeParseError( std::string(inError.what()), inError.GetLineNum(), inError.GetOffset(), inError.GetErrorCode() ) {};
 };
 
 }
