@@ -283,7 +283,9 @@
 	X1(EColumnsIdentifier,"columns") \
 	X2(EColIdentifier,EColumnIdentifier,"col") \
 	X2(EColsIdentifier,EColumnsIdentifier,"cols") \
-	X1(EBackIdentifier,"back")
+	X1(EBackIdentifier,"back") \
+	X1(EMoveIdentifier,"move") \
+	X1(EAlongIdentifier,"along")
 
 
 typedef enum
