@@ -1457,6 +1457,18 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 		}
 	}
 	
+	#if DEBUG_HOST_ENTITIES
+	std::cout << "Returning node:" << std::endl;
+	if( theNode )
+	{
+		theNode->DebugPrint( std::cout, 1 );
+		std::cout << " [" << theNode->GetLineNum() << "]";
+	}
+	else
+		std::cout << "(null)";
+	std::cout << std::endl;
+	#endif /*DEBUG_HOST_ENTITIES*/
+	
 	return theNode;
 }
 
