@@ -2292,13 +2292,19 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 	// container:
+	std::string			tempName = CVariableEntry::GetNewTempName();
 	size_t				containerLineNum = tokenItty->mLineNum;
 	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
-	CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, true, "GetItemOfListWithKey", containerLineNum );
-	fcall->AddParam( theTarget );
-	fcall->AddParam( theIndex );
 	
-	return fcall;	// TODO: delete stuff on exceptions before this.
+	// put entry <itemNumber> of <container> into temp1
+	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, containerLineNum );
+	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, containerLineNum) );
+	getItemNode->AddParam( theIndex );
+	getItemNode->AddParam( theTarget );
+	currFunction->AddCommand( getItemNode );
+	
+	// return temp1
+	return new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, containerLineNum);	// TODO: delete stuff on exceptions before this.
 }
 
 
