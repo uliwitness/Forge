@@ -253,6 +253,10 @@
 	X1(EMinutesIdentifier,"minutes") \
 	X1(EHourIdentifier,"hour") \
 	X1(EHoursIdentifier,"hours") \
+	X1(EDayIdentifier,"day") \
+	X1(EDaysIdentifier,"days") \
+	X1(EWeekIdentifier,"week") \
+	X1(EWeeksIdentifier,"weeks") \
 	X1(EKilobyteIdentifier,"kilobyte") \
 	X1(EKilobytesIdentifier,"kilobytes") \
 	X1(EMegabyteIdentifier,"megabyte") \
@@ -285,7 +289,8 @@
 	X2(EColsIdentifier,EColumnsIdentifier,"cols") \
 	X1(EBackIdentifier,"back") \
 	X1(EMoveIdentifier,"move") \
-	X1(EAlongIdentifier,"along")
+	X1(EAlongIdentifier,"along") \
+	X1(EScreensIdentifier,"screens")
 
 
 typedef enum
