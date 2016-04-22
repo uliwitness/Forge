@@ -290,7 +290,8 @@
 	X1(EBackIdentifier,"back") \
 	X1(EMoveIdentifier,"move") \
 	X1(EAlongIdentifier,"along") \
-	X1(EScreensIdentifier,"screens")
+	X1(EScreensIdentifier,"screens") \
+	X1(EScreenIdentifier,"screen")
 
 
 typedef enum
