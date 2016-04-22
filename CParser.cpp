@@ -3509,7 +3509,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 				
 				hdlName.append( tokenItty->GetIdentifierText() );
-				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
+				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip handler name.
 				
 				// Now that we know whether it's a function or a handler, store a pointer to it:
 				theTerm = new CFunctionCallNode( &parseTree, false, "vcy_fcn_addr", tokenItty->mLineNum );
