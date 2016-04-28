@@ -25,6 +25,7 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		551E0E091CD2C294008B80E1 /* LEOStringUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */; };
 		5523FE9413426059009D8EF1 /* testfile8.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 558A8D1512BD10C800F514F4 /* testfile8.hc */; };
 		5523FE961342605B009D8EF1 /* testfile9.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55D78A0712BE9E1F00C5D76E /* testfile9.hc */; };
 		5523FE9813426067009D8EF1 /* testfile11.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCECD312C8F11200D76F6B /* testfile11.hc */; };
@@ -142,6 +143,8 @@
 		3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWhileLoopNode.cpp; sourceTree = "<group>"; };
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
+		551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOStringUtilities.c; path = Leonie/common/LEOStringUtilities.c; sourceTree = "<group>"; };
+		551E0E0A1CD2C29C008B80E1 /* LEOStringUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LEOStringUtilities.h; path = Leonie/common/LEOStringUtilities.h; sourceTree = "<group>"; };
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF32CaseTables.h; path = Leonie/generic/UTF32CaseTables.h; sourceTree = "<group>"; };
 		5538246417274659007785D8 /* LEOObjCCallInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOObjCCallInstructions.c; path = Leonie/generic/LEOObjCCallInstructions.c; sourceTree = "<group>"; };
 		5538246517274659007785D8 /* LEOObjCCallInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOObjCCallInstructions.h; path = Leonie/generic/LEOObjCCallInstructions.h; sourceTree = "<group>"; };
@@ -450,6 +453,8 @@
 				55C72BF4127DD30B00CF0F16 /* LEOContextGroup.h */,
 				55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */,
 				55C72BF6127DD30B00CF0F16 /* LEOHandlerID.h */,
+				551E0E0A1CD2C29C008B80E1 /* LEOStringUtilities.h */,
+				551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */,
 				556FA4551718AED200A108E5 /* LEOMsgCommandsGeneric.h */,
 				556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */,
 				55AAC0571710A1BB008441AF /* LEOMsgInstructionsGeneric.h */,
@@ -545,6 +550,7 @@
 				55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */,
 				55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */,
 				55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */,
+				551E0E091CD2C294008B80E1 /* LEOStringUtilities.c in Sources */,
 				55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */,
 				55BF651412D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp in Sources */,
 				55BF655412D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp in Sources */,
