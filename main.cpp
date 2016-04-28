@@ -66,7 +66,8 @@ int main( int argc, char * const argv[] )
 				printParseTree = false,
 				printIndented = false,
 				verbose = false,
-				doOptimize = true;
+				doOptimize = true,
+				printresult = false;
 	
 	int			fnameIdx = 0;
 	for( int x = 1; x < argc; )
@@ -107,6 +108,10 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], "--verbose" ) == 0 )
 			{
 				verbose = true;
+			}
+			else if( strcmp( argv[x], "--printresult" ) == 0 )
+			{
+				printresult = true;
 			}
 			else if( strcmp( argv[x], "--message" ) == 0 )
 			{
@@ -260,6 +265,25 @@ int main( int argc, char * const argv[] )
 				LEORunInContext( theHandler->instructions, ctx );
 				if( ctx->errMsg[0] != 0 )
 					printf("ERROR: %s\n", ctx->errMsg );
+				if( printresult )
+				{
+					if( ctx->stack == ctx->stackEndPtr )
+						printf("WARNING: No result left on stack. Bad code generated?\n");
+					long	numResults = ctx->stackEndPtr -ctx->stack;
+					if( numResults > 1 )
+						printf("WARNING: %ld results left on stack, expected 1. Bad code generated?\n", numResults);
+					if( numResults > 0 )
+					{
+						if( LEOGetValueIsUnset( ctx->stack, ctx ) )
+							printf("Result: --\n");
+						else
+						{
+							char		str[256] = {};
+							const char* theResultAsString = LEOGetValueAsString( ctx->stack, str, sizeof(str), ctx );
+							printf("Result: \"%s\"\n", theResultAsString);
+						}
+					}
+				}
 				
 				LEOContextRelease( ctx );
 			}
