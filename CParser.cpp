@@ -552,6 +552,12 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 
 		size_t		endLineNum = 1;
 		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
+		
+		// Add a "return the result" command so we hand on the return value to whoever called us:
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, endLineNum );
+		theReturnCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, "result", "result", endLineNum) );
+		currFunctionNode->AddCommand( theReturnCommand );
+		
 		currFunctionNode->SetEndLineNum( endLineNum );
 		
 		mFileName = fname;
