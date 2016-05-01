@@ -43,5 +43,19 @@ on startup
 		return ""
 	end if
 
+	put "this:ha"&return&"that:ho"&return&"more:hoo" into myArray
+	set that of myArray to "YEAH!"
+	if myArray is not "this:ha"&return&"that:YEAH!"&return&"more:hoo" then
+		put "*** BUILD FAILED ***" &newline
+		return ""
+	end if
+
+	put "this:ha"&lineFeed&"that:ho"&lineFeed&"more:hoo" into myArray
+	set that of myArray to "YEAH!"
+	if myArray is not "this:ha"&lineFeed&"that:YEAH!"&lineFeed&"more:hoo" then
+		put "*** BUILD FAILED ***" &newline
+		return ""
+	end if
+
 	put "Tests all ran successfully." &newline
 end startup
