@@ -202,8 +202,8 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 		{
 			if( handler->GetLineNum() > 0 )
 				lineIndentTable->push_back( CLineNumEntry(handler->GetLineNum(), 0, handler->GetUserHandlerName(), handler->IsCommand() ) );
-			if( handler->GetCommandsLineNum() > 0 )
-				lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1 ) );
+			if( handler->GetCommandsLineNum() > 0 && handler->GetCommandsLineNum() != handler->GetEndLineNum() )
+				lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1 ) );	// Don't indent an empty handler's last line.
 			if( handler->GetEndLineNum() > 0 )
 				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1, "", false) );
 		}

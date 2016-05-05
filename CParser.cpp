@@ -718,14 +718,25 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
 	
+	bool	isFirstEmptyLine = true;
+	size_t	firstEmptyLineLine = 0;
 	while( tokenItty->IsIdentifier( ENewlineOperator ) )
+	{
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		if( isFirstEmptyLine )
+		{
+			firstEmptyLineLine = tokenItty->mLineNum;
+			isFirstEmptyLine = false;
+		}
+	}
 	
 	try
 	{
 		size_t		endLineNum = fcnLineNum;
 		currFunctionNode->SetCommandsLineNum( tokenItty->mLineNum );
 		ParseFunctionBody( userHandlerName, parseTree, currFunctionNode, tokenItty, tokens, &endLineNum );
+		if( currFunctionNode->GetCommandsLineNum() == endLineNum )	// Function body is empty? Make the first empty line our "commands" line.
+			currFunctionNode->SetCommandsLineNum( firstEmptyLineLine );
 		currFunctionNode->SetEndLineNum( endLineNum );
 	}
 	catch( const CForgeParseError& err )
