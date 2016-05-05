@@ -211,8 +211,11 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 		if( loop )
 		{
 			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 1, "", false) );
-			if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1, "", false) );
-			if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1, "", false) );
+			if( loop->GetCommandsLineNum() > 0 && loop->GetCommandsLineNum() != loop->GetEndRepeatLineNum() )
+			{
+				if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1, "", false) );
+				if( loop->GetEndRepeatLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetEndRepeatLineNum(), -1, "", false) );
+			}
 		}
 		CIfNode*	conditional = dynamic_cast<CIfNode*>(currNode);
 		if( conditional )

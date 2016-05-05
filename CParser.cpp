@@ -2016,6 +2016,18 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 		
 		whileLoop->SetCondition( conditionNode );
 		
+		bool	isFirstEmptyLine = true;
+		size_t	firstEmptyLineLine = 0;
+		while( tokenItty->IsIdentifier( ENewlineOperator ) )
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			if( isFirstEmptyLine )
+			{
+				firstEmptyLineLine = tokenItty->mLineNum;
+				isFirstEmptyLine = false;
+			}
+		}
+		
 		// Commands:
 		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
@@ -2025,6 +2037,8 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		tokenItty->ExpectIdentifier( mFileName, ERepeatIdentifier, EEndIdentifier );
+		if( whileLoop->GetCommandsLineNum() == tokenItty->mLineNum )	// Function body is empty? Make the first empty line our "commands" line.
+			whileLoop->SetCommandsLineNum( firstEmptyLineLine );
 		whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
