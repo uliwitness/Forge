@@ -47,10 +47,11 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded( void )
 }
 
 
-char						gLEOLastErrorString[1024] = { 0 };
-size_t						gLEOLastErrorOffset = SIZE_T_MAX;
-size_t						gLEOLastErrorLineNum = SIZE_T_MAX;
-std::vector<CMessageEntry>	gMessages;
+char							gLEOLastErrorString[1024] = { 0 };
+size_t							gLEOLastErrorOffset = SIZE_T_MAX;
+size_t							gLEOLastErrorLineNum = SIZE_T_MAX;
+std::vector<CMessageEntry>		gMessages;
+std::vector<CHandlerNotesEntry>	gHandlerNotes;
 
 
 extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCode, size_t codeLength, uint16_t inFileID )
@@ -70,6 +71,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 		parser.Parse( LEOFileNameForFileID( inFileID ), tokens, *parseTree, inCode );
 		
 		gMessages.assign( parser.GetMessages().begin(), parser.GetMessages().end() );
+		gHandlerNotes.assign( parser.GetHandlerNotes().begin(), parser.GetHandlerNotes().end() );
 		
 		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
@@ -605,6 +607,19 @@ extern "C" void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const c
 	
 	*outErrMsg = gMessages[inIndex].mMessage.c_str();
 	*outLineNum = gMessages[inIndex].mLineNum;
-	*outLineNum = gMessages[inIndex].mOffset;
+	*outOffset = gMessages[inIndex].mOffset;
+}
+
+
+extern "C" void	LEOParserGetHandlerNoteAtIndex( size_t inIndex, const char** outHandlerName, const char** outNote )
+{
+	if( inIndex >= gHandlerNotes.size() )
+	{
+		*outHandlerName = NULL;
+		return;
+	}
+	
+	*outHandlerName = gHandlerNotes[inIndex].mHandlerName.c_str();
+	*outNote = gHandlerNotes[inIndex].mNotes.c_str();
 }
 

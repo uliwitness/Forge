@@ -44,34 +44,34 @@ namespace Carlson
 	//! An entry in our operator look-up table.
 	struct TOperatorEntry
 	{
-		TIdentifierSubtype		mType;				// The identifier for this operator.
-		TIdentifierSubtype		mSecondType;		// The second identifier if this operator consists of two tokens.
-		int						mPrecedence;		// Precedence, with higher number taking precedence over lower numbers (i.e. * > +).
-		LEOInstructionID		mInstructionID;		// Name of function to call for this operator.
-		TIdentifierSubtype		mTypeToReturn;		// The identifier to return for this operator.
+		TIdentifierSubtype		mType;				//!< The identifier for this operator.
+		TIdentifierSubtype		mSecondType;		//!< The second identifier if this operator consists of two tokens.
+		int						mPrecedence;		//!< Precedence, with higher number taking precedence over lower numbers (i.e. * > +).
+		LEOInstructionID		mInstructionID;		//!< Name of function to call for this operator.
+		TIdentifierSubtype		mTypeToReturn;		//!< The identifier to return for this operator.
 	};
 	
 	//! An entry in our unary operator look-up table.
 	struct TUnaryOperatorEntry
 	{
-		TIdentifierSubtype		mType;				// The identifier for this operator.
-		LEOInstructionID		mInstructionID;		// Instruction that implements this operator.
+		TIdentifierSubtype		mType;				//!< The identifier for this operator.
+		LEOInstructionID		mInstructionID;		//!< Instruction that implements this operator.
 	};
 	
 	//! An entry in our chunk type look-up table.
 	struct TChunkTypeEntry
 	{
-		TIdentifierSubtype		mType;						// The identifier for this chunk.
-		TIdentifierSubtype		mPluralType;				// The identifier for this chunk when we're looking for its plural.
-		TChunkType				mChunkTypeConstant;			// Constant to pass to get a range of this chunk type.
+		TIdentifierSubtype		mType;						//!< The identifier for this chunk.
+		TIdentifierSubtype		mPluralType;				//!< The identifier for this chunk when we're looking for its plural.
+		TChunkType				mChunkTypeConstant;			//!< Constant to pass to get a range of this chunk type.
 	};
 	
 	//! An entry in our constant look-up table.
 	#define MAX_CONSTANT_IDENTS		3
 	struct TConstantEntry
 	{
-		TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	// The identifier for this constant.
-		CValueNode*				mValue;	// TVariant holding this constant.
+		TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
+		CValueNode*				mValue;						//!< Actual value this constant evaluates to.
 	};
 	
 	//! An entry in our ObjC -> Variant or Variant -> ObjC type conversion mapping tables. (no longer used, needs to be ported from old source code generator)
@@ -91,9 +91,9 @@ namespace Carlson
 		CObjCMethodEntry( std::string& hdr, std::string& frm, std::string& sig ) : mHeaderName(hdr), mFrameworkName(frm), mMethodSignature(sig) {};
 		
 	public:
-		std::string				mHeaderName;		// Name of framework umbrella header that declares this method as it's specified for an include statement.
-		std::string				mFrameworkName;		// Name of framework as it's passed to -framework command line option.
-		std::string				mMethodSignature;	// The return and parameter types of the method.
+		std::string				mHeaderName;		//!< Name of framework umbrella header that declares this method as it's specified for an include statement.
+		std::string				mFrameworkName;		//!< Name of framework as it's passed to -framework command line option.
+		std::string				mMethodSignature;	//!< The return and parameter types of the method.
 	};
 	
 	//! Warning/error that the script editor can show in-line or in some asynchronous place.
@@ -108,6 +108,17 @@ namespace Carlson
 		
 		CMessageEntry( std::string inMessage, std::string inFileName, size_t inLineNum, size_t inOffset = SIZE_T_MAX, long inErrorCode = 0 )
 			: mMessage(inMessage), mFileName(inFileName), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
+	};
+	
+	
+	//! Documentation comments found in the script so you can show them in script editor or a help viewer:
+	class CHandlerNotesEntry
+	{
+	public:
+		std::string		mHandlerName;	//!< Name of the handler to which these notes apply.
+		std::string		mNotes;			//!< Actual help text the author of the handler provided.
+		
+		CHandlerNotesEntry( std::string inHandlerName, std::string inNotes ) : mHandlerName(inHandlerName), mNotes(inNotes) {}
 	};
 	
 	// -------------------------------------------------------------------------
@@ -126,6 +137,8 @@ namespace Carlson
 		const char*					mFileName;					//!< Name of file being parsed right now.
 		const char*					mSupportFolderPath;			//!< Path to folder with support files.
 		std::vector<CMessageEntry>	mMessages;					//!< Errors and warnings.
+		std::vector<CHandlerNotesEntry>	mHandlerNotes;			//!< List of documentation comments found in the script.
+		std::string					mCurrentNotes;				//!< The most recent "notes" text (documentation "comment") we encountered, so a handler definition can snarf it up and associate it with its handler name. Only valid while parsing.
 		
 	protected:
 		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		//!< Populated from frameworkheaders.hhc file.
@@ -247,7 +260,8 @@ namespace Carlson
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
 		void		LoadNativeHeaders();
 		
-		const std::vector<CMessageEntry>&	GetMessages()	{ return mMessages; };
+		const std::vector<CMessageEntry>&		GetMessages()		{ return mMessages; };
+		const std::vector<CHandlerNotesEntry>&	GetHandlerNotes()	{ return mHandlerNotes; };
 		
 	// statics:
 		static void		LoadNativeHeadersFromFile( const char* filepath );	//!< Used to load OS-native API signatures and names from the frameworkheaders.hhc file.
