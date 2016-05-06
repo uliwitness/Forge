@@ -2944,7 +2944,7 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 	operandA = terms.back();
 	terms.pop_back();
 	
-	operandA->DebugPrint( std::cout, 0 );
+//	operandA->DebugPrint( std::cout, 0 );
 	
 	return operandA;
 }
