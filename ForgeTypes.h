@@ -291,7 +291,13 @@
 	X1(EMoveIdentifier,"move") \
 	X1(EAlongIdentifier,"along") \
 	X1(EScreensIdentifier,"screens") \
-	X1(EScreenIdentifier,"screen")
+	X1(EScreenIdentifier,"screen") \
+	X1(EIIdentifier,"i") \
+	X1(EHaveIdentifier,"have") \
+	X1(EHasIdentifier,"has") \
+	X1(EAmongIdentifier,"among") \
+	X1(EIsAmongOperator,"is among") \
+	X1(EHasPropertyOperator,"has property")
 
 
 typedef enum

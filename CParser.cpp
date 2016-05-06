@@ -90,6 +90,7 @@ static TOperatorEntry	sOperators[] =
 {
 	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, AND_INSTR, EAndIdentifier },
 	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, OR_INSTR, EOrIdentifier },
+	{ EHasIdentifier, EPropertyIdentifier, 150, HAS_PROPERTY_INSTR, EHasPropertyOperator },
 	{ ELessThanOperator, EGreaterThanOperator, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
 	{ ELessThanOperator, EEqualsOperator, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
 	{ ELessThanEqualOperator, ELastIdentifier_Sentinel, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
@@ -100,6 +101,7 @@ static TOperatorEntry	sOperators[] =
 	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
 	{ EIsIdentifier, ENotIdentifier, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
 	{ ENotEqualOperator, ELastIdentifier_Sentinel, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
+//	{ EIsIdentifier, EAmongIdentifier, 200, IS_AMONG_OPERATOR_INSTR, EIsAmongOperator },
 	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
 	{ EAmpersandOperator, EAmpersandOperator, 300, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
 	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
@@ -135,6 +137,16 @@ static TBuiltInFunctionEntry	sDefaultBuiltInFunctions[] =
 	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR, BACK_OF_STACK, 0 },
 	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR, 0, 0 },
 	{ ELastIdentifier_Sentinel, NULL, 0, 0 }
+};
+
+static THostCommandEntry	sDefaultHostFunctions[] =
+{
+	{
+		ELastIdentifier_Sentinel, INVALID_INSTR2, 0, 0, '\0',
+		{
+			{ EHostParam_Sentinel, ELastIdentifier_Sentinel, EHostParameterOptional, INVALID_INSTR2, 0, 0, '\0', '\0' },
+		}
+	}
 };
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
@@ -249,6 +261,8 @@ CParser::CParser()
 		sGlobalProperties = sDefaultGlobalProperties;
 	if( !sBuiltInFunctions )
 		sBuiltInFunctions = sDefaultBuiltInFunctions;
+	if( !sHostFunctions )
+		sHostFunctions = sDefaultHostFunctions;
 }
 
 
@@ -416,6 +430,9 @@ CParser::CParser()
 	size_t		numOldEntries = 0,
 				numNewEntries = 0;
 	
+	if( !sHostFunctions )
+		sHostFunctions = sDefaultHostFunctions;
+	
 	if( sHostFunctions )
 	{
 		for( size_t x = 0; sHostFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
@@ -427,12 +444,13 @@ CParser::CParser()
 	}
 	
 	THostCommandEntry*	newTable = NULL;
-	if( sHostFunctions == NULL )
+	if( sHostFunctions == sDefaultHostFunctions )
 	{
 		newTable = (THostCommandEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(THostCommandEntry) );
 		if( !newTable )
 			throw std::runtime_error( "Couldn't resize list of host commands." );
-		memmove( newTable, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
+		memmove( newTable, sHostFunctions, numOldEntries *sizeof(THostCommandEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(THostCommandEntry) );
 	}
 	else
 	{
@@ -1294,7 +1312,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											hostCommand->AddParam( new CStringValueNode( &parseTree, tokenItty->GetShortDescription(), tokenItty->mLineNum ) );
 										}
 										else
-											HE_PRINT("\t\tInvisibble identifier accepted.\n");
+											HE_PRINT("\t\tInvisible identifier accepted.\n");
 									}
 									else
 									{
