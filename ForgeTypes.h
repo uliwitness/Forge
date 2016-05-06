@@ -297,7 +297,9 @@
 	X1(EHasIdentifier,"has") \
 	X1(EAmongIdentifier,"among") \
 	X1(EIsAmongOperator,"is among") \
-	X1(EHasPropertyOperator,"has property")
+	X1(EHasPropertyOperator,"has property") \
+	X1(EWorkingIdentifier,"working") \
+	X1(EEffectiveIdentifier,"effective")
 
 
 typedef enum
@@ -338,11 +340,30 @@ typedef enum
 #define LEO_MAX_HOST_PARAMS		15
 
 
+//! An entry in our operator look-up table.
+struct TOperatorEntry
+{
+	TIdentifierSubtype		mType;				//!< The identifier for this operator.
+	TIdentifierSubtype		mSecondType;		//!< The second identifier if this operator consists of two tokens.
+	int						mPrecedence;		//!< Precedence, with higher number taking precedence over lower numbers (i.e. * > +).
+	LEOInstructionID		mInstructionID;		//!< Name of function to call for this operator.
+	TIdentifierSubtype		mTypeToReturn;		//!< The identifier to return for this operator.
+};
+
+
+//! An entry in our unary operator look-up table.
+struct TUnaryOperatorEntry
+{
+	TIdentifierSubtype		mType;				//!< The identifier for this operator.
+	LEOInstructionID		mInstructionID;		//!< Instruction that implements this operator.
+};
+
+
 //! An entry in our global property look-up table:
 struct TGlobalPropertyEntry
 {
 	TIdentifierSubtype		mType;					//! The identifier for this property (i.e. its name).
-	TIdentifierSubtype		mPrefixType;			//! One of ELongIdentifier, EShortIdentifier or EAbbreviatedIdentifier for two-word properties. Otherwise, ELastIdentifier_Sentinel.
+	TIdentifierSubtype		mPrefixType;			//! One of ELongIdentifier, EShortIdentifier, EAbbreviatedIdentifier, EWorkingIdentifier or EEffectiveIdentifier for two-word properties. Otherwise, ELastIdentifier_Sentinel.
 	LEOInstructionID		mSetterInstructionID;	//! Instruction for changing this property.
 	LEOInstructionID		mGetterInstructionID;	//! Instruction for retrieving this property's value.
 };

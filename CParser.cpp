@@ -86,37 +86,35 @@ static CFunctionDefinitionNode*			sLastErrorFunction = NULL;
 #pragma mark [Operator lookup table]
 // LOOKUP TABLES:
 // Operator token(s), precedence and instruction function name:
-static TOperatorEntry	sOperators[] =
+static TOperatorEntry	sDefaultOperators[] =
 {
-	{ EAndIdentifier, ELastIdentifier_Sentinel, 100, AND_INSTR, EAndIdentifier },
-	{ EOrIdentifier, ELastIdentifier_Sentinel, 100, OR_INSTR, EOrIdentifier },
-	{ EHasIdentifier, EPropertyIdentifier, 150, HAS_PROPERTY_INSTR, EHasPropertyOperator },
-	{ ELessThanOperator, EGreaterThanOperator, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
-	{ ELessThanOperator, EEqualsOperator, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
-	{ ELessThanEqualOperator, ELastIdentifier_Sentinel, 200, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
-	{ ELessThanOperator, ELastIdentifier_Sentinel, 200, LESS_THAN_OPERATOR_INSTR, ELessThanOperator },
-	{ EGreaterThanOperator, EEqualsOperator, 200, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualOperator },
-	{ EGreaterThanEqualOperator, ELastIdentifier_Sentinel, 200, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualOperator },
-	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 200, GREATER_THAN_OPERATOR_INSTR, EGreaterThanOperator },
-	{ EEqualsOperator, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
-	{ EIsIdentifier, ENotIdentifier, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
-	{ ENotEqualOperator, ELastIdentifier_Sentinel, 200, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
-//	{ EIsIdentifier, EAmongIdentifier, 200, IS_AMONG_OPERATOR_INSTR, EIsAmongOperator },
-	{ EIsIdentifier, ELastIdentifier_Sentinel, 200, EQUAL_OPERATOR_INSTR, EEqualsOperator },
-	{ EAmpersandOperator, EAmpersandOperator, 300, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
-	{ EAmpersandOperator, ELastIdentifier_Sentinel, 300, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
-	{ EPlusOperator, ELastIdentifier_Sentinel, 500, ADD_OPERATOR_INSTR, EPlusOperator },
-	{ EMinusOperator, ELastIdentifier_Sentinel, 500, SUBTRACT_OPERATOR_INSTR, EMinusOperator },
-	{ EMultiplyOperator, ELastIdentifier_Sentinel, 1000, MULTIPLY_OPERATOR_INSTR, EMultiplyOperator },
-	{ EDivideOperator, ELastIdentifier_Sentinel, 1000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
-	{ EDivideSymbolOperator, ELastIdentifier_Sentinel, 1000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
-	{ EModIdentifier, ELastIdentifier_Sentinel, 1000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
-	{ EModuloIdentifier, ELastIdentifier_Sentinel, 1000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
-	{ EExponentOperator, ELastIdentifier_Sentinel, 1100, POWER_OPERATOR_INSTR, EExponentOperator },
+	{ EAndIdentifier, ELastIdentifier_Sentinel, 1000, AND_INSTR, EAndIdentifier },
+	{ EOrIdentifier, ELastIdentifier_Sentinel, 1000, OR_INSTR, EOrIdentifier },
+	{ ELessThanOperator, EGreaterThanOperator, 2000, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
+	{ ELessThanOperator, EEqualsOperator, 2000, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
+	{ ELessThanEqualOperator, ELastIdentifier_Sentinel, 2000, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
+	{ ELessThanOperator, ELastIdentifier_Sentinel, 2000, LESS_THAN_OPERATOR_INSTR, ELessThanOperator },
+	{ EGreaterThanOperator, EEqualsOperator, 2000, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualOperator },
+	{ EGreaterThanEqualOperator, ELastIdentifier_Sentinel, 2000, GREATER_THAN_EQUAL_OPERATOR_INSTR, EGreaterThanEqualOperator },
+	{ EGreaterThanOperator, ELastIdentifier_Sentinel, 2000, GREATER_THAN_OPERATOR_INSTR, EGreaterThanOperator },
+	{ EEqualsOperator, ELastIdentifier_Sentinel, 2000, EQUAL_OPERATOR_INSTR, EEqualsOperator },
+	{ EIsIdentifier, ENotIdentifier, 2000, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
+	{ ENotEqualOperator, ELastIdentifier_Sentinel, 2000, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
+	{ EIsIdentifier, ELastIdentifier_Sentinel, 2000, EQUAL_OPERATOR_INSTR, EEqualsOperator },
+	{ EAmpersandOperator, EAmpersandOperator, 3000, CONCATENATE_VALUES_WITH_SPACE_INSTR, EDoubleAmpersandPseudoOperator },
+	{ EAmpersandOperator, ELastIdentifier_Sentinel, 3000, CONCATENATE_VALUES_INSTR, EAmpersandOperator },
+	{ EPlusOperator, ELastIdentifier_Sentinel, 5000, ADD_OPERATOR_INSTR, EPlusOperator },
+	{ EMinusOperator, ELastIdentifier_Sentinel, 5000, SUBTRACT_OPERATOR_INSTR, EMinusOperator },
+	{ EMultiplyOperator, ELastIdentifier_Sentinel, 8000, MULTIPLY_OPERATOR_INSTR, EMultiplyOperator },
+	{ EDivideOperator, ELastIdentifier_Sentinel, 8000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
+	{ EDivideSymbolOperator, ELastIdentifier_Sentinel, 8000, DIVIDE_OPERATOR_INSTR, EDivideOperator },
+	{ EModIdentifier, ELastIdentifier_Sentinel, 8000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
+	{ EModuloIdentifier, ELastIdentifier_Sentinel, 8000, MODULO_OPERATOR_INSTR, EModuloIdentifier },
+	{ EExponentOperator, ELastIdentifier_Sentinel, 9000, POWER_OPERATOR_INSTR, EExponentOperator },
 	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, 0, INVALID_INSTR, ELastIdentifier_Sentinel }
 };
 
-static TUnaryOperatorEntry	sUnaryOperators[] =
+static TUnaryOperatorEntry	sDefaultUnaryOperators[] =
 {
 	{ ENotIdentifier, NEGATE_BOOL_INSTR },
 	{ EMinusOperator, NEGATE_NUMBER_INSTR },
@@ -148,6 +146,10 @@ static THostCommandEntry	sDefaultHostFunctions[] =
 		}
 	}
 };
+
+static TOperatorEntry*			sOperators = NULL;
+
+static TUnaryOperatorEntry*		sUnaryOperators = NULL;
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
@@ -257,12 +259,110 @@ const std::string CVariableEntry::GetNewTempName()
 
 CParser::CParser()
 {
+	if( !sOperators )
+		sOperators = sDefaultOperators;
+	if( !sUnaryOperators )
+		sUnaryOperators = sDefaultUnaryOperators;
 	if( !sGlobalProperties )
 		sGlobalProperties = sDefaultGlobalProperties;
 	if( !sBuiltInFunctions )
 		sBuiltInFunctions = sDefaultBuiltInFunctions;
 	if( !sHostFunctions )
 		sHostFunctions = sDefaultHostFunctions;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddOperatorsAndOffsetInstructions:
+//		Add additional operators to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, size_t firstOperatorInstruction )
+{
+	if( !sOperators )
+		sOperators = sDefaultOperators;
+	
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	for( size_t x = 0; sOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+		numOldEntries++;
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+		numNewEntries++;
+	
+	TOperatorEntry*	newTable = NULL;
+	if( sOperators == sDefaultOperators )
+	{
+		newTable = (TOperatorEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of built-in functions." );
+		memmove( newTable, sOperators, numOldEntries *sizeof(TOperatorEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TOperatorEntry) );
+	}
+	else
+	{
+		newTable = (TOperatorEntry*) realloc( sOperators, (numOldEntries +numNewEntries +1) * sizeof(TOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TOperatorEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		if( newTable[x].mInstructionID == INVALID_INSTR2 )
+			newTable[x].mInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mInstructionID += firstOperatorInstruction;
+	}
+	
+	sOperators = newTable;
+}
+// -----------------------------------------------------------------------------
+//	AddUnaryOperatorsAndOffsetInstructions:
+//		Add additional unary operators to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddUnaryOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+{
+	if( !sUnaryOperators )
+		sUnaryOperators = sDefaultUnaryOperators;
+	
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	for( size_t x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+		numOldEntries++;
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+		numNewEntries++;
+	
+	TUnaryOperatorEntry*	newTable = NULL;
+	if( sUnaryOperators == sDefaultUnaryOperators )
+	{
+		newTable = (TUnaryOperatorEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TUnaryOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of built-in functions." );
+		memmove( newTable, sUnaryOperators, numOldEntries *sizeof(TUnaryOperatorEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TUnaryOperatorEntry) );
+	}
+	else
+	{
+		newTable = (TUnaryOperatorEntry*) realloc( sUnaryOperators, (numOldEntries +numNewEntries +1) * sizeof(TUnaryOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TUnaryOperatorEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		if( newTable[x].mInstructionID == INVALID_INSTR2 )
+			newTable[x].mInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mInstructionID += firstUnaryOperatorInstruction;
+	}
+	
+	sUnaryOperators = newTable;
 }
 
 
@@ -2408,7 +2508,8 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		// Look for long/abbreviated/short style qualifier:
 		std::string		propName;
 		if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) || tokenItty->IsIdentifier( EWorkingIdentifier )
+			|| tokenItty->IsIdentifier( EEffectiveIdentifier ) )
 		{
 			propName = tokenItty->GetIdentifierText();
 			propName.append( 1, ' ' );
@@ -2485,7 +2586,8 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		
 		// Is it a qualified property?
 		if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+			|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) || tokenItty->IsIdentifier( EWorkingIdentifier )
+			|| tokenItty->IsIdentifier( EEffectiveIdentifier ) )
 		{
 			propName = tokenItty->GetIdentifierText();
 			propName.append( 1, ' ' );
@@ -2841,6 +2943,8 @@ CValueNode*	CParser::CollapseExpressionStack( CParseTree& parseTree, std::deque<
 	
 	operandA = terms.back();
 	terms.pop_back();
+	
+	operandA->DebugPrint( std::cout, 0 );
 	
 	return operandA;
 }
@@ -3675,7 +3779,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					
 					// Is it a qualified property?
 					if( tokenItty->IsIdentifier( ELongIdentifier ) || tokenItty->IsIdentifier( EShortIdentifier )
-						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) )
+						|| tokenItty->IsIdentifier( EAbbreviatedIdentifier ) || tokenItty->IsIdentifier( EWorkingIdentifier )
+						|| tokenItty->IsIdentifier( EEffectiveIdentifier ) )
 					{
 						propName = tokenItty->GetIdentifierText();
 						propName.append( 1, ' ' );

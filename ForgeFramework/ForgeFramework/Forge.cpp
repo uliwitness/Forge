@@ -456,6 +456,60 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 }
 
 
+extern "C" void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, size_t firstOperatorInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
+	
+	try
+	{
+		CParser::AddOperatorsAndOffsetInstructions( inEntries, firstOperatorInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
+extern "C" void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+{
+	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
+	
+	try
+	{
+		CParser::AddUnaryOperatorsAndOffsetInstructions( inEntries, firstUnaryOperatorInstruction );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
 extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;

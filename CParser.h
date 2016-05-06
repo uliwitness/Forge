@@ -41,23 +41,6 @@ namespace Carlson
 	class CCodeBlockNodeBase;
 	class CFunctionCallNode;
 	
-	//! An entry in our operator look-up table.
-	struct TOperatorEntry
-	{
-		TIdentifierSubtype		mType;				//!< The identifier for this operator.
-		TIdentifierSubtype		mSecondType;		//!< The second identifier if this operator consists of two tokens.
-		int						mPrecedence;		//!< Precedence, with higher number taking precedence over lower numbers (i.e. * > +).
-		LEOInstructionID		mInstructionID;		//!< Name of function to call for this operator.
-		TIdentifierSubtype		mTypeToReturn;		//!< The identifier to return for this operator.
-	};
-	
-	//! An entry in our unary operator look-up table.
-	struct TUnaryOperatorEntry
-	{
-		TIdentifierSubtype		mType;				//!< The identifier for this operator.
-		LEOInstructionID		mInstructionID;		//!< Instruction that implements this operator.
-	};
-	
 	//! An entry in our chunk type look-up table.
 	struct TChunkTypeEntry
 	{
@@ -266,6 +249,8 @@ namespace Carlson
 	// statics:
 		static void		LoadNativeHeadersFromFile( const char* filepath );	//!< Used to load OS-native API signatures and names from the frameworkheaders.hhc file.
 		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );	//!< Callback to be invoked when the user actually triggers execution of the first OS-native API. Allows lazy-loading some parts of the system headers.
+		static void		AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, size_t firstOperatorInstruction );
+		static void		AddUnaryOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction );
 		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstBuiltInFunctionInstruction );	//!< Register functions that take no params and can be called as "foo()" or "the foo" and map them to a bunch of instructions previously registered.
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
