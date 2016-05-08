@@ -299,7 +299,9 @@
 	X1(EIsAmongOperator,"is among") \
 	X1(EHasPropertyOperator,"has property") \
 	X1(EWorkingIdentifier,"working") \
-	X1(EEffectiveIdentifier,"effective")
+	X1(EEffectiveIdentifier,"effective") \
+	X1(EMarkIdentifier,"mark") \
+	X1(EUnmarkIdentifier,"unmark")
 
 
 typedef enum
