@@ -140,7 +140,7 @@ static TBuiltInFunctionEntry	sDefaultBuiltInFunctions[] =
 static THostCommandEntry	sDefaultHostFunctions[] =
 {
 	{
-		ELastIdentifier_Sentinel, INVALID_INSTR2, 0, 0, '\0',
+		ELastIdentifier_Sentinel, INVALID_INSTR2, 0, 0, '\0', '\0',
 		{
 			{ EHostParam_Sentinel, ELastIdentifier_Sentinel, EHostParameterOptional, INVALID_INSTR2, 0, 0, '\0', '\0' },
 		}
@@ -1281,11 +1281,10 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				identifiersToBacktrack++;
 				
-				uint8_t					currMode = '\0';
-				THostCommandEntry*		cmd = inHostTable + commandIdx;
-				THostParameterEntry*	par = cmd->mParam;
-				COperatorNode*			hostCommand = new COperatorNode( &parseTree, cmd->mInstructionID, tokenItty->mLineNum );
-				hostCommand->SetInstructionParams( cmd->mInstructionParam1, cmd->mInstructionParam2 );
+				uint8_t					currMode = currCmd->mInitialMode;
+				THostParameterEntry*	par = currCmd->mParam;
+				COperatorNode*			hostCommand = new COperatorNode( &parseTree, currCmd->mInstructionID, tokenItty->mLineNum );
+				hostCommand->SetInstructionParams( currCmd->mInstructionParam1, currCmd->mInstructionParam2 );
 				theNode = hostCommand;
 				bool	abortThisCommand = false;
 				
@@ -2567,6 +2566,9 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inEndToken )
 {
+	if( tokenItty == tokens.end() )
+		return nullptr;
+	
 	// Try to find chunk type that matches:
 	CValueNode*	container = NULL;
 	TChunkType	typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->mSubType );

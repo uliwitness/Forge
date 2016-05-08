@@ -403,6 +403,7 @@ struct THostCommandEntry
 	LEOInstructionID			mInstructionID;					//! The instruction to execute after pushing this command's params & param count on the stack.
 	uint16_t					mInstructionParam1;				//! These parameters will be assigned to the instruction.
 	uint32_t					mInstructionParam2;				//! These parameters will be assigned to the instruction.
+	char						mInitialMode;					//! The mModeToSet that the parser will start out with. Use '\0' when in doubt.
 	char						mTerminalMode;					//! If not 0, this is the mModeToSet that must have been set for this by one of the parameters to be considered a successful match.
 	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	//! These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
 };
