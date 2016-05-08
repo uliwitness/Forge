@@ -618,6 +618,60 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 }
 
 
+extern "C" void	LEOAddStringConstants( struct TStringConstantEntry* inEntries )
+{
+	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
+	
+	try
+	{
+		CParser::AddStringConstants( inEntries );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
+extern "C" void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries )
+{
+	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
+	
+	try
+	{
+		CParser::AddNumberConstants( inEntries );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
 extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 {
 	gLEOLastErrorString[0] = 0;

@@ -255,5 +255,7 @@ namespace Carlson
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+		static void		AddStringConstants( TStringConstantEntry* inEntries );
+		static void		AddNumberConstants( TNumberConstantEntry* inEntries );
 	};
 }

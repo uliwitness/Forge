@@ -228,6 +228,21 @@ void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntrie
 	If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 
+
+/*!
+	Add one or more string constants to the table of Forge's built-in constants.
+	@seealso //leo_ref/c/func/LEOAddNumberConstants	LEOAddNumberConstants
+*/
+void	LEOAddStringConstants( struct TStringConstantEntry* inEntries );
+
+
+/*!
+	Add one or more numeric constants to the table of Forge's built-in constants.
+	@seealso //leo_ref/c/func/LEOAddStringConstants	LEOAddStringConstants
+*/
+void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries );
+
+
 /*! Load syntax for 'native calls' (i.e. native operating system APIs as you would call them from C, Objective C, C# or Pascal) from the specified .hhc header file, so the functions and methods in it become available to the parser as if they were handlers (just that they can return pointers and you might have to manage memory handed into or returned from them).
 	@seealso //leo_ref/c/func/LEOSetFirstNativeCallCallback	LEOSetFirstNativeCallCallback
 */

@@ -405,6 +405,20 @@ struct THostCommandEntry
 };
 
 
+#define MAX_CONSTANT_IDENTS		3
+struct TStringConstantEntry
+{
+	TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
+	const char*				mValue;						//!< Actual string this constant evaluates to.
+};
+
+
+struct TNumberConstantEntry
+{
+	TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
+	LEONumber				mValue;						//!< Actual number this constant evaluates to.
+};
+
 
 typedef void	(*LEOFirstNativeCallCallbackPtr)( void );
 

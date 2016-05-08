@@ -180,7 +180,7 @@ static TChunkTypeEntry	sChunkTypes[TChunkType_Count] =
 
 #pragma mark [Constant lookup table]
 // Constant identifier and actual code to generate the value:
-struct TConstantEntry	sConstants[] =
+struct TConstantEntry	sDefaultConstants[] =
 {
 	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_T_MAX ) },
 	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_T_MAX ) },
@@ -196,35 +196,11 @@ struct TConstantEntry	sConstants[] =
 	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ) },
 	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ) },
 	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ) },
-	{ { EBarnIdentifier, EDoorIdentifier, EOpenIdentifier }, new CStringValueNode( NULL, std::string("barn door open"), SIZE_T_MAX ) },
-	{ { EBarnIdentifier, EDoorIdentifier, ECloseIdentifier }, new CStringValueNode( NULL, std::string("barn door close"), SIZE_T_MAX ) },
-	{ { EIrisIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris open"), SIZE_T_MAX ) },
-	{ { EIrisIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("iris close"), SIZE_T_MAX ) },
-	{ { EPushIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push up"), SIZE_T_MAX ) },
-	{ { EPushIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push down"), SIZE_T_MAX ) },
-	{ { EPushIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push left"), SIZE_T_MAX ) },
-	{ { EPushIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("push right"), SIZE_T_MAX ) },
-	{ { EScrollIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll up"), SIZE_T_MAX ) },
-	{ { EScrollIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll down"), SIZE_T_MAX ) },
-	{ { EScrollIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll left"), SIZE_T_MAX ) },
-	{ { EScrollIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("scroll right"), SIZE_T_MAX ) },
-	{ { EShrinkIdentifier, EToIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("shrink to top"), SIZE_T_MAX ) },
-	{ { EShrinkIdentifier, EToIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("shrink to center"), SIZE_T_MAX ) },
-	{ { EShrinkIdentifier, EToIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("shrink to bottom"), SIZE_T_MAX ) },
-	{ { EStretchIdentifier, EFromIdentifier, ETopIdentifier }, new CStringValueNode( NULL, std::string("stretch from top"), SIZE_T_MAX ) },
-	{ { EStretchIdentifier, EFromIdentifier, ECenterIdentifier }, new CStringValueNode( NULL, std::string("stretch from center"), SIZE_T_MAX ) },
-	{ { EStretchIdentifier, EFromIdentifier, EBottomIdentifier }, new CStringValueNode( NULL, std::string("stretch from bottom"), SIZE_T_MAX ) },
-	{ { EVenetianIdentifier, EBlindsIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("venetian blinds"), SIZE_T_MAX ) },
-	{ { EWipeIdentifier, EUpIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe up"), SIZE_T_MAX ) },
-	{ { EWipeIdentifier, EDownIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe down"), SIZE_T_MAX ) },
-	{ { EWipeIdentifier, ELeftIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe left"), SIZE_T_MAX ) },
-	{ { EWipeIdentifier, ERightIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("wipe right"), SIZE_T_MAX ) },
-	{ { EZoomIdentifier, ECloseIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom close"), SIZE_T_MAX ) },
-	{ { EZoomIdentifier, EInIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom in"), SIZE_T_MAX ) },
-	{ { EZoomIdentifier, EOpenIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom open"), SIZE_T_MAX ) },
-	{ { EZoomIdentifier, EOutIdentifier, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("zoom out"), SIZE_T_MAX ) },
 	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL }
 };
+
+
+struct TConstantEntry*	sConstants = nullptr;
 
 
 #pragma mark -
@@ -269,6 +245,8 @@ CParser::CParser()
 		sBuiltInFunctions = sDefaultBuiltInFunctions;
 	if( !sHostFunctions )
 		sHostFunctions = sDefaultHostFunctions;
+	if( !sConstants )
+		sConstants = sDefaultConstants;
 }
 
 
@@ -574,6 +552,106 @@ CParser::CParser()
 	}
 	
 	sHostFunctions = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddStringConstants:
+//		Add additional constants to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddStringConstants( TStringConstantEntry* inEntries )
+{
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	if( !sConstants )
+		sConstants = sDefaultConstants;
+	
+	if( sConstants )
+	{
+		for( size_t x = 0; sConstants[x].mType[0] != ELastIdentifier_Sentinel; x++ )
+			numOldEntries++;
+	}
+	for( size_t x = 0; inEntries[x].mType[0] != ELastIdentifier_Sentinel; x++ )
+	{
+		numNewEntries++;
+	}
+	
+	TConstantEntry*	newTable = NULL;
+	if( sConstants == sDefaultConstants )
+	{
+		newTable = (TConstantEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TConstantEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+		memmove( newTable, sConstants, numOldEntries *sizeof(TConstantEntry) );
+	}
+	else
+	{
+		newTable = (TConstantEntry*) realloc( sConstants, (numOldEntries +numNewEntries +1) * sizeof(TConstantEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+	}
+	
+	// Create a CStringValueNode template object for every string constant we were given:
+	size_t		x = numOldEntries;
+	for( size_t ox = 0; inEntries[ox].mType[0] != ELastIdentifier_Sentinel; ox++ )
+	{
+		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
+		newTable[x++].mValue = new CStringValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
+	}
+	
+	sConstants = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddNumberConstants:
+//		Add additional constants to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddNumberConstants( TNumberConstantEntry* inEntries )
+{
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	if( !sConstants )
+		sConstants = sDefaultConstants;
+	
+	if( sConstants )
+	{
+		for( size_t x = 0; sConstants[x].mType[0] != ELastIdentifier_Sentinel; x++ )
+			numOldEntries++;
+	}
+	for( size_t x = 0; inEntries[x].mType[0] != ELastIdentifier_Sentinel; x++ )
+	{
+		numNewEntries++;
+	}
+	
+	TConstantEntry*	newTable = NULL;
+	if( sConstants == sDefaultConstants )
+	{
+		newTable = (TConstantEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TConstantEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+		memmove( newTable, sConstants, numOldEntries *sizeof(TConstantEntry) );
+	}
+	else
+	{
+		newTable = (TConstantEntry*) realloc( sConstants, (numOldEntries +numNewEntries +1) * sizeof(TConstantEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+	}
+	
+	// Create a CStringValueNode template object for every string constant we were given:
+	size_t		x = numOldEntries;
+	for( size_t ox = 0; inEntries[ox].mType[0] != ELastIdentifier_Sentinel; ox++ )
+	{
+		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
+		newTable[x++].mValue = new CFloatValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
+	}
+	
+	sConstants = newTable;
 }
 
 
