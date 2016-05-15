@@ -302,7 +302,9 @@
 	X1(EEffectiveIdentifier,"effective") \
 	X1(EMarkIdentifier,"mark") \
 	X1(EUnmarkIdentifier,"unmark") \
-	X1(EAllIdentifier,"all")
+	X1(EAllIdentifier,"all") \
+	X1(EMouseLocationIdentifier,"mouselocation") \
+	X2(EMouseLocIdentifier,EMouseLocationIdentifier,"mouseloc")
 
 
 typedef enum
