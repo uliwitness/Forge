@@ -600,6 +600,7 @@ CParser::CParser()
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
 		newTable[x++].mValue = new CStringValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
 	}
+	newTable[x].mType[0] = ELastIdentifier_Sentinel;
 	
 	sConstants = newTable;
 }
@@ -634,7 +635,7 @@ CParser::CParser()
 		newTable = (TConstantEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TConstantEntry) );
 		if( !newTable )
 			throw std::runtime_error( "Couldn't resize list of constants." );
-		memmove( newTable, sConstants, numOldEntries *sizeof(TConstantEntry) );
+		memmove( newTable, sConstants, numOldEntries * sizeof(TConstantEntry) );
 	}
 	else
 	{
@@ -650,6 +651,7 @@ CParser::CParser()
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
 		newTable[x++].mValue = new CFloatValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
 	}
+	newTable[x].mType[0] = ELastIdentifier_Sentinel;
 	
 	sConstants = newTable;
 }
