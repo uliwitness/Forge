@@ -304,7 +304,11 @@
 	X1(EUnmarkIdentifier,"unmark") \
 	X1(EAllIdentifier,"all") \
 	X1(EMouseLocationIdentifier,"mouselocation") \
-	X2(EMouseLocIdentifier,EMouseLocationIdentifier,"mouseloc")
+	X2(EMouseLocIdentifier,EMouseLocationIdentifier,"mouseloc") \
+	X1(EFocusedStackIdentifier,"focusedstack") \
+	X2(EFocusStackIdentifier,EFocusedStackIdentifier,"focusstack") \
+	X2(EFocussedStackIdentifier,EFocusedStackIdentifier,"focussedstack") \
+	X1(EMainStackIdentifier,"mainstack")
 
 
 typedef enum
