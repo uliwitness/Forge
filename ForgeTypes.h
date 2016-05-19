@@ -308,7 +308,9 @@
 	X1(EFocusedStackIdentifier,"focusedstack") \
 	X2(EFocusStackIdentifier,EFocusedStackIdentifier,"focusstack") \
 	X2(EFocussedStackIdentifier,EFocusedStackIdentifier,"focussedstack") \
-	X1(EMainStackIdentifier,"mainstack")
+	X1(EMainStackIdentifier,"mainstack") \
+	X1(EProjectIdentifier,"project") \
+	X2(EProjIdentifier,EProjectIdentifier,"proj")
 
 
 typedef enum
