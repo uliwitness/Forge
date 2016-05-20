@@ -310,7 +310,13 @@
 	X2(EFocussedStackIdentifier,EFocusedStackIdentifier,"focussedstack") \
 	X1(EMainStackIdentifier,"mainstack") \
 	X1(EProjectIdentifier,"project") \
-	X2(EProjIdentifier,EProjectIdentifier,"proj")
+	X2(EProjIdentifier,EProjectIdentifier,"proj") \
+	X1(ECheckMarkIdentifier,"checkmark") \
+	X1(EMixedMarkIdentifier,"mixedmark") \
+	X1(ECommandCharacterIdentifier,"commandcharacter") \
+	X1(EMarkCharacterIdentifier,"markcharacter") \
+	X2(ECommandCharIdentifier,ECommandCharacterIdentifier,"commandchar") \
+	X2(EMarkCharIdentifier,EMarkCharacterIdentifier,"markchar")
 
 
 typedef enum
