@@ -316,7 +316,9 @@
 	X1(ECommandCharacterIdentifier,"commandcharacter") \
 	X1(EMarkCharacterIdentifier,"markcharacter") \
 	X2(ECommandCharIdentifier,ECommandCharacterIdentifier,"commandchar") \
-	X2(EMarkCharIdentifier,EMarkCharacterIdentifier,"markchar")
+	X2(EMarkCharIdentifier,EMarkCharacterIdentifier,"markchar") \
+	X1(EMenuIdentifier,"menu") \
+	X1(EMenuItemIdentifier,"menuitem")
 
 
 typedef enum
