@@ -4157,7 +4157,16 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					theTerm = ParseConstantChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
 					break;
 				}
-
+				
+				// Try to parse a host-specific function (e.g. object descriptor):
+				//	ParseContainer below would try that as well, but since we want to be able to
+				//	define constants that are equivalent to object types, we do it here before we
+				//	try to parse a constant, so that when in doubt, we get the actual object
+				//	descriptor (which is implemented as a host function).
+				theTerm = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
+				if( theTerm )
+					break;
+				
 				// Now try constant:
 				CValueNode		*	constantValue = NULL;
 				TConstantEntry	*	currConst = sConstants;
