@@ -90,6 +90,8 @@ static TOperatorEntry	sDefaultOperators[] =
 {
 	{ EAndIdentifier, ELastIdentifier_Sentinel, 1000, AND_INSTR, EAndIdentifier },
 	{ EOrIdentifier, ELastIdentifier_Sentinel, 1000, OR_INSTR, EOrIdentifier },
+	{ EIntersectsIdentifier, ELastIdentifier_Sentinel, 1500, INTERSECTS_INSTR, EIntersectsIdentifier },
+	{ EIsIdentifier, EWithinIdentifier, 1500, IS_WITHIN_INSTR, EIsWithinPseudoIdentifier },
 	{ ELessThanOperator, EGreaterThanOperator, 2000, NOT_EQUAL_OPERATOR_INSTR, ENotEqualOperator },
 	{ ELessThanOperator, EEqualsOperator, 2000, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },
 	{ ELessThanEqualOperator, ELastIdentifier_Sentinel, 2000, LESS_THAN_EQUAL_OPERATOR_INSTR, ELessThanEqualOperator },

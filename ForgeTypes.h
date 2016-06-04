@@ -318,7 +318,10 @@
 	X2(ECommandCharIdentifier,ECommandCharacterIdentifier,"commandchar") \
 	X2(EMarkCharIdentifier,EMarkCharacterIdentifier,"markchar") \
 	X1(EMenuIdentifier,"menu") \
-	X1(EMenuItemIdentifier,"menuitem")
+	X1(EMenuItemIdentifier,"menuitem") \
+	X1(EWithinIdentifier,"within") \
+	X1(EIntersectsIdentifier,"intersects") \
+	X1(EIsWithinPseudoIdentifier,"is within")
 
 
 typedef enum
