@@ -887,8 +887,8 @@ void	CParser::ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::
 
 void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
-	std::string								handlerName( tokenItty->GetIdentifierText() );
-	std::string								userHandlerName( tokenItty->GetIdentifierText() );
+	std::string								handlerName( tokenItty->GetOriginalIdentifierText() );
+	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
 	std::stringstream						fcnHeader;
 	std::stringstream						fcnSignature;
 	size_t									fcnLineNum = tokenItty->mLineNum;
@@ -2903,7 +2903,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 			currFunction->AddCommand( theExitRepeatCommand );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
-		else if( tokenItty->GetIdentifierText().compare(userHandlerName) == 0 )
+		else if( strcasecmp(tokenItty->GetIdentifierText().c_str(), userHandlerName.c_str()) == 0 )
 		{
 			CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
 			currFunction->AddCommand( theReturnCommand );
@@ -3009,7 +3009,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 	
 	if( endIdentifier == EEndIdentifier && tokenItty != tokens.end() )
 	{
-		if( tokenItty->GetIdentifierText().compare(userHandlerName) != 0 )
+		if( strcasecmp(tokenItty->GetIdentifierText().c_str(), userHandlerName.c_str()) != 0 )
 		{
 			std::stringstream		errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
