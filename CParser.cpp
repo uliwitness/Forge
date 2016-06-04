@@ -198,7 +198,7 @@ struct TConstantEntry	sDefaultConstants[] =
 	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL }
+	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL, ELastIdentifier_Sentinel }
 };
 
 
@@ -1677,25 +1677,30 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 											continue;	// Otherwise skip.
 										}
 										
+										TConstantEntry	*	currConst = sConstants +cx;
 										for( size_t cix = 0; cix < MAX_CONSTANT_IDENTS; cix ++ )
 										{
-											if( sConstants[cx].mType[cix] == ELastIdentifier_Sentinel )
+											if( currConst->mType[cix] == ELastIdentifier_Sentinel )
 											{
 												cix = MAX_CONSTANT_IDENTS;
 												break;
 											}
-											if( tokenItty == tokens.end() || tokenItty->mType != sConstants[cx].mType[cix] )
+											if( tokenItty == tokens.end() || tokenItty->mSubType != currConst->mType[cix] )
 											{
+												HE_PRINT("\t\tMismatch %s and %s, backtracking %zu identifiers.\n", (tokenItty == tokens.end()) ? "(null)" : tokenItty->GetShortDescription().c_str(), gIdentifierStrings[currConst->mType[cix]], constantIdentifiersToBacktrack );
 												tokenItty -= constantIdentifiersToBacktrack;
 												constantIdentifiersToBacktrack = 0;
 												break;
 											}
+											HE_PRINT("\t\tMatched %s.\n", tokenItty->GetShortDescription().c_str() );
+											tokenItty++;
 											constantIdentifiersToBacktrack++;
 										}
 										
 										if( constantIdentifiersToBacktrack > 0 )	// Found a match?
 										{
-											term = sConstants[cx].mValue->Copy();
+											HE_PRINT("\t\tComplete match for constant %s.\n", currConst->mValue->GetAsString().c_str() );
+											term = currConst->mValue->Copy();
 											constantIdentifiersToBacktrack = 0;	// Now we've created this value, we can't backtrack or we'll leak it. And once we add it to the hostCommand below, we'll be even less able to backtrack.
 											break;
 										}

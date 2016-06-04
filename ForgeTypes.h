@@ -324,7 +324,6 @@
 	X1(EIsWithinPseudoIdentifier,"is within") \
 	X1(ESpeedIdentifier,"speed") \
 	X1(ESlowIdentifier,"slow") \
-	X1(ESlowlyIdentifier,"slowly") \
 	X1(EVeryIdentifier,"very") \
 	X1(EFastIdentifier,"fast")
 
