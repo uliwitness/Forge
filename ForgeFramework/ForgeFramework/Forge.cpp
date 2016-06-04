@@ -184,6 +184,24 @@ extern "C" void		LEOCleanUpParseTree( LEOParseTree* inTree )
 }
 
 
+extern "C" void		LEODebugPrintParseTree( LEOParseTree* inTree )
+{
+	try
+	{
+		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
+	}
+	catch( std::exception& err )
+	{
+		printf( "Internal error in LEODebugPrintParseTree: \"%s\".\n", err.what() );
+	}
+	catch( ... )
+	{
+		printf( "Internal error in LEODebugPrintParseTree.\n" );
+	}
+}
+
+
+
 struct CLineNumEntry
 {
 	CLineNumEntry( size_t ln = 0, int ic = 0, const std::string& hn = "", bool isc = false ) : mLineNum(ln), mIndentChange(ic),mHandlerName(hn), mIsCommand(isc) {};

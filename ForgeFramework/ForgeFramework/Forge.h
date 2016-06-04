@@ -92,6 +92,10 @@ LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters( const 
 void			LEOCleanUpParseTree( LEOParseTree* inTree );
 
 
+/*! Print a description of a particular parse tree to the console, to help in debugging the engine. */
+void			LEODebugPrintParseTree( LEOParseTree* inTree );
+
+
 /*! Extract information from the parse tree that is of interest for displaying the script in an editor.
 	This includes information on which line cause indentation to change as well as a list of handlers
 	and what line in the script they start at for quick navigation.
