@@ -184,20 +184,20 @@ static TChunkTypeEntry	sChunkTypes[TChunkType_Count] =
 // Constant identifier and actual code to generate the value:
 struct TConstantEntry	sDefaultConstants[] =
 {
-	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_T_MAX ) },
-	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_T_MAX ) },
-	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(""), SIZE_T_MAX ) },
-	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(","), SIZE_T_MAX ) },
-	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":"), SIZE_T_MAX ) },
-	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ) },
-	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ) },
-	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0"), SIZE_T_MAX ) },
-	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\""), SIZE_T_MAX ) },
-	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ) },
-	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ) },
-	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ) },
-	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ) },
-	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ) },
+	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(""), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(","), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\""), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL }
 };
 
@@ -600,6 +600,7 @@ CParser::CParser()
 	for( size_t ox = 0; inEntries[ox].mType[0] != ELastIdentifier_Sentinel; ox++ )
 	{
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
+		newTable[x].mSetName = inEntries[ox].mSetName;
 		newTable[x++].mValue = new CStringValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
 	}
 	newTable[x].mType[0] = ELastIdentifier_Sentinel;
@@ -651,6 +652,7 @@ CParser::CParser()
 	for( size_t ox = 0; inEntries[ox].mType[0] != ELastIdentifier_Sentinel; ox++ )
 	{
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
+		newTable[x].mSetName = inEntries[ox].mSetName;
 		newTable[x++].mValue = new CFloatValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
 	}
 	newTable[x].mType[0] = ELastIdentifier_Sentinel;
@@ -1654,6 +1656,100 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								}
+								identifiersToBacktrack = -1;
+								break;
+							}
+							
+							case EHostParamConstant:
+							case EHostParamExpressionOrConstant:
+							{
+								HE_PRINT("\tConstant?\n");
+								CValueNode	*	term = nullptr;
+								if( tokenItty->mType == EIdentifierToken )
+								{
+									size_t			constantIdentifiersToBacktrack = 0;
+									
+									for( size_t cx = 0; sConstants[cx].mType[0] != ELastIdentifier_Sentinel; cx++ )
+									{
+										if( sConstants[cx].mSetName != par->mIdentifierType			// Parameter requested exactly this?
+											&& par->mIdentifierType != ELastIdentifier_Sentinel )	// Param wants *any* constant?
+										{
+											continue;	// Otherwise skip.
+										}
+										
+										for( size_t cix = 0; cix < MAX_CONSTANT_IDENTS; cix ++ )
+										{
+											if( sConstants[cx].mType[cix] == ELastIdentifier_Sentinel )
+											{
+												cix = MAX_CONSTANT_IDENTS;
+												break;
+											}
+											if( tokenItty == tokens.end() || tokenItty->mType != sConstants[cx].mType[cix] )
+											{
+												tokenItty -= constantIdentifiersToBacktrack;
+												constantIdentifiersToBacktrack = 0;
+												break;
+											}
+											constantIdentifiersToBacktrack++;
+										}
+										
+										if( constantIdentifiersToBacktrack > 0 )	// Found a match?
+										{
+											term = sConstants[cx].mValue->Copy();
+											constantIdentifiersToBacktrack = 0;	// Now we've created this value, we can't backtrack or we'll leak it. And once we add it to the hostCommand below, we'll be even less able to backtrack.
+											break;
+										}
+									}
+									
+									assert( constantIdentifiersToBacktrack == 0 );
+								}
+								
+								if( !term && par->mType == EHostParamExpressionOrConstant )
+								{
+									HE_PRINT("\t\tExpression because couldn't find constant?\n");
+									term = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+								}
+								if( !term && par->mIsOptional )
+								{
+									HE_PRINT("\t\tNot found.\n");
+									if( par->mInstructionID == INVALID_INSTR )
+										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+								}
+								else if( !term )
+								{
+									HE_PRINT("\t\tNot found.\n");
+									delete hostCommand;
+									hostCommand = NULL;
+									theNode = NULL;
+									abortThisCommand = true;
+									std::stringstream		errMsg;
+									if( tokenItty != tokens.end() )
+									{
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
+																<< tokenItty->GetShortDescription() << "\".";
+									}
+									else
+									{
+										--tokenItty;
+										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
+									}
+									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
+									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+								}
+								
+								hostCommand->AddParam( term );
+								if( par->mInstructionID != INVALID_INSTR )
+								{
+									hostCommand->SetInstructionID( par->mInstructionID );
+									hostCommand->SetInstructionParams( par->mInstructionParam1, par->mInstructionParam2 );
+								}
+								if( par->mModeToSet != 0 )
+								{
+									HE_PRINT("\t\tChanging mode to '%c'\n", par->mModeToSet);
+									currMode = par->mModeToSet;
+								}
+								HE_PRINT("\t\tForget about backtracking.\n");
 								identifiersToBacktrack = -1;
 								break;
 							}

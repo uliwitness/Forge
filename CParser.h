@@ -55,6 +55,7 @@ namespace Carlson
 	{
 		TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
 		CValueNode*				mValue;						//!< Actual value this constant evaluates to.
+		TIdentifierSubtype		mSetName;					//!< A one-word name for the group of identifiers this belongs to, used to reference it from host entries.
 	};
 	
 	//! An entry in our ObjC -> Variant or Variant -> ObjC type conversion mapping tables. (no longer used, needs to be ported from old source code generator)

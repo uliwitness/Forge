@@ -321,7 +321,12 @@
 	X1(EMenuItemIdentifier,"menuitem") \
 	X1(EWithinIdentifier,"within") \
 	X1(EIntersectsIdentifier,"intersects") \
-	X1(EIsWithinPseudoIdentifier,"is within")
+	X1(EIsWithinPseudoIdentifier,"is within") \
+	X1(ESpeedIdentifier,"speed") \
+	X1(ESlowIdentifier,"slow") \
+	X1(ESlowlyIdentifier,"slowly") \
+	X1(EVeryIdentifier,"very") \
+	X1(EFastIdentifier,"fast")
 
 
 typedef enum
@@ -337,16 +342,18 @@ typedef enum
 /*! The THostParameterType enum is used by THostCommandEntry to indicate which
 	part of a command is to be parsed in what way. */
 typedef enum {
-	EHostParamImmediateValue = 0,	//! Just a value.
-	EHostParamExpression,			//! An entire expression, but no label.
-	EHostParamContainer,			//! A container that something can be put into.
-	EHostParamIdentifier,			//! An identifier that gets passed as a string.
-	EHostParamInvisibleIdentifier,	//! An identifier that is simply used to switch modes, but doesn't cause a parameter.
-	EHostParamLabeledValue,			//! A value preceded by an identifier labeling it.
-	EHostParamLabeledExpression,	//! An expression preceded by an identifier labeling it.
-	EHostParamLabeledContainer,		//! A container that something can be put into, preceded by an identifier labeling it.
-	EHostParamExpressionOrIdentifiersTillLineEnd,	//! Either an expression, or a bunch of unquoted string literals all merged into one string parameter with a single space separating each from the next. Used e.g. for 'play' command's melody.
-	EHostParam_Sentinel				//! If this value is specified, this is the last parameter.
+	EHostParamImmediateValue = 0,	//!< Just a value.
+	EHostParamExpression,			//!< An entire expression, but no label.
+	EHostParamContainer,			//!< A container that something can be put into.
+	EHostParamIdentifier,			//!< An identifier that gets passed as a string.
+	EHostParamInvisibleIdentifier,	//!< An identifier that is simply used to switch modes, but doesn't cause a parameter.
+	EHostParamLabeledValue,			//!< A value preceded by an identifier labeling it.
+	EHostParamLabeledExpression,	//!< An expression preceded by an identifier labeling it.
+	EHostParamLabeledContainer,		//!< A container that something can be put into, preceded by an identifier labeling it.
+	EHostParamExpressionOrIdentifiersTillLineEnd,	//!< Either an expression, or a bunch of unquoted string literals all merged into one string parameter with a single space separating each from the next. Used e.g. for 'play' command's melody.
+	EHostParamConstant,				//!< A value from a particular set of (possibly multi-word) constants. mIdentifierType is an index into our list of constant sets. Use ELastIdentifier_Sentinel for "any" constant.
+	EHostParamExpressionOrConstant,	//!< A value from a particular set of (possibly multi-word) constants. mIdentifierType is an index into our list of constant sets. If we don't find one from that set, parse an expression instead.
+	EHostParam_Sentinel				//!< If this value is specified, this is the last parameter.
 } THostParameterType;
 
 
@@ -384,47 +391,47 @@ struct TUnaryOperatorEntry
 //! An entry in our global property look-up table:
 struct TGlobalPropertyEntry
 {
-	TIdentifierSubtype		mType;					//! The identifier for this property (i.e. its name).
-	TIdentifierSubtype		mPrefixType;			//! One of ELongIdentifier, EShortIdentifier, EAbbreviatedIdentifier, EWorkingIdentifier or EEffectiveIdentifier for two-word properties. Otherwise, ELastIdentifier_Sentinel.
-	LEOInstructionID		mSetterInstructionID;	//! Instruction for changing this property.
-	LEOInstructionID		mGetterInstructionID;	//! Instruction for retrieving this property's value.
+	TIdentifierSubtype		mType;					//!< The identifier for this property (i.e. its name).
+	TIdentifierSubtype		mPrefixType;			//!< One of ELongIdentifier, EShortIdentifier, EAbbreviatedIdentifier, EWorkingIdentifier or EEffectiveIdentifier for two-word properties. Otherwise, ELastIdentifier_Sentinel.
+	LEOInstructionID		mSetterInstructionID;	//!< Instruction for changing this property.
+	LEOInstructionID		mGetterInstructionID;	//!< Instruction for retrieving this property's value.
 };
 
 
 //! An entry in our global property look-up table:
 struct TBuiltInFunctionEntry
 {
-	TIdentifierSubtype		mType;			//! The identifier for this function (i.e. its name).
-	LEOInstructionID		mInstructionID;	//! Instruction for this function.
-	uint16_t				mParam1;		//! Parameter to set on the instruction.
-	uint32_t				mParam2;		//! Parameter to set on the instruction.
+	TIdentifierSubtype		mType;			//!< The identifier for this function (i.e. its name).
+	LEOInstructionID		mInstructionID;	//!< Instruction for this function.
+	uint16_t				mParam1;		//!< Parameter to set on the instruction.
+	uint32_t				mParam2;		//!< Parameter to set on the instruction.
 };
 
 
 /*! An entry for a parameter to a THostCommandEntry in our host command look-up table: */
 struct THostParameterEntry
 {
-	THostParameterType		mType;				//! The type of parameter to parse, or EHostParam_Sentinel if this is the end of the list of host command entries.
-	TIdentifierSubtype		mIdentifierType;	//! The identifier (for the label or identifier, depending on mType).
-	THostParameterOptional	mIsOptional;		//! Is this parameter required or optional? If not present and optional, we, pass an empty string unless mType indicates otherwise, or mInstructionID is not INVALID_INSTR2.
-	LEOInstructionID		mInstructionID;		//! If not INVALID_INSTR2, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
-	uint16_t				mInstructionParam1;	//! If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction if this parameter is parsed.
-	uint32_t				mInstructionParam2;	//! If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction if this parameter is parsed.
-	char					mModeRequired;		//! If this isn't 0, only parse this if the current mode is this number. The mode can be used to group together certain parameters so they only match when a previous parameter matched.
-	char					mModeToSet;			//! If this parameter matches, and this isn't 0, change the current mode to this. The mode can be used to only look for certain parameters when a previous parameter matched.
+	THostParameterType		mType;				//!< The type of parameter to parse, or EHostParam_Sentinel if this is the end of the list of host command entries.
+	TIdentifierSubtype		mIdentifierType;	//!< The identifier (for the label or identifier, depending on mType).
+	THostParameterOptional	mIsOptional;		//!< Is this parameter required or optional? If not present and optional, we, pass an empty string unless mType indicates otherwise, or mInstructionID is not INVALID_INSTR2.
+	LEOInstructionID		mInstructionID;		//!< If not INVALID_INSTR2, this instruction overrides the one in the command entry if this parameter is present. If mType is EHostParamIdentifier, no string will be passed as a parameter either.
+	uint16_t				mInstructionParam1;	//!< If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction if this parameter is parsed.
+	uint32_t				mInstructionParam2;	//!< If mInstructionID is not INVALID_INSTR2, these parameters will be assigned to the instruction if this parameter is parsed.
+	char					mModeRequired;		//!< If this isn't 0, only parse this if the current mode is this number. The mode can be used to group together certain parameters so they only match when a previous parameter matched.
+	char					mModeToSet;			//!< If this parameter matches, and this isn't 0, change the current mode to this. The mode can be used to only look for certain parameters when a previous parameter matched.
 };
 
 
 //! An entry in our host command look-up table:
 struct THostCommandEntry
 {
-	TIdentifierSubtype			mType;							//! The identifier that introduces this command.
-	LEOInstructionID			mInstructionID;					//! The instruction to execute after pushing this command's params & param count on the stack.
-	uint16_t					mInstructionParam1;				//! These parameters will be assigned to the instruction.
-	uint32_t					mInstructionParam2;				//! These parameters will be assigned to the instruction.
-	char						mInitialMode;					//! The mModeToSet that the parser will start out with. Use '\0' when in doubt.
-	char						mTerminalMode;					//! If not 0, this is the mModeToSet that must have been set for this by one of the parameters to be considered a successful match.
-	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	//! These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
+	TIdentifierSubtype			mType;							//!< The identifier that introduces this command.
+	LEOInstructionID			mInstructionID;					//!< The instruction to execute after pushing this command's params & param count on the stack.
+	uint16_t					mInstructionParam1;				//!< These parameters will be assigned to the instruction.
+	uint32_t					mInstructionParam2;				//!< These parameters will be assigned to the instruction.
+	char						mInitialMode;					//!< The mModeToSet that the parser will start out with. Use '\0' when in doubt.
+	char						mTerminalMode;					//!< If not 0, this is the mModeToSet that must have been set for this by one of the parameters to be considered a successful match.
+	struct THostParameterEntry	mParam[LEO_MAX_HOST_PARAMS +1];	//!< These are the parameters that get pushed on the stack. Indicate the last param by setting the type of the one following it to EHostParam_Sentinel.
 };
 
 
@@ -433,6 +440,7 @@ struct TStringConstantEntry
 {
 	TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
 	const char*				mValue;						//!< Actual string this constant evaluates to.
+	TIdentifierSubtype		mSetName;					//!< A one-word name for the group of identifiers this belongs to, used to reference it from host entries.
 };
 
 
@@ -440,6 +448,7 @@ struct TNumberConstantEntry
 {
 	TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
 	LEONumber				mValue;						//!< Actual number this constant evaluates to.
+	TIdentifierSubtype		mSetName;					//!< A one-word name for the group of identifiers this belongs to, used to reference it from host entries.
 };
 
 
