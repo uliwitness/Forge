@@ -326,7 +326,16 @@
 	X1(ESlowIdentifier,"slow") \
 	X1(ESlowlyIdentifier,"slowly") \
 	X1(EVeryIdentifier,"very") \
-	X1(EFastIdentifier,"fast")
+	X1(EFastIdentifier,"fast") \
+	X1(EBrowseIdentifier,"browse") \
+	X1(EPointerIdentifier,"pointer") \
+	X1(EEditIdentifier,"edit") \
+	X1(ETextIdentifier,"text") \
+	X1(EOvalIdentifier,"oval") \
+	X1(ERoundedIdentifier,"rounded") \
+	X1(ERectangleIdentifier,"rectangle") \
+	X1(EBezierIdentifier,"bezier") \
+	X1(EPathIdentifier,"path")
 
 
 typedef enum
