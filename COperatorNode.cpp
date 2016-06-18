@@ -42,6 +42,8 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 
 void	COperatorNode::AddParam( CValueNode* val )
 {
+	assert( val != nullptr );
+	
 	mParams.push_back( val );
 	if( val )
 		mParseTree->NodeWasAdded(val);

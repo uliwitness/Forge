@@ -1300,6 +1300,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 					{
 						switch( par->mType )
 						{
+						
 							case EHostParamImmediateValue:
 							{
 								HE_PRINT("\tImmediate value\n");
@@ -1718,7 +1719,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 								{
 									HE_PRINT("\t\tNot found.\n");
 									if( par->mInstructionID == INVALID_INSTR )
-										hostCommand->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );
+										term = new CStringValueNode( &parseTree, "", tokenItty->mLineNum );
 								}
 								else if( !term )
 								{
@@ -2680,7 +2681,9 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	
 	if( typeConstant != TChunkTypeInvalid )
 	{
-		return ParseChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
+		container = ParseChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
+		if( container )
+			return container;
 	}
 	
 	// Try if it is a "my <property>"-style property expression:
@@ -2844,7 +2847,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	
 	// Implicit declaration of any old variable:
-	if( !container )
+	if( !container && !tokenItty->IsIdentifier(ENewlineOperator) )
 	{
 		CreateVariable( varName, realVarName, initWithName, currFunction );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
@@ -3357,7 +3360,7 @@ void	CParser::SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallba
 }
 
 
-// This parses an *editable* chunk expression that is a CVariant. This is a
+// This parses an *editable* chunk expression that is a reference. This is a
 //	little more complex and dangerous, as it simply points to the target value.
 //	If you can, use the more efficient call for constant (i.e. non-changeable)
 //	chunk expressions.
@@ -3366,6 +3369,12 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 											std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "char" or "item" or whatever chunk type token this was.
+	
+	if( tokenItty->IsIdentifier( ENewlineOperator ) )
+	{
+		tokenItty--;
+		return nullptr;
+	}
 	
 	std::stringstream		valueStr;
 	std::stringstream		startOffs;
@@ -3421,6 +3430,12 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "char" or "item" or whatever chunk type token this was.
+	
+	if( tokenItty->IsIdentifier( ENewlineOperator ) )
+	{
+		tokenItty--;
+		return nullptr;
+	}
 	
 	bool					hadTo = false;
 	CValueNode*				endOffsObj = NULL;
@@ -4155,7 +4170,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( typeConstant != TChunkTypeInvalid )
 				{
 					theTerm = ParseConstantChunkExpression( typeConstant, parseTree, currFunction, tokenItty, tokens );
-					break;
+					if( theTerm )
+						break;
 				}
 				
 				// Try to parse a host-specific function (e.g. object descriptor):
