@@ -133,7 +133,7 @@ void				LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char
 	table, this sets outName to NULL. The char* pointers returned in outName are owned by the display
 	info table. Do not try to free() them.
 	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
-void				LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsCommand );
+void				LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsHandlerEnd, bool *outIsCommand );
 
 /*! Free the memory occupied by this display info table.
 	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */

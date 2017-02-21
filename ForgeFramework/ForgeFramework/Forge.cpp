@@ -204,11 +204,12 @@ extern "C" void		LEODebugPrintParseTree( LEOParseTree* inTree )
 
 struct CLineNumEntry
 {
-	CLineNumEntry( size_t ln = 0, int ic = 0, const std::string& hn = "", bool isc = false ) : mLineNum(ln), mIndentChange(ic),mHandlerName(hn), mIsCommand(isc) {};
+	CLineNumEntry( size_t ln = 0, int ic = 0, const std::string& hn = "", bool isc = false, bool ishe = false ) : mLineNum(ln), mIndentChange(ic),mHandlerName(hn), mIsCommand(isc), mIsHandlerEnd(ishe) {};
 	size_t		mLineNum;		// Line number this indent change is at.
 	int			mIndentChange;	// Amount of inset (+ive) or outset (-ive) to apply to this line and all following it.
-	std::string	mHandlerName;	// If this is the start of a handler, its name, otherwise an empty string.
+	std::string	mHandlerName;	// If this is the start/end of a handler, its name, otherwise an empty string.
 	bool		mIsCommand;		// If mHandlerName is not empty, whether this is a command or function message handler.
+	bool		mIsHandlerEnd;
 };
 
 
@@ -225,7 +226,7 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 			if( handler->GetCommandsLineNum() > 0 && handler->GetCommandsLineNum() != handler->GetEndLineNum() )
 				lineIndentTable->push_back( CLineNumEntry(handler->GetCommandsLineNum(), 1 ) );	// Don't indent an empty handler's last line.
 			if( handler->GetEndLineNum() > 0 )
-				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1, "", false) );
+				lineIndentTable->push_back( CLineNumEntry(handler->GetEndLineNum(), -1, handler->GetUserHandlerName(), false, true) );
 		}
 		CWhileLoopNode*	loop = dynamic_cast<CWhileLoopNode*>(currNode);
 		if( loop )
@@ -370,7 +371,7 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 }
 
 
-extern "C" void LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsCommand )
+extern "C" void LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, size_t inIndex, const char** outName, size_t *outLine, bool *outIsHandlerEnd, bool *outIsCommand )
 {
 	size_t			x = 0;
 	for( CLineNumEntry& currEntry : *(std::vector<CLineNumEntry>*)inTable )
@@ -382,6 +383,7 @@ extern "C" void LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* i
 				*outName = currEntry.mHandlerName.c_str();
 				*outLine = currEntry.mLineNum;
 				*outIsCommand = currEntry.mIsCommand;
+				*outIsHandlerEnd = currEntry.mIsHandlerEnd;
 				return;
 			}
 			x++;
