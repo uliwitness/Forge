@@ -1655,7 +1655,7 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
 									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
+//									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
 								}
 								identifiersToBacktrack = -1;
 								break;
