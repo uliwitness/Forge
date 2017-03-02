@@ -105,6 +105,13 @@ namespace Carlson
 		CHandlerNotesEntry( std::string inHandlerName, std::string inNotes ) : mHandlerName(inHandlerName), mNotes(inNotes) {}
 	};
 	
+	
+	typedef enum
+	{
+		EAllVarsAreGlobals,
+		EVarsAreLocals
+	} TAllVarsAreGlobals;
+	
 	// -------------------------------------------------------------------------
 	/*!
 		@class CParser
@@ -136,7 +143,7 @@ namespace Carlson
 		CParser();
 		
 		void	Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );	//!< Parse a complete script consisting of handlers etc.
-		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree );	//!< Generates a handler named ":run" that returns the given expression.
+		void	ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, TAllVarsAreGlobals inAllVarsAreGlobals );	//!< Generates a handler named ":run" that returns the given expression.
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );

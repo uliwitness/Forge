@@ -706,7 +706,7 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 }
 
 
-void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree )
+void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& tokens, CParseTree& parseTree, TAllVarsAreGlobals inAllVarsAreGlobals )
 {
 	bool						tryCommand = true;
 	CFunctionDefinitionNode*	currFunctionNode = NULL;
@@ -720,6 +720,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+		currFunctionNode->SetAllVarsAreGlobals( inAllVarsAreGlobals == EAllVarsAreGlobals );
 		
 		size_t		endLineNum = 1;
 		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator, true );	// Parse one line as an expression wrapped in a "return" statement.

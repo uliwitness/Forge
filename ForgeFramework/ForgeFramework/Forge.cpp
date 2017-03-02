@@ -131,7 +131,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 		parseTree = new CParseTree;
 		CParser				parser;
 		std::deque<CToken>	tokens = CTokenizer::TokenListFromText( inCode, codeLength );
-		parser.ParseCommandOrExpression( LEOFileNameForFileID( inFileID ), tokens, *parseTree );
+		parser.ParseCommandOrExpression( LEOFileNameForFileID( inFileID ), tokens, *parseTree, EAllVarsAreGlobals );
 
 		parseTree->Simplify();
 		

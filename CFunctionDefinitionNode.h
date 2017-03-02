@@ -21,7 +21,7 @@ class CFunctionDefinitionNode : public CCodeBlockNodeBase
 {
 public:
 	CFunctionDefinitionNode( CParseTree* inTree, bool isCommand, const std::string& inName, const std::string& userHandlerName, size_t inLineNum )
-		: CCodeBlockNodeBase( inTree, inLineNum ), mName( inName ), mUserHandlerName(userHandlerName), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand)
+		: CCodeBlockNodeBase( inTree, inLineNum ), mName( inName ), mUserHandlerName(userHandlerName), mLineNum( inLineNum ), mEndLineNum(0), mLocalVariableCount(0), mIsCommand(isCommand), mAllVarsAreGlobals(false)
 	{
 		
 	};
@@ -47,6 +47,8 @@ public:
 	void			SetCommandsLineNum( size_t n )			{ mCommandsLineNum = n; };
 	size_t			GetCommandsLineNum()					{ return mCommandsLineNum; };
 	
+	void			SetAllVarsAreGlobals( bool inState )	{ mAllVarsAreGlobals = inState; }
+	
 	virtual CCodeBlockNodeBase*	GetContainingFunction()		{ return this; };
 	bool						IsCommand()					{ return mIsCommand; };
 	const std::string&			GetUserHandlerName()		{ return mUserHandlerName; };
@@ -61,6 +63,7 @@ protected:
 	std::map<std::string,CVariableEntry>	mLocals;
 	size_t									mLocalVariableCount;
 	std::map<std::string,CVariableEntry>	mGlobals;
+	bool									mAllVarsAreGlobals;	// For message box, which doesn't have local variables and creates globals for every local var.
 };
 
 
