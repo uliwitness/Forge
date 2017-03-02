@@ -2985,6 +2985,21 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								    size_t *outEndLineNum, TIdentifierSubtype endIdentifier, bool parseFirstLineAsReturnExpression )
 {
+	if( parseFirstLineAsReturnExpression && tokenItty != tokens.end() && tokenItty->mType == EIdentifierToken )
+	{
+		std::string	identifierString = tokenItty->GetIdentifierText();
+		++tokenItty;
+		if( tokenItty == tokens.end() || tokenItty->GetIdentifierSubType() == ENewlineOperator )
+		{
+			// It's a single identifier? Could be message send w/o params or variable as expression:
+			if( !currFunction->LocalVariableExists( identifierString ) )
+			{
+				parseFirstLineAsReturnExpression = false;	// Force parsing as command.
+			}
+		}
+		--tokenItty;
+	}
+	
 	if( parseFirstLineAsReturnExpression )
 	{
 		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, (tokenItty != tokens.end()) ? tokenItty->mLineNum : 1 );
