@@ -118,16 +118,17 @@ static TOperatorEntry	sDefaultOperators[] =
 
 static TUnaryOperatorEntry	sDefaultUnaryOperators[] =
 {
-	{ ENotIdentifier, ELastIdentifier_Sentinel, NEGATE_BOOL_INSTR },
-	{ EMinusOperator, ELastIdentifier_Sentinel, NEGATE_NUMBER_INSTR },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
+	{ ENotIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_BOOL_INSTR, 0, 0 },
+	{ EMinusOperator, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_NUMBER_INSTR, 0, 0 },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
 };
 
 
 static TUnaryOperatorEntry	sDefaultPostfixOperators[] =
 {
-	{ EIsIdentifier, EUnsetIdentifier, IS_UNSET_INSTR },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
+	{ EIsIdentifier, EUnsetIdentifier, ELastIdentifier_Sentinel, IS_UNSET_INSTR, 0, 0 },
+	{ EIsIdentifier, ENotIdentifier, EUnsetIdentifier, IS_UNSET_INSTR, 1, 0 },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
 };
 
 
@@ -4300,22 +4301,25 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				}
 
 				// Try to find unary operator that matches:
-				LEOInstructionID	operatorCommandName = INVALID_INSTR;
+				LEOInstructionID				operatorCommandName = INVALID_INSTR;
+				int16_t							operatorParam1 = 0;
+				int32_t							operatorParam2 = 0;
+				std::deque<CToken>::iterator	lastTokenItty = tokenItty;
 				
 				for( int x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
 				{
-					if( tokenItty->mSubType == sUnaryOperators[x].mType )
+					std::deque<CToken>::iterator	bestTokenItty = tokenItty;
+					tokenItty = lastTokenItty;
+					if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, sUnaryOperators[x].mType, sUnaryOperators[x].mSecondType, sUnaryOperators[x].mThirdType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty	)
 					{
-						if( sUnaryOperators[x].mSecondType != ELastIdentifier_Sentinel )	// two-word operator?
-						{
-							++tokenItty;
-							if( tokenItty != tokens.end() && tokenItty->IsIdentifier(sUnaryOperators[x].mSecondType) )
-								operatorCommandName = sUnaryOperators[x].mInstructionID;	// Both tokens match! Found it!
-							else
-								--tokenItty;	// Second token didn't match - whole operator doesn't match.
-						}
-						else
-							operatorCommandName = sUnaryOperators[x].mInstructionID;
+						// Longest match yet!
+						operatorCommandName = sUnaryOperators[x].mInstructionID;
+						operatorParam1 = sUnaryOperators[x].mInstructionParam1;
+						operatorParam2 = sUnaryOperators[x].mInstructionParam2;
+					}
+					else
+					{
+						tokenItty = bestTokenItty;
 					}
 				}
 				
@@ -4326,6 +4330,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					
 					COperatorNode*	opFCall = new COperatorNode( &parseTree, operatorCommandName, lineNum );
 					opFCall->AddParam( ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier ) );
+					opFCall->SetInstructionParams( operatorParam1, operatorParam2 );
 					theTerm = opFCall;
 				}
 				else
@@ -4344,7 +4349,11 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		}
 	}
 	
-	theTerm = ParseAnyPostfixOperatorForTerm( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
+	if( theTerm && tokenItty != tokens.end() )
+	{
+		std::cout << "Token before we're looking for postfix operator: \"" << tokenItty->mStringValue << "\"" << std::endl;
+		theTerm = ParseAnyPostfixOperatorForTerm( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
+	}
 	
 	return theTerm;
 }
@@ -4356,40 +4365,34 @@ CValueNode*	CParser::ParseAnyPostfixOperatorForTerm( CValueNode* theTerm, CParse
 {
 	if( tokenItty != tokens.end() )
 	{
-		LEOInstructionID	currCommandName = INVALID_INSTR;
-		size_t				currCommandLineNum = SIZE_T_MAX;
+		LEOInstructionID	operatorCommandName = INVALID_INSTR;
+		int16_t				operatorParam1 = 0;
+		int32_t				operatorParam2 = 0;
+		size_t				currCommandLineNum = tokenItty->mLineNum;
+		std::deque<CToken>::iterator originalTokenItty = tokenItty;
 		
-		for( size_t x = 0; sDefaultPostfixOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+		for( size_t x = 0; sPostfixOperators[x].mType != ELastIdentifier_Sentinel; x++ )
 		{
-			if( tokenItty->IsIdentifier( sDefaultPostfixOperators[x].mType ) && inEndIdentifier != sDefaultPostfixOperators[x].mType )
+			std::deque<CToken>::iterator bestTokenItty = tokenItty;
+			tokenItty = originalTokenItty;
+			if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, sPostfixOperators[x].mType, sPostfixOperators[x].mSecondType, sPostfixOperators[x].mThirdType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty )
 			{
-				if( sDefaultPostfixOperators[x].mSecondType != ELastIdentifier_Sentinel )	// Two-token operator!
-				{
-					++tokenItty;
-					if( tokenItty != tokens.end() && tokenItty->IsIdentifier( sDefaultPostfixOperators[x].mSecondType ) && inEndIdentifier != sDefaultPostfixOperators[x].mSecondType )
-					{
-						currCommandName = sDefaultPostfixOperators[x].mInstructionID;
-						currCommandLineNum = tokenItty->mLineNum;
-						++tokenItty;
-					}
-					else	// Second token didn't match, whole operator doesn't match.
-					{
-						--tokenItty;
-					}
-				}
-				else	// Single-token operator matched.
-				{
-					currCommandName = sDefaultPostfixOperators[x].mInstructionID;
-					currCommandLineNum = tokenItty->mLineNum;
-					++tokenItty;
-				}
+				// Longest match yet!
+				operatorCommandName = sPostfixOperators[x].mInstructionID;
+				operatorParam1 = sPostfixOperators[x].mInstructionParam1;
+				operatorParam2 = sPostfixOperators[x].mInstructionParam2;
+			}
+			else	// This wasn't a longer match than the previous one?
+			{
+				tokenItty = bestTokenItty;	// Remember last best choice's location.
 			}
 		}
 		
-		if( currCommandName != INVALID_INSTR )
+		if( operatorCommandName != INVALID_INSTR )
 		{
-			COperatorNode * postfixOpNode = new COperatorNode( &parseTree, currCommandName, currCommandLineNum );
+			COperatorNode * postfixOpNode = new COperatorNode( &parseTree, operatorCommandName, currCommandLineNum );
 			postfixOpNode->AddParam( theTerm );
+			postfixOpNode->SetInstructionParams( operatorParam1, operatorParam2 );
 			theTerm = postfixOpNode;
 		}
 	}

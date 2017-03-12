@@ -90,6 +90,7 @@ namespace Carlson
 	{
 	public:
 		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
+		static bool					NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inFirstType, ... );
 
 		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

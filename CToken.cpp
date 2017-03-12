@@ -343,6 +343,46 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		
 		return tokenList;
 	}
+
+	/*static*/ bool		CTokenizer::NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inFirstType, ... )
+	{
+		if( tokenItty == tokens.end() )
+		{
+			return false;
+		}
+
+		std::deque<CToken>::iterator&	originalTokenItty = tokenItty;
+		bool							fullMatch = true;
+		va_list							ap;
+		
+		va_start( ap, inFirstType );
+			TIdentifierSubtype currType = inFirstType;
+			while( currType != ELastIdentifier_Sentinel )
+			{
+				if( !tokenItty->IsIdentifier(currType) )
+				{
+					fullMatch = false;
+					break;
+				}
+				
+				++tokenItty;
+				if( tokenItty == tokens.end() )
+				{
+					fullMatch = false;
+					break;
+				}
+				
+				currType = (TIdentifierSubtype) va_arg( ap, std::underlying_type<TIdentifierSubtype>::type );
+			}
+		va_end(ap);
+		
+		if( !fullMatch )
+		{
+			tokenItty = originalTokenItty;
+		}
+		
+		return fullMatch;
+	}
 	
 	std::string	CToken::GetDescription() const
 	{
