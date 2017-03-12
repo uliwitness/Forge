@@ -190,6 +190,33 @@ protected:
 };
 
 
+class CUnsetValueNode : public CValueNode
+{
+public:
+	CUnsetValueNode( CParseTree* inTree, size_t inLineNum ) : CValueNode(inTree,inLineNum) {};
+	
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+	
+	virtual bool				IsConstant()		{ return true; };
+
+	virtual CUnsetValueNode*	Copy()				{ return new CUnsetValueNode( mParseTree, mLineNum ); };
+
+	virtual void				DebugPrint( std::ostream& destStream, size_t indentLevel )
+	{
+		INDENT_PREPARE(indentLevel);
+		
+		destStream << indentChars << "<unset>" << std::endl;
+	};
+	
+	virtual std::string			GetAsString()	{ return ""; };
+	virtual bool				GetAsBool()
+	{
+		throw CForgeParseError( "Can't make unset value into boolean.", GetLineNum() );
+		return false;
+	};
+};
+
+
 class CLocalVariableRefValueNode : public CValueNode
 {
 public:

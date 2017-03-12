@@ -390,10 +390,11 @@ struct TOperatorEntry
 };
 
 
-//! An entry in our unary operator look-up table.
+//! An entry in our unary and unary postfix operator look-up table.
 struct TUnaryOperatorEntry
 {
 	TIdentifierSubtype		mType;				//!< The identifier for this operator.
+	TIdentifierSubtype		mSecondType;		//!< The second identifier if this operator consists of two tokens.
 	LEOInstructionID		mInstructionID;		//!< Instruction that implements this operator.
 };
 

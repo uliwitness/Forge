@@ -118,9 +118,16 @@ static TOperatorEntry	sDefaultOperators[] =
 
 static TUnaryOperatorEntry	sDefaultUnaryOperators[] =
 {
-	{ ENotIdentifier, NEGATE_BOOL_INSTR },
-	{ EMinusOperator, NEGATE_NUMBER_INSTR },
-	{ ELastIdentifier_Sentinel, INVALID_INSTR }
+	{ ENotIdentifier, ELastIdentifier_Sentinel, NEGATE_BOOL_INSTR },
+	{ EMinusOperator, ELastIdentifier_Sentinel, NEGATE_NUMBER_INSTR },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
+};
+
+
+static TUnaryOperatorEntry	sDefaultPostfixOperators[] =
+{
+	{ EIsIdentifier, EUnsetIdentifier, IS_UNSET_INSTR },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
 
@@ -152,6 +159,8 @@ static THostCommandEntry	sDefaultHostFunctions[] =
 static TOperatorEntry*			sOperators = NULL;
 
 static TUnaryOperatorEntry*		sUnaryOperators = NULL;
+
+static TUnaryOperatorEntry*		sPostfixOperators = NULL;
 
 static TGlobalPropertyEntry*	sGlobalProperties = NULL;
 
@@ -198,6 +207,7 @@ struct TConstantEntry	sDefaultConstants[] =
 	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ), ELastIdentifier_Sentinel },
+	{ { EUnsetIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CUnsetValueNode( NULL, SIZE_T_MAX ), ELastIdentifier_Sentinel },
 	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL, ELastIdentifier_Sentinel }
 };
 
@@ -241,6 +251,8 @@ CParser::CParser()
 		sOperators = sDefaultOperators;
 	if( !sUnaryOperators )
 		sUnaryOperators = sDefaultUnaryOperators;
+	if( !sPostfixOperators )
+		sPostfixOperators = sDefaultPostfixOperators;
 	if( !sGlobalProperties )
 		sGlobalProperties = sDefaultGlobalProperties;
 	if( !sBuiltInFunctions )
@@ -321,7 +333,7 @@ CParser::CParser()
 	{
 		newTable = (TUnaryOperatorEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TUnaryOperatorEntry) );
 		if( !newTable )
-			throw std::runtime_error( "Couldn't resize list of built-in functions." );
+			throw std::runtime_error( "Couldn't resize list of built-in unary operators." );
 		memmove( newTable, sUnaryOperators, numOldEntries *sizeof(TUnaryOperatorEntry) );
 		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TUnaryOperatorEntry) );
 	}
@@ -343,6 +355,54 @@ CParser::CParser()
 	}
 	
 	sUnaryOperators = newTable;
+}
+
+
+// -----------------------------------------------------------------------------
+//	AddPostfixOperatorsAndOffsetInstructions:
+//		Add additional postfix operators to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddPostfixOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+{
+	if( !sPostfixOperators )
+		sPostfixOperators = sDefaultPostfixOperators;
+	
+	size_t		numOldEntries = 0,
+				numNewEntries = 0;
+	
+	for( size_t x = 0; sPostfixOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+		numOldEntries++;
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+		numNewEntries++;
+	
+	TUnaryOperatorEntry*	newTable = NULL;
+	if( sPostfixOperators == sDefaultPostfixOperators )
+	{
+		newTable = (TUnaryOperatorEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TUnaryOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of built-in unary operators." );
+		memmove( newTable, sPostfixOperators, numOldEntries *sizeof(TUnaryOperatorEntry) );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TUnaryOperatorEntry) );
+	}
+	else
+	{
+		newTable = (TUnaryOperatorEntry*) realloc( sPostfixOperators, (numOldEntries +numNewEntries +1) * sizeof(TUnaryOperatorEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of global properties." );
+		memmove( newTable +numOldEntries, inEntries, (numNewEntries +1) *sizeof(TUnaryOperatorEntry) );
+	}
+	
+	// Fix up instruction IDs to account for the ones that were already there:
+	for( size_t x = numOldEntries; newTable[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		if( newTable[x].mInstructionID == INVALID_INSTR2 )
+			newTable[x].mInstructionID = INVALID_INSTR;
+		else
+			newTable[x].mInstructionID += firstUnaryOperatorInstruction;
+	}
+	
+	sPostfixOperators = newTable;
 }
 
 
@@ -3818,7 +3878,6 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			{
 				theTerm = new CIntValueNode( &parseTree, theNumber, tokenItty->mLineNum );
 			}
-			theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 			
 			// If there's a unit after this number, apply that unit to the term:
 			for( int x = 1; x < kLEOUnit_Last; x++ )
@@ -3830,6 +3889,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					break;
 				}
 			}
+			
+			theTerm = ParseAnyFollowingArrayDefinitionWithKey( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );	// If this was a key at the start of an array definition, parse that and turn theTerm into an array, otherwise this just returns theTerm again.
 			break;
 		}
 
@@ -4244,7 +4305,18 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				for( int x = 0; sUnaryOperators[x].mType != ELastIdentifier_Sentinel; x++ )
 				{
 					if( tokenItty->mSubType == sUnaryOperators[x].mType )
-						operatorCommandName = sUnaryOperators[x].mInstructionID;
+					{
+						if( sUnaryOperators[x].mSecondType != ELastIdentifier_Sentinel )	// two-word operator?
+						{
+							++tokenItty;
+							if( tokenItty != tokens.end() && tokenItty->IsIdentifier(sUnaryOperators[x].mSecondType) )
+								operatorCommandName = sUnaryOperators[x].mInstructionID;	// Both tokens match! Found it!
+							else
+								--tokenItty;	// Second token didn't match - whole operator doesn't match.
+						}
+						else
+							operatorCommandName = sUnaryOperators[x].mInstructionID;
+					}
 				}
 				
 				if( operatorCommandName != INVALID_INSTR )
@@ -4269,6 +4341,56 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 			break;
+		}
+	}
+	
+	theTerm = ParseAnyPostfixOperatorForTerm( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
+	
+	return theTerm;
+}
+
+
+CValueNode*	CParser::ParseAnyPostfixOperatorForTerm( CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								TIdentifierSubtype inEndIdentifier )
+{
+	if( tokenItty != tokens.end() )
+	{
+		LEOInstructionID	currCommandName = INVALID_INSTR;
+		size_t				currCommandLineNum = SIZE_T_MAX;
+		
+		for( size_t x = 0; sDefaultPostfixOperators[x].mType != ELastIdentifier_Sentinel; x++ )
+		{
+			if( tokenItty->IsIdentifier( sDefaultPostfixOperators[x].mType ) && inEndIdentifier != sDefaultPostfixOperators[x].mType )
+			{
+				if( sDefaultPostfixOperators[x].mSecondType != ELastIdentifier_Sentinel )	// Two-token operator!
+				{
+					++tokenItty;
+					if( tokenItty != tokens.end() && tokenItty->IsIdentifier( sDefaultPostfixOperators[x].mSecondType ) && inEndIdentifier != sDefaultPostfixOperators[x].mSecondType )
+					{
+						currCommandName = sDefaultPostfixOperators[x].mInstructionID;
+						currCommandLineNum = tokenItty->mLineNum;
+						++tokenItty;
+					}
+					else	// Second token didn't match, whole operator doesn't match.
+					{
+						--tokenItty;
+					}
+				}
+				else	// Single-token operator matched.
+				{
+					currCommandName = sDefaultPostfixOperators[x].mInstructionID;
+					currCommandLineNum = tokenItty->mLineNum;
+					++tokenItty;
+				}
+			}
+		}
+		
+		if( currCommandName != INVALID_INSTR )
+		{
+			COperatorNode * postfixOpNode = new COperatorNode( &parseTree, currCommandName, currCommandLineNum );
+			postfixOpNode->AddParam( theTerm );
+			theTerm = postfixOpNode;
 		}
 	}
 	

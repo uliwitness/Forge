@@ -214,6 +214,9 @@ namespace Carlson
 		CValueNode*	ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								TIdentifierSubtype inEndIdentifier);	//!< Returns theTerm if it didn't find an array definition after this potential key in theTerm.
+		CValueNode*	ParseAnyPostfixOperatorForTerm( CValueNode* theTerm, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+								TIdentifierSubtype inEndIdentifier );
 		void	OutputExpressionStack( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<std::string>	&terms, std::deque<const char*>	&operators );
 		void	CreateVariable( const std::string& varName, const std::string& realVarName, bool initWithName,
@@ -259,6 +262,7 @@ namespace Carlson
 		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );	//!< Callback to be invoked when the user actually triggers execution of the first OS-native API. Allows lazy-loading some parts of the system headers.
 		static void		AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, size_t firstOperatorInstruction );
 		static void		AddUnaryOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction );
+		static void		AddPostfixOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction );
 		static void		AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstBuiltInFunctionInstruction );	//!< Register functions that take no params and can be called as "foo()" or "the foo" and map them to a bunch of instructions previously registered.
 		static void		AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
 		static void		AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );

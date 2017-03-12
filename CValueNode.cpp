@@ -49,6 +49,12 @@ void	CStringValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 }
 
 
+void	CUnsetValueNode::GenerateCode( CCodeBlock* inCodeBlock )
+{
+	inCodeBlock->GeneratePushUnsetValueInstruction();
+}
+
+
 CLocalVariableRefValueNode::CLocalVariableRefValueNode( CParseTree* inTree, CCodeBlockNodeBase *inCodeBlockNode,
 														const std::string& inVarName, const std::string& inRealVarName, size_t inLineNum )
 	: CValueNode(inTree,inLineNum), mCodeBlockNode(inCodeBlockNode), mVarName(inVarName), mRealVarName(inRealVarName)
