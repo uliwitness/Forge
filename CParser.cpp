@@ -3531,9 +3531,9 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 	else
 		methodCall->AddParam( ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel ) );
 	
-	methodCall->AddParam( NULL );	// Leave space for method name.
-	methodCall->AddParam( NULL );	// Leave space for method signature.
-	methodCall->AddParam( NULL );	// Leave space for framework name.
+	methodCall->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );	// Leave space for method name.
+	methodCall->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );	// Leave space for method signature.
+	methodCall->AddParam( new CStringValueNode( &parseTree, "", tokenItty->mLineNum ) );	// Leave space for framework name.
 	
 	if( tokenItty->mType != EIdentifierToken )
 	{
