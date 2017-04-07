@@ -351,7 +351,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			return false;
 		}
 
-		std::deque<CToken>::iterator&	originalTokenItty = tokenItty;
+		std::deque<CToken>::iterator	originalTokenItty = tokenItty;
 		bool							fullMatch = true;
 		va_list							ap;
 		
