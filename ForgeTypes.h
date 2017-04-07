@@ -336,7 +336,10 @@
 	X1(ERoundedIdentifier,"rounded") \
 	X1(ERectangleIdentifier,"rectangle") \
 	X1(EBezierIdentifier,"bezier") \
-	X1(EPathIdentifier,"path")
+	X1(EPathIdentifier,"path") \
+	X1(EAIdentifier,"a") \
+	X2(EAnIdentifier,EAIdentifier,"an") \
+	X1(EIntegerIdentifier,"integer")
 
 
 typedef enum
@@ -396,6 +399,7 @@ struct TUnaryOperatorEntry
 	TIdentifierSubtype		mType;				//!< The identifier for this operator.
 	TIdentifierSubtype		mSecondType;		//!< The second identifier if this operator consists of > 1 tokens.
 	TIdentifierSubtype		mThirdType;			//!< The third identifier if this operator consists of > 2 tokens.
+	TIdentifierSubtype		mFourthType;		//!< The fourth identifier if this operator consists of > 3 tokens.
 	LEOInstructionID		mInstructionID;		//!< Instruction that implements this operator.
 	uint16_t				mInstructionParam1;	//!< First param to assign to instruction for this operator.
 	uint32_t				mInstructionParam2;	//!< Second param to assign to instruction for this operator

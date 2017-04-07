@@ -118,17 +118,21 @@ static TOperatorEntry	sDefaultOperators[] =
 
 static TUnaryOperatorEntry	sDefaultUnaryOperators[] =
 {
-	{ ENotIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_BOOL_INSTR, 0, 0 },
-	{ EMinusOperator, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_NUMBER_INSTR, 0, 0 },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
+	{ ENotIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_BOOL_INSTR, 0, 0 },
+	{ EMinusOperator, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, NEGATE_NUMBER_INSTR, 0, 0 },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
 };
 
 
 static TUnaryOperatorEntry	sDefaultPostfixOperators[] =
 {
-	{ EIsIdentifier, EUnsetIdentifier, ELastIdentifier_Sentinel, IS_UNSET_INSTR, 0, 0 },
-	{ EIsIdentifier, ENotIdentifier, EUnsetIdentifier, IS_UNSET_INSTR, 1, 0 },
-	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
+	{ EIsIdentifier, EUnsetIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, IS_UNSET_INSTR, 0, 0 },
+	{ EIsIdentifier, ENotIdentifier, EUnsetIdentifier, ELastIdentifier_Sentinel, IS_UNSET_INSTR, 1, 0 },
+	{ EIsIdentifier, EAIdentifier, ENumberIdentifier, ELastIdentifier_Sentinel, IS_TYPE_INSTR, 2, 0 },
+	{ EIsIdentifier, ENotIdentifier, EAIdentifier, ENumberIdentifier, IS_TYPE_INSTR, 3, 0 },
+	{ EIsIdentifier, EAIdentifier, EIntegerIdentifier, ELastIdentifier_Sentinel, IS_TYPE_INSTR, 4, 0 },
+	{ EIsIdentifier, ENotIdentifier, EAIdentifier, EIntegerIdentifier, IS_TYPE_INSTR, 5, 0 },
+	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR, 0, 0 }
 };
 
 
@@ -4310,7 +4314,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				{
 					std::deque<CToken>::iterator	bestTokenItty = tokenItty;
 					tokenItty = lastTokenItty;
-					if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, sUnaryOperators[x].mType, sUnaryOperators[x].mSecondType, sUnaryOperators[x].mThirdType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty	)
+					if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, sUnaryOperators[x].mType, sUnaryOperators[x].mSecondType, sUnaryOperators[x].mThirdType, sUnaryOperators[x].mFourthType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty	)
 					{
 						// Longest match yet!
 						operatorCommandName = sUnaryOperators[x].mInstructionID;
@@ -4375,7 +4379,8 @@ CValueNode*	CParser::ParseAnyPostfixOperatorForTerm( CValueNode* theTerm, CParse
 		{
 			std::deque<CToken>::iterator bestTokenItty = tokenItty;
 			tokenItty = originalTokenItty;
-			if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, sPostfixOperators[x].mType, sPostfixOperators[x].mSecondType, sPostfixOperators[x].mThirdType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty )
+			TUnaryOperatorEntry *opEntry = sPostfixOperators + x;
+			if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, opEntry->mType, opEntry->mSecondType, opEntry->mThirdType, opEntry->mFourthType, ELastIdentifier_Sentinel ) && tokenItty > bestTokenItty )
 			{
 				// Longest match yet!
 				operatorCommandName = sPostfixOperators[x].mInstructionID;
