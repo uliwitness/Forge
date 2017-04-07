@@ -366,13 +366,16 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 				}
 				
 				++tokenItty;
+				
+				currType = (TIdentifierSubtype) va_arg( ap, std::underlying_type<TIdentifierSubtype>::type );
+				if( currType == ELastIdentifier_Sentinel )
+					break;
+				
 				if( tokenItty == tokens.end() )
 				{
 					fullMatch = false;
 					break;
 				}
-				
-				currType = (TIdentifierSubtype) va_arg( ap, std::underlying_type<TIdentifierSubtype>::type );
 			}
 		va_end(ap);
 		
