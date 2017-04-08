@@ -4355,7 +4355,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	
 	if( theTerm && tokenItty != tokens.end() )
 	{
-		std::cout << "Token before we're looking for postfix operator: \"" << tokenItty->mStringValue << "\"" << std::endl;
+		//std::cout << "Token before we're looking for postfix operator: \"" << tokenItty->mStringValue << "\"" << std::endl;
 		theTerm = ParseAnyPostfixOperatorForTerm( theTerm, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 	}
 	
