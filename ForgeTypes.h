@@ -337,6 +337,8 @@
 	X1(ERectangleIdentifier,"rectangle") \
 	X1(EBezierIdentifier,"bezier") \
 	X1(EPathIdentifier,"path") \
+	X1(ERecordIdentifier,"record") \
+	X1(ERecordingIdentifier,"recording") \
 	X1(EAIdentifier,"a") \
 	X2(EAnIdentifier,EAIdentifier,"an") \
 	X1(EIntegerIdentifier,"integer")
