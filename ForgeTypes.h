@@ -343,7 +343,10 @@
 	X2(EAnIdentifier,EAIdentifier,"an") \
 	X1(EIntegerIdentifier,"integer") \
 	X1(EHashSignOperator,"#") \
-	X1(EExclamationMarkOperator,"!")
+	X1(EExclamationMarkOperator,"!") \
+	X1(EReadIdentifier,"read") \
+	X1(EWriteIdentifier,"write") \
+	X1(EFileIdentifier,"file")
 
 typedef enum
 {

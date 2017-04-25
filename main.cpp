@@ -13,6 +13,7 @@ extern "C" {
 #include "LEOContextGroup.h"
 #include "LEORemoteDebugger.h"
 #include "LEOMsgCommandsGeneric.h"
+#include "LEOFileInstructionsGeneric.h"
 #include "LEOInterpreter.h"
 }
 #include "CConcatOperatorNodeTransformation.h"
@@ -179,6 +180,9 @@ int main( int argc, char * const argv[] )
 		
 		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
+
+		LEOAddInstructionsToInstructionArray( gFileInstructions, LEO_NUMBER_OF_FILE_INSTRUCTIONS, &kFirstFileInstruction );
+		LEOAddHostCommandsAndOffsetInstructions( gFileCommands, kFirstFileInstruction );
 		
 		LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
 		LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
