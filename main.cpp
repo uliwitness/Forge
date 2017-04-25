@@ -269,6 +269,9 @@ int main( int argc, char * const argv[] )
 					printf("ERROR: %s\n", ctx->errMsg );
 				if( printresult )
 				{
+					// Remove all parameters from the stack:
+					LEOCleanUpStackToPtr( ctx, ctx->stackEndPtr -paramCount -1 );
+					
 					if( ctx->stack == ctx->stackEndPtr )
 						printf("WARNING: No result left on stack. Bad code generated?\n");
 					long	numResults = ctx->stackEndPtr -ctx->stack;
