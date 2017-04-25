@@ -180,6 +180,10 @@ int main( int argc, char * const argv[] )
 		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
 		LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
 		
+		LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
+		LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
+		LEOAddOperatorsAndOffsetInstructions( gPropertyOperators, kFirstPropertyInstruction );
+		
 		if( verbose )
 			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
 		parser.Parse( filename, tokens, parseTree, code );

@@ -42,6 +42,7 @@
 		55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55993B7C1347EBB1001624A2 /* CMakeChunkRefNode.cpp */; };
 		55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */; };
 		55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A5855C12F369E1009550CD /* LEORemoteDebugger.c */; };
+		55A793EC1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */; };
 		55AAC0581710A1BB008441AF /* LEOMsgInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */; };
 		55AAC05B1710ADAC008441AF /* UTF8UTF32Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC0591710ADAB008441AF /* UTF8UTF32Utilities.c */; };
 		55AAC0661710AEB1008441AF /* CChunkPropertyNodeTransformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC05C1710AEAD008441AF /* CChunkPropertyNodeTransformation.cpp */; };
@@ -167,6 +168,7 @@
 		55993B811348F3AB001624A2 /* CMakeChunkConstNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMakeChunkConstNode.h; sourceTree = "<group>"; };
 		55A5855C12F369E1009550CD /* LEORemoteDebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEORemoteDebugger.c; path = Leonie/macosx/LEORemoteDebugger.c; sourceTree = "<group>"; };
 		55A5855D12F369E1009550CD /* LEORemoteDebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEORemoteDebugger.h; path = Leonie/macosx/LEORemoteDebugger.h; sourceTree = "<group>"; };
+		55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOPropertyInstructionsGeneric.c; sourceTree = "<group>"; };
 		55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOMsgInstructionsGeneric.c; path = Leonie/generic/LEOMsgInstructionsGeneric.c; sourceTree = "<group>"; };
 		55AAC0571710A1BB008441AF /* LEOMsgInstructionsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOMsgInstructionsGeneric.h; path = Leonie/generic/LEOMsgInstructionsGeneric.h; sourceTree = "<group>"; };
 		55AAC0591710ADAB008441AF /* UTF8UTF32Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = UTF8UTF32Utilities.c; path = Leonie/generic/UTF8UTF32Utilities.c; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 				55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */,
 				55AAC0791710B1B1008441AF /* LEOPropertyInstructions.h */,
 				55AAC0781710B1B1008441AF /* LEOPropertyInstructions.c */,
+				55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */,
 				55AAC07F1710B21D008441AF /* LEODownloadInstructions.h */,
 				55AAC07E1710B21C008441AF /* LEODownloadInstructions.c */,
 				5538246517274659007785D8 /* LEOObjCCallInstructions.h */,
@@ -554,6 +557,7 @@
 				55CFBE2812D3D156007B3627 /* CLineMarkerNode.cpp in Sources */,
 				55BF651412D8A26300C2FDC3 /* CAssignChunkArrayNode.cpp in Sources */,
 				55BF655412D91ACC00C2FDC3 /* CGetArrayItemCountNode.cpp in Sources */,
+				55A793EC1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c in Sources */,
 				55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */,
 				55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */,
 				55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */,
