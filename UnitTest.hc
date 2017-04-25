@@ -58,7 +58,7 @@ on startup
 		return ""
 	end if
 
-	test "Test Text"
+	test parameter 1
 
 	put "Tests all ran successfully." &newline
 end startup
