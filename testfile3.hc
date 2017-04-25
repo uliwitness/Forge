@@ -1,3 +1,4 @@
+#!/usr/bin/env Forge
 --on mainHarness
 --  put "a,b,c" into tstr
 --  testme @tstr

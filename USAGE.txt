@@ -4,7 +4,7 @@ This is a HyperTalk interpreter that compiles scripts into a bytecode and then
 executes the "startup" handler in them. The command line tool has the following
 syntax:
 
-forge [options] <inputfile>
+forge [options] <inputfile> [arguments]
 
 Where inputfile is the path to a UTF8-encoded text file that contains a valid
 HyperTalk script. Currently, the following options are supported:
@@ -27,6 +27,15 @@ HyperTalk script. Currently, the following options are supported:
 --printinstructions		Dump all bytecode instructions as a sort of pseudo-
 						source-code to stdout.
 
+--printindented			Pretty-print the script, indenting lines according to
+						Forge's interpretation of the script and on/end lines.
+
+--printresult			Prints "Result: " followed by the value returned by the
+						first handler, in quotes.
+
+--dont-optimize			Do not perform optimizations on the script, run it as
+						written.
+
 --verbose				Dump some additional headings and status messages to
 						stdout.
 						
@@ -34,10 +43,15 @@ HyperTalk script. Currently, the following options are supported:
 						to call. If this is not specified, the handler named
 						"startUp" will be called.
 
+arguments				Any additional arguments following the file name will be
+						passed on to the script's first handler as parameters.
 
 
-
-
+A script may start with the usual Unix "shebang" sequence "#!", which Forge
+will ignore. It is recommended that Forge scripts use the filename suffix ".hc"
+(or ".sh" if you really must) and use the standard shebang "#!/usr/bin/env Forge"
+instead of making assumptions about where in the user's PATH Forge has been
+installed.
 
 
 

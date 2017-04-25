@@ -1,3 +1,4 @@
+#!/usr/bin/env Forge
 on startUp
 	handlerWithInvalidCommand "foo"
 end startUp

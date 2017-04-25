@@ -1,3 +1,4 @@
+#!/usr/bin/env Forge
 on testx
   global gEventHandlerThing
   

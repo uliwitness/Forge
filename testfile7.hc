@@ -1,3 +1,4 @@
+#!/usr/bin/env Forge
 on startup
 	put quoteIt("foo") into myVar
 	put myVar

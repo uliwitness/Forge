@@ -1,3 +1,4 @@
+#!/usr/bin/env Forge
 on testx
   put "hey,there,kill,violence,now" into theList
   --delete item 5 of theList
