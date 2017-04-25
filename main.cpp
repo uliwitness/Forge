@@ -250,7 +250,7 @@ int main( int argc, char * const argv[] )
 					}
 				}
 				
-				LEOPushEmptyValueOnStack( ctx );	// Reserve space for return value.
+				LEOPushUnsetValueOnStack( ctx );	// Reserve space for return value.
 				
 				// Push params on stack in reverse order:
 				LEOInteger	paramCount = 0;
@@ -273,8 +273,11 @@ int main( int argc, char * const argv[] )
 						printf("WARNING: No result left on stack. Bad code generated?\n");
 					long	numResults = ctx->stackEndPtr -ctx->stack;
 					if( numResults > 1 )
+					{
 						printf("WARNING: %ld results left on stack, expected 1. Bad code generated?\n", numResults);
-					if( numResults > 0 )
+						LEODebugPrintContext( ctx );
+					}
+					else if( numResults > 0 )
 					{
 						if( LEOGetValueIsUnset( ctx->stack, ctx ) )
 							printf("Result: --\n");
