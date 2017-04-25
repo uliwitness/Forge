@@ -203,17 +203,19 @@ int main( int argc, char * const argv[] )
 			size_t			x = 0;
 			while( true )
 			{
-				LEODisplayInfoTableGetHandlerInfoAtIndex( lit, x++, &currName, &currLine, &isCommand );
+				bool isEnd = false;
+				LEODisplayInfoTableGetHandlerInfoAtIndex( lit, x++, &currName, &currLine, &isEnd, &isCommand );
 				if( !currName )
 					break;
-				std::cout << (isCommand ? "[C] " : "[F] ") << currName << " (Line " << currLine << ")" << std::endl;
+				if( !isEnd )
+					std::cout << (isCommand ? "[C] " : "[F] ") << currName << " (Line " << currLine << ")" << std::endl;
 			}
 			LEOCleanUpDisplayInfoTable( lit );
 		}
 		
 		uint16_t 			fileID = LEOFileIDForFileName(filename);
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
-		LEOContextGroup	*	group = LEOContextGroupCreate();
+		LEOContextGroup	*	group = LEOContextGroupCreate( NULL, NULL );
 		CCodeBlock			block( group, script, fileID );
 		
 		parseTree.Simplify();
