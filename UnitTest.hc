@@ -1,3 +1,4 @@
+#!/usr/bin/Forge
 on startup
 	put "Running tests..." &newline
 

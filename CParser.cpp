@@ -882,6 +882,13 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		
 		ParseDocumentation( tokenItty, tokens, parseTree, scriptText );
 	}
+	else if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, EHashSignOperator, EExclamationMarkOperator, ELastIdentifier_Sentinel ) )	// Ignore the shebang if this is run as a Unix script.
+	{
+		while( tokenItty != tokens.end() && !tokenItty->IsIdentifier( ENewlineOperator ) )	// Skip until end of line.
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		}
+	}
 	else
 	{
 		std::stringstream errMsg;

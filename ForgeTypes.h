@@ -341,8 +341,9 @@
 	X1(ERecordingIdentifier,"recording") \
 	X1(EAIdentifier,"a") \
 	X2(EAnIdentifier,EAIdentifier,"an") \
-	X1(EIntegerIdentifier,"integer")
-
+	X1(EIntegerIdentifier,"integer") \
+	X1(EHashSignOperator,"#") \
+	X1(EExclamationMarkOperator,"!")
 
 typedef enum
 {
