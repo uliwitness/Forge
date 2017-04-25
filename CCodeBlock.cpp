@@ -343,18 +343,21 @@ void	CCodeBlock::GeneratePutValueIntoValueInstruction()
 
 void	CCodeBlock::GeneratePushPropertyOfObjectInstruction()
 {
+	assert(kFirstPropertyInstruction != 0);
 	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +PUSH_PROPERTY_OF_OBJECT_INSTR, 0, 0 );
 }
 
 
 void	CCodeBlock::GenerateSetPropertyOfObjectInstruction()
 {
+	assert(kFirstPropertyInstruction != 0);
 	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +SET_PROPERTY_OF_OBJECT_INSTR, 0, 0 );
 }
 
 
 void	CCodeBlock::GeneratePushMeInstruction()
 {
+	assert(kFirstPropertyInstruction != 0);
 	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +PUSH_ME_INSTR, 0, 0 );
 }
 

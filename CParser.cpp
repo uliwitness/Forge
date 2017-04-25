@@ -2762,6 +2762,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	// Try if it is a "my <property>"-style property expression:
 	if( tokenItty->IsIdentifier( EMyIdentifier ) )
 	{
+		assert(kFirstPropertyInstruction != 0);
 		COperatorNode*		meContainer = new COperatorNode( &parseTree, kFirstPropertyInstruction +PUSH_ME_INSTR, tokenItty->mLineNum );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// skip "my".
@@ -2789,6 +2790,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	}
 	else if( tokenItty->IsIdentifier( EMeIdentifier ) )	// A reference to the object owning this script?
 	{
+		assert(kFirstPropertyInstruction != 0);
 		COperatorNode*		hostCommand = new COperatorNode( &parseTree, kFirstPropertyInstruction +PUSH_ME_INSTR, tokenItty->mLineNum );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		return hostCommand;
