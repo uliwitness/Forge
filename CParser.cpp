@@ -889,6 +889,19 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 	}
+	else if( tokenItty->mType == EWebPageContentToken )
+	{
+//		if( mFirstHandlerName.length() == 0 )
+//		{
+//			mFirstHandlerName = "startup";
+//			mFirstHandlerIsFunction = false;
+//		}
+//
+//		parseTree
+//		// +++
+
+		tokenItty++;
+	}
 	else
 	{
 		std::stringstream errMsg;
@@ -998,6 +1011,9 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	
 	while( !tokenItty->IsIdentifier( ENewlineOperator ) )
 	{
+		if( tokenItty->mType == EWebPageContentToken )
+			break;
+		
 		std::string	realVarName( tokenItty->GetIdentifierText() );
 		std::string	varName("var_");
 		varName.append( realVarName );
@@ -1146,6 +1162,36 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 }
 
 
+void	CParser::FindPrintHostCommand( LEOInstructionID* printInstrID, uint16_t* param1, uint32_t* param2 )
+{
+	// Look for a host command named "put" with exactly 1 parameter & use instruction from that:
+	if( sHostCommands )
+	{
+		for( size_t x = 0; sHostCommands[x].mType != ELastIdentifier_Sentinel; x++ )
+		{
+			if( sHostCommands[x].mType == EPutIdentifier )
+			{
+				*printInstrID = sHostCommands[x].mInstructionID;
+				*param1 = sHostCommands[x].mInstructionParam1;
+				*param2 = sHostCommands[x].mInstructionParam2;
+				if( sHostCommands[x].mParam[0].mType == EHostParamExpression && sHostCommands[x].mParam[1].mType == EHostParam_Sentinel )
+				{
+					if( sHostCommands[x].mParam[0].mInstructionID != INVALID_INSTR )
+					{
+						*printInstrID = sHostCommands[x].mParam[0].mInstructionID;
+						*param1 = sHostCommands[x].mParam[0].mInstructionParam1;
+						*param2 = sHostCommands[x].mParam[0].mInstructionParam2;
+					}
+					break;
+				}
+				else
+					*printInstrID = INVALID_INSTR;
+			}
+		}
+	}
+}
+
+
 void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
@@ -1206,30 +1252,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			uint16_t			param1 = 0;
 			uint32_t			param2 = 0;
 			
-			if( sHostCommands )
-			{
-				for( size_t x = 0; sHostCommands[x].mType != ELastIdentifier_Sentinel; x++ )
-				{
-					if( sHostCommands[x].mType == EPutIdentifier )
-					{
-						printInstrID = sHostCommands[x].mInstructionID;
-						param1 = sHostCommands[x].mInstructionParam1;
-						param2 = sHostCommands[x].mInstructionParam2;
-						if( sHostCommands[x].mParam[0].mType == EHostParamExpression && sHostCommands[x].mParam[1].mType == EHostParam_Sentinel )
-						{
-							if( sHostCommands[x].mParam[0].mInstructionID != INVALID_INSTR )
-							{
-								printInstrID = sHostCommands[x].mParam[0].mInstructionID;
-								param1 = sHostCommands[x].mParam[0].mInstructionParam1;
-								param2 = sHostCommands[x].mParam[0].mInstructionParam2;
-							}
-							break;
-						}
-						else
-							printInstrID = INVALID_INSTR;
-					}
-				}
-			}
+			FindPrintHostCommand( &printInstrID, &param1, &param2 );
 			
 			// Found one?
 			if( printInstrID != INVALID_INSTR )
@@ -1301,6 +1324,43 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			delete thePutCommand;
 		
 		// TODO: Don't leak destContainer and whatExpression if error before they're added to command.
+		
+		throw;
+	}
+}
+
+
+void	CParser::ParseWebPageContentToken( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	COperatorNode*	thePutCommand = NULL;
+	size_t			startLine = tokenItty->mLineNum;
+	
+	try {
+		// Look for a host command named "put" with exactly 1 parameter & use instruction from that:
+		LEOInstructionID	printInstrID = INVALID_INSTR;
+		uint16_t			param1 = 0;
+		uint32_t			param2 = 0;
+		
+		FindPrintHostCommand( &printInstrID, &param1, &param2 );
+		
+		// Found one?
+		if( printInstrID != INVALID_INSTR )
+		{
+			COperatorNode* opNode = new COperatorNode( &parseTree, printInstrID, startLine );
+			thePutCommand = opNode;
+			opNode->SetInstructionParams( param1, param2 );
+			opNode->AddParam( new CStringValueNode( &parseTree, tokenItty->GetOriginalWebPageContentText(), startLine ) );
+		}
+		
+		currFunction->AddCommand( thePutCommand );
+
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+	}
+	catch( ... )
+	{
+		if( thePutCommand )
+			delete thePutCommand;
 		
 		throw;
 	}
@@ -2956,6 +3016,8 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								bool dontSwallowReturn )
 {
+	bool	hadWebContentToken = false;
+	
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -3033,13 +3095,18 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 		ParseSetStatement( parseTree, currFunction, tokenItty, tokens );
 	else if( tokenItty->IsIdentifier(EGlobalIdentifier) )
 		ParseGlobalStatement( parseTree, currFunction, tokenItty, tokens );
+	else if( tokenItty->mType == EWebPageContentToken )
+	{
+		ParseWebPageContentToken( parseTree, currFunction, tokenItty, tokens );
+		hadWebContentToken = true;
+	}
 	else
 		ParseHostCommand( parseTree, currFunction, tokenItty, tokens );
 	
 	// End this line:
 	if( !dontSwallowReturn && tokenItty != tokens.end() )
 	{
-		if( !tokenItty->IsIdentifier(ENewlineOperator) )
+		if( !tokenItty->IsIdentifier(ENewlineOperator) && !hadWebContentToken )
 		{
 			std::stringstream errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected end of line, found "

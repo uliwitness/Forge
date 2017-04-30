@@ -68,7 +68,8 @@ int main( int argc, char * const argv[] )
 				printIndented = false,
 				verbose = false,
 				doOptimize = true,
-				printresult = false;
+				printresult = false,
+				webPageEmbedMode = false;
 	
 	int			fnameIdx = 0;
 	for( int x = 1; x < argc; )
@@ -126,6 +127,8 @@ int main( int argc, char * const argv[] )
 			}
 			else if( strcmp( argv[x], "--dont-optimize" ) == 0 )
 				doOptimize = false;
+			else if( strcmp( argv[x], "--webpage" ) == 0 )
+				webPageEmbedMode = true;
 			else
 			{
 				std::cerr << "Unknown option \"" << argv[x] << "\"." << std::endl;
@@ -162,7 +165,7 @@ int main( int argc, char * const argv[] )
 		
 		if( verbose )
 			std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
-		tokens = CTokenizer::TokenListFromText( code, strlen(code) );
+		tokens = CTokenizer::TokenListFromText( code, strlen(code), webPageEmbedMode );
 		if( printTokens )
 		{
 			for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )

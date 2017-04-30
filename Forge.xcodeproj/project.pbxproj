@@ -34,6 +34,7 @@
 		5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 5538246417274659007785D8 /* LEOObjCCallInstructions.c */; };
 		554DC30D1863670C00B514E3 /* testfile13.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554DC30C186366F100B514E3 /* testfile13.hc */; };
 		554DC317186390FE00B514E3 /* CForgeExceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 554DC315186390FE00B514E3 /* CForgeExceptions.cpp */; };
+		5559CEFD1EB654E000815DD9 /* testfile16.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5559CEFC1EB6548A00815DD9 /* testfile16.hc */; };
 		556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 556FA4521718AA7500A108E5 /* UnitTest.hc */; };
 		556FA4561718AED200A108E5 /* LEOMsgCommandsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */; };
 		558A8D8512BD208600F514F4 /* CPushValueCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558A8D8412BD208600F514F4 /* CPushValueCommandNode.cpp */; };
@@ -107,6 +108,7 @@
 				554DC30D1863670C00B514E3 /* testfile13.hc in CopyFiles */,
 				55CD60E81876E972002450E2 /* testfile14.hc in CopyFiles */,
 				55A793F11EB00554005C40D0 /* testfile15.hc in CopyFiles */,
+				5559CEFD1EB654E000815DD9 /* testfile16.hc in CopyFiles */,
 				556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -155,6 +157,7 @@
 		554DC30C186366F100B514E3 /* testfile13.hc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testfile13.hc; sourceTree = "<group>"; };
 		554DC315186390FE00B514E3 /* CForgeExceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CForgeExceptions.cpp; sourceTree = "<group>"; };
 		554DC316186390FE00B514E3 /* CForgeExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CForgeExceptions.h; sourceTree = "<group>"; };
+		5559CEFC1EB6548A00815DD9 /* testfile16.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile16.hc; sourceTree = "<group>"; };
 		556FA4521718AA7500A108E5 /* UnitTest.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = UnitTest.hc; sourceTree = "<group>"; };
 		556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOMsgCommandsGeneric.c; sourceTree = "<group>"; };
 		556FA4551718AED200A108E5 /* LEOMsgCommandsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEOMsgCommandsGeneric.h; sourceTree = "<group>"; };
@@ -299,6 +302,7 @@
 				554DC30C186366F100B514E3 /* testfile13.hc */,
 				55CD60E71876E952002450E2 /* testfile14.hc */,
 				55A793F01EB003A9005C40D0 /* testfile15.hc */,
+				5559CEFC1EB6548A00815DD9 /* testfile16.hc */,
 				556FA4521718AA7500A108E5 /* UnitTest.hc */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,

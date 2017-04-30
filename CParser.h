@@ -151,6 +151,7 @@ namespace Carlson
 		CValueNode	*	ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		void	FindPrintHostCommand( LEOInstructionID* printInstrID, uint16_t* param1, uint32_t* param2 );
 		void	ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseGetStatement( CParseTree& parseTree,
@@ -158,6 +159,8 @@ namespace Carlson
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseSetStatement( CParseTree& parseTree,
 									CCodeBlockNodeBase* currFunction,
+									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		void	ParseWebPageContentToken( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

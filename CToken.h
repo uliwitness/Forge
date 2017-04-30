@@ -18,17 +18,21 @@ extern "C" {
 
 namespace Carlson
 {
-
+	#define TOKEN_TYPES		X(EInvalidToken) \
+							X(EStringToken) \
+							X(EIdentifierToken) \
+							X(ENumberToken) \
+							X(EWebPageContentToken) \
+							X(ECommentPseudoToken) \
+							X(EMultilineCommentPseudoToken) \
+							X(ECurlyStringPseudoToken) \
+							X(EGuillemotsStringPseudoToken)
+	
 	typedef enum
 	{
-		EInvalidToken = 0,
-		EStringToken,
-		EIdentifierToken,
-		ENumberToken,
-		ECommentPseudoToken,
-		EMultilineCommentPseudoToken,
-		ECurlyStringPseudoToken,
-		EGuillemotsStringPseudoToken,
+		#define X(tokenConst)	tokenConst,
+		TOKEN_TYPES
+		#undef X
 		ELastToken_Sentinel
 	} TTokenType;
 
@@ -83,13 +87,14 @@ namespace Carlson
 		const std::string	GetIdentifierText() const;			// Lowercased and otherwise normalised for easier compares.
 		TIdentifierSubtype	GetIdentifierSubType() const;		// Like mSubType, but throws if this isn't an identifier.
 		const std::string	GetOriginalIdentifierText() const;	// Original string as entered by user.
+		const std::string	GetOriginalWebPageContentText() const;	// Original string as entered by user.
 		size_t				GetOffset() const { return mOffset; };
 	};
 	
 	class CTokenizer
 	{
 	public:
-		static std::deque<CToken>	TokenListFromText( const char* str, size_t len );
+		static std::deque<CToken>	TokenListFromText( const char* str, size_t len, bool webPageEmbedMode = false );
 		static bool					NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inFirstType, ... );
 
 		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

@@ -28,16 +28,14 @@ namespace Carlson
 
 #pragma mark Token type strings
 
+	#define STRINGIFY(n)	STRINGIFY2(n)
+	#define STRINGIFY2(n)	#n
+
 	const char*		gTokenTypeStrings[ELastToken_Sentinel] =
 	{
-		"EInvalidToken",
-		"EStringToken",
-		"EIdentifierToken",
-		"ENumberToken",
-		"***ECommentPseudoToken",
-		"***EMultilineCommentPseudoToken",
-		"***ECurlyStringPseudoToken",
-		"***EGuillemotsStringPseudoToken"
+		#define X(tokenConst)	STRINGIFY(tokenConst),
+		TOKEN_TYPES
+		#undef X
 	};
 
 #pragma mark Token identifier strings
@@ -99,11 +97,11 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		return ELastIdentifier_Sentinel;
 	}
 	
-	std::deque<CToken>	CTokenizer::TokenListFromText( const char* str, size_t len )
+	std::deque<CToken>	CTokenizer::TokenListFromText( const char* str, size_t len, bool webPageEmbedMode )
 	{
 		size_t				x = 0,
 							currStartOffs = 0;
-		TTokenType			currType = EInvalidToken;	// We're in whitespace.
+		TTokenType			currType = webPageEmbedMode ? EWebPageContentToken : EInvalidToken;	// Invalid == we're in whitespace. WebPage == keep the literal text and make it a token that turns into a print command, for PHP-style code embedded in web pages.
 		std::string			currText;
 		std::deque<CToken>	tokenList;
 		size_t				currLineNum = 1;
@@ -128,6 +126,12 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					if( currCh == '\"' )
 					{
 						currType = EStringToken;
+						currStartOffs = newX;
+					}
+					else if( currCh == '?' && nextCh == '>' )
+					{
+						currType = EWebPageContentToken;
+						newX++;
 						currStartOffs = newX;
 					}
 					else if( currCh == 0x201C )	// “
@@ -170,7 +174,21 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 					}
 					break;
-				
+
+				case EWebPageContentToken:
+					if( currCh == '<' && nextCh == '?' )
+					{
+						tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+						newX++;
+						currStartOffs = newX;
+						currText.clear();
+						currStartOffs = x;
+						currType = EInvalidToken;
+					}
+					else
+						currText.append( str +x, newX -x );
+					break;
+					
 				case ECommentPseudoToken:
 					if( currCh == '\n' || currCh == '\r' )
 					{
@@ -212,6 +230,12 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						{
 							currType = ECommentPseudoToken;
 						}
+						else if( currCh == '?' && nextCh == '>' )
+						{
+							currType = EWebPageContentToken;
+							newX++;
+							currStartOffs = newX;
+						}
 						else if( currCh != ' ' && currCh != '\t' )
 						{
 							char		opstr[2] = { 0, 0 };
@@ -240,7 +264,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					char	opstr[2] = { 0, 0 };
 					opstr[0] = currCh;
 					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
-					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-');
+					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '?' && currCh == '>');
 					if( endThisToken )
 					{
 						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
@@ -248,6 +272,12 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						
 						if( currCh == '-' && nextCh == '-' )	// Comment!
 							currType = ECommentPseudoToken;
+						else if( currCh == '?' && nextCh == '>' )	// Back to webpage content.
+						{
+							currType = EWebPageContentToken;
+							newX++;
+							currStartOffs = newX;
+						}
 						else if( subtype != ELastIdentifier_Sentinel )
 							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
 						
@@ -464,6 +494,14 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	{
 		if( mType != EIdentifierToken )
 			throw CForgeParseError( "Expected identifier here.", mLineNum, mOffset );
+		
+		return mStringValue;
+	}
+	
+	const std::string	CToken::GetOriginalWebPageContentText() const
+	{
+		if( mType != EWebPageContentToken )
+			throw CForgeParseError( "Expected web page content here.", mLineNum, mOffset );
 		
 		return mStringValue;
 	}
