@@ -9,6 +9,15 @@ forge [options] <inputfile> [arguments]
 Where inputfile is the path to a UTF8-encoded text file that contains a valid
 HyperTalk script. Currently, the following options are supported:
 
+--webpage				Run in "webpage" mode, which means text in the file will
+						just be printed out, and actual script commands have
+						to be within <?hc and ?> delimiters, like PHP or VBScript
+						let you do it.
+						
+--message <messageName>	The message to send. I.e. the name of the first handler
+						to call. If this is not specified, the handler named
+						"startUp" will be called.
+
 --debug	<host>			Try to connect to a remote debugger on startup on server
 						<host>:13762. This will also set a breakpoint on the
 						startUp handler's first instruction so you can step
@@ -38,14 +47,6 @@ HyperTalk script. Currently, the following options are supported:
 
 --verbose				Dump some additional headings and status messages to
 						stdout.
-
---webpage				Run in "webpage" mode, which means text in the file will
-						just be printed out, and actual script commands have
-						to be within <? and ?> delimiters.
-						
---message <messageName>	The message to send. I.e. the name of the first handler
-						to call. If this is not specified, the handler named
-						"startUp" will be called.
 
 arguments				Any additional arguments following the file name will be
 						passed on to the script's first handler as parameters.
