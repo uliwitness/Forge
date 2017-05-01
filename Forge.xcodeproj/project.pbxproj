@@ -287,23 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				3D1F6C410A81496B00BF477D /* USAGE.txt */,
-				04E0A9720A8ECFDB006A9717 /* testfile.hc */,
-				3DB55B160AC89AE40073C115 /* testfile2.hc */,
-				3D473B790AD46C0B00B35697 /* testfile3.hc */,
-				3DCEC4450AD9998400092ABF /* testfile4.hc */,
-				3DB565550AF8F46500F04130 /* testfile5.hc */,
-				3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */,
-				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
-				558A8D1512BD10C800F514F4 /* testfile8.hc */,
-				55D78A0712BE9E1F00C5D76E /* testfile9.hc */,
-				55FCEC0012C8DD0E00D76F6B /* testfile10.hc */,
-				55FCECD312C8F11200D76F6B /* testfile11.hc */,
-				55BF65DC12D936C000C2FDC3 /* testfile12.hc */,
-				554DC30C186366F100B514E3 /* testfile13.hc */,
-				55CD60E71876E952002450E2 /* testfile14.hc */,
-				55A793F01EB003A9005C40D0 /* testfile15.hc */,
-				5559CEFC1EB6548A00815DD9 /* testfile16.hc */,
-				556FA4521718AA7500A108E5 /* UnitTest.hc */,
+				5559CEFE1EB6DD3F00815DD9 /* Test Scripts */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				049E87FB0A8FB6830072DD07 /* Linked Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -374,6 +358,30 @@
 				55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */,
 			);
 			name = "Code Blocks";
+			sourceTree = "<group>";
+		};
+		5559CEFE1EB6DD3F00815DD9 /* Test Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				04E0A9720A8ECFDB006A9717 /* testfile.hc */,
+				3DB55B160AC89AE40073C115 /* testfile2.hc */,
+				3D473B790AD46C0B00B35697 /* testfile3.hc */,
+				3DCEC4450AD9998400092ABF /* testfile4.hc */,
+				3DB565550AF8F46500F04130 /* testfile5.hc */,
+				3D0E9CF40AFCFDE3004CE917 /* testfile6.hc */,
+				3D4E23A80D992FE000CDC3BC /* testfile7.hc */,
+				558A8D1512BD10C800F514F4 /* testfile8.hc */,
+				55D78A0712BE9E1F00C5D76E /* testfile9.hc */,
+				55FCEC0012C8DD0E00D76F6B /* testfile10.hc */,
+				55FCECD312C8F11200D76F6B /* testfile11.hc */,
+				55BF65DC12D936C000C2FDC3 /* testfile12.hc */,
+				554DC30C186366F100B514E3 /* testfile13.hc */,
+				55CD60E71876E952002450E2 /* testfile14.hc */,
+				55A793F01EB003A9005C40D0 /* testfile15.hc */,
+				5559CEFC1EB6548A00815DD9 /* testfile16.hc */,
+				556FA4521718AA7500A108E5 /* UnitTest.hc */,
+			);
+			name = "Test Scripts";
 			sourceTree = "<group>";
 		};
 		558A8D8012BD205800F514F4 /* Commands */ = {

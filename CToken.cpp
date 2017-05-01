@@ -176,18 +176,39 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					break;
 
 				case EWebPageContentToken:
+				{
+					bool	foundCodeStartIndicator = false;
 					if( currCh == '<' && nextCh == '?' )
 					{
-						tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
-						newX++;
-						currStartOffs = newX;
-						currText.clear();
-						currStartOffs = x;
-						currType = EInvalidToken;
+						nextCh = (nextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+						if( nextCh == 'h' )
+						{
+							nextCh = (nextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+							if( nextCh == 'c' )
+							{
+								nextCh = (nextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+								if( nextCh == ' ' || nextCh == '\t' || nextCh == '\r' || nextCh == '\n' )
+								{
+									tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+
+									newX = nextNewX;
+									currStartOffs = nextNewX;
+									currText.clear();
+									currStartOffs = x;
+									currType = EInvalidToken;
+									
+									foundCodeStartIndicator = true;
+								}
+							}
+						}
 					}
-					else
+					
+					if( !foundCodeStartIndicator )
+					{
 						currText.append( str +x, newX -x );
+					}
 					break;
+				}
 					
 				case ECommentPseudoToken:
 					if( currCh == '\n' || currCh == '\r' )
@@ -264,7 +285,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					char	opstr[2] = { 0, 0 };
 					opstr[0] = currCh;
 					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
-					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '?' && currCh == '>');
+					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '?' && nextCh == '>');
 					if( endThisToken )
 					{
 						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
