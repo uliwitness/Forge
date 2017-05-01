@@ -125,6 +125,7 @@ namespace Carlson
 		std::map<std::string,CVariableEntry>	mGlobals;	//!< List of globals so we can declare them.
 		std::string					mFirstHandlerName;			//!< Name of the function implementing the first handler we parse (can be used by templates as main entry point).
 		bool						mFirstHandlerIsFunction;	//!< TRUE if mFirstHandlerName is a function, FALSE if it's a message/command handler.
+		bool						mWebPageEmbedMode;			//!< TRUE if we allow in-line content and top-level commands.
 		const char*					mFileName;					//!< Name of file being parsed right now.
 		const char*					mSupportFolderPath;			//!< Path to folder with support files.
 		std::vector<CMessageEntry>	mMessages;					//!< Errors and warnings.
@@ -147,6 +148,7 @@ namespace Carlson
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
+		CFunctionDefinitionNode*	StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );	// Called by ParseFunctionDefinition.
 		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
 		CValueNode	*	ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
@@ -174,16 +176,16 @@ namespace Carlson
 		void	ParseReturnStatement( CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		void	ParseDownloadStatement( std::string& userHandlerName, CParseTree& parseTree,
+		void	ParseDownloadStatement( const std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		void	ParseRepeatForEachStatement( std::string& userHandlerName, CParseTree& parseTree,
+		void	ParseRepeatForEachStatement( const std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		void	ParseRepeatStatement( std::string& userHandlerName, CParseTree& parseTree,
+		void	ParseRepeatStatement( const std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		void	ParseIfStatement( std::string& userHandlerName, CParseTree& parseTree,
+		void	ParseIfStatement( const std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		CValueNode*	ParseContainer( bool asPointer, bool initWithName, CParseTree& parseTree,
@@ -192,7 +194,7 @@ namespace Carlson
 										TIdentifierSubtype inEndToken );
 		CValueNode*	ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
-		void	ParseOneLine( std::string& userHandlerName,
+		void	ParseOneLine( const std::string& userHandlerName,
 										CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
@@ -256,6 +258,7 @@ namespace Carlson
 		void		GenerateObjCTypeToVariantCode( std::string type, std::string &prefix, std::string &suffix );
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
 		void		LoadNativeHeaders();
+		void		SetWebPageEmbedMode( bool inState )	{ mWebPageEmbedMode = inState; }
 		
 		const std::vector<CMessageEntry>&		GetMessages()		{ return mMessages; };
 		const std::vector<CHandlerNotesEntry>&	GetHandlerNotes()	{ return mHandlerNotes; };

@@ -52,6 +52,7 @@ public:
 	virtual CCodeBlockNodeBase*	GetContainingFunction()		{ return this; };
 	bool						IsCommand()					{ return mIsCommand; };
 	const std::string&			GetUserHandlerName()		{ return mUserHandlerName; };
+	const std::string&			GetName()					{ return mName; };
 	
 protected:
 	std::string								mName;

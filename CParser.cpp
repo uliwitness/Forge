@@ -251,6 +251,7 @@ const std::string CVariableEntry::GetNewTempName()
 // -----------------------------------------------------------------------------
 
 CParser::CParser()
+	: mWebPageEmbedMode(false)
 {
 	if( !sOperators )
 		sOperators = sDefaultOperators;
@@ -889,18 +890,15 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 	}
-	else if( tokenItty->mType == EWebPageContentToken )
+	else if( mWebPageEmbedMode )
 	{
-//		if( mFirstHandlerName.length() == 0 )
-//		{
-//			mFirstHandlerName = "startup";
-//			mFirstHandlerIsFunction = false;
-//		}
-//
-//		parseTree
-//		// +++
-
-		tokenItty++;
+		CFunctionDefinitionNode	* startupFunction = parseTree.GetFunctionDefinition( "startup" );
+		if( startupFunction == NULL )
+		{
+			startupFunction = StartParsingFunctionDefinition( "startup", "startUp", true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
+		}
+		
+		ParseOneLine( std::string("startUp"), parseTree, startupFunction, tokenItty, tokens );
 	}
 	else
 	{
@@ -971,22 +969,14 @@ void	CParser::ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::
 }
 
 
-void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
 {
-	std::string								handlerName( tokenItty->GetOriginalIdentifierText() );
-	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
-	std::stringstream						fcnHeader;
-	std::stringstream						fcnSignature;
-	size_t									fcnLineNum = tokenItty->mLineNum;
-	
 	if( sLastErrorFunction )	// Last function had an error and never ended?
 	{
 		sLastErrorFunction->SetEndLineNum(fcnLineNum);	// We're now parsing a new function, so make sure we undo its indentation in the code formatter.
 		sLastErrorFunction = NULL;	// All good now.
 	}
 	
-	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-
 	if( mFirstHandlerName.length() == 0 )
 	{
 		mFirstHandlerName = handlerName;
@@ -995,8 +985,8 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
 	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum );
-	parseTree.AddNode( currFunctionNode );
-	
+	parseTree.AddFunctionDefinitionNode( currFunctionNode );
+
 	if( mCurrentNotes.size() > 0 )	// Have documentation preceding this handler?
 	{
 		mHandlerNotes.push_back( CHandlerNotesEntry(userHandlerName,mCurrentNotes) );
@@ -1006,6 +996,20 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	
 	// Make built-in system variables so they get declared below like other local vars:
 	currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
+	
+	return currFunctionNode;
+}
+
+
+void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+{
+	std::string								handlerName( tokenItty->GetOriginalIdentifierText() );
+	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
+	size_t									fcnLineNum = tokenItty->mLineNum;
+	
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+
+	CFunctionDefinitionNode* currFunctionNode = StartParsingFunctionDefinition( handlerName, userHandlerName, isCommand, fcnLineNum, tokenItty, tokens, parseTree );
 
 	int		currParamIdx = 0;
 	
@@ -2005,7 +2009,7 @@ void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 }
 
 
-void	CParser::ParseDownloadStatement( std::string& userHandlerName, CParseTree& parseTree,
+void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParseTree& parseTree,
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
@@ -2346,7 +2350,7 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 
 
 // When you enter this, "repeat for each" has already been parsed, and you should be at the chunk type token:
-void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	// chunk type:
@@ -2448,7 +2452,7 @@ void	CParser::ParseRepeatForEachStatement( std::string& userHandlerName, CParseT
 }
 
 
-void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	size_t		conditionLineNum = tokenItty->mLineNum;
@@ -2668,7 +2672,7 @@ void	CParser::ParseRepeatStatement( std::string& userHandlerName, CParseTree& pa
 }
 
 
-void	CParser::ParseIfStatement( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+void	CParser::ParseIfStatement( const std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	size_t			conditionLineNum = tokenItty->mLineNum;
@@ -3012,7 +3016,7 @@ void	CParser::CreateVariable( const std::string& varName, const std::string& rea
 }
 
 
-void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 								std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 								bool dontSwallowReturn )
 {
@@ -3106,7 +3110,7 @@ void	CParser::ParseOneLine( std::string& userHandlerName, CParseTree& parseTree,
 	// End this line:
 	if( !dontSwallowReturn && tokenItty != tokens.end() )
 	{
-		if( !tokenItty->IsIdentifier(ENewlineOperator) && !hadWebContentToken )
+		if( !tokenItty->IsIdentifier(ENewlineOperator) && !hadWebContentToken && tokenItty->mType != EWebPageContentToken )
 		{
 			std::stringstream errMsg;
 			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected end of line, found "

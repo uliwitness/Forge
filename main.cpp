@@ -149,6 +149,7 @@ int main( int argc, char * const argv[] )
 	char*				code = filename ? GetFileContents( filename ) : NULL;
 	std::deque<CToken>	tokens;
 	CParser				parser;
+	parser.SetWebPageEmbedMode(webPageEmbedMode);
 	
 	if( !code )
 	{

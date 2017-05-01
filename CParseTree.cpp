@@ -9,6 +9,7 @@
 
 #include "CParseTree.h"
 #include "CNodeTransformation.h"
+#include "CFunctionDefinitionNode.h"
 #include <string>
 #include <assert.h>
 
@@ -33,6 +34,13 @@ CParseTree::~CParseTree()
 		delete *itty;
 		*itty = NULL;
 	}
+}
+
+
+void	CParseTree::AddFunctionDefinitionNode( CFunctionDefinitionNode* inNode )
+{
+	AddNode( inNode );
+	mFunctionNodes[inNode->GetName()] = inNode;
 }
 
 
