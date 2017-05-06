@@ -346,7 +346,8 @@
 	X1(EExclamationMarkOperator,"!") \
 	X1(EReadIdentifier,"read") \
 	X1(EWriteIdentifier,"write") \
-	X1(EFileIdentifier,"file")
+	X1(EFileIdentifier,"file") \
+	X1(EUseIdentifier,"use")
 
 typedef enum
 {

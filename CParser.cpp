@@ -860,6 +860,38 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
 	}
+	else if( tokenItty->IsIdentifier( EUseIdentifier ) )
+	{
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "use".
+		if( tokenItty == tokens.end() )
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected file name after 'use' statement.";
+			
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		}
+		std::string	fileName;
+		if( tokenItty->mType == EStringToken )
+		{
+			fileName = tokenItty->mStringValue;
+		}
+		else if( tokenItty->mType == EIdentifierToken )
+		{
+			fileName = tokenItty->GetOriginalIdentifierText();
+		}
+		else
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected file name after 'use' statement, found "
+									<< tokenItty->GetShortDescription() << ".";
+			
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		}
+		
+		
+	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "function" 
