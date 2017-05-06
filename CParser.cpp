@@ -3643,6 +3643,9 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
+	if( kFirstObjCCallInstruction == 0 )	// ObjC call instructions weren't installed.
+		return NULL;
+	
 	if( sFirstNativeCallCallback )
 	{
 		LEOFirstNativeCallCallbackPtr	callback = sFirstNativeCallCallback;
@@ -4274,9 +4277,9 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				theTerm = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				break;
 			}
-			else if( tokenItty->mSubType == EOpenSquareBracketOperator )
+			else if( tokenItty->mSubType == EOpenSquareBracketOperator
+					&& (theTerm = ParseObjCMethodCall( parseTree, currFunction, tokenItty, tokens )) )
 			{	
-				theTerm = ParseObjCMethodCall( parseTree, currFunction, tokenItty, tokens );
 				break;
 			}
 			else
