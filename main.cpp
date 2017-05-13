@@ -213,7 +213,7 @@ int main( int argc, char * const argv[] )
 		
 		uint16_t 			fileID = LEOFileIDForFileName(filename);
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
-		LEOContextGroup	*	group = LEOContextGroupCreate();
+		LEOContextGroup	*	group = LEOContextGroupCreate( NULL, NULL );
 		CCodeBlock			block( group, script, fileID );
 		
 		parseTree.Simplify();
