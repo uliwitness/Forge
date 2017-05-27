@@ -1237,9 +1237,13 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 				COperatorNode* opNode = new COperatorNode( &parseTree, printInstrID, startLine );
 				resultNode = opNode;
 				opNode->SetInstructionParams( param1, param2 );
-				opNode->AddParam( whatExpression );
+				if( whatExpression )
+					opNode->AddParam( whatExpression );
+				else
+					printInstrID = INVALID_INSTR;
 			}
-			else
+			
+			if( printInstrID == INVALID_INSTR )
 			{
 				std::stringstream		errMsg;
 				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"into\", \"before\" or \"after\" here, found "
