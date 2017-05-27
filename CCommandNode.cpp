@@ -51,6 +51,8 @@ void	CCommandNode::Simplify()
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )
 	{
 		CValueNode	*	originalNode = *itty;
+		if( !originalNode )
+			continue;
 		originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
 		CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
 		if( newNode != originalNode )
@@ -65,7 +67,10 @@ void	CCommandNode::Simplify()
 void	CCommandNode::Visit( std::function<void(CNode*)> visitorBlock )
 {
 	for( auto currParam : mParams )
-		currParam->Visit( visitorBlock );
+	{
+		if( currParam )
+			currParam->Visit( visitorBlock );
+	}
 	
 	CNode::Visit( visitorBlock );
 }
