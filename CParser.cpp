@@ -860,7 +860,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
 	}
-	else if( tokenItty->IsIdentifier( EUseIdentifier ) )
+	else if( tokenItty->IsIdentifier( EUseIdentifier ) && mWebPageEmbedMode )
 	{
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "use".
 		if( tokenItty == tokens.end() )
@@ -890,7 +890,35 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
 		}
 		
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
+		const char* oldFileName = mFileName;
+		char innerFileName[1024] = {};
+		strncpy(innerFileName,fileName.c_str(),sizeof(innerFileName));
+		
+		FILE * theFile = fopen(innerFileName,"r");
+		if( theFile )
+		{
+			fseek( theFile, 0, SEEK_END );
+			size_t fileLen = ftell(theFile);
+			fseek( theFile, 0, SEEK_SET );
+			std::vector<char>	fileText;
+			fileText.resize( fileLen );
+			fread( fileText.data(), 1, fileLen, theFile );
+			std::deque<CToken>	includedTokens = CTokenizer::TokenListFromText( fileText.data(), fileLen , mWebPageEmbedMode );
+			Parse( innerFileName, includedTokens, parseTree, fileText.data() );
+			fclose(theFile);
+			mFileName = oldFileName;
+		}
+		else
+		{
+			std::stringstream		errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can't find file \""
+			<< innerFileName << "\" to use.";
+			
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		}
 	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{
