@@ -2028,41 +2028,12 @@ void	CParser::ParseGlobalStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 {
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "global".
 	
-	if( tokenItty == tokens.end() )
-	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected variable name identifier after \"global\".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-	}
-	
 	std::string		globalName( "var_" );
-	size_t			startLine = tokenItty->mLineNum;
 	globalName.append( tokenItty->GetIdentifierText() );
-	std::string		userGlobalName = tokenItty->GetIdentifierText();
 	
-	currFunction->AddLocalVar( globalName, userGlobalName, TVariantType_INVALID, false, false, true );
+	currFunction->AddLocalVar( globalName, tokenItty->GetIdentifierText(), TVariantType_INVALID, false, false, true );
 	
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip global name.
-	
-	if( tokenItty != tokens.end() && tokenItty->IsIdentifier( EEqualsOperator ) )
-	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip = sign.
-		
-		CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
-		if( theWhatNode == nullptr )
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression after \"global " << userGlobalName << " = \".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
-		
-		CPutCommandNode *thePutCommand = new CPutCommandNode( &parseTree, startLine );
-		thePutCommand->AddParam( theWhatNode );
-		thePutCommand->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, globalName, userGlobalName, startLine ) );
-		currFunction->AddCommand( thePutCommand );
-	}
 }
 
 
