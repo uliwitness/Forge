@@ -348,7 +348,8 @@
 	X1(EReadIdentifier,"read") \
 	X1(EWriteIdentifier,"write") \
 	X1(EFileIdentifier,"file") \
-	X1(EUseIdentifier,"use")
+	X1(EUseIdentifier,"use") \
+	X1(EPageIdentifier,"page")
 
 typedef enum
 {
@@ -475,6 +476,15 @@ struct TNumberConstantEntry
 	TIdentifierSubtype		mType[MAX_CONSTANT_IDENTS];	//!< The identifier for this constant.
 	LEONumber				mValue;						//!< Actual number this constant evaluates to.
 	TIdentifierSubtype		mSetName;					//!< A one-word name for the group of identifiers this belongs to, used to reference it from host entries.
+};
+
+
+struct TBuiltInVariableEntry
+{
+	TIdentifierSubtype	mType;									//!< Identifier subtype for this built-in variable.
+	const char*			mVariableName;							//!< Internal name we use in generated code (to avoid collisions with temps we generate), e.g. "var_x" for something that matches the user-defined variable "X". Must be all-lowercase.
+	const char*			mUserVariableName;						//!< External name we show to the user or which the user specified, including proper case (e.g. "X").
+	bool				mIsGlobal;								//!< Is this a global or a local variable?
 };
 
 

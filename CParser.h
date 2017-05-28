@@ -275,5 +275,6 @@ namespace Carlson
 		static void		AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
 		static void		AddStringConstants( TStringConstantEntry* inEntries );
 		static void		AddNumberConstants( TNumberConstantEntry* inEntries );
+		static void		AddBuiltInVariables( TBuiltInVariableEntry* inEntries );
 	};
 }

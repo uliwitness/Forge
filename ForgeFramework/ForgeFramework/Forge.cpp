@@ -692,6 +692,33 @@ extern "C" void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries )
 }
 
 
+extern "C" void	LEOAddBuiltInVariables( struct TBuiltInVariableEntry* inEntries )
+{
+	gLEOLastErrorString[0] = 0;
+	gLEOLastErrorOffset = SIZE_T_MAX;
+	gLEOLastErrorLineNum = SIZE_T_MAX;
+	
+	try
+	{
+		CParser::AddBuiltInVariables( inEntries );
+	}
+	catch( CForgeParseError& ferr )
+	{
+		strcpy( gLEOLastErrorString, ferr.what() );
+		gLEOLastErrorLineNum = ferr.GetLineNum();
+		gLEOLastErrorOffset = ferr.GetOffset();
+	}
+	catch( std::exception& err )
+	{
+		strcpy( gLEOLastErrorString, err.what() );
+	}
+	catch( ... )
+	{
+		strcpy( gLEOLastErrorString, "Unknown error." );
+	}
+}
+
+
 extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 {
 	gLEOLastErrorString[0] = 0;

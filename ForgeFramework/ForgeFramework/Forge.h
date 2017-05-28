@@ -246,6 +246,13 @@ void	LEOAddStringConstants( struct TStringConstantEntry* inEntries );
 */
 void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries );
 
+	
+/*!
+ Add one or more variable names to the table of Forge's built-in variables.
+ You can reference these using "the <name>", e.g. "the result" or "the download".
+ */
+void	LEOAddBuiltInVariables( struct TBuiltInVariableEntry* inEntries );
+
 
 /*! Load syntax for 'native calls' (i.e. native operating system APIs as you would call them from C, Objective C, C# or Pascal) from the specified .hhc header file, so the functions and methods in it become available to the parser as if they were handlers (just that they can return pointers and you might have to manage memory handed into or returned from them).
 	@seealso //leo_ref/c/func/LEOSetFirstNativeCallCallback	LEOSetFirstNativeCallCallback

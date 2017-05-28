@@ -216,8 +216,21 @@ struct TConstantEntry	sDefaultConstants[] =
 	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL, ELastIdentifier_Sentinel }
 };
 
-
 struct TConstantEntry*	sConstants = nullptr;
+	
+
+#pragma mark [Built-in variable lookup table]
+
+
+struct TBuiltInVariableEntry	sDefaultBuiltInVariables[] =
+{
+	{ EResultIdentifier, "result", "result", false },
+	{ EDownloadIdentifier, "download", "download", false },
+	{ ELastIdentifier_Sentinel, nullptr, nullptr, false }
+};
+
+	
+struct TBuiltInVariableEntry*	sBuiltInVariables = nullptr;
 
 
 #pragma mark -
@@ -267,6 +280,8 @@ CParser::CParser()
 		sHostFunctions = sDefaultHostFunctions;
 	if( !sConstants )
 		sConstants = sDefaultConstants;
+	if( !sBuiltInVariables )
+		sBuiltInVariables = sDefaultBuiltInVariables;
 }
 
 
@@ -726,6 +741,51 @@ CParser::CParser()
 	sConstants = newTable;
 }
 
+	
+// -----------------------------------------------------------------------------
+//	AddBuiltInVariables:
+//		Add additional built-in variables to the ones the parser understands.
+// -----------------------------------------------------------------------------
+
+/*static*/ void	CParser::AddBuiltInVariables( TBuiltInVariableEntry* inEntries )
+{
+	size_t		numOldEntries = 0,
+	numNewEntries = 0;
+	
+	if( !sBuiltInVariables )
+		sBuiltInVariables = sDefaultBuiltInVariables;
+	
+	if( sBuiltInVariables )
+	{
+		for( size_t x = 0; sBuiltInVariables[x].mType != ELastIdentifier_Sentinel; x++ )
+			numOldEntries++;
+	}
+	for( size_t x = 0; inEntries[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		numNewEntries++;
+	}
+	
+	TBuiltInVariableEntry*	newTable = NULL;
+	if( sBuiltInVariables == sDefaultBuiltInVariables )
+	{
+		newTable = (TBuiltInVariableEntry*) calloc( numOldEntries +numNewEntries +1, sizeof(TBuiltInVariableEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+		memmove( newTable, sBuiltInVariables, numOldEntries *sizeof(TBuiltInVariableEntry) );
+	}
+	else
+	{
+		newTable = (TBuiltInVariableEntry*) realloc( sBuiltInVariables, (numOldEntries +numNewEntries +1) * sizeof(TBuiltInVariableEntry) );
+		if( !newTable )
+			throw std::runtime_error( "Couldn't resize list of constants." );
+	}
+	
+	// Create a CStringValueNode template object for every string constant we were given:
+	memmove( newTable +numOldEntries, inEntries, (numNewEntries  +1) *sizeof(TBuiltInVariableEntry) );	// +1 to include terminator entry.
+	
+	sBuiltInVariables = newTable;
+}
+
 
 // -----------------------------------------------------------------------------
 //	Parse:
@@ -952,14 +1012,15 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	}
 	else if( mWebPageEmbedMode )
 	{
-		CFunctionDefinitionNode	* startupFunction = parseTree.GetFunctionDefinition( "startup" );
+		const char *implicitWebStartupFunctionName = "::generatepage";
+		CFunctionDefinitionNode	* startupFunction = parseTree.GetFunctionDefinition( implicitWebStartupFunctionName );
 		if( startupFunction == NULL )
 		{
-			startupFunction = StartParsingFunctionDefinition( "startup", "startUp", true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
+			startupFunction = StartParsingFunctionDefinition( implicitWebStartupFunctionName, implicitWebStartupFunctionName, true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
 			startupFunction->SetAllVarsAreGlobals( true );
 		}
 		
-		ParseOneLine( std::string("startUp"), parseTree, startupFunction, tokenItty, tokens );
+		ParseOneLine( std::string(implicitWebStartupFunctionName), parseTree, startupFunction, tokenItty, tokens );
 	}
 	else
 	{
@@ -2951,23 +3012,19 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 		return container;
 
 	// Otherwise try to parse a built-in variable:
-	if( tokenItty->IsIdentifier( EResultIdentifier ) )
+	for( int bivIdx = 0; sBuiltInVariables[bivIdx].mType != ELastIdentifier_Sentinel; ++bivIdx )
 	{
-		std::string		realResultName( "result" );
-		std::string		resultName( "result" );
-		CreateVariable( resultName, realResultName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, resultName, realResultName, tokenItty->mLineNum );
-		
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	}
-	else if( tokenItty->IsIdentifier( EDownloadIdentifier ) )
-	{
-		std::string		realDVarName( "download" );
-		std::string		dVarName( "download" );
-		CreateVariable( dVarName, realDVarName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
-		container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName, tokenItty->mLineNum );
-		
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		TBuiltInVariableEntry* currVar = sBuiltInVariables + bivIdx;
+		if( tokenItty->IsIdentifier( currVar->mType ) )
+		{
+			std::string		realDVarName( currVar->mUserVariableName );
+			std::string		dVarName( currVar->mVariableName );
+			CreateVariable( dVarName, realDVarName, initWithName, currFunction, currVar->mIsGlobal || currFunction->GetAllVarsAreGlobals() );
+			container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName, tokenItty->mLineNum );
+			
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+			return container;
+		}
 	}
 	
 	// Check if it could be an object property expression:
@@ -3069,14 +3126,14 @@ void	CParser::CreateVariable( const std::string& varName, const std::string& rea
 	std::map<std::string,CVariableEntry>::iterator	theContainerItty;
 	std::map<std::string,CVariableEntry>*			varMap;
 	
-	if( isGlobal )
-		varMap = &currFunction->GetGlobals();
-	else
+//	if( isGlobal )
+//		varMap = &currFunction->GetGlobals();
+//	else
 		varMap = &currFunction->GetLocals();
 	theContainerItty = varMap->find( varName );
 
 	if( theContainerItty == varMap->end() )	// No var of that name yet?
-		(*varMap)[varName] = CVariableEntry( realVarName, TVariantType_INVALID, initWithName );	// Add one to variable list.
+		(*varMap)[varName] = CVariableEntry( realVarName, TVariantType_INVALID, initWithName, false, isGlobal );	// Add one to variable list.
 
 }
 

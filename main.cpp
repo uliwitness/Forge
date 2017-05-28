@@ -23,6 +23,14 @@ extern "C" {
 
 using namespace Carlson;
 
+
+struct TBuiltInVariableEntry	gBuiltInVariables[] =
+{
+	{ EPageIdentifier, "page", "page", true },
+	{ ELastIdentifier_Sentinel, nullptr, nullptr }
+};
+
+
 static char*	GetFileContents( const char* fname )
 {
 	// Open script to run:
@@ -59,7 +67,7 @@ static char*	GetFileContents( const char* fname )
 int main( int argc, char * const argv[] )
 {
 	const char*	debuggerHost = NULL;
-	const char* messageName = "startUp";
+	const char* messageName = nullptr;
 	bool		debuggerOn = false,
 				runCode = true,
 				printInstructions = false,
@@ -144,6 +152,14 @@ int main( int argc, char * const argv[] )
 		x++;
 	}
 	
+	if( messageName == nullptr )
+	{
+		if( webPageEmbedMode )
+			messageName = "::generatepage";
+		else
+			messageName = "startUp";
+	}
+	
 	// Do actual work:
 	char*				filename = (fnameIdx > 0) ? argv[fnameIdx] : NULL;
 	char*				code = filename ? GetFileContents( filename ) : NULL;
@@ -191,6 +207,10 @@ int main( int argc, char * const argv[] )
 		LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
 		LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
 		LEOAddOperatorsAndOffsetInstructions( gPropertyOperators, kFirstPropertyInstruction );
+		if( webPageEmbedMode )
+		{
+			LEOAddBuiltInVariables( gBuiltInVariables );
+		}
 		
 		if( verbose )
 			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;

@@ -1,7 +1,6 @@
 <?hc
 	on printPageTitle
-		global gPage
-		output the title of gPage
+		output the title of the page
 	end printPageTitle
 ?><html>
 <head>
