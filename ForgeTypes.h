@@ -50,6 +50,7 @@
 	X1(ECommaOperator,",") \
 	X1(EOpenBracketOperator,"(") \
 	X1(ECloseBracketOperator,")") \
+	X1(EOutputIdentifier,"output") \
 	X1(EPutIdentifier,"put") \
 	X1(EIntoIdentifier,"into") \
 	X1(EAfterIdentifier,"after") \
