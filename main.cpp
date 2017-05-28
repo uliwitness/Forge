@@ -20,7 +20,9 @@ extern "C" {
 #include "CConcatOperatorNodeTransformation.h"
 #include "CConcatSpaceOperatorNodeTransformation.h"
 #include "CChunkPropertyNodeTransformation.h"
+#include "LEOMsgInstructionsGeneric.h"
 
+#include <fstream>
 #include <unistd.h>
 #include "fake_filesystem.hpp"	// until <filesystem> ships for Xcode's clang.
 using namespace fake;
@@ -59,36 +61,35 @@ struct ForgeToolOptions
 int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions );
 
 
-static char*	GetFileContents( const char* fname )
+static bool GetFileContents( const std::string& fname, std::vector<char>& outFileContents )
 {
 	// Open script to run:
-	FILE*	theFile = fopen( fname, "r" );
+	FILE*	theFile = fopen( fname.c_str(), "r" );
 	if( !theFile )
 	{
-		printf("ERROR: Can't open file \"%s\".\n", fname);
-		return NULL;
+		printf("ERROR: Can't open file \"%s\".\n", fname.c_str());
+		return false;
 	}
 	
 	// Find out file length:
 	fseek( theFile, 0, SEEK_END );
 	long	len = ftell( theFile ),
-			readbytes;
-	char*	codeStr = (char*) calloc( len +1, sizeof(char) );
+			readbytes = 0;
+	outFileContents.resize( len +1 );
 	
 	// Rewind and read in whole file:
 	fseek( theFile, 0, SEEK_SET );
-	readbytes = fread( codeStr, 1, len, theFile );
+	readbytes = fread( outFileContents.data(), 1, len, theFile );
 	if( readbytes != len )
 	{
-		free( codeStr );
 		fclose( theFile );
-		printf("ERROR: Couldn't read from file \"%s\" (%ld bytes read).\n",fname,readbytes);
-		return NULL;
+		printf("ERROR: Couldn't read from file \"%s\" (%ld bytes read).\n",fname.c_str(),readbytes);
+		return false;
 	}
-	codeStr[len] = 0;	// Terminate string.
+	outFileContents[len] = 0;	// Terminate string.
 	fclose( theFile );
 	
-	return codeStr;
+	return true;
 }
 
 
@@ -211,8 +212,6 @@ int main( int argc, char * const argv[] )
 	char*	filename = (toolOptions.fnameIdx > 0) ? argv[toolOptions.fnameIdx] : NULL;
 	if( filename && fnameIsFolder )
 	{
-		chdir(filename);
-		
 		filesystem::directory_iterator	currFile(filename);
 		for( ; currFile != filesystem::directory_iterator(); ++currFile )
 		{
@@ -245,24 +244,37 @@ int main( int argc, char * const argv[] )
 int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions )
 {
 	// Do actual work:
-	char*				code = GetFileContents( inFilePathString.c_str() );
-	std::deque<CToken>	tokens;
-	CParser				parser;
-	parser.SetWebPageEmbedMode(toolOptions.webPageEmbedMode);
-	
-	if( !code )
+	std::vector<char>	code;
+	if( !GetFileContents( inFilePathString, code ) )
 	{
 		std::cerr << "error: Couldn't find file \"" << inFilePathString << "\"." << std::endl;
 		return 2;
 	}
-		
+
+	std::deque<CToken>	tokens;
+	CParser				parser;
+	parser.SetWebPageEmbedMode(toolOptions.webPageEmbedMode);
+	if( toolOptions.webPageEmbedMode )
+	{
+		parser.SetIncludeHandler([](const std::string& inFileName, const std::string& inRelativeToFileName, std::vector<char>&outContents)
+		{
+			std::string includePath;
+			size_t namestart = inRelativeToFileName.find_last_of('/');
+			includePath = inRelativeToFileName.substr( 0, namestart );
+			includePath.append(1,'/');
+			includePath.append(inFileName);
+			
+			return GetFileContents( includePath, outContents );
+		});
+	}
+	
 	try
 	{
 		CParseTree				parseTree;
 		
 		if( toolOptions.verbose )
 			std::cout << "Tokenizing file \"" << inFilePathString << "\"..." << std::endl;
-		tokens = CTokenizer::TokenListFromText( code, strlen(code), toolOptions.webPageEmbedMode );
+		tokens = CTokenizer::TokenListFromText( code.data(), code.size(), toolOptions.webPageEmbedMode );
 		if( toolOptions.printTokens )
 		{
 			for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
@@ -271,7 +283,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 		
 		if( toolOptions.verbose )
 			std::cout << "Parsing file \"" << inFilePathString << "\"..." << std::endl;
-		parser.Parse( inFilePathString.c_str(), tokens, parseTree, code );
+		parser.Parse( inFilePathString.c_str(), tokens, parseTree, code.data() );
 		
 		if( toolOptions.printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
@@ -283,7 +295,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 			LEODisplayInfoTable*	lit = LEODisplayInfoTableCreateForParseTree( (LEOParseTree*) &parseTree );
 			char*	theText = NULL;
 			size_t	theLength = 0;
-			LEODisplayInfoTableApplyToText( lit, code, strlen(code), &theText, &theLength, NULL, NULL );
+			LEODisplayInfoTableApplyToText( lit, code.data(), code.size(), &theText, &theLength, NULL, NULL );
 			std::cout << theText << std::endl;
 			free( theText );
 			const char*		currName = "";
@@ -315,6 +327,12 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 		
 		if( toolOptions.runCode )
 		{
+			std::stringstream	capturedOutput;
+			if( toolOptions.webPageEmbedMode )
+			{
+				gLEOMsgOutputStream = &capturedOutput;
+			}
+			
 			if( toolOptions.verbose )
 				printf( "\nRun the code:\n" );
 			
@@ -335,7 +353,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 					{
 						ctx->preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
-						LEORemoteDebuggerAddFile( code, fileID, script );
+						LEORemoteDebuggerAddFile( code.data(), fileID, script );
 					}
 				}
 				
@@ -416,7 +434,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 								{
 									std::string suffixlessFileName;
 									size_t namestart = inFilePathString.find_last_of('/');
-									if( namestart == std::string::npos ) namestart = 0;
+									if( namestart == std::string::npos ) namestart = 0; else ++namestart;
 									size_t basenameend = inFilePathString.find_last_of('.');
 									suffixlessFileName = inFilePathString.substr( namestart, basenameend -namestart );
 									desiredFilename << suffixlessFileName << "." << str;
@@ -431,12 +449,21 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 						
 						if( filenameRequested )
 						{
-							std::cout << "Output file name requested: " << desiredFilename.str() << std::endl;
+							std::cout << "Writing file: " << desiredFilename.str() << std::endl;
+							
+							std::ofstream	outputFile;
+							outputFile.open( desiredFilename.str() );
+							outputFile << capturedOutput.str();
 						}
 					}
 				}
 				
 				LEOContextRelease( ctx );
+			}
+			
+			if( toolOptions.webPageEmbedMode )
+			{
+				gLEOMsgOutputStream = &std::cout;
 			}
 		}
 		

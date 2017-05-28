@@ -113,6 +113,9 @@ namespace Carlson
 	} TAllVarsAreGlobals;
 	
 	// -------------------------------------------------------------------------
+	
+	typedef std::function<bool(const std::string& inFileName,const std::string& inRelativeToFileName,std::vector<char>&outContents)> CParserIncludeHandler;	//!< Fills outContents with the contents of the requested include file. Returns TRUE on success, FALSE otherwise.
+	
 	/*!
 		@class CParser
 		The object that keeps all state while parsing a token stream and
@@ -131,6 +134,7 @@ namespace Carlson
 		std::vector<CMessageEntry>	mMessages;					//!< Errors and warnings.
 		std::vector<CHandlerNotesEntry>	mHandlerNotes;			//!< List of documentation comments found in the script.
 		std::string					mCurrentNotes;				//!< The most recent "notes" text (documentation "comment") we encountered, so a handler definition can snarf it up and associate it with its handler name. Only valid while parsing.
+		CParserIncludeHandler		mIncludeHandler;			//!< Lambda that is called (if present) to retrieve a file included using the "use" statement in web page mode.
 		
 	protected:
 		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		//!< Populated from frameworkheaders.hhc file.
@@ -257,8 +261,10 @@ namespace Carlson
 		
 		void		GenerateObjCTypeToVariantCode( std::string type, std::string &prefix, std::string &suffix );
 		void		GenerateVariantToObjCTypeCode( std::string type, std::string &prefix, std::string &suffix, std::string& ioValue );
+		
 		void		LoadNativeHeaders();
 		void		SetWebPageEmbedMode( bool inState )	{ mWebPageEmbedMode = inState; }
+		void		SetIncludeHandler( CParserIncludeHandler inIncludeHandler ) { mIncludeHandler = inIncludeHandler; };
 		
 		const std::vector<CMessageEntry>&		GetMessages()		{ return mMessages; };
 		const std::vector<CHandlerNotesEntry>&	GetHandlerNotes()	{ return mHandlerNotes; };

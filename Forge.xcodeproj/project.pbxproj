@@ -49,7 +49,7 @@
 		55A793EC1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */; };
 		55A793EF1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55A793ED1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.c */; };
 		55A793F11EB00554005C40D0 /* testfile15.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55A793F01EB003A9005C40D0 /* testfile15.hc */; };
-		55AAC0581710A1BB008441AF /* LEOMsgInstructionsGeneric.c in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */; };
+		55AAC0581710A1BB008441AF /* LEOMsgInstructionsGeneric.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.cpp */; };
 		55AAC05B1710ADAC008441AF /* UTF8UTF32Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC0591710ADAB008441AF /* UTF8UTF32Utilities.c */; };
 		55AAC0661710AEB1008441AF /* CChunkPropertyNodeTransformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC05C1710AEAD008441AF /* CChunkPropertyNodeTransformation.cpp */; };
 		55AAC0671710AEB1008441AF /* CConcatOperatorNodeTransformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55AAC05E1710AEAE008441AF /* CConcatOperatorNodeTransformation.cpp */; };
@@ -189,7 +189,7 @@
 		55A793ED1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOFileInstructionsGeneric.c; path = Leonie/generic/LEOFileInstructionsGeneric.c; sourceTree = "<group>"; };
 		55A793EE1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOFileInstructionsGeneric.h; path = Leonie/generic/LEOFileInstructionsGeneric.h; sourceTree = "<group>"; };
 		55A793F01EB003A9005C40D0 /* testfile15.hc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testfile15.hc; sourceTree = "<group>"; };
-		55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOMsgInstructionsGeneric.c; path = Leonie/generic/LEOMsgInstructionsGeneric.c; sourceTree = "<group>"; };
+		55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LEOMsgInstructionsGeneric.cpp; path = Leonie/generic/LEOMsgInstructionsGeneric.cpp; sourceTree = "<group>"; };
 		55AAC0571710A1BB008441AF /* LEOMsgInstructionsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOMsgInstructionsGeneric.h; path = Leonie/generic/LEOMsgInstructionsGeneric.h; sourceTree = "<group>"; };
 		55AAC0591710ADAB008441AF /* UTF8UTF32Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = UTF8UTF32Utilities.c; path = Leonie/generic/UTF8UTF32Utilities.c; sourceTree = "<group>"; };
 		55AAC05A1710ADAB008441AF /* UTF8UTF32Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF8UTF32Utilities.h; path = Leonie/generic/UTF8UTF32Utilities.h; sourceTree = "<group>"; };
@@ -497,7 +497,7 @@
 				556FA4551718AED200A108E5 /* LEOMsgCommandsGeneric.h */,
 				556FA4541718AED100A108E5 /* LEOMsgCommandsGeneric.c */,
 				55AAC0571710A1BB008441AF /* LEOMsgInstructionsGeneric.h */,
-				55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.c */,
+				55AAC0561710A1BB008441AF /* LEOMsgInstructionsGeneric.cpp */,
 				55A793EE1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.h */,
 				55A793ED1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.c */,
 				55AAC0791710B1B1008441AF /* LEOPropertyInstructions.h */,
@@ -609,7 +609,7 @@
 				55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */,
 				55E8060213662396006F1287 /* CObjectPropertyNode.cpp in Sources */,
 				55E8060F136624D6006F1287 /* Forge.cpp in Sources */,
-				55AAC0581710A1BB008441AF /* LEOMsgInstructionsGeneric.c in Sources */,
+				55AAC0581710A1BB008441AF /* LEOMsgInstructionsGeneric.cpp in Sources */,
 				55AAC05B1710ADAC008441AF /* UTF8UTF32Utilities.c in Sources */,
 				55AAC0661710AEB1008441AF /* CChunkPropertyNodeTransformation.cpp in Sources */,
 				55AAC0671710AEB1008441AF /* CConcatOperatorNodeTransformation.cpp in Sources */,
