@@ -382,6 +382,60 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 					}
 				}
 				
+				if( toolOptions.webPageEmbedMode )
+				{
+					std::stringstream	desiredFilename;
+					
+					LEOValuePtr pageGlobal = LEOGetArrayValueForKey( group->globals, "page" );
+					if( pageGlobal )
+					{
+						bool			filenameRequested = false;
+						char			tmpStr[1024] = {};
+						union LEOValue	tmp;
+						LEOValuePtr theValue = LEOGetValueForKey( pageGlobal, "filename", &tmp, kLEOInvalidateReferences, ctx );
+						if( theValue )
+						{
+							const char* str = LEOGetValueAsString( theValue, tmpStr, sizeof(tmpStr), ctx );
+							if( str )
+							{
+								filenameRequested = true;
+								desiredFilename << str;
+							}
+							if( theValue == &tmp )
+							{
+								LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+							}
+						}
+						if( !filenameRequested )
+						{
+							theValue = LEOGetValueForKey( pageGlobal, "filetype", &tmp, kLEOInvalidateReferences, ctx );
+							if( theValue )
+							{
+								const char* str = LEOGetValueAsString( theValue, tmpStr, sizeof(tmpStr), ctx );
+								if( str )
+								{
+									std::string suffixlessFileName;
+									size_t namestart = inFilePathString.find_last_of('/');
+									if( namestart == std::string::npos ) namestart = 0;
+									size_t basenameend = inFilePathString.find_last_of('.');
+									suffixlessFileName = inFilePathString.substr( namestart, basenameend -namestart );
+									desiredFilename << suffixlessFileName << "." << str;
+									filenameRequested = true;
+								}
+								if( theValue == &tmp )
+								{
+									LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+								}
+							}
+						}
+						
+						if( filenameRequested )
+						{
+							std::cout << "Output file name requested: " << desiredFilename.str() << std::endl;
+						}
+					}
+				}
+				
 				LEOContextRelease( ctx );
 			}
 		}
