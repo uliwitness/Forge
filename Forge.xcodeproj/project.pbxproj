@@ -179,6 +179,7 @@
 		55993B7D1347EBB2001624A2 /* CMakeChunkRefNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMakeChunkRefNode.h; sourceTree = "<group>"; };
 		55993B801348F3AA001624A2 /* CMakeChunkConstNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMakeChunkConstNode.cpp; sourceTree = "<group>"; };
 		55993B811348F3AB001624A2 /* CMakeChunkConstNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMakeChunkConstNode.h; sourceTree = "<group>"; };
+		559CCA141EDB168200E6D0CD /* LEOUserData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LEOUserData.h; path = Leonie/common/LEOUserData.h; sourceTree = "<group>"; };
 		55A5855C12F369E1009550CD /* LEORemoteDebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEORemoteDebugger.c; path = Leonie/macosx/LEORemoteDebugger.c; sourceTree = "<group>"; };
 		55A5855D12F369E1009550CD /* LEORemoteDebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEORemoteDebugger.h; path = Leonie/macosx/LEORemoteDebugger.h; sourceTree = "<group>"; };
 		55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOPropertyInstructionsGeneric.c; sourceTree = "<group>"; };
@@ -470,6 +471,7 @@
 			children = (
 				55C72BE8127DD30B00CF0F16 /* LEOValue.h */,
 				55C72BE9127DD30B00CF0F16 /* LEOValue.c */,
+				559CCA141EDB168200E6D0CD /* LEOUserData.h */,
 				55C72BEA127DD30B00CF0F16 /* LEOInterpreter.h */,
 				55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */,
 				55C72BEC127DD30B00CF0F16 /* LEOInstructions.h */,
