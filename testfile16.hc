@@ -1,4 +1,5 @@
-<?hc put "title": "This is the title" into gPage
+<?hc put "title": "This is the title" ¬
+		"slug": "this-is-the-title" into gPage
 
 use "testfile16_header.hc" ?>
 <?hc repeat with x = 1 to 5 ?>

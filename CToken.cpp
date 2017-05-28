@@ -144,6 +144,26 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						currType = EGuillemotsStringPseudoToken;
 						currStartOffs = newX;
 					}
+					else if( currCh == 0x00AC )	// ¬ Line continuation character? Just swallow the line break.
+					{
+						currStartOffs = newX;
+						if( nextCh == '\n' )	// Unix line ending:
+						{
+							currStartOffs = nextNewX;
+						}
+						else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
+						{
+							size_t			nextNextNewX = nextNewX;
+							uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+							if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
+							{
+								currStartOffs = nextNextNewX;
+							}
+						}
+						
+						newX = currStartOffs;
+						++currLineNum;
+					}
 					else if( isdigit( currCh ) )
 					{
 						currType = ENumberToken;
@@ -251,11 +271,45 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						{
 							currType = ECommentPseudoToken;
 						}
+						else if( currCh == '(' && nextCh == '*' )
+						{
+							currType = EMultilineCommentPseudoToken;
+						}
 						else if( currCh == '?' && nextCh == '>' )
 						{
 							currType = EWebPageContentToken;
 							newX++;
 							currStartOffs = newX;
+						}
+						else if( currCh == 0x201C )	// “
+						{
+							currType = ECurlyStringPseudoToken;
+							currStartOffs = newX;
+						}
+						else if( currCh == 0x00AB )	// «
+						{
+							currType = EGuillemotsStringPseudoToken;
+							currStartOffs = newX;
+						}
+						else if( currCh == 0x00AC )	// ¬ Line continuation character? Just swallow the line break.
+						{
+							currStartOffs = newX;
+							if( nextCh == '\n' )	// Unix line ending:
+							{
+								currStartOffs = nextNewX;
+							}
+							else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
+							{
+								size_t			nextNextNewX = nextNewX;
+								uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+								if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
+								{
+									currStartOffs = nextNextNewX;
+								}
+							}
+							
+							newX = currStartOffs;
+							++currLineNum;
 						}
 						else if( currCh != ' ' && currCh != '\t' )
 						{
@@ -285,7 +339,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					char	opstr[2] = { 0, 0 };
 					opstr[0] = currCh;
 					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
-					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '?' && nextCh == '>');
+					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '(' && nextCh == '*') || (currCh == '?' && nextCh == '>') || currCh == 0x00AC;
 					if( endThisToken )
 					{
 						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
@@ -293,11 +347,35 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						
 						if( currCh == '-' && nextCh == '-' )	// Comment!
 							currType = ECommentPseudoToken;
+						else if( currCh == '(' && nextCh == '*' )
+						{
+							currType = EMultilineCommentPseudoToken;
+						}
 						else if( currCh == '?' && nextCh == '>' )	// Back to webpage content.
 						{
 							currType = EWebPageContentToken;
 							newX++;
 							currStartOffs = newX;
+						}
+						else if( currCh == 0x00AC )	// ¬ Line continuation character? Just swallow the line break.
+						{
+							currStartOffs = newX;
+							if( nextCh == '\n' )	// Unix line ending:
+							{
+								currStartOffs = nextNewX;
+							}
+							else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
+							{
+								size_t			nextNextNewX = nextNewX;
+								uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
+								if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
+								{
+									currStartOffs = nextNextNewX;
+								}
+							}
+							
+							newX = currStartOffs;
+							++currLineNum;
 						}
 						else if( subtype != ELastIdentifier_Sentinel )
 							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
