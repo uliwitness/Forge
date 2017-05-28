@@ -1,5 +1,5 @@
 <?hc
-	set the title of the page to "This is the title"
+	set the title of the page to "This is the <title>"
 	set the slug of the page to "this-is-the-title"
 	
 	use "testfile16_header.hc"

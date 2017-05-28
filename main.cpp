@@ -14,6 +14,7 @@ extern "C" {
 #include "LEORemoteDebugger.h"
 #include "LEOMsgCommandsGeneric.h"
 #include "LEOFileInstructionsGeneric.h"
+#include "LEOWebPageInstructionsGeneric.h"
 #include "LEOInterpreter.h"
 }
 #include "CConcatOperatorNodeTransformation.h"
@@ -207,6 +208,10 @@ int main( int argc, char * const argv[] )
 		LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
 		LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
 		LEOAddOperatorsAndOffsetInstructions( gPropertyOperators, kFirstPropertyInstruction );
+
+		LEOAddInstructionsToInstructionArray( gWebPageInstructions, LEO_NUMBER_OF_WEB_PAGE_INSTRUCTIONS, &kFirstWebPageInstruction );
+		LEOAddBuiltInFunctionsAndOffsetInstructions( gWebPageBuiltInFunctions, kFirstWebPageInstruction );
+
 		if( webPageEmbedMode )
 		{
 			LEOAddBuiltInVariables( gBuiltInVariables );

@@ -83,6 +83,7 @@
 		55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */; };
 		55E8060213662396006F1287 /* CObjectPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E8060013662395006F1287 /* CObjectPropertyNode.cpp */; };
 		55E8060F136624D6006F1287 /* Forge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E8060D136624D6006F1287 /* Forge.cpp */; };
+		55EEB2481EDB02D4003069DA /* LEOWebPageInstructionsGeneric.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55EEB2461EDB02D4003069DA /* LEOWebPageInstructionsGeneric.cpp */; };
 		55FCEC0612C8DDCE00D76F6B /* CIfNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */; };
 		55FCEE0912C95BE800D76F6B /* CAddCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
@@ -257,6 +258,8 @@
 		55E8060B1366249C006F1287 /* ForgeTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgeTypes.h; sourceTree = "<group>"; };
 		55E8060D136624D6006F1287 /* Forge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Forge.cpp; path = ForgeFramework/ForgeFramework/Forge.cpp; sourceTree = "<group>"; };
 		55E8060E136624D6006F1287 /* Forge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Forge.h; path = ForgeFramework/ForgeFramework/Forge.h; sourceTree = "<group>"; };
+		55EEB2461EDB02D4003069DA /* LEOWebPageInstructionsGeneric.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LEOWebPageInstructionsGeneric.cpp; path = Leonie/generic/LEOWebPageInstructionsGeneric.cpp; sourceTree = "<group>"; };
+		55EEB2471EDB02D4003069DA /* LEOWebPageInstructionsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOWebPageInstructionsGeneric.h; path = Leonie/generic/LEOWebPageInstructionsGeneric.h; sourceTree = "<group>"; };
 		55FCEC0012C8DD0E00D76F6B /* testfile10.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile10.hc; sourceTree = "<group>"; };
 		55FCEC0512C8DDCE00D76F6B /* CIfNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIfNode.cpp; sourceTree = "<group>"; };
 		55FCEC0912C8DDDB00D76F6B /* CIfNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIfNode.h; sourceTree = "<group>"; };
@@ -495,6 +498,8 @@
 				55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */,
 				55AAC07F1710B21D008441AF /* LEODownloadInstructions.h */,
 				55AAC07E1710B21C008441AF /* LEODownloadInstructions.c */,
+				55EEB2471EDB02D4003069DA /* LEOWebPageInstructionsGeneric.h */,
+				55EEB2461EDB02D4003069DA /* LEOWebPageInstructionsGeneric.cpp */,
 				5538246517274659007785D8 /* LEOObjCCallInstructions.h */,
 				5538246417274659007785D8 /* LEOObjCCallInstructions.c */,
 			);
@@ -555,6 +560,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F650486A84900D96B5E /* main.cpp in Sources */,
+				55EEB2481EDB02D4003069DA /* LEOWebPageInstructionsGeneric.cpp in Sources */,
 				3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */,
 				3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */,
 				3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */,

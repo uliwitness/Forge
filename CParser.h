@@ -264,6 +264,7 @@ namespace Carlson
 		const std::vector<CHandlerNotesEntry>&	GetHandlerNotes()	{ return mHandlerNotes; };
 		
 	// statics:
+		static TBuiltInFunctionEntry* GetBuiltInFunctionWithName( const std::string& inName );
 		static void		LoadNativeHeadersFromFile( const char* filepath );	//!< Used to load OS-native API signatures and names from the frameworkheaders.hhc file.
 		static void		SetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inCallback );	//!< Callback to be invoked when the user actually triggers execution of the first OS-native API. Allows lazy-loading some parts of the system headers.
 		static void		AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, size_t firstOperatorInstruction );

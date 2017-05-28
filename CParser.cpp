@@ -144,11 +144,18 @@ static TGlobalPropertyEntry	sDefaultGlobalProperties[] =
 	{ ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, INVALID_INSTR }
 };
 
+
 static TBuiltInFunctionEntry	sDefaultBuiltInFunctions[] =
 {
-	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR, BACK_OF_STACK, 0 },
-	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR, 0, 0 },
-	{ ELastIdentifier_Sentinel, NULL, 0, 0 }
+	{ EParamCountIdentifier, PARAMETER_COUNT_INSTR, BACK_OF_STACK, 0, 0 },
+	{ EParametersIdentifier, PUSH_PARAMETERS_INSTR, 0, 0, 0 },
+	{ ENumToCharIdentifier, NUM_TO_CHAR_INSTR, 0, 0, 1 },
+	{ ECharToNumIdentifier, CHAR_TO_NUM_INSTR, 0, 0, 1 },
+	{ ENumToHexIdentifier, NUM_TO_HEX_INSTR, 0, 0, 1 },
+	{ EHexToNumIdentifier, HEX_TO_NUM_INSTR, 0, 0, 1 },
+	{ ENumToBinaryIdentifier, NUM_TO_BINARY_INSTR, 0, 0, 1 },
+	{ EBinaryToNumIdentifier, BINARY_TO_NUM_INSTR, 0, 0, 1 },
+	{ ELastIdentifier_Sentinel, NULL, 0, 0, 0 }
 };
 
 static THostCommandEntry	sDefaultHostFunctions[] =
@@ -3476,6 +3483,24 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 	
 	return CollapseExpressionStack( parseTree, terms, operators );
 }
+	
+	
+TBuiltInFunctionEntry* CParser::GetBuiltInFunctionWithName( const std::string& inName )
+{
+	if( !sBuiltInFunctions )
+		return nullptr;
+	
+	TIdentifierSubtype	subType = CToken::IdentifierTypeFromText( inName.c_str() );
+	for( int x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
+	{
+		if( sBuiltInFunctions[x].mType == subType )
+		{
+			return( sBuiltInFunctions +x );
+		}
+	}
+
+	return nullptr;
+}
 
 
 void	CParser::LoadNativeHeadersFromFile( const char* filepath )
@@ -4341,7 +4366,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					
 					for( x = 0; sBuiltInFunctions[x].mType != ELastIdentifier_Sentinel; x++ )
 					{
-						if( sBuiltInFunctions[x].mType == subType )
+						if( sBuiltInFunctions[x].mType == subType && sBuiltInFunctions[x].mParamCount == 0 )
 						{
 							COperatorNode* fcall = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
 							fcall->SetInstructionParams( sBuiltInFunctions[x].mParam1, sBuiltInFunctions[x].mParam2 );
@@ -4417,20 +4442,27 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					{
 						if( sBuiltInFunctions[x].mType == subType )
 						{
-							COperatorNode* fcall = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
-							fcall->SetInstructionParams( sBuiltInFunctions[x].mParam1, sBuiltInFunctions[x].mParam2 );
-							theTerm = fcall;
-							CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-							
-							if( tokenItty->IsIdentifier( EOpenBracketOperator ) )
+							if( sBuiltInFunctions[x].mParamCount == 0 )
 							{
+								COperatorNode* fcall = new COperatorNode( &parseTree, sBuiltInFunctions[x].mInstructionID, tokenItty->mLineNum );
+								fcall->SetInstructionParams( sBuiltInFunctions[x].mParam1, sBuiltInFunctions[x].mParam2 );
+								theTerm = fcall;
 								CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-								if( tokenItty->IsIdentifier( ECloseBracketOperator ) )
+								
+								if( tokenItty->IsIdentifier( EOpenBracketOperator ) )
+								{
 									CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-								else
-									CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
+									if( tokenItty->IsIdentifier( ECloseBracketOperator ) )
+										CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+									else
+										CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );
+								}
+								break;
 							}
-							break;
+							else
+							{
+								theTerm = ParseFunctionCall( parseTree, currFunction, false, tokenItty, tokens );
+							}
 						}
 					}
 				}

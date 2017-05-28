@@ -1,6 +1,6 @@
 <?hc
 	on printPageTitle
-		output the title of the page
+		output htmlencoded(the title of the page)
 	end printPageTitle
 ?><html>
 <head>

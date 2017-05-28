@@ -97,6 +97,12 @@
 	X1(EParameterIdentifier,"parameter") \
 	X1(EParametersIdentifier,"parameters") \
 	X1(EParamCountIdentifier,"paramcount") \
+	X1(ENumToCharIdentifier,"numtochar") \
+	X1(ECharToNumIdentifier,"chartonum") \
+	X1(ENumToHexIdentifier,"numtohex") \
+	X1(EHexToNumIdentifier,"hextonum") \
+	X1(ENumToBinaryIdentifier,"numtobinary") \
+	X1(EBinaryToNumIdentifier,"binarytonum") \
 	X1(EUnsetIdentifier,"unset") \
 	X1(EIsIdentifier,"is") \
 	X1(ENotIdentifier,"not") \
@@ -349,7 +355,8 @@
 	X1(EWriteIdentifier,"write") \
 	X1(EFileIdentifier,"file") \
 	X1(EUseIdentifier,"use") \
-	X1(EPageIdentifier,"page")
+	X1(EPageIdentifier,"page") \
+	X1(EHTMLEncodedIdentifier,"htmlencoded")
 
 typedef enum
 {
@@ -432,6 +439,7 @@ struct TBuiltInFunctionEntry
 	LEOInstructionID		mInstructionID;	//!< Instruction for this function.
 	uint16_t				mParam1;		//!< Parameter to set on the instruction.
 	uint32_t				mParam2;		//!< Parameter to set on the instruction.
+	size_t					mParamCount;	//!< Number of arguments a caller must pass to this function.
 };
 
 

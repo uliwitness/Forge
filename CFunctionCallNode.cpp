@@ -12,6 +12,8 @@
 #include "CCodeBlock.h"
 #include "CNodeTransformation.h"
 #include "LEOInstructions.h"
+#include "ForgeTypes.h"
+#include "CParser.h"
 
 
 namespace Carlson
@@ -80,26 +82,19 @@ void	CFunctionCallNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
 	LEOInstructionID	instructionID = INVALID_INSTR;
 	
-	if( mSymbolName.compare( "numtochar" ) == 0 )
-		instructionID = NUM_TO_CHAR_INSTR;
-	else if( mSymbolName.compare( "chartonum" ) == 0 )
-		instructionID = CHAR_TO_NUM_INSTR;
-	else if( mSymbolName.compare( "numtohex" ) == 0 )
-		instructionID = NUM_TO_HEX_INSTR;
-	else if( mSymbolName.compare( "hextonum" ) == 0 )
-		instructionID = HEX_TO_NUM_INSTR;
-	else if( mSymbolName.compare( "numtobinary" ) == 0 )
-		instructionID = NUM_TO_BINARY_INSTR;
-	else if( mSymbolName.compare( "binarytonum" ) == 0 )
-		instructionID = BINARY_TO_NUM_INSTR;
-	else if( mSymbolName.compare( "paramcount" ) == 0 )
-		instructionID = PARAMETER_COUNT_INSTR;
-	
+	TBuiltInFunctionEntry *foundFunction = CParser::GetBuiltInFunctionWithName( mSymbolName );
+	if( foundFunction && foundFunction->mParamCount == mParams.size()
+	   && foundFunction->mParam1 == 0 && foundFunction->mParam2 == 0  )
+	{
+		instructionID = foundFunction->mInstructionID;
+	}
+		
 	if( instructionID != INVALID_INSTR )
 	{
 		// Push the param on the stack:
-		if( mParams.size() > 0 )
-			mParams[0]->GenerateCode( inCodeBlock );
+		size_t numParams = mParams.size();
+		for( size_t x = 0; x < numParams; ++x )
+			mParams[x]->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateOperatorInstruction( instructionID );
 	}
