@@ -1,4 +1,6 @@
-<?hc use "testfile16_header.hc" ?>
+<?hc global gAW_Title = "Test Web Page"
+
+use "testfile16_header.hc" ?>
 <?hc repeat with x = 1 to 5 ?>
 <b>This is page content.</b><br /><?hc
 end repeat ?>

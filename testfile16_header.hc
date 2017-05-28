@@ -1,5 +1,5 @@
 <html>
 <head>
-<title>This is a web page</title>
+<title><?hc output gAW_Title ?></title>
 </head>
 <body>
