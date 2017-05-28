@@ -51,7 +51,9 @@ public:
 	virtual void	Simplify();
 	virtual void	Visit( std::function<void(CNode*)> visitorBlock );
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
-	
+
+	virtual bool	GetAllVarsAreGlobals()					{ CCodeBlockNodeBase * owner = GetContainingFunction(); return owner ? owner->GetAllVarsAreGlobals() : false; }
+
 	virtual void	DebugPrintInner( std::ostream& destStream, size_t indentLevel );
 
 	virtual CCodeBlockNodeBase*	GetContainingFunction()				{ return NULL; };

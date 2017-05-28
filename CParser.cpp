@@ -956,6 +956,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		if( startupFunction == NULL )
 		{
 			startupFunction = StartParsingFunctionDefinition( "startup", "startUp", true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
+			startupFunction->SetAllVarsAreGlobals( true );
 		}
 		
 		ParseOneLine( std::string("startUp"), parseTree, startupFunction, tokenItty, tokens );
@@ -2050,7 +2051,7 @@ void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	thePutCommand->AddParam( theWhatNode );
 		
 	// Make sure we have an "it":
-	CreateVariable( "var_it", "it", false, currFunction );
+	CreateVariable( "var_it", "it", false, currFunction, currFunction->GetAllVarsAreGlobals() );
 	thePutCommand->AddParam( new CLocalVariableRefValueNode( &parseTree, currFunction, "var_it", "it", tokenItty->mLineNum ) );
 	
 	currFunction->AddCommand( thePutCommand );
@@ -2433,7 +2434,7 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	std::string	counterVarName("var_");
 	counterVarName.append( tokenItty->GetIdentifierText() );
 	
-	CreateVariable( counterVarName, tokenItty->GetIdentifierText(), false, currFunction );
+	CreateVariable( counterVarName, tokenItty->GetIdentifierText(), false, currFunction, currFunction->GetAllVarsAreGlobals() );
 	
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2580,7 +2581,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		std::string	counterVarName("var_");
 		counterVarName.append( tokenItty->GetIdentifierText() );
 		
-		CreateVariable( counterVarName, tokenItty->GetIdentifierText(), false, currFunction );
+		CreateVariable( counterVarName, tokenItty->GetIdentifierText(), false, currFunction, currFunction->GetAllVarsAreGlobals() );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2935,7 +2936,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	{
 		if( !container && currFunction->LocalVariableExists( varName ) )
 		{
-			CreateVariable( varName, realVarName, initWithName, currFunction );
+			CreateVariable( varName, realVarName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
 			container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
 			
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2954,7 +2955,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	{
 		std::string		realResultName( "result" );
 		std::string		resultName( "result" );
-		CreateVariable( resultName, realResultName, initWithName, currFunction );
+		CreateVariable( resultName, realResultName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, resultName, realResultName, tokenItty->mLineNum );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2963,7 +2964,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	{
 		std::string		realDVarName( "download" );
 		std::string		dVarName( "download" );
-		CreateVariable( dVarName, realDVarName, initWithName, currFunction );
+		CreateVariable( dVarName, realDVarName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, dVarName, realDVarName, tokenItty->mLineNum );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -3052,7 +3053,7 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	// Implicit declaration of any old variable:
 	if( !container && !tokenItty->IsIdentifier(ENewlineOperator) )
 	{
-		CreateVariable( varName, realVarName, initWithName, currFunction );
+		CreateVariable( varName, realVarName, initWithName, currFunction, currFunction->GetAllVarsAreGlobals() );
 		container = new CLocalVariableRefValueNode( &parseTree, currFunction, varName, realVarName, tokenItty->mLineNum );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );

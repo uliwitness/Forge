@@ -103,11 +103,11 @@ void	CCodeBlockNode::AddLocalVar( const std::string& inName, const std::string& 
 								bool dontDispose )
 {
 	CVariableEntry	newEntry( inUserName, theType, initWithName,
-								isParam, isGlobal, dontDispose );
+								isParam, isGlobal || GetAllVarsAreGlobals(), dontDispose );
 	std::map<std::string,CVariableEntry>::iterator	foundVariable = (*mLocals).find( inName );
 	if( foundVariable == (*mLocals).end() )
 		(*mLocals)[inName] = newEntry;
-	if( isGlobal )
+	if( isGlobal || GetAllVarsAreGlobals() )
 	{
 		foundVariable = (*mGlobals).find( inName );
 		if( foundVariable == (*mGlobals).end() )

@@ -30,11 +30,11 @@ void	CFunctionDefinitionNode::AddLocalVar( const std::string& inName,
 												bool dontDispose )
 {
 	CVariableEntry	newEntry( inUserName, theType, initWithName,
-								isParam, isGlobal, dontDispose );
+								isParam, isGlobal || GetAllVarsAreGlobals(), dontDispose );
 	std::map<std::string,CVariableEntry>::iterator	foundVariable = mLocals.find( inName );
 	if( foundVariable == mLocals.end() )
 		mLocals[inName] = newEntry;
-	if( isGlobal || mAllVarsAreGlobals )
+	if( isGlobal || GetAllVarsAreGlobals() )
 	{
 		foundVariable = mGlobals.find( inName );
 		if( foundVariable == mGlobals.end() )

@@ -385,8 +385,8 @@
 				55CD60E71876E952002450E2 /* testfile14.hc */,
 				55A793F01EB003A9005C40D0 /* testfile15.hc */,
 				5559CEFC1EB6548A00815DD9 /* testfile16.hc */,
-				55965D4A1EDA0C63008A5BE3 /* testfile16_footer.hc */,
 				55965D4B1EDA0C63008A5BE3 /* testfile16_header.hc */,
+				55965D4A1EDA0C63008A5BE3 /* testfile16_footer.hc */,
 				556FA4521718AA7500A108E5 /* UnitTest.hc */,
 			);
 			name = "Test Scripts";

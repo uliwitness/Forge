@@ -48,6 +48,7 @@ public:
 	size_t			GetCommandsLineNum()					{ return mCommandsLineNum; };
 	
 	void			SetAllVarsAreGlobals( bool inState )	{ mAllVarsAreGlobals = inState; }
+	virtual bool	GetAllVarsAreGlobals()					{ return mAllVarsAreGlobals; }
 	
 	virtual CCodeBlockNodeBase*	GetContainingFunction()		{ return this; };
 	bool						IsCommand()					{ return mIsCommand; };
