@@ -21,6 +21,10 @@ extern "C" {
 #include "CConcatSpaceOperatorNodeTransformation.h"
 #include "CChunkPropertyNodeTransformation.h"
 
+#include <unistd.h>
+#include "fake_filesystem.hpp"	// until <filesystem> ships for Xcode's clang.
+using namespace fake;
+
 
 using namespace Carlson;
 
@@ -30,6 +34,29 @@ struct TBuiltInVariableEntry	gBuiltInVariables[] =
 	{ EPageIdentifier, "page", "page", true },
 	{ ELastIdentifier_Sentinel, nullptr, nullptr }
 };
+
+
+struct ForgeToolOptions
+{
+	bool			debuggerOn = false;
+	bool			runCode = true;
+	bool			printInstructions = false;
+	bool			printTokens = false;
+	bool			printParseTree = false;
+	bool			printIndented = false;
+	bool			verbose = false;
+	bool			doOptimize = true;
+	bool			printresult = false;
+	bool			webPageEmbedMode = false;
+	const char*		debuggerHost = NULL;
+	const char*		messageName = nullptr;
+	int				argc;
+	char * const *	argv;
+	int				fnameIdx = 0;
+};
+
+
+int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions );
 
 
 static char*	GetFileContents( const char* fname )
@@ -67,62 +94,53 @@ static char*	GetFileContents( const char* fname )
 
 int main( int argc, char * const argv[] )
 {
-	const char*	debuggerHost = NULL;
-	const char* messageName = nullptr;
-	bool		debuggerOn = false,
-				runCode = true,
-				printInstructions = false,
-				printTokens = false,
-				printParseTree = false,
-				printIndented = false,
-				verbose = false,
-				doOptimize = true,
-				printresult = false,
-				webPageEmbedMode = false;
+	ForgeToolOptions toolOptions;
+	toolOptions.argc = argc;
+	toolOptions.argv = argv;
 	
-	int			fnameIdx = 0;
+	bool		fnameIsFolder = false;
 	for( int x = 1; x < argc; )
 	{
 		if( argv[x][0] == '-' )
 		{
 			if( strcmp( argv[x], "--debug" ) == 0 )
 			{
-				debuggerOn = true;
+				toolOptions.debuggerOn = true;
 				if( (argc -1) < (x +1) )	// No parameter after debug option?
 				{
 					std::cerr << "Error: Expected host name after --debug option." << std::endl;
 					return 6;
 				}
-				debuggerHost = argv[x+1];
+				toolOptions.debuggerHost = argv[x+1];
 				x++;
 			}
 			else if( strcmp( argv[x], "--dontrun" ) == 0 )
 			{
-				runCode = false;
+				toolOptions.runCode = false;
 			}
 			else if( strcmp( argv[x], "--printinstructions" ) == 0 )
 			{
-				printInstructions = true;
+				toolOptions.printInstructions = true;
 			}
 			else if( strcmp( argv[x], "--printtokens" ) == 0 )
 			{
-				printTokens = true;
+				toolOptions.printTokens = true;
 			}
 			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
 			{
-				printParseTree = true;
+				toolOptions.printParseTree = true;
 			}
 			else if( strcmp( argv[x], "--printindented" ) == 0 )
 			{
-				printIndented = true;
+				toolOptions.printIndented = true;
 			}
 			else if( strcmp( argv[x], "--verbose" ) == 0 )
 			{
-				verbose = true;
+				toolOptions.verbose = true;
 			}
 			else if( strcmp( argv[x], "--printresult" ) == 0 )
 			{
-				printresult = true;
+				toolOptions.printresult = true;
 			}
 			else if( strcmp( argv[x], "--message" ) == 0 )
 			{
@@ -131,13 +149,15 @@ int main( int argc, char * const argv[] )
 					std::cerr << "Error: Expected handler name after --message option." << std::endl;
 					return 7;
 				}
-				messageName = argv[x+1];
+				toolOptions.messageName = argv[x+1];
 				x++;
 			}
 			else if( strcmp( argv[x], "--dont-optimize" ) == 0 )
-				doOptimize = false;
+				toolOptions.doOptimize = false;
+			else if( strcmp( argv[x], "--folder" ) == 0 )
+				fnameIsFolder = true;
 			else if( strcmp( argv[x], "--webpage" ) == 0 )
-				webPageEmbedMode = true;
+				toolOptions.webPageEmbedMode = true;
 			else
 			{
 				std::cerr << "Unknown option \"" << argv[x] << "\"." << std::endl;
@@ -146,34 +166,93 @@ int main( int argc, char * const argv[] )
 		}
 		else	// end of options, file name.
 		{
-			fnameIdx = x;
+			toolOptions.fnameIdx = x;
 			break;
 		}
 		
 		x++;
 	}
 	
-	if( messageName == nullptr )
+	if( toolOptions.messageName == nullptr )
 	{
-		if( webPageEmbedMode )
-			messageName = "::generatepage";
+		if( toolOptions.webPageEmbedMode )
+			toolOptions.messageName = "::generatepage";
 		else
-			messageName = "startUp";
+			toolOptions.messageName = "startUp";
 	}
 	
+	LEOInitInstructionArray();
+	
+	if( toolOptions.doOptimize )
+	{
+		CConcatOperatorNodeTransformation::Initialize();
+		CConcatSpaceOperatorNodeTransformation::Initialize();
+		CChunkPropertyNodeTransformation::Initialize();
+	}
+	
+	LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
+	LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
+	
+	LEOAddInstructionsToInstructionArray( gFileInstructions, LEO_NUMBER_OF_FILE_INSTRUCTIONS, &kFirstFileInstruction );
+	LEOAddHostCommandsAndOffsetInstructions( gFileCommands, kFirstFileInstruction );
+	
+	LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
+	LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
+	LEOAddOperatorsAndOffsetInstructions( gPropertyOperators, kFirstPropertyInstruction );
+	
+	LEOAddInstructionsToInstructionArray( gWebPageInstructions, LEO_NUMBER_OF_WEB_PAGE_INSTRUCTIONS, &kFirstWebPageInstruction );
+	LEOAddBuiltInFunctionsAndOffsetInstructions( gWebPageBuiltInFunctions, kFirstWebPageInstruction );
+	
+	if( toolOptions.webPageEmbedMode )
+	{
+		LEOAddBuiltInVariables( gBuiltInVariables );
+	}
+
+	char*	filename = (toolOptions.fnameIdx > 0) ? argv[toolOptions.fnameIdx] : NULL;
+	if( filename && fnameIsFolder )
+	{
+		chdir(filename);
+		
+		filesystem::directory_iterator	currFile(filename);
+		for( ; currFile != filesystem::directory_iterator(); ++currFile )
+		{
+			filesystem::path	fpath( (*currFile).path() );
+			std::string			fname( fpath.filename().string() );
+			if( fname.length() > 0 && fname[0] == '.' )
+				continue;
+			if( fname.rfind(".hc") != fname.length() -3 )
+				continue;
+			
+			int errNum = ProcessOneScriptFile( (*currFile).path().string(), toolOptions );
+			if( errNum != EXIT_SUCCESS )
+				return errNum;
+		}
+	}
+	else if( filename )
+	{
+		return ProcessOneScriptFile( filename, toolOptions );
+	}
+	else
+	{
+		std::cerr << "error: Last parameter should be name of script to compile." << std::endl;
+		return 2;
+	}
+	
+	return 0;
+}
+
+
+int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions )
+{
 	// Do actual work:
-	char*				filename = (fnameIdx > 0) ? argv[fnameIdx] : NULL;
-	char*				code = filename ? GetFileContents( filename ) : NULL;
+	char*				code = GetFileContents( inFilePathString.c_str() );
 	std::deque<CToken>	tokens;
 	CParser				parser;
-	parser.SetWebPageEmbedMode(webPageEmbedMode);
+	parser.SetWebPageEmbedMode(toolOptions.webPageEmbedMode);
 	
 	if( !code )
 	{
-		if( !filename )
-			std::cerr << "error: Last parameter should be name of script to compile." << std::endl;
-		else
-			std::cerr << "error: Couldn't find file \"" << filename << "\"." << std::endl;
+		std::cerr << "error: Couldn't find file \"" << inFilePathString << "\"." << std::endl;
 		return 2;
 	}
 		
@@ -181,53 +260,26 @@ int main( int argc, char * const argv[] )
 	{
 		CParseTree				parseTree;
 		
-		if( verbose )
-			std::cout << "Tokenizing file \"" << filename << "\"..." << std::endl;
-		tokens = CTokenizer::TokenListFromText( code, strlen(code), webPageEmbedMode );
-		if( printTokens )
+		if( toolOptions.verbose )
+			std::cout << "Tokenizing file \"" << inFilePathString << "\"..." << std::endl;
+		tokens = CTokenizer::TokenListFromText( code, strlen(code), toolOptions.webPageEmbedMode );
+		if( toolOptions.printTokens )
 		{
 			for( std::deque<CToken>::iterator currToken = tokens.begin(); currToken != tokens.end(); currToken++ )
 				std::cout << "Token: " << currToken->GetDescription() << std::endl;
 		}
 		
-		LEOInitInstructionArray();
+		if( toolOptions.verbose )
+			std::cout << "Parsing file \"" << inFilePathString << "\"..." << std::endl;
+		parser.Parse( inFilePathString.c_str(), tokens, parseTree, code );
 		
-		if( doOptimize )
-		{
-			CConcatOperatorNodeTransformation::Initialize();
-			CConcatSpaceOperatorNodeTransformation::Initialize();
-			CChunkPropertyNodeTransformation::Initialize();
-		}
-		
-		LEOAddInstructionsToInstructionArray( gMsgInstructions, LEO_NUMBER_OF_MSG_INSTRUCTIONS, &kFirstMsgInstruction );
-		LEOAddHostCommandsAndOffsetInstructions( gMsgCommands, kFirstMsgInstruction );
-
-		LEOAddInstructionsToInstructionArray( gFileInstructions, LEO_NUMBER_OF_FILE_INSTRUCTIONS, &kFirstFileInstruction );
-		LEOAddHostCommandsAndOffsetInstructions( gFileCommands, kFirstFileInstruction );
-		
-		LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
-		LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );
-		LEOAddOperatorsAndOffsetInstructions( gPropertyOperators, kFirstPropertyInstruction );
-
-		LEOAddInstructionsToInstructionArray( gWebPageInstructions, LEO_NUMBER_OF_WEB_PAGE_INSTRUCTIONS, &kFirstWebPageInstruction );
-		LEOAddBuiltInFunctionsAndOffsetInstructions( gWebPageBuiltInFunctions, kFirstWebPageInstruction );
-
-		if( webPageEmbedMode )
-		{
-			LEOAddBuiltInVariables( gBuiltInVariables );
-		}
-		
-		if( verbose )
-			std::cout << "Parsing file \"" << filename << "\"..." << std::endl;
-		parser.Parse( filename, tokens, parseTree, code );
-		
-		if( printParseTree )
+		if( toolOptions.printParseTree )
 			parseTree.DebugPrint( std::cout, 1 );
 		
-		if( printIndented )
+		if( toolOptions.printIndented )
 		{
-			if( verbose )
-				std::cout << "Indenting file \"" << filename << "\"..." << std::endl;
+			if( toolOptions.verbose )
+				std::cout << "Indenting file \"" << inFilePathString << "\"..." << std::endl;
 			LEODisplayInfoTable*	lit = LEODisplayInfoTableCreateForParseTree( (LEOParseTree*) &parseTree );
 			char*	theText = NULL;
 			size_t	theLength = 0;
@@ -250,7 +302,7 @@ int main( int argc, char * const argv[] )
 			LEOCleanUpDisplayInfoTable( lit );
 		}
 		
-		uint16_t 			fileID = LEOFileIDForFileName(filename);
+		uint16_t 			fileID = LEOFileIDForFileName(inFilePathString.c_str());
 		LEOScript		*	script = LEOScriptCreateForOwner( 0, 0, NULL );
 		LEOContextGroup	*	group = LEOContextGroupCreate( NULL, NULL );
 		CCodeBlock			block( group, script, fileID );
@@ -258,15 +310,15 @@ int main( int argc, char * const argv[] )
 		parseTree.Simplify();
 		parseTree.GenerateCode( &block );
 		
-		if( printInstructions )
+		if( toolOptions.printInstructions )
 			LEODebugPrintScript( group, script );
 		
-		if( runCode )
+		if( toolOptions.runCode )
 		{
-			if( verbose )
+			if( toolOptions.verbose )
 				printf( "\nRun the code:\n" );
 			
-			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, messageName );
+			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, toolOptions.messageName );
 			LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
 			
 			if( theHandler == NULL )
@@ -277,9 +329,9 @@ int main( int argc, char * const argv[] )
 			{
 				LEOContext	*	ctx = LEOContextCreate( group, NULL, NULL );
 				
-				if( debuggerOn )
+				if( toolOptions.debuggerOn )
 				{
-					if( LEOInitRemoteDebugger( debuggerHost ) )
+					if( LEOInitRemoteDebugger( toolOptions.debuggerHost ) )
 					{
 						ctx->preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
@@ -292,9 +344,9 @@ int main( int argc, char * const argv[] )
 				// Push params on stack in reverse order:
 				LEOInteger	paramCount = 0;
 				
-				for( int x = (argc -1); x > fnameIdx; x-- )
+				for( int x = (toolOptions.argc -1); x > toolOptions.fnameIdx; x-- )
 				{
-					LEOPushStringValueOnStack( ctx, argv[x], strlen(argv[x]) );
+					LEOPushStringValueOnStack( ctx, toolOptions.argv[x], strlen(toolOptions.argv[x]) );
 					paramCount++;
 				}
 
@@ -304,7 +356,7 @@ int main( int argc, char * const argv[] )
 				LEORunInContext( theHandler->instructions, ctx );
 				if( ctx->errMsg[0] != 0 )
 					printf("ERROR: %s\n", ctx->errMsg );
-				if( printresult )
+				if( toolOptions.printresult )
 				{
 					// Remove all parameters from the stack:
 					LEOCleanUpStackToPtr( ctx, ctx->stackEndPtr -paramCount -1 );
@@ -343,8 +395,8 @@ int main( int argc, char * const argv[] )
 		return 3;
 	}
 	
-	if( verbose )
+	if( toolOptions.verbose )
 		std::cout << "Finished successfully." << std::endl;
 	
-    return 0;
+    return EXIT_SUCCESS;
 }

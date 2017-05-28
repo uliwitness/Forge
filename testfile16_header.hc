@@ -1,4 +1,6 @@
 <?hc
+	set the filetype of the page to "html"
+
 	on printPageTitle
 		output htmlencoded(the title of the page)
 	end printPageTitle

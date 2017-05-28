@@ -4,7 +4,7 @@ This is a HyperTalk interpreter that compiles scripts into a bytecode and then
 executes the "startup" handler in them. The command line tool has the following
 syntax:
 
-forge [options] <inputfile> [arguments]
+forge [options] [--folder] <inputfile> [arguments]
 
 Where inputfile is the path to a UTF8-encoded text file that contains a valid
 HyperTalk script. Currently, the following options are supported:
@@ -13,7 +13,11 @@ HyperTalk script. Currently, the following options are supported:
 						just be printed out, and actual script commands have
 						to be within <?hc and ?> delimiters, like PHP or VBScript
 						let you do it.
-						
+
+--folder				The <inputfile> given is a folder. Process all the scripts
+						inside it. This is useful with the --webpage option to
+						turn an entire folder full of scripts into a static site.
+
 --message <messageName>	The message to send. I.e. the name of the first handler
 						to call. If this is not specified, the handler named
 						"startUp" will be called.
