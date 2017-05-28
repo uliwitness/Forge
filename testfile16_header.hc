@@ -4,6 +4,7 @@
 	end printPageTitle
 ?><html>
 <head>
+<meta charset="UTF-8" />
 <title><?hc printPageTitle
 ?></title>
 </head>
