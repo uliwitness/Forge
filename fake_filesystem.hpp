@@ -119,6 +119,9 @@ namespace filesystem
 		fake::filesystem::path	mPath;
 		dir* mDir = nullptr;
 	};
+	
+	bool create_directory( const path& p );
+	bool create_directories( const path& p );
 }
 
 }

@@ -9,6 +9,7 @@
 #include "fake_filesystem.hpp"
 #include <dirent.h>
 #include <sys/stat.h>
+#include <vector>
 
 
 using namespace fake::filesystem;
@@ -147,3 +148,30 @@ bool	directory_iterator::operator != ( const directory_iterator& inOther ) const
 {
 	return inOther.mEntry.mPath != mEntry.mPath;
 }
+
+
+bool fake::filesystem::create_directory( const path& p )
+{
+	int result = mkdir( p.string().c_str(), 0777 );
+	
+	return (result == 0);
+}
+
+
+bool fake::filesystem::create_directories( const path& p )
+{
+	std::vector<path>	pathsToCreate;
+	path				currPath = p;
+	while( !exists(currPath) && currPath.string().length() > 0 )
+	{
+		pathsToCreate.push_back(currPath);
+		currPath = currPath.parent_path();
+	}
+	for( path pathToCreate : pathsToCreate )
+	{
+		if( !create_directory(pathToCreate) )
+			return false;
+	}
+	return true;
+}
+

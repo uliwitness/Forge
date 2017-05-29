@@ -260,8 +260,11 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 		{
 			std::string includePath;
 			size_t namestart = inRelativeToFileName.find_last_of('/');
+			if( namestart == std::string::npos )
+				namestart = 0;
 			includePath = inRelativeToFileName.substr( 0, namestart );
-			includePath.append(1,'/');
+			if( namestart != 0 )
+				includePath.append(1,'/');
 			includePath.append(inFileName);
 			
 			return GetFileContents( includePath, outContents );
@@ -450,6 +453,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 						if( filenameRequested )
 						{
 							std::cout << "Writing file: " << desiredFilename.str() << std::endl;
+							filesystem::create_directories( filesystem::path(desiredFilename.str()).parent_path() );
 							
 							std::ofstream	outputFile;
 							outputFile.open( desiredFilename.str() );

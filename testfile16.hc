@@ -2,7 +2,7 @@
 	set the title of the page to "This is the <title>"
 	set the slug of the page to "this-is-the-title"
 	--set the filetype of the page to "rss"
-	--set the filename of the page to "gobblegobble.xml"
+	set the filename of the page to "xmls/gobblegobble.xml"
 
 	use "testfile16_header.hc"
 ?>
