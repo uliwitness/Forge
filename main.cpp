@@ -38,6 +38,15 @@ struct TBuiltInVariableEntry	gBuiltInVariables[] =
 };
 
 
+struct ForgeToolResourceEntry
+{
+	ForgeToolResourceEntry( std::string src, std::string dst ) : mSourceFile(src), mDestFile(dst) {}
+	
+	std::string	mSourceFile;
+	std::string mDestFile;
+};
+
+
 struct ForgeToolOptions
 {
 	bool			debuggerOn = false;
@@ -55,10 +64,12 @@ struct ForgeToolOptions
 	int				argc;
 	char * const *	argv;
 	int				fnameIdx = 0;
+	bool			postbuild = false;	// Ignore passed arc/argv and instead pass the resources as parameters.
+	std::vector<ForgeToolResourceEntry>	resources;
 };
 
 
-int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions );
+int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions& toolOptions );
 
 
 static bool GetFileContents( const std::string& fname, std::vector<char>& outFileContents )
@@ -226,6 +237,18 @@ int main( int argc, char * const argv[] )
 			if( errNum != EXIT_SUCCESS )
 				return errNum;
 		}
+		
+		if( toolOptions.webPageEmbedMode )
+		{
+			filesystem::path	postBuildFile("../library/postbuild.hc");
+			if( filesystem::exists(postBuildFile) )
+			{
+				toolOptions.postbuild = true;
+				int errNum = ProcessOneScriptFile( postBuildFile.string(), toolOptions );
+				if( errNum != EXIT_SUCCESS )
+					return errNum;
+			}
+		}
 	}
 	else if( filename )
 	{
@@ -241,7 +264,7 @@ int main( int argc, char * const argv[] )
 }
 
 
-int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOptions& toolOptions )
+int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions& toolOptions )
 {
 	// Do actual work:
 	std::vector<char>	code;
@@ -331,7 +354,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 		if( toolOptions.runCode )
 		{
 			std::stringstream	capturedOutput;
-			if( toolOptions.webPageEmbedMode )
+			if( toolOptions.webPageEmbedMode && !toolOptions.postbuild )
 			{
 				gLEOMsgOutputStream = &capturedOutput;
 			}
@@ -339,12 +362,13 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 			if( toolOptions.verbose )
 				printf( "\nRun the code:\n" );
 			
-			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, toolOptions.messageName );
+			const char*		handlerName = toolOptions.postbuild ? "buildEnded" : toolOptions.messageName;
+			LEOHandlerID	handlerID = LEOContextGroupHandlerIDForHandlerName( group, handlerName );
 			LEOHandler*		theHandler = LEOScriptFindCommandHandlerWithID( script, handlerID );
 			
 			if( theHandler == NULL )
 			{
-				printf( "ERROR: Could not find handler to run!" );
+				printf( "ERROR: Could not find handler \"%s\" to run!", handlerName );
 			}
 			else
 			{
@@ -363,15 +387,31 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 				LEOPushUnsetValueOnStack( ctx );	// Reserve space for return value.
 				
 				// Push params on stack in reverse order:
-				LEOInteger	paramCount = 0;
-				
-				for( int x = (toolOptions.argc -1); x > toolOptions.fnameIdx; x-- )
+				LEOInteger paramCount = 0;
+				if( !toolOptions.postbuild )
 				{
-					LEOPushStringValueOnStack( ctx, toolOptions.argv[x], strlen(toolOptions.argv[x]) );
-					paramCount++;
+					paramCount = 0;
+					
+					for( int x = (toolOptions.argc -1); x > toolOptions.fnameIdx; x-- )
+					{
+						LEOPushStringValueOnStack( ctx, toolOptions.argv[x], strlen(toolOptions.argv[x]) );
+						paramCount++;
+					}
+				
+					LEOPushIntegerOnStack( ctx, paramCount, kLEOUnitNone );	// Parameter count.
 				}
-
-				LEOPushIntegerOnStack( ctx, paramCount, kLEOUnitNone );	// Parameter count.
+				else
+				{
+					paramCount = toolOptions.resources.size();
+					for( ForgeToolResourceEntry currEntry : toolOptions.resources )
+					{
+						LEOValueArray * arrayValue = (LEOValueArray*) LEOPushArrayValueOnStack( ctx, NULL );
+						LEOAddStringArrayEntryToRoot( &arrayValue->array, "filename", currEntry.mSourceFile.data(), currEntry.mSourceFile.size(), ctx );
+						LEOAddStringArrayEntryToRoot( &arrayValue->array, "destination", currEntry.mDestFile.data(), currEntry.mDestFile.size(), ctx );
+					}
+					
+					LEOPushIntegerOnStack( ctx, paramCount, kLEOUnitNone );	// Parameter count.
+				}
 				
 				LEOContextPushHandlerScriptReturnAddressAndBasePtr( ctx, theHandler, script, NULL, NULL );	// NULL return address is same as exit to top. basePtr is set to NULL as well on exit.
 				LEORunInContext( theHandler->instructions, ctx );
@@ -459,13 +499,70 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, const ForgeToolOp
 							outputFile.open( desiredFilename.str() );
 							outputFile << capturedOutput.str();
 						}
+
+						theValue = LEOGetValueForKey( pageGlobal, "resources", &tmp, kLEOInvalidateReferences, ctx );
+						if( theValue )
+						{
+							char			keyStr[100] = {};
+							size_t			x = 0;
+							while( true )
+							{
+								snprintf( keyStr, sizeof(keyStr) -1, "%zu", ++x );
+								union LEOValue	currResourceTmp;
+								LEOValuePtr currResourceValue = LEOGetValueForKey( theValue, keyStr, &currResourceTmp, kLEOInvalidateReferences, ctx );
+								if( !currResourceValue )
+									break;
+								
+								if( currResourceValue )
+								{
+									union LEOValue	currResourceFilenameTmp;
+									LEOValuePtr currResourceFilenameValue = LEOGetValueForKey( currResourceValue, "filename", &currResourceFilenameTmp, kLEOInvalidateReferences, ctx );
+									if( currResourceFilenameValue )
+									{
+										char currResourceFilenameStrBuf[1024];
+										const char* currResourceFilenameStr = LEOGetValueAsString( currResourceFilenameValue, currResourceFilenameStrBuf, sizeof(currResourceFilenameStrBuf), ctx );
+										
+										const char*		currResourceDestStr = "";
+										union LEOValue	currResourceDestTmp;
+										LEOValuePtr currResourceDestValue = LEOGetValueForKey( currResourceValue, "destination", &currResourceDestTmp, kLEOInvalidateReferences, ctx );
+										if( currResourceDestValue )
+										{
+											char currResourceDestStrBuf[1024];
+											currResourceDestStr = LEOGetValueAsString( currResourceDestValue, currResourceDestStrBuf, sizeof(currResourceDestStrBuf), ctx );
+										}
+										
+										toolOptions.resources.push_back( ForgeToolResourceEntry( currResourceFilenameStr, currResourceDestStr ) );
+										
+										if( currResourceDestValue == &currResourceDestTmp )
+										{
+											LEOCleanUpValue( currResourceDestValue, kLEOInvalidateReferences, ctx );
+										}
+										
+										if( currResourceFilenameValue == &currResourceFilenameTmp )
+										{
+											LEOCleanUpValue( currResourceFilenameValue, kLEOInvalidateReferences, ctx );
+										}
+									}
+								}
+								
+								if( currResourceValue == &currResourceTmp )
+								{
+									LEOCleanUpValue( currResourceValue, kLEOInvalidateReferences, ctx );
+								}
+							}
+							
+							if( theValue == &tmp )
+							{
+								LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+							}
+						}
 					}
 				}
 				
 				LEOContextRelease( ctx );
 			}
 			
-			if( toolOptions.webPageEmbedMode )
+			if( toolOptions.webPageEmbedMode && !toolOptions.postbuild )
 			{
 				gLEOMsgOutputStream = &std::cout;
 			}
