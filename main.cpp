@@ -207,6 +207,7 @@ int main( int argc, char * const argv[] )
 	
 	LEOAddInstructionsToInstructionArray( gFileInstructions, LEO_NUMBER_OF_FILE_INSTRUCTIONS, &kFirstFileInstruction );
 	LEOAddHostCommandsAndOffsetInstructions( gFileCommands, kFirstFileInstruction );
+	LEOAddHostFunctionsAndOffsetInstructions( gFileHostFunctions, kFirstFileInstruction );
 	
 	LEOAddInstructionsToInstructionArray( gPropertyInstructions, LEO_NUMBER_OF_PROPERTY_INSTRUCTIONS, &kFirstPropertyInstruction );
 	LEOAddHostFunctionsAndOffsetInstructions( gPropertyHostFunctions, kFirstPropertyInstruction );

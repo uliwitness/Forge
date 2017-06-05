@@ -22,8 +22,12 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << GetDebugNodeName() << " \"" << ((gNumInstructions > mInstructionID) ? gInstructions[mInstructionID].name : "???") << "\"" << std::endl
-				<< indentChars << "{" << std::endl;
+	destStream << indentChars << GetDebugNodeName() << " \"" << ((gNumInstructions > mInstructionID) ? gInstructions[mInstructionID].name : "???") << "\"";
+	if( mInstructionParam1 != 0 || mInstructionParam2 != 0 )
+	{
+		destStream << " (" << mInstructionParam1 << ", " << mInstructionParam2 << ")";
+	}
+	destStream << std::endl << indentChars << "{" << std::endl;
 	
 	std::vector<CValueNode*>::iterator itty;
 	
@@ -61,6 +65,7 @@ void	COperatorNode::SetParamAtIndex( size_t idx, CValueNode* val )
 CValueNode*	COperatorNode::Copy()
 {
 	COperatorNode	*	nodeCopy = new COperatorNode( mParseTree, mInstructionID, mLineNum );
+	nodeCopy->SetInstructionParams( mInstructionParam1, mInstructionParam2 );
 	
 	std::vector<CValueNode*>::const_iterator	itty;
 	for( itty = mParams.begin(); itty != mParams.end(); itty++ )

@@ -93,6 +93,7 @@
 	X1(EWordIdentifier,"word") \
 	X1(ELineIdentifier,"line") \
 	X1(EEntryIdentifier,"entry") \
+	X1(EEntriesIdentifier,"entries") \
 	X2(EParamIdentifier,EParameterIdentifier,"param") \
 	X1(EParameterIdentifier,"parameter") \
 	X1(EParametersIdentifier,"parameters") \
@@ -355,6 +356,8 @@
 	X1(EWriteIdentifier,"write") \
 	X1(ECopyIdentifier,"copy") \
 	X1(EFileIdentifier,"file") \
+	X1(EFilesIdentifier,"files") \
+	X1(EFolderIdentifier,"folder") \
 	X1(EUseIdentifier,"use") \
 	X1(EPageIdentifier,"page") \
 	X1(EHTMLEncodedIdentifier,"htmlencoded")

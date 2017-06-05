@@ -7,7 +7,9 @@
 
 	use "testfile16_header.hc"
 ?>
-<?hc repeat with x = 1 to 5 ?>
+<?hc put the files in folder "../" into theFiles
+put htmlEncoded(theFiles)
+repeat with x = 1 to 5 ?>
 <b>This is page content.</b><br /><?hc
 end repeat ?>
 <?hc repeat with x = 1 to 5
