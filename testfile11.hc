@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on startUp
 	put 10 into theNumber
 	repeat while theNumber > 0

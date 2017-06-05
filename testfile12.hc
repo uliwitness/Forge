@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on startUp
 	put empty into myVar
 	repeat with x = 1 to 10

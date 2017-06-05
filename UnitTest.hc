@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on startup
 	put "Running tests..." &newline
 

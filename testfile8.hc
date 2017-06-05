@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on startUp p1--,p2
 	put p1
 	put p2

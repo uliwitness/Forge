@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on startUp
 	read from file "/etc/apache2/httpd.conf"
 	if the result is not empty then

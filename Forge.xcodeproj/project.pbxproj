@@ -270,7 +270,7 @@
 		55FCECD312C8F11200D76F6B /* testfile11.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile11.hc; sourceTree = "<group>"; };
 		55FCEE0712C95BE800D76F6B /* CAddCommandNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAddCommandNode.cpp; sourceTree = "<group>"; };
 		55FCEE0812C95BE800D76F6B /* CAddCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAddCommandNode.h; sourceTree = "<group>"; };
-		8DD76F6C0486A84900D96B5E /* Forge */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Forge; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76F6C0486A84900D96B5E /* forge */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = forge; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,7 +339,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76F6C0486A84900D96B5E /* Forge */,
+				8DD76F6C0486A84900D96B5E /* forge */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -531,7 +531,7 @@
 			name = Forge;
 			productInstallPath = "$(HOME)/bin";
 			productName = HyperC;
-			productReference = 8DD76F6C0486A84900D96B5E /* Forge */;
+			productReference = 8DD76F6C0486A84900D96B5E /* forge */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -645,7 +645,7 @@
 				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_CFLAGS = "-DDONT_ADJUST_LINE_NUMBERS";
-				PRODUCT_NAME = Forge;
+				PRODUCT_NAME = forge;
 				ZERO_LINK = NO;
 			};
 			name = Debug;
@@ -660,7 +660,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_WARN_PEDANTIC = NO;
 				INSTALL_PATH = "$(HOME)/bin";
-				PRODUCT_NAME = Forge;
+				PRODUCT_NAME = forge;
 				STRIP_INSTALLED_PRODUCT = YES;
 				ZERO_LINK = NO;
 			};

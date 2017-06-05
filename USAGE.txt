@@ -58,7 +58,7 @@ arguments				Any additional arguments following the file name will be
 
 A script may start with the usual Unix "shebang" sequence "#!", which Forge
 will ignore. It is recommended that Forge scripts use the filename suffix ".hc"
-(or ".sh" if you really must) and use the standard shebang "#!/usr/bin/env Forge"
+(or ".sh" if you really must) and use the standard shebang "#!/usr/bin/env forge"
 instead of making assumptions about where in the user's PATH Forge has been
 installed.
 

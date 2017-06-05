@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 on testx str1,str2,str3
   put "1,2,3,4" into str1
   put "" into str2

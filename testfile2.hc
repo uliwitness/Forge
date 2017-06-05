@@ -1,4 +1,4 @@
-#!/usr/bin/env Forge
+#!/usr/bin/env forge
 function xIndentScript txt,tabSpaces,selStart,selEnd
   put 0 into indentLevel
   put 0 into lineStartOffset
