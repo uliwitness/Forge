@@ -20,7 +20,9 @@ HyperTalk script. Currently, the following options are supported:
 
 --message <messageName>	The message to send. I.e. the name of the first handler
 						to call. If this is not specified, the handler named
-						"startUp" will be called.
+						"startUp" will be called. In web mode, no handler will be
+						called by default and any text or commands at
+						the script's top level will be run instead.
 
 --debug	<host>			Try to connect to a remote debugger on startup on server
 						<host>:13762. This will also set a breakpoint on the
