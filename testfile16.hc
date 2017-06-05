@@ -3,6 +3,7 @@
 	set the slug of the page to "this-is-the-title"
 	--set the filetype of the page to "rss"
 	set the filename of the page to "xmls/gobblegobble.xml"
+	copy file "testfile16.hc" to "testfile16 copy.hc"
 
 	use "testfile16_header.hc"
 ?>

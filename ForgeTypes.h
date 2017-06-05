@@ -353,6 +353,7 @@
 	X1(EExclamationMarkOperator,"!") \
 	X1(EReadIdentifier,"read") \
 	X1(EWriteIdentifier,"write") \
+	X1(ECopyIdentifier,"copy") \
 	X1(EFileIdentifier,"file") \
 	X1(EUseIdentifier,"use") \
 	X1(EPageIdentifier,"page") \
