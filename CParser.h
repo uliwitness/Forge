@@ -217,6 +217,9 @@ namespace Carlson
 		CValueNode*	ParseNativeFunctionCallStartingAtParams( std::string& methodName, CObjCMethodEntry& methodInfo,
 										CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		CValueNode* ParseNumberOfExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+												std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+												TIdentifierSubtype inEndIdentifier );
 		CValueNode*	ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
 										TIdentifierSubtype inEndIdentifier );

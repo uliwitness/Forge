@@ -4075,6 +4075,80 @@ CValueNode* CParser::ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm
 	}
 	return theTerm;
 }
+	
+	
+CValueNode* CParser::ParseNumberOfExpression( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
+												std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens,
+											    TIdentifierSubtype inEndIdentifier )
+{
+	CValueNode * theTerm = nullptr;
+	
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "number".
+	
+	// OF:
+	if( !tokenItty->IsIdentifier(EOfIdentifier) )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
+		<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+	}
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+	
+	// Array entries?
+	bool		arrayEntry = false;
+	TChunkType	typeConstant = TChunkTypeInvalid;
+	if( tokenItty->IsIdentifier( EEntriesIdentifier ) )
+	{
+		arrayEntry = true;
+	}
+	else
+	{
+		// Chunk type:
+		typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->GetIdentifierSubType() );
+		if( typeConstant == TChunkTypeInvalid )
+		{
+			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Back to 'of'.
+			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Back to 'number'.
+			return ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
+		}
+	}
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "items" etc.
+	
+	// OF:
+	if( !tokenItty->IsIdentifier(EOfIdentifier) )
+	{
+		std::stringstream		errMsg;
+		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
+		<< tokenItty->GetShortDescription() << ".";
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+	}
+	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+	
+	// VALUE:
+	size_t		lineNum = tokenItty->mLineNum;
+	CValueNode*	valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
+	
+	if( arrayEntry )
+	{
+		COperatorNode*	fcall = new COperatorNode( &parseTree, GET_ARRAY_ITEM_COUNT_INSTR, lineNum );
+		fcall->SetInstructionParams( BACK_OF_STACK, 0 );
+		fcall->AddParam( valueObj );
+		theTerm = fcall;
+	}
+	else
+	{
+		COperatorNode*	fcall = new COperatorNode( &parseTree, COUNT_CHUNKS_INSTR, lineNum );
+		
+		fcall->SetInstructionParams( 0, typeConstant );
+		fcall->AddParam( valueObj );
+		theTerm = fcall;
+	}
+	
+	return theTerm;
+}
 
 
 CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
@@ -4230,69 +4304,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 			}
 			else if( tokenItty->mSubType == ENumberIdentifier )		// The identifier "number", i.e. the actual word.
 			{
-				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "number".
-				
-				// OF:
-				if( !tokenItty->IsIdentifier(EOfIdentifier) )
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-				}
-				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-				
-				// Array entries?
-				bool		arrayEntry = false;
-				TChunkType	typeConstant = TChunkTypeInvalid;
-				if( tokenItty->IsIdentifier( EEntriesIdentifier ) )
-				{
-					arrayEntry = true;
-				}
-				else
-				{
-					// Chunk type:
-					typeConstant = GetChunkTypeNameFromIdentifierSubtype( tokenItty->GetIdentifierSubType() );
-					if( typeConstant == TChunkTypeInvalid )
-					{
-						CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Back to 'of'.
-						CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Back to 'number'.
-						return ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
-					}
-				}
-				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "items" etc.
-				
-				// OF:
-				if( !tokenItty->IsIdentifier(EOfIdentifier) )
-				{
-					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-				}
-				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
-				
-				// VALUE:
-				size_t		lineNum = tokenItty->mLineNum;
-				CValueNode*	valueObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
-				
-				if( arrayEntry )
-				{
-					COperatorNode*	fcall = new COperatorNode( &parseTree, GET_ARRAY_ITEM_COUNT_INSTR, lineNum );
-					fcall->SetInstructionParams( BACK_OF_STACK, 0 );
-					fcall->AddParam( valueObj );
-					theTerm = fcall;
-				}
-				else
-				{
-					CFunctionCallNode*	fcall = new CFunctionCallNode( &parseTree, false, "vcy_chunk_count", lineNum );
-					
-					fcall->AddParam( new CIntValueNode( &parseTree, typeConstant, tokenItty->mLineNum ) );
-					fcall->AddParam( valueObj );
-					theTerm = fcall;
-				}
+				theTerm = ParseNumberOfExpression( parseTree, currFunction, tokenItty, tokens, inEndIdentifier );
 				break;
 			}
 			else if( tokenItty->mSubType == EOpenBracketOperator )
@@ -4317,6 +4329,12 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "the".
 				
 				theTerm = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
+				
+				if( tokenItty != tokens.end() && tokenItty->IsIdentifier( ENumberIdentifier ) )
+				{
+					theTerm = ParseNumberOfExpression( parseTree, currFunction, tokenItty, tokens,
+													   inEndIdentifier );
+				}
 				
 				bool			isStyleQualifiedProperty = false;
 				if( !theTerm )
