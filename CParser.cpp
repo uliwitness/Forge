@@ -4048,7 +4048,10 @@ CValueNode* CParser::ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm
 		
 		while( tokenItty != tokens.end() && (tokenItty->mType == EStringToken || tokenItty->mType == EIdentifierToken || tokenItty->mType == ENumberToken) )
 		{
-			theParam = new CStringValueNode( &parseTree, tokenItty->mStringValue, tokenItty->mLineNum );
+			if( tokenItty->mType == ENumberToken )
+				theParam = new CIntValueNode( &parseTree, tokenItty->mNumberValue, tokenItty->mLineNum );
+			else
+				theParam = new CStringValueNode( &parseTree, tokenItty->mStringValue, tokenItty->mLineNum );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			// +++ Check whether the key is a floating point number here (which is tokenized to {integer, period operator, integer}) and optionally generate a key string matching the entire float here.
 			if( tokenItty == tokens.end() || !tokenItty->IsIdentifier(EColonOperator) )	// Not a key followed by a colon and another value?
