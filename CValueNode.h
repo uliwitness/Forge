@@ -83,7 +83,7 @@ public:
 	{
 		INDENT_PREPARE(indentLevel);
 		
-		destStream << indentChars << "int( " << mIntValue << " )" << std::endl;
+		destStream << indentChars << "int( " << mIntValue << gUnitLabels[mUnit] << " )" << std::endl;
 	};
 
 	virtual int				GetAsInt()		{ return (int)mIntValue; };
@@ -112,7 +112,7 @@ public:
 	{
 		INDENT_PREPARE(indentLevel);
 		
-		destStream << indentChars << "float( " << mFloatValue << " )" << std::endl;
+		destStream << indentChars << "float( " << mFloatValue << gUnitLabels[mUnit] << " )" << std::endl;
 	};
 	
 	virtual float				GetAsFloat()	{ return mFloatValue; };
