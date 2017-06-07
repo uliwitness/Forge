@@ -18,6 +18,11 @@
 #include "CForgeExceptions.h"
 #include "LEOValue.h"
 
+extern "C"
+{
+#include "LEOStringUtilities.h"
+}
+
 
 namespace Carlson
 {
@@ -172,7 +177,7 @@ public:
 	{
 		INDENT_PREPARE(indentLevel);
 		
-		destStream << indentChars << "\"" << mStringValue.c_str() << "\"" << std::endl;
+		destStream << indentChars << "\"" << LEOStringEscapedForPrintingInQuotes(mStringValue.c_str()) << "\"" << std::endl;
 	};
 	
 	virtual std::string			GetAsString()	{ return mStringValue; };
