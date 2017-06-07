@@ -42,6 +42,8 @@ struct ForgeToolResourceEntry
 {
 	ForgeToolResourceEntry( std::string src, std::string dst ) : mSourceFile(src), mDestFile(dst) {}
 	
+	bool operator == ( const ForgeToolResourceEntry& inOriginal ) const { return (mSourceFile.compare( inOriginal.mSourceFile ) == 0) && (mDestFile.compare( inOriginal.mDestFile ) == 0); }
+	
 	std::string	mSourceFile;
 	std::string mDestFile;
 };
@@ -262,6 +264,18 @@ int main( int argc, char * const argv[] )
 	}
 	
 	return 0;
+}
+
+
+void	AddResourceEntryIfUnique( const ForgeToolResourceEntry& inResourceToAdd, ForgeToolOptions& toolOptions )
+{
+	for( const ForgeToolResourceEntry& currResource : toolOptions.resources )
+	{
+		if( currResource == inResourceToAdd )
+			return;	// No need to add, already have it.
+	}
+	
+	toolOptions.resources.push_back( inResourceToAdd );
 }
 
 
@@ -532,7 +546,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 											currResourceDestStr = LEOGetValueAsString( currResourceDestValue, currResourceDestStrBuf, sizeof(currResourceDestStrBuf), ctx );
 										}
 										
-										toolOptions.resources.push_back( ForgeToolResourceEntry( currResourceFilenameStr, currResourceDestStr ) );
+										AddResourceEntryIfUnique( ForgeToolResourceEntry( currResourceFilenameStr, currResourceDestStr ), toolOptions );
 										
 										if( currResourceDestValue == &currResourceDestTmp )
 										{
