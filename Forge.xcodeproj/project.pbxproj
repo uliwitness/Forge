@@ -25,6 +25,7 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		551906041EED586B005AD911 /* testfile18.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 551906031EED585F005AD911 /* testfile18.hc */; };
 		551E0E091CD2C294008B80E1 /* LEOStringUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */; };
 		5523FE9413426059009D8EF1 /* testfile8.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 558A8D1512BD10C800F514F4 /* testfile8.hc */; };
 		5523FE961342605B009D8EF1 /* testfile9.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55D78A0712BE9E1F00C5D76E /* testfile9.hc */; };
@@ -117,6 +118,7 @@
 				55965D4C1EDA0C6F008A5BE3 /* testfile16_footer.hc in CopyFiles */,
 				55965D4D1EDA0C6F008A5BE3 /* testfile16_header.hc in CopyFiles */,
 				55C91B941EE6194E0074A214 /* testfile17.hc in CopyFiles */,
+				551906041EED586B005AD911 /* testfile18.hc in CopyFiles */,
 				556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -157,6 +159,7 @@
 		3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWhileLoopNode.cpp; sourceTree = "<group>"; };
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
+		551906031EED585F005AD911 /* testfile18.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile18.hc; sourceTree = "<group>"; };
 		551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOStringUtilities.c; path = Leonie/common/LEOStringUtilities.c; sourceTree = "<group>"; };
 		551E0E0A1CD2C29C008B80E1 /* LEOStringUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LEOStringUtilities.h; path = Leonie/common/LEOStringUtilities.h; sourceTree = "<group>"; };
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF32CaseTables.h; path = Leonie/generic/UTF32CaseTables.h; sourceTree = "<group>"; };
@@ -400,6 +403,7 @@
 				55965D4B1EDA0C63008A5BE3 /* testfile16_header.hc */,
 				55965D4A1EDA0C63008A5BE3 /* testfile16_footer.hc */,
 				55C91B931EE619410074A214 /* testfile17.hc */,
+				551906031EED585F005AD911 /* testfile18.hc */,
 				556FA4521718AA7500A108E5 /* UnitTest.hc */,
 			);
 			name = "Test Scripts";

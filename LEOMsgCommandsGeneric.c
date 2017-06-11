@@ -40,6 +40,26 @@ struct THostCommandEntry		gMsgCommands[] =
 		}
 	},
 	{
+		EStartIdentifier, START_RECORDING_OUTPUT_INSTR, 0, 0, '\0', 'X',
+		{
+			{ EHostParamInvisibleIdentifier, ERecordingIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamInvisibleIdentifier, EOutputIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamInvisibleIdentifier, EIntoIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamIdentifier, ELastIdentifier_Sentinel, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', 'X' },
+			{ EHostParam_Sentinel, ELastIdentifier_Sentinel, EHostParameterOptional, INVALID_INSTR2, 0, 0, '\0', '\0' }
+		}
+	},
+	{
+		EStopIdentifier, STOP_RECORDING_OUTPUT_INSTR, 0, 0, '\0', 'X',
+		{
+			{ EHostParamInvisibleIdentifier, ERecordingIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamInvisibleIdentifier, EOutputIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamInvisibleIdentifier, EIntoIdentifier, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', '\0' },
+			{ EHostParamIdentifier, ELastIdentifier_Sentinel, EHostParameterRequired, INVALID_INSTR2, 0, 0, '\0', 'X' },
+			{ EHostParam_Sentinel, ELastIdentifier_Sentinel, EHostParameterOptional, INVALID_INSTR2, 0, 0, '\0', '\0' }
+		}
+	},
+	{
 		ELastIdentifier_Sentinel, INVALID_INSTR2, 0, 0, '\0', '\0',
 		{
 			{ EHostParam_Sentinel, ELastIdentifier_Sentinel, EHostParameterOptional, INVALID_INSTR2, 0, 0, '\0', '\0' }
