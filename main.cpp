@@ -49,6 +49,15 @@ struct ForgeToolResourceEntry
 };
 
 
+struct ForgeToolSummaryEntry
+{
+	ForgeToolSummaryEntry( std::string fileName, std::string summary ) : mFileName(fileName), mSummary(summary) {}
+
+	std::string	mFileName;
+	std::string mSummary;
+};
+
+
 struct ForgeToolOptions
 {
 	bool			debuggerOn = false;
@@ -63,11 +72,12 @@ struct ForgeToolOptions
 	bool			webPageEmbedMode = false;
 	const char*		debuggerHost = NULL;
 	const char*		messageName = nullptr;
-	int				argc;
-	char * const *	argv;
+	int				argc = 0;
+	char * const *	argv = nullptr;
 	int				fnameIdx = 0;
 	bool			postbuild = false;	// Ignore passed arc/argv and instead pass the resources as parameters.
 	std::vector<ForgeToolResourceEntry>	resources;
+	std::vector<ForgeToolSummaryEntry>	summaries;
 };
 
 
@@ -238,7 +248,9 @@ int main( int argc, char * const argv[] )
 			
 			int errNum = ProcessOneScriptFile( (*currFile).path().string(), toolOptions );
 			if( errNum != EXIT_SUCCESS )
+			{
 				return errNum;
+			}
 		}
 		
 		if( toolOptions.webPageEmbedMode )
@@ -249,17 +261,20 @@ int main( int argc, char * const argv[] )
 				toolOptions.postbuild = true;
 				int errNum = ProcessOneScriptFile( postBuildFile.string(), toolOptions );
 				if( errNum != EXIT_SUCCESS )
+				{
 					return errNum;
+				}
 			}
 		}
 	}
 	else if( filename )
 	{
-		return ProcessOneScriptFile( filename, toolOptions );
+		int theResult = ProcessOneScriptFile( filename, toolOptions );
+		return theResult;
 	}
 	else
 	{
-		std::cerr << "error: Last parameter should be name of script to compile." << std::endl;
+		std::cerr << "error: First parameter after options should be name of script to compile." << std::endl;
 		return 2;
 	}
 	
@@ -417,12 +432,30 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 				}
 				else
 				{
-					paramCount = toolOptions.resources.size();
+					paramCount = 2;
+					
+					// We must push the params *backwards*!
+					
+					LEOValueArray * arrayValue = (LEOValueArray*) LEOPushArrayValueOnStack( ctx, NULL );
+					size_t	currIndex = 0;
+					for( ForgeToolSummaryEntry currEntry : toolOptions.summaries )
+					{
+						char	currKey[100] = {};
+						snprintf( currKey, sizeof(currKey) -1, "%zu", ++currIndex );
+						LEOValuePtr singleEntryArray = LEOAddArrayArrayEntryToRoot( &arrayValue->array, currKey, NULL, ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "filename", currEntry.mFileName.data(), currEntry.mFileName.size(), ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "summary", currEntry.mSummary.data(), currEntry.mSummary.size(), ctx );
+					}
+					
+					arrayValue = (LEOValueArray*) LEOPushArrayValueOnStack( ctx, NULL );
+					currIndex = 0;
 					for( ForgeToolResourceEntry currEntry : toolOptions.resources )
 					{
-						LEOValueArray * arrayValue = (LEOValueArray*) LEOPushArrayValueOnStack( ctx, NULL );
-						LEOAddStringArrayEntryToRoot( &arrayValue->array, "filename", currEntry.mSourceFile.data(), currEntry.mSourceFile.size(), ctx );
-						LEOAddStringArrayEntryToRoot( &arrayValue->array, "destination", currEntry.mDestFile.data(), currEntry.mDestFile.size(), ctx );
+						char	currKey[100] = {};
+						snprintf( currKey, sizeof(currKey) -1, "%zu", ++currIndex );
+						LEOValuePtr singleEntryArray = LEOAddArrayArrayEntryToRoot( &arrayValue->array, currKey, NULL, ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "filename", currEntry.mSourceFile.data(), currEntry.mSourceFile.size(), ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "destination", currEntry.mDestFile.data(), currEntry.mDestFile.size(), ctx );
 					}
 					
 					LEOPushIntegerOnStack( ctx, paramCount, kLEOUnitNone );	// Parameter count.
@@ -565,6 +598,20 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 									LEOCleanUpValue( currResourceValue, kLEOInvalidateReferences, ctx );
 								}
 							}
+							
+							if( theValue == &tmp )
+							{
+								LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+							}
+						}
+
+						theValue = LEOGetValueForKey( pageGlobal, "summary", &tmp, kLEOInvalidateReferences, ctx );
+						if( theValue )
+						{
+							char currSummaryStrBuf[1024];
+							const char* currSummaryStr = LEOGetValueAsString( theValue, currSummaryStrBuf, sizeof(currSummaryStrBuf), ctx );
+							
+							toolOptions.summaries.push_back( ForgeToolSummaryEntry( desiredFilename.str(), currSummaryStr ) );
 							
 							if( theValue == &tmp )
 							{
