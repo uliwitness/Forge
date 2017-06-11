@@ -10,6 +10,7 @@
 #include "CWhileLoopNode.h"
 #include "CCodeBlock.h"
 #include "CNodeTransformation.h"
+#include "LEOInterpreter.h"
 
 
 namespace Carlson
@@ -18,7 +19,7 @@ namespace Carlson
 void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 {
 	int32_t	lineMarkerInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
-	inBlock->GenerateLineMarkerInstruction( (int32_t) mLineNum );	// Make sure debugger indicates condition as current line on every iteration.
+	inBlock->GenerateLineMarkerInstruction( (int32_t) mLineNum, LEOFileIDForFileName(mFileName.c_str()) );	// Make sure debugger indicates condition as current line on every iteration.
 	
 	// Push condition:
 	mCondition->GenerateCode(inBlock);

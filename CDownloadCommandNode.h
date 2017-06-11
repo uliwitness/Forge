@@ -17,7 +17,7 @@ namespace Carlson
 class CDownloadCommandNode : public CCommandNode
 {
 public:
-	CDownloadCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "download", inLineNum ), mProgressBlock(NULL), mCompletionBlock(NULL), mBlockNamesAdded(false), mProgressLineNum(0), mProgressCommandsLineNum(0), mCompletionLineNum(0), mCompletionCommandsLineNum(0), mEndDownloadLineNum(0) {};
+	CDownloadCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "download", inLineNum, inFileName ), mProgressBlock(NULL), mCompletionBlock(NULL), mBlockNamesAdded(false), mProgressLineNum(0), mProgressCommandsLineNum(0), mCompletionLineNum(0), mCompletionCommandsLineNum(0), mEndDownloadLineNum(0) {};
 
 	virtual CCodeBlockNodeBase*	CreateProgressBlock( size_t inLineNum );
 	virtual CCodeBlockNodeBase*	GetProgressBlock()							{ return mProgressBlock; };		// May return NULL!

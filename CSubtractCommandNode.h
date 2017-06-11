@@ -15,7 +15,7 @@ namespace Carlson
 class CSubtractCommandNode : public CCommandNode
 {
 public:
-	CSubtractCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "SubtractFrom", inLineNum ) {};
+	CSubtractCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "SubtractFrom", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

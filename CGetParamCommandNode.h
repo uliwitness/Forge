@@ -15,8 +15,8 @@ namespace Carlson
 class CGetParamCommandNode : public CCommandNode
 {
 public:
-	CGetParamCommandNode( CParseTree* inTree, size_t inLineNum )
-		: CCommandNode( inTree, "GetParameter", inLineNum ) {};
+	CGetParamCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName )
+		: CCommandNode( inTree, "GetParameter", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

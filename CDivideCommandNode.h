@@ -15,7 +15,7 @@ namespace Carlson
 class CDivideCommandNode : public CCommandNode
 {
 public:
-	CDivideCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "DivideBy", inLineNum ) {};
+	CDivideCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "DivideBy", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

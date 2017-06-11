@@ -20,8 +20,8 @@ namespace Carlson
 class CAssignChunkArrayNode : public CCommandNode
 {
 public:
-	CAssignChunkArrayNode( CParseTree* inTree, size_t inLineNum )
-		: CCommandNode( inTree, "AssignChunkArray", inLineNum ) {};
+	CAssignChunkArrayNode( CParseTree* inTree, size_t inLineNum, std::string inFileName )
+		: CCommandNode( inTree, "AssignChunkArray", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

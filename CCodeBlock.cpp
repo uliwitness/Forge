@@ -240,7 +240,7 @@ void	CCodeBlock::GenerateOperatorInstruction( LEOInstructionID inInstructionID, 
 }
 
 
-size_t	CCodeBlock::GetNextInstructionOffset()
+size_t	CCodeBlock::GetNextInstructionOffset() const
 {
 	return mCurrentHandler->numInstructions;
 }
@@ -281,9 +281,9 @@ void	CCodeBlock::GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInt
 }
 
 
-void	CCodeBlock::GenerateLineMarkerInstruction( uint32_t inLineNum )
+void	CCodeBlock::GenerateLineMarkerInstruction( uint32_t inLineNum, uint16_t inFileID )
 {
-	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, mFileID, inLineNum );
+	LEOHandlerAddInstruction( mCurrentHandler, LINE_MARKER_INSTR, (inFileID != 65535) ? inFileID : mFileID, inLineNum );
 }
 
 

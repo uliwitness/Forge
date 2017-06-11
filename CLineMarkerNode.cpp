@@ -18,12 +18,12 @@ void	CLineMarkerNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "# LINE " << mLineNum << std::endl;
+	destStream << indentChars << "# LINE " << mLineNum << "\"" << mFileName << "\"" << std::endl;
 }
 
 void	CLineMarkerNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GenerateLineMarkerInstruction( (uint32_t) mLineNum );
+	inCodeBlock->GenerateLineMarkerInstruction( (uint32_t) mLineNum, LEOFileIDForFileName( mFileName.c_str() ) );
 }
 
 } // namespace Carlson

@@ -411,6 +411,12 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 						ctx->preInstructionProc = LEORemoteDebuggerPreInstructionProc;	// Activate the debugger.
 						LEORemoteDebuggerAddBreakpoint( theHandler->instructions );		// Set a breakpoint on the first instruction, so we can step through everything with the debugger.
 						LEORemoteDebuggerAddFile( code.data(), fileID, script );
+						
+						for( const CIncludeFileEntry& currInclude : parser.GetIncludedFiles() )
+						{
+							uint16_t 	includedFileID = LEOFileIDForFileName(currInclude.mFileName.c_str());
+							LEORemoteDebuggerAddFile( currInclude.mFileData.data(), includedFileID, script );
+						}
 					}
 				}
 				

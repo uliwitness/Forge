@@ -27,8 +27,8 @@ class CCommandNode;
 class CCodeBlockNodeBase : public CNode
 {
 public:
-	CCodeBlockNodeBase( CParseTree* inTree, size_t inLineNum )
-		: CNode(inTree), mLineNum( inLineNum ) {};
+	CCodeBlockNodeBase( CParseTree* inTree, size_t inLineNum, const std::string &inFileName )
+		: CNode(inTree), mLineNum( inLineNum ), mFileName(inFileName) {};
 	virtual ~CCodeBlockNodeBase();
 	
 	virtual void	AddCommand( CNode* inCmd )	{ mCommands.push_back( inCmd ); mParseTree->NodeWasAdded( inCmd ); };	// Function node now owns this command and will delete it!
@@ -62,6 +62,7 @@ public:
 protected:
 	size_t									mLineNum;
 	std::vector<CNode*>						mCommands;
+	std::string								mFileName;
 };
 
 
@@ -70,8 +71,8 @@ protected:
 class CCodeBlockNode : public CCodeBlockNodeBase
 {
 public:
-	CCodeBlockNode( CParseTree* inTree, size_t inLineNum, CCodeBlockNodeBase* owningBlock )
-		: CCodeBlockNodeBase( inTree, inLineNum ), mOwningBlock(owningBlock)
+	CCodeBlockNode( CParseTree* inTree, size_t inLineNum, const std::string &inFileName, CCodeBlockNodeBase* owningBlock )
+		: CCodeBlockNodeBase( inTree, inLineNum, inFileName ), mOwningBlock(owningBlock)
 	{
 		mGlobals = &owningBlock->GetGlobals();
 		mLocals = &owningBlock->GetLocals();

@@ -15,8 +15,8 @@ namespace Carlson
 class CReturnCommandNode : public CCommandNode
 {
 public:
-	CReturnCommandNode( CParseTree* inTree, size_t inLineNum )
-		: CCommandNode( inTree, "return", inLineNum ) {};
+	CReturnCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName )
+		: CCommandNode( inTree, "return", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

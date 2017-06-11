@@ -15,7 +15,7 @@ namespace Carlson
 class CMultiplyCommandNode : public CCommandNode
 {
 public:
-	CMultiplyCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "MultiplyBy", inLineNum ) {};
+	CMultiplyCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "MultiplyBy", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

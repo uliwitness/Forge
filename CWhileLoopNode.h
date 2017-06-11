@@ -16,7 +16,7 @@ namespace Carlson
 class CWhileLoopNode : public CCodeBlockNode
 {
 public:
-	CWhileLoopNode( CParseTree* inTree, size_t inLineNum, CCodeBlockNodeBase* owningBlock ) : CCodeBlockNode( inTree, inLineNum, owningBlock ), mCondition(NULL), mCommandsLineNum(0), mEndRepeatLineNum(0) {};
+	CWhileLoopNode( CParseTree* inTree, size_t inLineNum, const std::string &inFileName, CCodeBlockNodeBase* owningBlock ) : CCodeBlockNode( inTree, inLineNum, inFileName, owningBlock ), mCondition(NULL), mCommandsLineNum(0), mEndRepeatLineNum(0) {};
 	~CWhileLoopNode() { if( mCondition) delete mCondition; mCondition = NULL; };
 
 	virtual void	SetCondition( CValueNode* inCond )	{ if( mCondition ) delete mCondition; mCondition = inCond; };	// inCond is now owned by the CWhileLoopNode.

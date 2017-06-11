@@ -20,8 +20,8 @@ namespace Carlson
 class CGetArrayItemCountNode : public CCommandNode
 {
 public:
-	CGetArrayItemCountNode( CParseTree* inTree, size_t inLineNum )
-		: CCommandNode( inTree, "GetArrayItemCount", inLineNum ) {};
+	CGetArrayItemCountNode( CParseTree* inTree, size_t inLineNum, std::string inFileName )
+		: CCommandNode( inTree, "GetArrayItemCount", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

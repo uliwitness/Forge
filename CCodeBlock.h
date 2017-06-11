@@ -52,7 +52,7 @@ public:
 	void		GenerateReturnInstruction();
 	void		GenerateSetReturnValueInstruction();
 
-	size_t		GetNextInstructionOffset();	// Offset that next instruction added will have.
+	size_t		GetNextInstructionOffset() const;	// Offset that next instruction added will have.
 	
 	void		GenerateJumpRelativeInstruction( int32_t numInstructions );
 	void		GenerateJumpRelativeIfFalseInstruction( int32_t numInstructions );
@@ -62,7 +62,7 @@ public:
 	void		GenerateAddIntegerInstruction( int16_t bpRelativeOffset, LEOInteger inNumber );
 	void		GenerateOperatorInstruction( LEOInstructionID inInstructionID, uint16_t inParam1 = 0, uint32_t inParam2 = 0 );
 	
-	void		GenerateLineMarkerInstruction( uint32_t inLineNum );
+	void		GenerateLineMarkerInstruction( uint32_t inLineNum, uint16_t inFileID );
 	
 	void		GeneratePushChunkRefInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );
 	void		GeneratePushChunkConstInstruction( int16_t bpRelativeOffset, uint32_t inChunkType );

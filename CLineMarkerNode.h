@@ -15,8 +15,8 @@ namespace Carlson
 class CLineMarkerNode : public CCommandNode
 {
 public:
-	CLineMarkerNode( CParseTree* inTree, size_t inLineNum )
-		: CCommandNode( inTree, "LINE:", inLineNum ) {};
+	CLineMarkerNode( CParseTree* inTree, size_t inLineNum, std::string inFileName )
+		: CCommandNode( inTree, "LINE:", inLineNum, inFileName ) {};
 	
 	virtual void	DebugPrint( std::ostream& destStream, size_t indentLevel );
 

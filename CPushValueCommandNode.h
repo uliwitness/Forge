@@ -15,7 +15,7 @@ namespace Carlson
 class CPushValueCommandNode : public CCommandNode
 {
 public:
-	CPushValueCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "PushValue", inLineNum ) {};
+	CPushValueCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "PushValue", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

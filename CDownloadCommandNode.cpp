@@ -61,7 +61,7 @@ void	CDownloadCommandNode::DebugPrint( std::ostream& destStream, size_t indentLe
 CCodeBlockNodeBase*	CDownloadCommandNode::CreateProgressBlock( size_t inLineNum )
 {
 	mProgressBlockName = mParseTree->GetUniqueIdentifierBasedOn("::downloadProgress:");
-	mProgressBlock = new CFunctionDefinitionNode( mParseTree, true, mProgressBlockName, mProgressBlockName, inLineNum );
+	mProgressBlock = new CFunctionDefinitionNode( mParseTree, true, mProgressBlockName, mProgressBlockName, inLineNum, mFileName );
 	mParseTree->AddNode( mProgressBlock );
 		
 	return mProgressBlock;
@@ -71,7 +71,7 @@ CCodeBlockNodeBase*	CDownloadCommandNode::CreateProgressBlock( size_t inLineNum 
 CCodeBlockNodeBase*	CDownloadCommandNode::CreateCompletionBlock( size_t inLineNum )
 {
 	mCompletionBlockName = mParseTree->GetUniqueIdentifierBasedOn("::downloadCompletion:");
-	mCompletionBlock = new CFunctionDefinitionNode( mParseTree, true, mCompletionBlockName, mCompletionBlockName, inLineNum );
+	mCompletionBlock = new CFunctionDefinitionNode( mParseTree, true, mCompletionBlockName, mCompletionBlockName, inLineNum, mFileName );
 	mParseTree->AddNode( mCompletionBlock );
 
 	return mCompletionBlock;

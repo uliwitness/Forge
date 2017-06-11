@@ -106,6 +106,17 @@ namespace Carlson
 	};
 	
 	
+	class CIncludeFileEntry
+	{
+	public:
+		std::string			mFileName;
+		std::string			mRelativeToFileName;
+		std::vector<char>	mFileData;
+		
+		CIncludeFileEntry( std::string inFileName, std::string inRelativeToFileName, const std::vector<char>& inFileData ) : mFileName(inFileName), mRelativeToFileName(inRelativeToFileName), mFileData(inFileData) {}
+	};
+	
+	
 	typedef enum
 	{
 		EAllVarsAreGlobals,
@@ -135,6 +146,7 @@ namespace Carlson
 		std::vector<CHandlerNotesEntry>	mHandlerNotes;			//!< List of documentation comments found in the script.
 		std::string					mCurrentNotes;				//!< The most recent "notes" text (documentation "comment") we encountered, so a handler definition can snarf it up and associate it with its handler name. Only valid while parsing.
 		CParserIncludeHandler		mIncludeHandler;			//!< Lambda that is called (if present) to retrieve a file included using the "use" statement in web page mode.
+		std::vector<CIncludeFileEntry>	mIncludeFiles;			//!< List file names included using the "use" statement so debugger can register them as well.
 		
 	protected:
 		static std::map<std::string,CObjCMethodEntry>	sObjCMethodTable;		//!< Populated from frameworkheaders.hhc file.
@@ -271,6 +283,7 @@ namespace Carlson
 		
 		const std::vector<CMessageEntry>&		GetMessages()		{ return mMessages; };
 		const std::vector<CHandlerNotesEntry>&	GetHandlerNotes()	{ return mHandlerNotes; };
+		const std::vector<CIncludeFileEntry>&	GetIncludedFiles()	{ return mIncludeFiles; }
 		
 	// statics:
 		static TBuiltInFunctionEntry* GetBuiltInFunctionWithName( const std::string& inName );

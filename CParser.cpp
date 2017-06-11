@@ -849,7 +849,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::string						handlerName( ":run" );
 		mFileName = fname;
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1, mFileName );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -889,7 +889,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		std::deque<CToken>::iterator	tokenItty = tokens.begin();
 		std::string						handlerName( ":run" );
 		
-		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1 );
+		currFunctionNode = new CFunctionDefinitionNode( &parseTree, true, handlerName, handlerName, 1, mFileName );
 		
 		// Make built-in system variables so they get declared below like other local vars:
 		currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
@@ -898,7 +898,7 @@ void	CParser::ParseCommandOrExpression( const char* fname, std::deque<CToken>& t
 		ParseFunctionBody( handlerName, parseTree, currFunctionNode, tokenItty, tokens, NULL, ENewlineOperator );
 		
 		// Add a "return the result" command so we hand on the return value to whoever called us:
-		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, endLineNum );
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, endLineNum, mFileName );
 		theReturnCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, "result", "result", endLineNum) );
 		currFunctionNode->AddCommand( theReturnCommand );
 		
@@ -967,6 +967,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		std::vector<char>	fileText;
 		if( mIncludeHandler( innerFileName, oldFileName, fileText ) )
 		{
+			mIncludeFiles.push_back( CIncludeFileEntry(innerFileName,oldFileName,fileText) );
 			std::deque<CToken>	includedTokens = CTokenizer::TokenListFromText( fileText.data(), fileText.size() -1, mWebPageEmbedMode );
 			Parse( innerFileName, includedTokens, parseTree, fileText.data() );	// Changes mFileName to the given file.
 			mFileName = oldFileName;	// Restore mFileName so we correctly report errors in continued parsing of this file.
@@ -1107,7 +1108,7 @@ CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::str
 	}
 	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
-	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum );
+	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum, mFileName );
 	parseTree.AddFunctionDefinitionNode( currFunctionNode );
 
 	if( mCurrentNotes.size() > 0 )	// Have documentation preceding this handler?
@@ -1144,7 +1145,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		std::string	realVarName( tokenItty->GetIdentifierText() );
 		std::string	varName("var_");
 		varName.append( realVarName );
-		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunctionNode, varName, realVarName, tokenItty->mLineNum) );
 		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, currParamIdx++, tokenItty->mLineNum ) );
 		currFunctionNode->AddCommand( theVarCopyCommand );
@@ -1252,7 +1253,7 @@ void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* cur
 		ParseHandlerCall( parseTree, currFunction, true, tokenItty, tokens );
 	else
 	{
-		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		CValueNode*		theWhatNode = ParseFunctionCall( parseTree, currFunction, true, tokenItty, tokens );
 		theReturnCommand->AddParam( theWhatNode );
 		
@@ -1276,12 +1277,12 @@ void	CParser::ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	if( isMessagePassing )
 	{
 		currFunctionCall->SetIsMessagePassing( true );
-		theVarAssignCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+		theVarAssignCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theVarAssignCommand->AddParam( currFunctionCall );
 	}
 	else
 	{
-		theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
+		theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum, mFileName );
 		theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, "result", "result", tokenItty->mLineNum) );
 		theVarAssignCommand->AddParam( currFunctionCall );
 	}
@@ -1336,7 +1337,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		// [into|after|before]
 		if( tokenItty->IsIdentifier( EIntoIdentifier ) )
 		{
-			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine, mFileName );
 			thePutCommand->AddParam( whatExpression );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			
@@ -1351,7 +1352,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 			
-			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine, mFileName );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
 			concatOperation->AddParam( destContainer->Copy() );
 			concatOperation->AddParam( whatExpression );
@@ -1365,7 +1366,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 
 			CValueNode*	destContainer = ParseContainer( false, false, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 			
-			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine );
+			resultNode = thePutCommand = new CPutCommandNode( &parseTree, startLine, mFileName );
 			COperatorNode	*	concatOperation = new COperatorNode( &parseTree, CONCATENATE_VALUES_INSTR, startLine );
 			concatOperation->AddParam( whatExpression );
 			concatOperation->AddParam( destContainer->Copy() );
@@ -1443,7 +1444,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		CValueNode*	whatExpression = ParseExpression( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 		
 		// Just build a put command:
-		thePutCommand = new CPutCommandNode( &parseTree, startLine );
+		thePutCommand = new CPutCommandNode( &parseTree, startLine, mFileName );
 		thePutCommand->AddParam( whatExpression );
 		thePutCommand->AddParam( destContainer );
 		
@@ -2103,7 +2104,7 @@ void	CParser::ParseGlobalStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 									std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	thePutCommand = new CPutCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// We map "get" to "put <what> into it":
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "get".
@@ -2123,7 +2124,7 @@ void	CParser::ParseGetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 void	CParser::ParseReturnStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// Return:
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2140,7 +2141,7 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 										CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CDownloadCommandNode*	theDownloadCommand = new CDownloadCommandNode( &parseTree, tokenItty->mLineNum );
+	CDownloadCommandNode*	theDownloadCommand = new CDownloadCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	currFunction->AddCommand( theDownloadCommand );
 	
 	// Download:
@@ -2215,7 +2216,7 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		//	containing info like download size (current, total) etc.:
 		std::string	realVarName( "download" );
 		std::string	varName("download");
-		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, progressNode, varName, realVarName, tokenItty->mLineNum) );
 		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0, tokenItty->mLineNum ) );
 		progressNode->AddCommand( theVarCopyCommand );
@@ -2275,7 +2276,7 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		//	containing info like download size (current, total) etc.:
 		std::string	realVarName( "download" );
 		std::string	varName("download");
-		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum );
+		CCommandNode*		theVarCopyCommand = new CGetParamCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theVarCopyCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, completionNode, varName, realVarName, tokenItty->mLineNum) );
 		theVarCopyCommand->AddParam( new CIntValueNode( &parseTree, 0, tokenItty->mLineNum ) );
 		completionNode->AddCommand( theVarCopyCommand );
@@ -2354,7 +2355,7 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CAddCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// Add:
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2386,7 +2387,7 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CSubtractCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CSubtractCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// Subtract:
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2417,7 +2418,7 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CMultiplyCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CMultiplyCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// Multiply:
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2448,7 +2449,7 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
-	CCommandNode*	theAddCommand = new CDivideCommandNode( &parseTree, tokenItty->mLineNum );
+	CCommandNode*	theAddCommand = new CDivideCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	
 	// Divide:
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2531,14 +2532,14 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	
 	if( isArrayEntry )
 	{
-		CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
+		CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum, mFileName );
 		theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 		theVarAssignCommand->AddParam( theExpressionNode );
 		currFunction->AddCommand( theVarAssignCommand );
 	}
 	else
 	{
-		CCommandNode*			theVarChunkListCommand = new CAssignChunkArrayNode( &parseTree, currLineNum );
+		CCommandNode*			theVarChunkListCommand = new CAssignChunkArrayNode( &parseTree, currLineNum, mFileName );
 		theVarChunkListCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 		theVarChunkListCommand->AddParam( new CIntValueNode(&parseTree, chunkTypeConstant, currLineNum) );
 		theVarChunkListCommand->AddParam( theExpressionNode );
@@ -2546,19 +2547,19 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	}
 	
 	// tempCounterName = 1;
-	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum );
+	CCommandNode*			theVarAssignCommand = new CAssignCommandNode( &parseTree, currLineNum, mFileName );
 	theVarAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, currLineNum) );
 	theVarAssignCommand->AddParam( new CIntValueNode(&parseTree, 1, currLineNum) );
 	currFunction->AddCommand( theVarAssignCommand );
 	
 	// tempMaxCountName = GetArrayItemCount( tempName );
-	CGetArrayItemCountNode*	currFunctionCall = new CGetArrayItemCountNode( &parseTree, currLineNum);
+	CGetArrayItemCountNode*	currFunctionCall = new CGetArrayItemCountNode( &parseTree, currLineNum, mFileName );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName, currLineNum) );
 	currFunctionCall->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	currFunction->AddCommand( currFunctionCall );
 	
 	// while( tempCounterName <= tempMaxCountName )
-	CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, currLineNum, currFunction );
+	CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, currLineNum, mFileName, currFunction );
 	currFunction->AddCommand( whileLoop );
 	COperatorNode	*	opNode = new COperatorNode( &parseTree, LESS_THAN_EQUAL_OPERATOR_INSTR, currLineNum );
 	whileLoop->SetCondition( opNode );
@@ -2566,7 +2567,7 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	opNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempMaxCountName, tempMaxCountName, currLineNum) );
 	
 	// counterVarName = GetArrayItem( tempName, tempCounterName );
-	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, currLineNum );
+	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, currLineNum, mFileName );
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, currLineNum) );
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, currLineNum) );
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
@@ -2579,7 +2580,7 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	}
 	
 	// tempCounterName += 1;	-- increment loop counter.
-	CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+	CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 	theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempCounterName, tempCounterName, tokenItty->mLineNum) );
 	theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1, tokenItty->mLineNum) );
 	whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
@@ -2612,7 +2613,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
-		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
+		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, mFileName, currFunction );
 		CValueNode*			conditionNode = NULL;
 		
 		currFunction->AddCommand( whileLoop );
@@ -2710,10 +2711,10 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		std::string		tempName = CVariableEntry::GetNewTempName();
 		currFunction->AddLocalVar( tempName, tempName, TVariantTypeInt );
 		
-		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
+		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, mFileName, currFunction );
 		
 		// tempName = startNum;
-		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
+		CCommandNode*	theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum, mFileName );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theAssignCommand->AddParam( startNumExpr );
 		currFunction->AddCommand( theAssignCommand );
@@ -2725,7 +2726,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		whileLoop->SetCondition( theComparison );
 		
 		// counterVarName = tempName;
-		theAssignCommand = new CPutCommandNode( &parseTree, conditionLineNum );
+		theAssignCommand = new CPutCommandNode( &parseTree, conditionLineNum, mFileName );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, conditionLineNum) );
 		whileLoop->AddCommand( theAssignCommand );
@@ -2748,7 +2749,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		while( true );
 		
 		// tempName += 1;
-		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, tokenItty->mLineNum) );
 		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, stepSize, tokenItty->mLineNum) );
 		whileLoop->AddCommand( theIncrementOperation );	// TODO: Need to dispose this on exceptions above.
@@ -2777,7 +2778,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		
 		// tempName = 0;
 		std::string			tempName = CVariableEntry::GetNewTempName();
-		CCommandNode*		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum );
+		CCommandNode*		theAssignCommand = new CAssignCommandNode( &parseTree, conditionLineNum, mFileName );
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theAssignCommand->AddParam( new CIntValueNode(&parseTree, 0, tokenItty->mLineNum) );
 		currFunction->AddCommand( theAssignCommand );
@@ -2789,7 +2790,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		if( tokenItty->IsIdentifier( ETimesIdentifier ) )
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "times".
 		
-		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, currFunction );
+		CWhileLoopNode*		whileLoop = new CWhileLoopNode( &parseTree, conditionLineNum, mFileName, currFunction );
 		currFunction->AddCommand( whileLoop );
 		
 		// while( tempName < countExpression )
@@ -2805,7 +2806,7 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		}
 		
 		// tempName += 1;
-		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum );
+		CAddCommandNode	*	theIncrementOperation = new CAddCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 		theIncrementOperation->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, tokenItty->mLineNum) );
 		theIncrementOperation->AddParam( new CIntValueNode(&parseTree, 1, tokenItty->mLineNum) );
 		whileLoop->AddCommand( theIncrementOperation );
@@ -2822,7 +2823,7 @@ void	CParser::ParseIfStatement( const std::string& userHandlerName, CParseTree& 
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
 {
 	size_t			conditionLineNum = tokenItty->mLineNum;
-	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, currFunction );
+	CIfNode*		ifNode = new CIfNode( &parseTree, conditionLineNum, mFileName, currFunction );
 	try
 	{
 		// If:
@@ -2941,7 +2942,7 @@ CValueNode*	CParser::ParseArrayItem( CParseTree& parseTree, CCodeBlockNodeBase* 
 	CValueNode*			theTarget = ParseContainer( false, true, parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
 	
 	// put entry <itemNumber> of <container> into temp1
-	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, containerLineNum );
+	CGetArrayItemNode*	getItemNode = new CGetArrayItemNode( &parseTree, containerLineNum, mFileName );
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, containerLineNum) );
 	getItemNode->AddParam( theIndex );
 	getItemNode->AddParam( theTarget );
@@ -3167,7 +3168,7 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 	while( tokenItty->IsIdentifier(ENewlineOperator) )
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
-	CLineMarkerNode*	lineMarker = new CLineMarkerNode( &parseTree, tokenItty->mLineNum );
+	CLineMarkerNode*	lineMarker = new CLineMarkerNode( &parseTree, tokenItty->mLineNum, mFileName );
 	currFunction->AddCommand( lineMarker );
 	
 	if( tokenItty->mType == EIdentifierToken && tokenItty->mSubType == ELastIdentifier_Sentinel )	// Unknown identifier.
@@ -3185,13 +3186,13 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "exit".
 		if( tokenItty->IsIdentifier(ERepeatIdentifier) )
 		{
-			CCommandNode*	theExitRepeatCommand = new CCommandNode( &parseTree, "ExitRepeat", tokenItty->mLineNum );
+			CCommandNode*	theExitRepeatCommand = new CCommandNode( &parseTree, "ExitRepeat", tokenItty->mLineNum, mFileName );
 			currFunction->AddCommand( theExitRepeatCommand );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		else if( strcasecmp(tokenItty->GetIdentifierText().c_str(), userHandlerName.c_str()) == 0 )
 		{
-			CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum );
+			CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, tokenItty->mLineNum, mFileName );
 			currFunction->AddCommand( theReturnCommand );
 			theReturnCommand->AddParam( new CStringValueNode(&parseTree, "", tokenItty->mLineNum) );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -3210,7 +3211,7 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "next".
 		if( tokenItty->IsIdentifier(ERepeatIdentifier) )
 		{
-			CCommandNode*	theNextRepeatCommand = new CCommandNode( &parseTree, "NextRepeat", tokenItty->mLineNum );
+			CCommandNode*	theNextRepeatCommand = new CCommandNode( &parseTree, "NextRepeat", tokenItty->mLineNum, mFileName );
 			currFunction->AddCommand( theNextRepeatCommand );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
@@ -3289,7 +3290,7 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 	
 	if( parseFirstLineAsReturnExpression )
 	{
-		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, (tokenItty != tokens.end()) ? tokenItty->mLineNum : 1 );
+		CCommandNode*	theReturnCommand = new CReturnCommandNode( &parseTree, (tokenItty != tokens.end()) ? tokenItty->mLineNum : 1, mFileName );
 		
 		CValueNode*	theWhatNode = ParseExpression( parseTree, currFunction, tokenItty, tokens, endIdentifier );
 		if( !theWhatNode )	// Empty string passed in?

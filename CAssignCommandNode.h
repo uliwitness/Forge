@@ -15,7 +15,7 @@ namespace Carlson
 class CAssignCommandNode : public CCommandNode
 {
 public:
-	CAssignCommandNode( CParseTree* inTree, size_t inLineNum ) : CCommandNode( inTree, "=", inLineNum ) {};
+	CAssignCommandNode( CParseTree* inTree, size_t inLineNum, std::string inFileName ) : CCommandNode( inTree, "=", inLineNum, inFileName ) {};
 
 	virtual void	GenerateCode( CCodeBlock* inCodeBlock );
 };

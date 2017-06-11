@@ -31,7 +31,7 @@ class CValueNode;
 class CCommandNode : public CNode
 {
 public:
-	CCommandNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum ) : CNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum) {};
+	CCommandNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum, std::string inFileName ) : CNode(inTree), mSymbolName(inSymbolName), mLineNum(inLineNum), mFileName(inFileName) {};
 	virtual ~CCommandNode() {};
 	
 	virtual void		GetSymbolName( std::string& outSymbolName )			{ outSymbolName = mSymbolName; };
@@ -54,6 +54,7 @@ protected:
 	std::string					mSymbolName;
 	std::vector<CValueNode*>	mParams;
 	size_t						mLineNum;
+	std::string					mFileName;
 };
 
 } // namespace Carlson

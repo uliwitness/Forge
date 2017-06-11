@@ -15,11 +15,11 @@ namespace Carlson
 class CIfNode : public CCodeBlockNode
 {
 public:
-	CIfNode( CParseTree* inTree, size_t inLineNum, CCodeBlockNodeBase* owningBlock ) : CCodeBlockNode( inTree, inLineNum, owningBlock ), mCondition(NULL), mElseBlock(NULL), mThenLineNum(0), mIfCommandsLineNum(0), mElseLineNum(0), mElseCommandsLineNum(0), mEndIfLineNum(0) {};
+	CIfNode( CParseTree* inTree, size_t inLineNum, const std::string &inFileName, CCodeBlockNodeBase* owningBlock ) : CCodeBlockNode( inTree, inLineNum, inFileName, owningBlock ), mCondition(NULL), mElseBlock(NULL), mThenLineNum(0), mIfCommandsLineNum(0), mElseLineNum(0), mElseCommandsLineNum(0), mEndIfLineNum(0) {};
 	~CIfNode() { delete mCondition; mCondition = NULL; if( mElseBlock ) { delete mElseBlock; mElseBlock = NULL; } };
 
 	virtual void			SetCondition( CValueNode* inCond )	{ if( mCondition ) delete mCondition; mCondition = inCond; };	// inCond is now owned by the CIfNode.
-	virtual CCodeBlockNode*	CreateElseBlock( size_t inLineNum )	{ mElseBlock = new CCodeBlockNode( mParseTree, inLineNum, mOwningBlock ); return mElseBlock; };
+	virtual CCodeBlockNode*	CreateElseBlock( size_t inLineNum )	{ mElseBlock = new CCodeBlockNode( mParseTree, inLineNum, mFileName, mOwningBlock ); return mElseBlock; };
 	virtual CCodeBlockNode*	GetElseBlock()						{ return mElseBlock; };	// May return NULL!
 	
 	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel );
