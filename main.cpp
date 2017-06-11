@@ -51,10 +51,12 @@ struct ForgeToolResourceEntry
 
 struct ForgeToolSummaryEntry
 {
-	ForgeToolSummaryEntry( std::string fileName, std::string summary ) : mFileName(fileName), mSummary(summary) {}
+	ForgeToolSummaryEntry( std::string fileName, std::string summary, std::string modified, std::string created ) : mFileName(fileName), mSummary(summary), mModified(modified), mCreated(created) {}
 
 	std::string	mFileName;
 	std::string mSummary;
+	std::string mModified;
+	std::string mCreated;
 };
 
 
@@ -451,6 +453,8 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 						LEOValuePtr singleEntryArray = LEOAddArrayArrayEntryToRoot( &arrayValue->array, currKey, NULL, ctx );
 						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "filename", currEntry.mFileName.data(), currEntry.mFileName.size(), ctx );
 						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "summary", currEntry.mSummary.data(), currEntry.mSummary.size(), ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "modified", currEntry.mModified.data(), currEntry.mModified.size(), ctx );
+						LEOAddStringArrayEntryToRoot( &singleEntryArray->array.array, "created", currEntry.mCreated.data(), currEntry.mCreated.size(), ctx );
 					}
 					
 					arrayValue = (LEOValueArray*) LEOPushArrayValueOnStack( ctx, NULL );
@@ -611,18 +615,48 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 							}
 						}
 
-						theValue = LEOGetValueForKey( pageGlobal, "summary", &tmp, kLEOInvalidateReferences, ctx );
+						union LEOValue	tmp1;
+						char currSummaryStrBuf[1024];
+						const char* currSummaryStr = nullptr;
+						theValue = LEOGetValueForKey( pageGlobal, "summary", &tmp1, kLEOInvalidateReferences, ctx );
 						if( theValue )
 						{
-							char currSummaryStrBuf[1024];
-							const char* currSummaryStr = LEOGetValueAsString( theValue, currSummaryStrBuf, sizeof(currSummaryStrBuf), ctx );
-							
-							toolOptions.summaries.push_back( ForgeToolSummaryEntry( desiredFilename.str(), currSummaryStr ) );
-							
-							if( theValue == &tmp )
-							{
-								LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
-							}
+							currSummaryStr = LEOGetValueAsString( theValue, currSummaryStrBuf, sizeof(currSummaryStrBuf), ctx );
+						}
+
+						union LEOValue	tmp2;
+						char currModifiedStrBuf[1024];
+						const char* currModifiedStr = nullptr;
+						LEOValuePtr theValue2 = LEOGetValueForKey( pageGlobal, "modified", &tmp2, kLEOInvalidateReferences, ctx );
+						if( theValue2 )
+						{
+							currModifiedStr = LEOGetValueAsString( theValue2, currModifiedStrBuf, sizeof(currModifiedStrBuf), ctx );
+						}
+
+						union LEOValue	tmp3;
+						char currCreatedStrBuf[1024];
+						const char* currCreatedStr = nullptr;
+						LEOValuePtr theValue3 = LEOGetValueForKey( pageGlobal, "modified", &tmp3, kLEOInvalidateReferences, ctx );
+						if( theValue3 )
+						{
+							currModifiedStr = LEOGetValueAsString( theValue3, currCreatedStrBuf, sizeof(currCreatedStrBuf), ctx );
+						}
+						
+						toolOptions.summaries.push_back( ForgeToolSummaryEntry( desiredFilename.str(), currSummaryStr ?: "", currModifiedStr ?: "", currCreatedStr ?: "" ) );
+						
+						if( theValue == &tmp3 )
+						{
+							LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+						}
+						
+						if( theValue == &tmp2 )
+						{
+							LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
+						}
+						
+						if( theValue == &tmp1 )
+						{
+							LEOCleanUpValue( theValue, kLEOInvalidateReferences, ctx );
 						}
 					}
 				}
