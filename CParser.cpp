@@ -1019,7 +1019,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		if( startupFunction == NULL )
 		{
 			startupFunction = StartParsingFunctionDefinition( implicitWebStartupFunctionName, implicitWebStartupFunctionName, true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
-			startupFunction->SetAllVarsAreGlobals( true );
+			//startupFunction->SetAllVarsAreGlobals( true );
 		}
 		
 		ParseOneLine( std::string(implicitWebStartupFunctionName), parseTree, startupFunction, tokenItty, tokens );
