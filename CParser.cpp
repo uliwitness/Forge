@@ -3031,7 +3031,46 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 	container = ParseHostFunction( parseTree, currFunction, tokenItty, tokens );
 	if( container )
 		return container;
-
+	
+	// A property/array entry expression that takes the property/item name from a variable or expression?
+	if( tokenItty->IsIdentifier( EEntryIdentifier ) )
+	{
+		size_t			lineNum = tokenItty->mLineNum;
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
+		CValueNode	*	propNameTerm = ParseTerm( parseTree, currFunction, tokenItty, tokens, inEndToken );
+		if( propNameTerm && inEndToken != EOfIdentifier && tokenItty != tokens.end() && tokenItty->IsIdentifier( EOfIdentifier ) )
+		{
+			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
+			CValueNode	*	targetObj = ParseTerm( parseTree, currFunction, tokenItty, tokens, ELastIdentifier_Sentinel );
+			
+			if( targetObj )
+			{
+				CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, "", lineNum );
+				propExpr->AddParam( targetObj );
+				propExpr->AddParam( propNameTerm );
+				container = propExpr;
+				
+				return container;
+			}
+			else
+			{
+				std::stringstream errMsg;
+				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an expression and \"of\" and an object after \"entry\".";
+				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			}
+		}
+		else if( propNameTerm )
+		{
+			std::stringstream errMsg;
+			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an expression and \"of\" after \"entry\".";
+			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		}
+		else
+			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
+	}
+	
 	// Otherwise try to parse a built-in variable:
 	for( int bivIdx = 0; sBuiltInVariables[bivIdx].mType != ELastIdentifier_Sentinel; ++bivIdx )
 	{

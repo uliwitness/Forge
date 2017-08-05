@@ -22,7 +22,7 @@ class CValueNode;
 class CObjectPropertyNode : public CValueNode
 {
 public:
-	CObjectPropertyNode( CParseTree* inTree, const std::string& inSymbolName, size_t inLineNum )
+	CObjectPropertyNode( CParseTree* inTree, const std::string& inSymbolName /* may be "" in which case last param is prop name */, size_t inLineNum )
 		: CValueNode(inTree,inLineNum), mSymbolName(inSymbolName) {};
 	virtual ~CObjectPropertyNode() {};
 	
