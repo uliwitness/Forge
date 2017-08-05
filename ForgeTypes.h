@@ -354,6 +354,7 @@
 	X1(EExclamationMarkOperator,"!") \
 	X1(EReadIdentifier,"read") \
 	X1(EWriteIdentifier,"write") \
+	X1(EOffsetIdentifier,"offset") \
 	X1(ECopyIdentifier,"copy") \
 	X1(EFileIdentifier,"file") \
 	X1(EFilesIdentifier,"files") \

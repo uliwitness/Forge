@@ -82,6 +82,7 @@
 		55D789E612BE937600C5D76E /* CReturnCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D789E512BE937600C5D76E /* CReturnCommandNode.cpp */; };
 		55D78AEB12C27E7B00C5D76E /* CPutCommandNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78AE912C27E7B00C5D76E /* CPutCommandNode.cpp */; };
 		55D78B1B12C2B23000C5D76E /* COperatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D78B1912C2B23000C5D76E /* COperatorNode.cpp */; };
+		55D922F01F360AA00014E91F /* testfile19.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55D922EF1F360A990014E91F /* testfile19.hc */; };
 		55E805FC13662198006F1287 /* LEOInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BED127DD30B00CF0F16 /* LEOInstructions.c */; };
 		55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */; };
 		55E8060213662396006F1287 /* CObjectPropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E8060013662395006F1287 /* CObjectPropertyNode.cpp */; };
@@ -119,6 +120,7 @@
 				55965D4D1EDA0C6F008A5BE3 /* testfile16_header.hc in CopyFiles */,
 				55C91B941EE6194E0074A214 /* testfile17.hc in CopyFiles */,
 				551906041EED586B005AD911 /* testfile18.hc in CopyFiles */,
+				55D922F01F360AA00014E91F /* testfile19.hc in CopyFiles */,
 				556FA4531718AAA600A108E5 /* UnitTest.hc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -261,6 +263,7 @@
 		55D78AEA12C27E7B00C5D76E /* CPutCommandNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPutCommandNode.h; sourceTree = "<group>"; };
 		55D78B1912C2B23000C5D76E /* COperatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COperatorNode.cpp; sourceTree = "<group>"; };
 		55D78B1A12C2B23000C5D76E /* COperatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COperatorNode.h; sourceTree = "<group>"; };
+		55D922EF1F360A990014E91F /* testfile19.hc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testfile19.hc; sourceTree = "<group>"; };
 		55E805FD1366237C006F1287 /* CGlobalPropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGlobalPropertyNode.cpp; sourceTree = "<group>"; };
 		55E805FE1366237C006F1287 /* CGlobalPropertyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGlobalPropertyNode.h; sourceTree = "<group>"; };
 		55E8060013662395006F1287 /* CObjectPropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CObjectPropertyNode.cpp; sourceTree = "<group>"; };
@@ -404,6 +407,7 @@
 				55965D4A1EDA0C63008A5BE3 /* testfile16_footer.hc */,
 				55C91B931EE619410074A214 /* testfile17.hc */,
 				551906031EED585F005AD911 /* testfile18.hc */,
+				55D922EF1F360A990014E91F /* testfile19.hc */,
 				556FA4521718AA7500A108E5 /* UnitTest.hc */,
 			);
 			name = "Test Scripts";
