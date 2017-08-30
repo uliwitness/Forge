@@ -3047,7 +3047,9 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 			{
 				CObjectPropertyNode	*	propExpr = new CObjectPropertyNode( &parseTree, "", lineNum );
 				propExpr->AddParam( targetObj );
-				propExpr->AddParam( propNameTerm );
+				CArrayValueNode * keyPath = new CArrayValueNode( &parseTree, lineNum );
+				keyPath->AddItem( propNameTerm );
+				propExpr->AddParam( keyPath );
 				container = propExpr;
 				
 				return container;

@@ -67,6 +67,7 @@ struct ForgeToolOptions
 	bool			printInstructions = false;
 	bool			printTokens = false;
 	bool			printParseTree = false;
+	bool			printOptimizedParseTree = false;
 	bool			printIndented = false;
 	bool			verbose = false;
 	bool			doOptimize = true;
@@ -155,6 +156,10 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
 			{
 				toolOptions.printParseTree = true;
+			}
+			else if( strcmp( argv[x], "--printoptimizedparsetree" ) == 0 )
+			{
+				toolOptions.printOptimizedParseTree = true;
 			}
 			else if( strcmp( argv[x], "--printindented" ) == 0 )
 			{
@@ -378,6 +383,10 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 		CCodeBlock			block( group, script, fileID );
 		
 		parseTree.Simplify();
+		
+		if( toolOptions.printOptimizedParseTree )
+			parseTree.DebugPrint( std::cout, 1 );
+
 		parseTree.GenerateCode( &block );
 		
 		if( toolOptions.printInstructions )
@@ -561,6 +570,10 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 						theValue = LEOGetValueForKey( pageGlobal, "resources", &tmp, kLEOInvalidateReferences, ctx );
 						if( theValue )
 						{
+							char strBuf[1024] = {};
+							const char* theGlobalStr = LEOGetValueAsString( theValue, strBuf, sizeof(strBuf), ctx );
+							std::cout << "[[" << theGlobalStr << "]]" << std::endl;
+							
 							char			keyStr[100] = {};
 							size_t			x = 0;
 							while( true )

@@ -12,6 +12,7 @@
 #include "CObjectPropertyNode.h"
 #include "COperatorNode.h"
 #include "LEOInstructions.h"
+#include <iostream>
 
 
 namespace Carlson
@@ -43,6 +44,26 @@ CNode*	CChunkPropertyNodeTransformation::Simplify( CObjectPropertyNode* inPropNo
 				chunkRefExpr->AddParam( theParamCopy );
 			}
 			return chunkRefExpr;
+		}
+		
+		CObjectPropertyNode *	objectPropNode = dynamic_cast<CObjectPropertyNode*>( inPropNode->GetParamAtIndex(0) );
+		if( objectPropNode )
+		{
+			CArrayValueNode * keyPath2 = inPropNode->CopyPropertyNameValue();
+			CArrayValueNode * keyPath = objectPropNode->CopyPropertyNameValue();
+			for( size_t x = 0; x < keyPath2->GetItemCount(); x++ )
+			{
+				keyPath->AddItem( keyPath2->GetItem( x ) );
+				keyPath2->SetItemAtIndex( NULL, x );	// Make sure it gives up ownership.
+			}
+			delete keyPath2;
+			
+			CValueNode * actualTarget = objectPropNode->GetParamAtIndex(0);
+			objectPropNode->SetParamAtIndex( 0, NULL );	// Make objectPropNode give up ownership of actualTarget.
+			inPropNode->SetParamAtIndex( 0, actualTarget );	// Replace objectPropNode in our target slot with actualTarget.
+			inPropNode->SetPropertyNameValue( keyPath );
+			
+			delete objectPropNode;	// Free no longer needed objectPropNode.
 		}
 	}
 	

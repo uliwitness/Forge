@@ -81,5 +81,17 @@ long	CLocalVariableRefValueNode::GetBPRelativeOffset()
 {
 	return mCodeBlockNode->GetBPRelativeOffsetForLocalVar(mVarName);
 }
+	
+	
+CArrayValueNode*	CArrayValueNode::Copy()
+{
+	CArrayValueNode * array = new CArrayValueNode( mParseTree, mLineNum );
+	for( CValueNode * currValue : mArray )
+	{
+		array->AddItem( currValue->Copy() );
+	}
+	return array;
+}
+
 
 } // namespace Carlson

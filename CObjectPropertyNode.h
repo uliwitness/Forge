@@ -32,6 +32,9 @@ public:
 	virtual void		SetParamAtIndex( size_t idx, CValueNode* val )	{ mParams[idx] = val; };
 	virtual void		AddParam( CValueNode* val );
 
+	CArrayValueNode *	CopyPropertyNameValue();
+	void				SetPropertyNameValue( CArrayValueNode * pn )	{ mSymbolName = ""; if( mParams.size() > 1 ) { delete mParams[1]; mParams[1] = pn; } else AddParam(pn); }
+	
 	virtual CValueNode*	Copy();
 	
 	virtual void		DebugPrint( std::ostream& destStream, size_t indentLevel );

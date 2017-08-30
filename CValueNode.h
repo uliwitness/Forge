@@ -17,6 +17,7 @@
 #include <math.h>
 #include "CForgeExceptions.h"
 #include "LEOValue.h"
+#include <vector>
 
 extern "C"
 {
@@ -249,5 +250,37 @@ protected:
 	std::string				mRealVarName;
 	CCodeBlockNodeBase *	mCodeBlockNode;
 };
+	
+	
+class CArrayValueNode : public CValueNode
+{
+public:
+	CArrayValueNode( CParseTree* inTree, size_t inLineNum ) : CValueNode(inTree,inLineNum) {}
+	virtual ~CArrayValueNode() { for( CValueNode * currItem : mArray ) { if( currItem ) delete currItem; } }
+	
+	virtual void			AddItem( CValueNode * inNode )	{ mArray.push_back(inNode); }	// Takes over ownership.
+	virtual void			SetItemAtIndex( CValueNode * inNode, size_t idx )	{ mArray[idx] = inNode; }	// Takes over ownership.
+	virtual size_t			GetItemCount()					{ return mArray.size(); }
+	virtual CValueNode *	GetItem( size_t idx )			{ return mArray[idx]; }
+
+	virtual CArrayValueNode*	Copy();
+
+	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel )
+	{
+		INDENT_PREPARE(indentLevel);
+		
+		destStream << indentChars << "array" << std::endl;
+		destStream << indentChars << "{" << std::endl;
+		for( CValueNode * currItem : mArray )
+		{
+			currItem->DebugPrint( destStream, indentLevel +1 );
+		}
+		destStream << indentChars << "}" << std::endl;
+	};
+
+protected:
+	std::vector<CValueNode*>	mArray;
+};
+
 
 }

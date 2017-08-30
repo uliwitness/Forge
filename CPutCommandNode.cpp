@@ -40,6 +40,7 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 		if( propName.length() > 0 )
 		{
 			inCodeBlock->GeneratePushStringInstruction( propName );
+			// TODO: Make a single-item array from the string here (a single-item keypath).
 		
 			propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
 		}

@@ -91,12 +91,26 @@ void	CObjectPropertyNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 	// Push all params on stack (in reverse order!):
 	if( mSymbolName.length() != 0 )
-		inCodeBlock->GeneratePushStringInstruction( mSymbolName );
+		inCodeBlock->GeneratePushStringInstruction( mSymbolName );	// TODO: Push string as array on stack (single-item keypath).
 	
 	for( itty = mParams.rbegin(); itty != mParams.rend(); itty++ )
 		(*itty)->GenerateCode( inCodeBlock );
 	
 	inCodeBlock->GeneratePushPropertyOfObjectInstruction();
 }
+	
+	
+CArrayValueNode *	CObjectPropertyNode::CopyPropertyNameValue()
+{
+	if( mSymbolName.empty() )
+		return (CArrayValueNode*) mParams[1]->Copy();
+	else
+	{
+		CArrayValueNode * keyPath = new CArrayValueNode(mParseTree,mLineNum);
+		keyPath->AddItem( new CStringValueNode( mParseTree, mSymbolName, mLineNum ) );
+		return keyPath;
+	}
+}
+
 
 } // namespace Carlson
