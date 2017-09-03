@@ -14,6 +14,7 @@
 #include "CValueNode.h"
 #include "CCodeBlock.h"
 #include "CCodeBlockNode.h"
+#include "LEOInstructions.h"
 
 
 namespace Carlson
@@ -80,6 +81,30 @@ void	CLocalVariableRefValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 long	CLocalVariableRefValueNode::GetBPRelativeOffset()
 {
 	return mCodeBlockNode->GetBPRelativeOffsetForLocalVar(mVarName);
+}
+	
+	
+void	CArrayValueNode::Simplify()
+{
+	for( CValueNode * currValue : mArray )
+	{
+		currValue->Simplify();
+	}
+	
+	CNode::Simplify();
+}
+
+	
+void	CArrayValueNode::GenerateCode( Carlson::CCodeBlock *inCodeBlock )
+{
+	int64_t x = 0;
+	for( CValueNode * currValue : mArray )
+	{
+		inCodeBlock->GeneratePushIntInstruction( ++x, kLEOUnitGroupNone );
+		currValue->GenerateCode( inCodeBlock );
+	}
+	
+	inCodeBlock->GenerateOperatorInstruction( PUSH_ARRAY_CONSTANT_INSTR, mArray.size(), 0 );
 }
 	
 	

@@ -13,6 +13,7 @@
 */
 
 #include "LEOPropertyInstructions.h"
+#include <stdio.h>
 
 
 void	LEOPushPropertyOfObjectInstruction( LEOContext* inContext );
@@ -68,8 +69,10 @@ void	LEOPushPropertyOfObjectInstruction( LEOContext* inContext )
 	have been pushed on the stack before this instruction is called, and will be
 	popped off the stack:
 	
-	propertyName -	The name of the property to change, as a string value or value
-					that converts to a string.
+	propertyName -	An array containing names of the properties to change, as an array
+					of string values or values that convert to a string. If more than
+					one item is passed, the code will descend into the object and set
+					the keys in the array.
 					
 	object -		The object to change the property on. This must be a
 					WILDObjectValue (i.e. isa = kLeoValueTypeWILDObject or isa = kLeoValueTypeObjectDescriptor).
@@ -82,16 +85,42 @@ void	LEOSetPropertyOfObjectInstruction( LEOContext* inContext )
 {
 	LEOValuePtr		theValue = inContext->stackEndPtr -1;
 	LEOValuePtr		theObject = inContext->stackEndPtr -2;
-	LEOValuePtr		thePropertyName = inContext->stackEndPtr -3;
+	LEOValuePtr		theKeyPath = inContext->stackEndPtr -3;
 	
-	char		propNameStr[1024] = { 0 };
-	LEOGetValueAsString( thePropertyName, propNameStr, sizeof(propNameStr), inContext );
+	LEODebugPrintContext( inContext );
 	
-	LEOSetValueForKey( theObject, propNameStr, theValue, inContext );
+	long long numKeys = LEOGetKeyCount( theKeyPath, inContext );
+	for( long long x = 1; x <= numKeys; ++x )
+	{
+		union LEOValue tmpValue;
+		char indexStr[256] = {0};
+		snprintf( indexStr, sizeof(indexStr) -1, "%lld", x );
+		LEOValuePtr thePropertyName = LEOGetValueForKey( theKeyPath, indexStr, &tmpValue, kLEOInvalidateReferences, inContext );
+		char		propNameStr[1024] = { 0 };
+		LEOGetValueAsString( thePropertyName, propNameStr, sizeof(propNameStr), inContext );
+		
+		LEOValuePtr foundObject = LEOGetValueForKey( theObject, propNameStr, &tmpValue, kLEOInvalidateReferences, inContext );
+		if( !foundObject )
+		{
+			inContext->flags |= kLEOContextKeepRunning;
+			inContext->errMsg[0] = 0;
+			
+			union LEOValue emptyValue;
+			LEOInitStringConstantValue( &emptyValue, "", kLEOInvalidateReferences, inContext );
+			LEOSetValueForKey( theObject, propNameStr, &emptyValue, inContext );
+			LEOCleanUpValue( &emptyValue, kLEOInvalidateReferences, inContext );
+			foundObject = LEOGetValueForKey( theObject, propNameStr, &tmpValue, kLEOInvalidateReferences, inContext );
+		}
+		theObject = foundObject;
+	}
+	
+	LEOPutValueIntoValue( theValue, theObject, inContext );
 	
 	LEOCleanUpStackToPtr( inContext, inContext->stackEndPtr -3 );
 	
 	inContext->currentInstruction++;
+
+	LEODebugPrintContext( inContext );
 }
 
 

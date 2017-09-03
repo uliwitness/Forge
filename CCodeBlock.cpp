@@ -361,5 +361,12 @@ void	CCodeBlock::GeneratePushMeInstruction()
 	LEOHandlerAddInstruction( mCurrentHandler, kFirstPropertyInstruction +PUSH_ME_INSTR, 0, 0 );
 }
 
+	
+void CCodeBlock::DebugPrint()
+{
+	LEODebugPrintScript( mGroup, mScript );
+}
+
+
 }
 

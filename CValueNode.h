@@ -263,6 +263,9 @@ public:
 	virtual size_t			GetItemCount()					{ return mArray.size(); }
 	virtual CValueNode *	GetItem( size_t idx )			{ return mArray[idx]; }
 
+	virtual void				GenerateCode( CCodeBlock* inCodeBlock );	// Generate the actual bytecode so it leaves the result on the stack.
+
+	virtual void				Simplify();
 	virtual CArrayValueNode*	Copy();
 
 	virtual void			DebugPrint( std::ostream& destStream, size_t indentLevel )

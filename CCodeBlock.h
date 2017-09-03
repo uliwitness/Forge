@@ -79,6 +79,8 @@ public:
 	void		GenerateSetPropertyOfObjectInstruction();
 	void		GeneratePushMeInstruction();
 	
+	void		DebugPrint();
+	
 protected:
 	LEOScript*				mScript;
 	LEOContextGroup*		mGroup;

@@ -13,6 +13,7 @@
 #include "CMakeChunkRefNode.h"
 #include "CObjectPropertyNode.h"
 #include "CGlobalPropertyNode.h"
+#include "LEOInstructions.h"
 #include <iostream>
 
 namespace Carlson
@@ -37,18 +38,13 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	{
 		std::string		propName;
 		propertyValue->GetSymbolName(propName);
+		inCodeBlock->GeneratePushIntInstruction( 1, kLEOUnitNone );
 		if( propName.length() > 0 )
-		{
 			inCodeBlock->GeneratePushStringInstruction( propName );
-			// TODO: Make a single-item array from the string here (a single-item keypath).
-		
-			propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
-		}
 		else
-		{
 			propertyValue->GetParamAtIndex( 1 )->GenerateCode( inCodeBlock );
-			propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
-		}
+		inCodeBlock->GenerateOperatorInstruction( PUSH_ARRAY_CONSTANT_INSTR, 1, 0 );
+		propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateSetPropertyOfObjectInstruction();

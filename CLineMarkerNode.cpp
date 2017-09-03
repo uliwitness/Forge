@@ -18,7 +18,7 @@ void	CLineMarkerNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 {
 	INDENT_PREPARE(indentLevel);
 	
-	destStream << indentChars << "# LINE " << mLineNum << "\"" << mFileName << "\"" << std::endl;
+	destStream << indentChars << "# LINE " << mLineNum << " \"" << mFileName << "\"" << std::endl;
 }
 
 void	CLineMarkerNode::GenerateCode( CCodeBlock* inCodeBlock )
