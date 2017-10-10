@@ -209,7 +209,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 								nextCh = (nextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
 								if( nextCh == ' ' || nextCh == '\t' || nextCh == '\r' || nextCh == '\n' )
 								{
-									tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+									if( currText.length() > 0 )
+									{
+										tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+									}
 
 									newX = nextNewX;
 									currStartOffs = nextNewX;
