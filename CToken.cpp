@@ -484,7 +484,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		bool							fullMatch = true;
 		va_list							ap;
 		
-		va_start( ap, inFirstType );
+		va_start( ap, (std::underlying_type<TIdentifierSubtype>::type)inFirstType );
 			TIdentifierSubtype currType = inFirstType;
 			while( currType != ELastIdentifier_Sentinel )
 			{
