@@ -1,3 +1,6 @@
 [submodule "Leonie"]
 	path = Leonie
 	url = https://uliwitness@github.com/uliwitness/Leonie.git
+[submodule "tinymarkdown"]
+	path = tinymarkdown
+	url = https://uliwitness@github.com/uliwitness/tinymarkdown.git

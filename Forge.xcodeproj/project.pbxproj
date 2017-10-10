@@ -192,6 +192,7 @@
 		559CCA141EDB168200E6D0CD /* LEOUserData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LEOUserData.h; path = Leonie/common/LEOUserData.h; sourceTree = "<group>"; };
 		559CCA151EDB1AF700E6D0CD /* fake_filesystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fake_filesystem.cpp; sourceTree = "<group>"; };
 		559CCA161EDB1AF700E6D0CD /* fake_filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fake_filesystem.hpp; sourceTree = "<group>"; };
+		55A2D0811F8D54C900F6DA4D /* tinymarkdown.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = tinymarkdown.hpp; path = tinymarkdown/tinymarkdown/tinymarkdown.hpp; sourceTree = "<group>"; };
 		55A5855C12F369E1009550CD /* LEORemoteDebugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEORemoteDebugger.c; path = Leonie/macosx/LEORemoteDebugger.c; sourceTree = "<group>"; };
 		55A5855D12F369E1009550CD /* LEORemoteDebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEORemoteDebugger.h; path = Leonie/macosx/LEORemoteDebugger.h; sourceTree = "<group>"; };
 		55A793EB1EAFE490005C40D0 /* LEOPropertyInstructionsGeneric.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LEOPropertyInstructionsGeneric.c; sourceTree = "<group>"; };
@@ -342,6 +343,7 @@
 				55E8060D136624D6006F1287 /* Forge.cpp */,
 				554DC316186390FE00B514E3 /* CForgeExceptions.h */,
 				554DC315186390FE00B514E3 /* CForgeExceptions.cpp */,
+				55A2D0811F8D54C900F6DA4D /* tinymarkdown.hpp */,
 				3DAE6D2F0BF29A8A00946F2F /* Parse Tree */,
 				55C72BFE127DD31600CF0F16 /* Leonie */,
 			);

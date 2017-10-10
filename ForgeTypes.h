@@ -361,7 +361,8 @@
 	X1(EFolderIdentifier,"folder") \
 	X1(EUseIdentifier,"use") \
 	X1(EPageIdentifier,"page") \
-	X1(EHTMLEncodedIdentifier,"htmlencoded")
+	X1(EHTMLEncodedIdentifier,"htmlencoded") \
+	X1(EMarkdownToHTMLIdentifier,"markdowntohtml")
 
 typedef enum
 {
