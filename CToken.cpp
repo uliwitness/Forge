@@ -476,7 +476,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		return tokenList;
 	}
 
-	/*static*/ bool		CTokenizer::NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, TIdentifierSubtype inFirstType, ... )
+	/*static*/ bool		CTokenizer::NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int /*TIdentifierSubtype*/ inFirstType, ... )
 	{
 		if( tokenItty == tokens.end() )
 		{
@@ -487,8 +487,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		bool							fullMatch = true;
 		va_list							ap;
 		
-		va_start( ap, (std::underlying_type<TIdentifierSubtype>::type)inFirstType );
-			TIdentifierSubtype currType = inFirstType;
+		va_start( ap, inFirstType );
+			TIdentifierSubtype currType = (TIdentifierSubtype)inFirstType;
 			while( currType != ELastIdentifier_Sentinel )
 			{
 				if( !tokenItty->IsIdentifier(currType) )
@@ -499,7 +499,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 				
 				++tokenItty;
 				
-				currType = (TIdentifierSubtype) va_arg( ap, std::underlying_type<TIdentifierSubtype>::type );
+				currType = (TIdentifierSubtype) va_arg( ap, int );
 				if( currType == ELastIdentifier_Sentinel )
 					break;
 				
