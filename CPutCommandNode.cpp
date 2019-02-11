@@ -38,12 +38,10 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	{
 		std::string		propName;
 		propertyValue->GetSymbolName(propName);
-		inCodeBlock->GeneratePushIntInstruction( 1, kLEOUnitNone );
 		if( propName.length() > 0 )
 			inCodeBlock->GeneratePushStringInstruction( propName );
 		else
 			propertyValue->GetParamAtIndex( 1 )->GenerateCode( inCodeBlock );
-		inCodeBlock->GenerateOperatorInstruction( PUSH_ARRAY_CONSTANT_INSTR, 1, 0 );
 		propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
 		srcValue->GenerateCode( inCodeBlock );
 		
@@ -59,9 +57,6 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GeneratePutValueIntoValueInstruction();
-
-//		DebugPrint( std::cerr, 0 );
-//		throw std::runtime_error("Can't assign to this value.");
 	}
 }
 

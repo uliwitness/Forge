@@ -39,27 +39,37 @@ void	LEOIHavePropertyInstruction( LEOContext* inContext );
 */
 void	LEOPushPropertyOfObjectInstruction( LEOContext* inContext )
 {
-	LEOValuePtr		thePropertyName = inContext->stackEndPtr -2;
+	LEODebugPrintContext( inContext );
+	
+	LEOValuePtr		theKeyPath = inContext->stackEndPtr -2;
 	LEOValuePtr		theObject = inContext->stackEndPtr -1;
+	union LEOValue tmpKeyPath;
+	LEOInitSimpleCopy(theKeyPath, &tmpKeyPath, kLEOInvalidateReferences, inContext );
+	LEOCleanUpValue(theKeyPath, kLEOInvalidateReferences, inContext);
 	
-	char			propNameStr[1024] = { 0 };
-	LEOGetValueAsString( thePropertyName, propNameStr, sizeof(propNameStr), inContext );
-	
-	LEOCleanUpValue( thePropertyName, kLEOInvalidateReferences, inContext );
-	LEOValuePtr	theValue = LEOGetValueForKey( theObject, propNameStr, thePropertyName, kLEOInvalidateReferences, inContext );
-	if( !theValue )
+	long long numKeys = LEOGetKeyCount( &tmpKeyPath, inContext );
+	for( long long x = 1; x <= numKeys; ++x )
 	{
-		size_t		lineNo = SIZE_T_MAX;
-		uint16_t	fileID = 0;
-		LEOInstructionsFindLineForInstruction( inContext->currentInstruction, &lineNo, &fileID );
-		LEOContextStopWithError( inContext, lineNo, SIZE_T_MAX, fileID, "Can't get property \"%s\" of this.", propNameStr );
-		return;
+		union LEOValue tmpValue;
+		char indexStr[256] = {0};
+		snprintf( indexStr, sizeof(indexStr) -1, "%lld", x );
+		LEOValuePtr thePropertyName = LEOGetValueForKey( &tmpKeyPath, indexStr, &tmpValue, kLEOInvalidateReferences, inContext );
+		char		propNameStr[1024] = { 0 };
+		LEOGetValueAsString( thePropertyName, propNameStr, sizeof(propNameStr), inContext );
+		
+		LEOValuePtr foundObject = LEOGetValueForKey( theObject, propNameStr, &tmpValue, kLEOInvalidateReferences, inContext );
+		theObject = foundObject;
 	}
-	else if( theValue == thePropertyName )	// This makes "rectangle of screen 1" not complain because the dictionary went away.
-		LEOInitSimpleCopy( theValue, thePropertyName, kLEOInvalidateReferences, inContext );
-	
+
+	LEODebugPrintContext( inContext );
+
+	union LEOValue tmp = *theKeyPath;
+	*theKeyPath = *theObject;
+	*theObject = tmp;
 	LEOCleanUpStackToPtr( inContext, inContext->stackEndPtr -1 );
-	
+
+	LEODebugPrintContext( inContext );
+
 	inContext->currentInstruction++;
 }
 
