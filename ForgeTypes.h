@@ -361,6 +361,9 @@
 	X1(EFolderIdentifier,"folder") \
 	X1(EUseIdentifier,"use") \
 	X1(EPageIdentifier,"page") \
+	X1(EInsertIdentifier,"insert") \
+	X1(EScriptIdentifier,"script") \
+	X1(EFrontIdentifier,"front") \
 	X1(EHTMLEncodedIdentifier,"htmlencoded") \
 	X1(EMarkdownToHTMLIdentifier,"markdowntohtml")
 
