@@ -46,7 +46,8 @@ void	COperatorNode::DebugPrint( std::ostream& destStream, size_t indentLevel )
 
 void	COperatorNode::AddParam( CValueNode* val )
 {
-	assert( val != nullptr );
+	if( !val )
+		throw CForgeParseError("Operator not followed by a valid instruction.", GetLineNum());
 	
 	mParams.push_back( val );
 	if( val )

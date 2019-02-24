@@ -43,6 +43,8 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 		else
 			propertyValue->GetParamAtIndex( 1 )->GenerateCode( inCodeBlock );
 		propertyValue->GetParamAtIndex( 0 )->GenerateCode( inCodeBlock );
+		if( !srcValue )
+			throw CForgeParseError("Expected a value to assign to the given property.", GetLineNum());
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GenerateSetPropertyOfObjectInstruction();
