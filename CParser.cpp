@@ -47,7 +47,6 @@ extern "C" {
 #include "LEOInstructions.h"
 #include "LEOPropertyInstructions.h"
 #include "LEOObjCCallInstructions.h"
-#include <math.h>
 }
 
 #include <iostream>
@@ -61,6 +60,10 @@ using namespace Carlson;
 
 #if WIN32
 #define strcasecmp _stricmp
+#define _USE_MATH_DEFINES
+#include <math.h>
+#else
+#include <cmath>
 #endif
 
 
@@ -226,7 +229,7 @@ struct TConstantEntry	sDefaultConstants[] =
 	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_MAX ), ELastIdentifier_Sentinel },
 	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_MAX ), ELastIdentifier_Sentinel },
 	{ { EUnsetIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CUnsetValueNode( NULL, SIZE_MAX ), ELastIdentifier_Sentinel },
-	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, (CValueNode *) NULL, ELastIdentifier_Sentinel }
+	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL, ELastIdentifier_Sentinel }
 };
 
 struct TConstantEntry*	sConstants = nullptr;

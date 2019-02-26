@@ -98,8 +98,12 @@ static bool GetFileContents( const std::string& fname, std::vector<char>& outFil
 	FILE*	theFile = fopen( fname.c_str(), "r" );
 	if( !theFile )
 	{
+#if WIN32
+		printf("ERROR: Can't open file \"%s\".\n", fname.c_str());
+#else
 		char theWD[1024];
 		printf("ERROR: Can't open file \"%s/%s\".\n", getcwd(theWD, sizeof(theWD)), fname.c_str());
+#endif
 		return false;
 	}
 	
