@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
