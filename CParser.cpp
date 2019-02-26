@@ -297,7 +297,7 @@ CParser::CParser()
 //		Add additional operators to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, size_t firstOperatorInstruction )
+/*static*/ void	CParser::AddOperatorsAndOffsetInstructions( TOperatorEntry* inEntries, LEOInstructionID firstOperatorInstruction )
 {
 	if( !sOperators )
 		sOperators = sDefaultOperators;
@@ -343,7 +343,7 @@ CParser::CParser()
 //		Add additional unary operators to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddUnaryOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+/*static*/ void	CParser::AddUnaryOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, LEOInstructionID firstUnaryOperatorInstruction )
 {
 	if( !sUnaryOperators )
 		sUnaryOperators = sDefaultUnaryOperators;
@@ -391,7 +391,7 @@ CParser::CParser()
 //		Add additional postfix operators to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddPostfixOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+/*static*/ void	CParser::AddPostfixOperatorsAndOffsetInstructions( TUnaryOperatorEntry* inEntries, LEOInstructionID firstUnaryOperatorInstruction )
 {
 	if( !sPostfixOperators )
 		sPostfixOperators = sDefaultPostfixOperators;
@@ -439,7 +439,7 @@ CParser::CParser()
 //		Add additional global functions to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
+/*static*/ void	CParser::AddBuiltInFunctionsAndOffsetInstructions( TBuiltInFunctionEntry* inEntries, LEOInstructionID firstGlobalPropertyInstruction )
 {
 	if( !sBuiltInFunctions )
 		sBuiltInFunctions = sDefaultBuiltInFunctions;
@@ -487,7 +487,7 @@ CParser::CParser()
 //		Add additional global properties to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
+/*static*/ void	CParser::AddGlobalPropertiesAndOffsetInstructions( TGlobalPropertyEntry* inEntries, LEOInstructionID firstGlobalPropertyInstruction )
 {
 	if( !sGlobalProperties )
 		sGlobalProperties = sDefaultGlobalProperties;
@@ -540,7 +540,7 @@ CParser::CParser()
 //		Add additional commands to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+/*static*/ void	CParser::AddHostCommandsAndOffsetInstructions( THostCommandEntry* inEntries, LEOInstructionID firstHostCommandInstruction )
 {
 	size_t		numOldEntries = 0,
 				numNewEntries = 0;
@@ -593,7 +593,7 @@ CParser::CParser()
 //		Add additional commands to the ones the parser understands.
 // -----------------------------------------------------------------------------
 
-/*static*/ void	CParser::AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+/*static*/ void	CParser::AddHostFunctionsAndOffsetInstructions( THostCommandEntry* inEntries, LEOInstructionID firstHostCommandInstruction )
 {
 	size_t		numOldEntries = 0,
 				numNewEntries = 0;

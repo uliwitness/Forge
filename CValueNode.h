@@ -95,7 +95,7 @@ public:
 	virtual int				GetAsInt()		{ return (int)mIntValue; };
 	virtual long			GetAsLong()		{ return (long)mIntValue; };
 	virtual long long		GetAsLongLong()	{ return mIntValue; };
-	virtual float			GetAsFloat()	{ return mIntValue; };
+	virtual float			GetAsFloat()	{ return (float)mIntValue; };
 	virtual std::string		GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%lld%s", mIntValue, gUnitLabels[mUnit]); return std::string( numStr ); };
 	
 protected:
@@ -125,10 +125,10 @@ public:
 	virtual int					GetAsInt()
 	{
 		if( mFloatValue == truncf(mFloatValue) )
-			return mFloatValue;
+			return (int)mFloatValue;
 		else
 			throw CForgeParseError( "Can't make floating point number into integer.", GetLineNum() );
-		return 0.0;
+		return 0;
 	};
 	virtual std::string			GetAsString()	{ char	numStr[256]; snprintf(numStr, 256, "%f%s", mFloatValue,gUnitLabels[mUnit]); return std::string( numStr ); };
 
@@ -240,7 +240,7 @@ public:
 		destStream << indentChars << "localVar( " << mVarName.c_str() << " )" << std::endl;
 	};
 	
-	long					GetBPRelativeOffset();
+	int16_t					GetBPRelativeOffset();
 	
 	std::string				GetVarName()		{ return mVarName; };
 	std::string				GetRealVarName()	{ return mRealVarName; };

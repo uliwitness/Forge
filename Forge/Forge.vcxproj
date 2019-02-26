@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{AD8D6655-C0EB-489F-B26F-245A379AC836}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Forge</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\Leonie\common;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\CAddCommandNode.h" />
+    <ClInclude Include="..\CAssignChunkArrayNode.h" />
+    <ClInclude Include="..\CAssignCommandNode.h" />
+    <ClInclude Include="..\CChunkPropertyNodeTransformation.h" />
+    <ClInclude Include="..\CCodeBlock.h" />
+    <ClInclude Include="..\CCodeBlockNode.h" />
+    <ClInclude Include="..\CCommandNode.h" />
+    <ClInclude Include="..\CConcatOperatorNodeTransformation.h" />
+    <ClInclude Include="..\CConcatSpaceOperatorNodeTransformation.h" />
+    <ClInclude Include="..\CDivideCommandNode.h" />
+    <ClInclude Include="..\CDownloadCommandNode.h" />
+    <ClInclude Include="..\CForgeExceptions.h" />
+    <ClInclude Include="..\CFunctionCallNode.h" />
+    <ClInclude Include="..\CFunctionDefinitionNode.h" />
+    <ClInclude Include="..\CGetArrayItemCountNode.h" />
+    <ClInclude Include="..\CGetArrayItemNode.h" />
+    <ClInclude Include="..\CGetChunkPropertyNode.h" />
+    <ClInclude Include="..\CGetParamCommandNode.h" />
+    <ClInclude Include="..\CGlobalPropertyNode.h" />
+    <ClInclude Include="..\CIfNode.h" />
+    <ClInclude Include="..\CLineMarkerNode.h" />
+    <ClInclude Include="..\CMakeChunkConstNode.h" />
+    <ClInclude Include="..\CMakeChunkRefNode.h" />
+    <ClInclude Include="..\CMultiplyCommandNode.h" />
+    <ClInclude Include="..\CNode.h" />
+    <ClInclude Include="..\CNodeTransformation.h" />
+    <ClInclude Include="..\CObjectPropertyNode.h" />
+    <ClInclude Include="..\COperatorNode.h" />
+    <ClInclude Include="..\COperatorNodeTransformation.h" />
+    <ClInclude Include="..\CParseErrorCommandNode.h" />
+    <ClInclude Include="..\CParser.h" />
+    <ClInclude Include="..\CParseTree.h" />
+    <ClInclude Include="..\CPushValueCommandNode.h" />
+    <ClInclude Include="..\CPutCommandNode.h" />
+    <ClInclude Include="..\CReturnCommandNode.h" />
+    <ClInclude Include="..\CSetChunkPropertyNode.h" />
+    <ClInclude Include="..\CSubtractCommandNode.h" />
+    <ClInclude Include="..\CToken.h" />
+    <ClInclude Include="..\CValueNode.h" />
+    <ClInclude Include="..\CVariableEntry.h" />
+    <ClInclude Include="..\CWhileLoopNode.h" />
+    <ClInclude Include="..\ForgeFramework\ForgeFramework\Forge.h" />
+    <ClInclude Include="..\ForgeTypes.h" />
+    <ClInclude Include="..\LEOMsgCommandsGeneric.h" />
+    <ClInclude Include="..\Leonie\common\LEOChunks.h" />
+    <ClInclude Include="..\Leonie\common\LEOContextGroup.h" />
+    <ClInclude Include="..\Leonie\common\LEODebugger.h" />
+    <ClInclude Include="..\Leonie\common\LEOHandlerID.h" />
+    <ClInclude Include="..\Leonie\common\LEOInstructions.h" />
+    <ClInclude Include="..\Leonie\common\LEOInterpreter.h" />
+    <ClInclude Include="..\Leonie\common\LEOScript.h" />
+    <ClInclude Include="..\Leonie\common\LEOStringUtilities.h" />
+    <ClInclude Include="..\Leonie\common\LEOUserData.h" />
+    <ClInclude Include="..\Leonie\common\LEOValue.h" />
+    <ClInclude Include="..\Leonie\generic\LEODownloadInstructions.h" />
+    <ClInclude Include="..\Leonie\generic\LEOFileInstructionsGeneric.h" />
+    <ClInclude Include="..\Leonie\generic\LEOMsgInstructionsGeneric.h" />
+    <ClInclude Include="..\Leonie\generic\LEOObjCCallInstructions.h" />
+    <ClInclude Include="..\Leonie\generic\LEOPropertyInstructions.h" />
+    <ClInclude Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.h" />
+    <ClInclude Include="..\Leonie\generic\UTF32CaseTables.h" />
+    <ClInclude Include="..\Leonie\generic\UTF8UTF32Utilities.h" />
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\CAddCommandNode.cpp" />
+    <ClCompile Include="..\CAssignChunkArrayNode.cpp" />
+    <ClCompile Include="..\CAssignCommandNode.cpp" />
+    <ClCompile Include="..\CChunkPropertyNodeTransformation.cpp" />
+    <ClCompile Include="..\CCodeBlock.cpp" />
+    <ClCompile Include="..\CCodeBlockNode.cpp" />
+    <ClCompile Include="..\CCommandNode.cpp" />
+    <ClCompile Include="..\CConcatOperatorNodeTransformation.cpp" />
+    <ClCompile Include="..\CConcatSpaceOperatorNodeTransformation.cpp" />
+    <ClCompile Include="..\CDivideCommandNode.cpp" />
+    <ClCompile Include="..\CDownloadCommandNode.cpp" />
+    <ClCompile Include="..\CForgeExceptions.cpp" />
+    <ClCompile Include="..\CFunctionCallNode.cpp" />
+    <ClCompile Include="..\CFunctionDefinitionNode.cpp" />
+    <ClCompile Include="..\CGetArrayItemCountNode.cpp" />
+    <ClCompile Include="..\CGetArrayItemNode.cpp" />
+    <ClCompile Include="..\CGetChunkPropertyNode.cpp" />
+    <ClCompile Include="..\CGetParamCommandNode.cpp" />
+    <ClCompile Include="..\CGlobalPropertyNode.cpp" />
+    <ClCompile Include="..\CIfNode.cpp" />
+    <ClCompile Include="..\CLineMarkerNode.cpp" />
+    <ClCompile Include="..\CMakeChunkConstNode.cpp" />
+    <ClCompile Include="..\CMakeChunkRefNode.cpp" />
+    <ClCompile Include="..\CMultiplyCommandNode.cpp" />
+    <ClCompile Include="..\CNode.cpp" />
+    <ClCompile Include="..\CNodeTransformation.cpp" />
+    <ClCompile Include="..\CObjectPropertyNode.cpp" />
+    <ClCompile Include="..\COperatorNode.cpp" />
+    <ClCompile Include="..\COperatorNodeTransformation.cpp" />
+    <ClCompile Include="..\CParseErrorCommandNode.cpp" />
+    <ClCompile Include="..\CParser.cpp" />
+    <ClCompile Include="..\CParseTree.cpp" />
+    <ClCompile Include="..\CPushValueCommandNode.cpp" />
+    <ClCompile Include="..\CPutCommandNode.cpp" />
+    <ClCompile Include="..\CReturnCommandNode.cpp" />
+    <ClCompile Include="..\CSetChunkPropertyNode.cpp" />
+    <ClCompile Include="..\CSubtractCommandNode.cpp" />
+    <ClCompile Include="..\CToken.cpp" />
+    <ClCompile Include="..\CValueNode.cpp" />
+    <ClCompile Include="..\CVariableEntry.cpp" />
+    <ClCompile Include="..\CWhileLoopNode.cpp" />
+    <ClCompile Include="..\ForgeFramework\ForgeFramework\Forge.cpp" />
+    <ClCompile Include="..\LEOMsgCommandsGeneric.c" />
+    <ClCompile Include="..\Leonie\common\LEOChunks.c" />
+    <ClCompile Include="..\Leonie\common\LEOContextGroup.c" />
+    <ClCompile Include="..\Leonie\common\LEODebugger.c" />
+    <ClCompile Include="..\Leonie\common\LEOInstructions.c" />
+    <ClCompile Include="..\Leonie\common\LEOInterpreter.c" />
+    <ClCompile Include="..\Leonie\common\LEOScript.c" />
+    <ClCompile Include="..\Leonie\common\LEOStringUtilities.c" />
+    <ClCompile Include="..\Leonie\common\LEOValue.c" />
+    <ClCompile Include="..\Leonie\generic\LEODownloadInstructions.c" />
+    <ClCompile Include="..\Leonie\generic\LEOFileInstructionsGeneric.cpp" />
+    <ClCompile Include="..\Leonie\generic\LEOMsgInstructionsGeneric.cpp" />
+    <ClCompile Include="..\Leonie\generic\LEOObjCCallInstructions.c" />
+    <ClCompile Include="..\Leonie\generic\LEOPropertyInstructions.c" />
+    <ClCompile Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.cpp" />
+    <ClCompile Include="..\Leonie\generic\UTF8UTF32Utilities.c" />
+    <ClCompile Include="..\LEOPropertyInstructionsGeneric.c" />
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

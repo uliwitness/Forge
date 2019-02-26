@@ -78,7 +78,7 @@ void	CLocalVariableRefValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 }
 
 
-long	CLocalVariableRefValueNode::GetBPRelativeOffset()
+int16_t	CLocalVariableRefValueNode::GetBPRelativeOffset()
 {
 	return mCodeBlockNode->GetBPRelativeOffsetForLocalVar(mVarName);
 }

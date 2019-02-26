@@ -17,6 +17,7 @@ extern "C"
 }
 
 #include <vector>
+#include <algorithm>
 
 namespace Carlson
 {
