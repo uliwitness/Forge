@@ -31,10 +31,10 @@ public:
 									TVariantType theType, bool initWithName = false,
 									bool isParam = false, bool isGlobal = false,
 									bool dontDispose = false );
-	virtual long	GetBPRelativeOffsetForLocalVar( const std::string& inName );
+	virtual int16_t	GetBPRelativeOffsetForLocalVar( const std::string& inName );
 	
 	// Sub-blocks retrieve and modify these two as needed: // TODO: This isn't really very OO.
-	virtual size_t&										GetLocalVariableCount()	{ return mLocalVariableCount; };
+	virtual int16_t&									GetLocalVariableCount()	{ return mLocalVariableCount; };
 	virtual std::map<std::string,CVariableEntry>&		GetLocals()				{ return mLocals; };
 	virtual std::map<std::string,CVariableEntry>&		GetGlobals()			{ return mGlobals; };
 	
@@ -63,7 +63,7 @@ protected:
 	size_t									mEndLineNum;
 	size_t									mCommandsLineNum;
 	std::map<std::string,CVariableEntry>	mLocals;
-	size_t									mLocalVariableCount;
+	int16_t									mLocalVariableCount;
 	std::map<std::string,CVariableEntry>	mGlobals;
 	bool									mAllVarsAreGlobals;	// For message box, which doesn't have local variables and creates globals for every local var.
 };

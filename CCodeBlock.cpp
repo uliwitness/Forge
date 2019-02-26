@@ -72,7 +72,7 @@ void	CCodeBlock::GenerateFunctionPrologForName( bool isCommand, const std::strin
 	
 	for( itty = locals.begin(); itty != locals.end(); itty++ )
 	{
-		if( itty->second.mBPRelativeOffset != LONG_MAX )
+		if( itty->second.mBPRelativeOffset != INT16_MAX )
 		{
 			//printf( "%s: %s BP offset %ld\n", inName.c_str(), itty->second.mRealName.c_str(), itty->second.mBPRelativeOffset );
 			if( itty->second.mIsGlobal )

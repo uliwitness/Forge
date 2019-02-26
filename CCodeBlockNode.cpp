@@ -116,13 +116,13 @@ void	CCodeBlockNode::AddLocalVar( const std::string& inName, const std::string& 
 }
 
 
-long	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
+int16_t	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
 {
 	std::map<std::string,CVariableEntry>::iterator	foundVariable = (*mLocals).find( inName );
 	if( foundVariable != (*mLocals).end() )
 	{
-		long	bpRelOffs = foundVariable->second.mBPRelativeOffset;
-		if( bpRelOffs == LONG_MAX )
+		int16_t	bpRelOffs = foundVariable->second.mBPRelativeOffset;
+		if( bpRelOffs == INT16_MAX)
 		{
 			bpRelOffs = (*mLocalVariableCount)++;
 			foundVariable->second.mBPRelativeOffset = bpRelOffs;
@@ -130,7 +130,7 @@ long	CCodeBlockNode::GetBPRelativeOffsetForLocalVar( const std::string& inName )
 		return bpRelOffs;
 	}
 	else
-		return LONG_MAX;
+		return INT16_MAX;
 }
 
 

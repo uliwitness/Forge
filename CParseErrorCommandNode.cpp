@@ -28,7 +28,7 @@ void	CParseErrorCommandNode::DebugPrint( std::ostream& destStream, size_t indent
 				<< indentChars << "{" << std::endl;
 	
 	destStream << indentChars << "\t" << mFileName << ":" << mLineNum;
-	if( mOffset != SIZE_T_MAX )
+	if( mOffset != SIZE_MAX )
 		destStream << ":" << mOffset;
 	destStream << ": " << mErrorMessage << std::endl;
 		

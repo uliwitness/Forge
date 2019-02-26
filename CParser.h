@@ -90,7 +90,7 @@ namespace Carlson
 		size_t			mOffset;
 		long			mErrorCode;
 		
-		CMessageEntry( std::string inMessage, std::string inFileName, size_t inLineNum, size_t inOffset = SIZE_T_MAX, long inErrorCode = 0 )
+		CMessageEntry( std::string inMessage, std::string inFileName, size_t inLineNum, size_t inOffset = SIZE_MAX, long inErrorCode = 0 )
 			: mMessage(inMessage), mFileName(inFileName), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
 	};
 	

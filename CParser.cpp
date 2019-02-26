@@ -41,21 +41,27 @@
 #include "CDownloadCommandNode.h"
 #include "CParseErrorCommandNode.h"
 #include "CForgeExceptions.h"
+#include "ForgeTypes.h"
 
 extern "C" {
 #include "LEOInstructions.h"
 #include "LEOPropertyInstructions.h"
 #include "LEOObjCCallInstructions.h"
+#include <math.h>
 }
 
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <fstream>
-#include <cmath>
 
 
 using namespace Carlson;
+
+
+#if WIN32
+#define strcasecmp _stricmp
+#endif
 
 
 #define DEBUG_HOST_ENTITIES			0
@@ -205,22 +211,22 @@ static TChunkTypeEntry	sChunkTypes[TChunkType_Count] =
 // Constant identifier and actual code to generate the value:
 struct TConstantEntry	sDefaultConstants[] =
 {
-	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(""), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(","), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\""), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { EUnsetIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CUnsetValueNode( NULL, SIZE_T_MAX ), ELastIdentifier_Sentinel },
-	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, NULL, ELastIdentifier_Sentinel }
+	{ { ETrueIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, true, SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EFalseIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CBoolValueNode( NULL, false, SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EEmptyIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(""), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ECommaIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(","), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EColonIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(":"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ECrIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ELineFeedIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ENullIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\0"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EQuoteIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\""), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EReturnIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\r"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ENewlineIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\n"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ESpaceIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string(" "), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ETabIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CStringValueNode( NULL, std::string("\t"), SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EPiIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CFloatValueNode( NULL, (float) M_PI, SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { EUnsetIdentifier, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, new CUnsetValueNode( NULL, SIZE_MAX ), ELastIdentifier_Sentinel },
+	{ { ELastIdentifier_Sentinel, ELastIdentifier_Sentinel, ELastIdentifier_Sentinel }, (CValueNode *) NULL, ELastIdentifier_Sentinel }
 };
 
 struct TConstantEntry*	sConstants = nullptr;
@@ -689,7 +695,7 @@ CParser::CParser()
 	{
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
 		newTable[x].mSetName = inEntries[ox].mSetName;
-		newTable[x++].mValue = new CStringValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
+		newTable[x++].mValue = new CStringValueNode( NULL, inEntries[ox].mValue, SIZE_MAX );
 	}
 	newTable[x].mType[0] = ELastIdentifier_Sentinel;
 	
@@ -741,7 +747,7 @@ CParser::CParser()
 	{
 		memmove( newTable[x].mType, inEntries[ox].mType, MAX_CONSTANT_IDENTS * sizeof(TIdentifierSubtype) );
 		newTable[x].mSetName = inEntries[ox].mSetName;
-		newTable[x++].mValue = new CFloatValueNode( NULL, inEntries[ox].mValue, SIZE_T_MAX );
+		newTable[x++].mValue = new CFloatValueNode( NULL, inEntries[ox].mValue, SIZE_MAX );
 	}
 	newTable[x].mType[0] = ELastIdentifier_Sentinel;
 	
@@ -961,8 +967,11 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		
 		const char* oldFileName = mFileName;
 		char innerFileName[1024] = {};
-		strncpy(innerFileName,fileName.c_str(),sizeof(innerFileName));
-		
+#if WIN32
+		strncpy_s(innerFileName, fileName.c_str(), sizeof(innerFileName));
+#else
+		strlcpy(innerFileName, fileName.c_str(), sizeof(innerFileName));
+#endif
 		
 		std::vector<char>	fileText;
 		if( mIncludeHandler( innerFileName, oldFileName, fileText ) )
@@ -4073,7 +4082,7 @@ CValueNode* CParser::ParseAnyFollowingArrayDefinitionWithKey(CValueNode* theTerm
 {
 	if( tokenItty != tokens.end() && tokenItty->IsIdentifier(EColonOperator) && inEndIdentifier != EColonOperator )
 	{
-		size_t	numPairs = 1;
+		int16_t	numPairs = 1;
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
 		CValueNode	*	theParam = theTerm;
@@ -4229,7 +4238,7 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					std::stringstream	numStr;
 					numStr << theNumber << "." << tokenItty->mNumberValue;
 					char*				endPtr = NULL;
-					double				theNum = strtod( numStr.str().c_str(), &endPtr );
+					float				theNum = strtof( numStr.str().c_str(), &endPtr );
 					
 					theTerm = new CFloatValueNode( &parseTree, theNum, tokenItty->mLineNum );
 					

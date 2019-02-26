@@ -104,7 +104,7 @@ void	CArrayValueNode::GenerateCode( Carlson::CCodeBlock *inCodeBlock )
 		currValue->GenerateCode( inCodeBlock );
 	}
 	
-	inCodeBlock->GenerateOperatorInstruction( PUSH_ARRAY_CONSTANT_INSTR, mArray.size(), 0 );
+	inCodeBlock->GenerateOperatorInstruction( PUSH_ARRAY_CONSTANT_INSTR, (uint16_t)mArray.size(), 0 );
 }
 	
 	

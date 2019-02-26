@@ -23,9 +23,14 @@ extern "C" {
 #include "LEOMsgInstructionsGeneric.h"
 
 #include <fstream>
+#if WIN32
+#include <filesystem>
+using namespace std;
+#else
 #include <unistd.h>
 #include "fake_filesystem.hpp"	// until <filesystem> ships for Xcode's clang.
 using namespace fake;
+#endif
 
 
 using namespace Carlson;
@@ -656,7 +661,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 							currModifiedStr = LEOGetValueAsString( theValue3, currCreatedStrBuf, sizeof(currCreatedStrBuf), ctx );
 						}
 						
-						toolOptions.summaries.push_back( ForgeToolSummaryEntry( desiredFilename.str(), currSummaryStr ?: "", currModifiedStr ?: "", currCreatedStr ?: "" ) );
+						toolOptions.summaries.push_back( ForgeToolSummaryEntry( desiredFilename.str(), currSummaryStr ? currSummaryStr : "", currModifiedStr ? currModifiedStr : "", currCreatedStr ? currCreatedStr : "" ) );
 						
 						if( theValue == &tmp3 )
 						{

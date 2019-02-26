@@ -27,7 +27,7 @@ typedef long TForgeErrorCode;
 class CForgeParseError : public std::runtime_error
 {
 public:
-	CForgeParseError( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_T_MAX, TForgeErrorCode inErrorCode = EForgeErrorCode_None ) throw() : std::runtime_error(inWhatMsg), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
+	CForgeParseError( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_MAX, TForgeErrorCode inErrorCode = EForgeErrorCode_None ) throw() : std::runtime_error(inWhatMsg), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
 	~CForgeParseError() throw() {};
 	
 	size_t		GetLineNum() const		{ return mLineNum; };
@@ -44,7 +44,7 @@ protected:
 class CForgeParseErrorProcessed : public CForgeParseError
 {
 public:
-	CForgeParseErrorProcessed( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_T_MAX, TForgeErrorCode inErrorCode = EForgeErrorCode_None )
+	CForgeParseErrorProcessed( const std::string& inWhatMsg, size_t inLineNum, size_t inOffset = SIZE_MAX, TForgeErrorCode inErrorCode = EForgeErrorCode_None )
 		: CForgeParseError( inWhatMsg, inLineNum, inOffset, inErrorCode )	{};
 	CForgeParseErrorProcessed( const CForgeParseError& inError ) : CForgeParseError( std::string(inError.what()), inError.GetLineNum(), inError.GetOffset(), inError.GetErrorCode() ) {};
 };

@@ -153,13 +153,13 @@ void			LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContextGroup* in
 */
 const char*		LEOParserGetLastErrorMessage( void );	
 
-/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the line in the script an error occurred on. If this returns SIZE_T_MAX, no line number information is available.
+/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the line in the script an error occurred on. If this returns SIZE_MAX, no line number information is available.
 	@seealso //leo_ref/c/func/LEOParserGetLastErrorMessage	LEOParserGetLastErrorMessage
 	@seealso //leo_ref/c/func/LEOParserGetLastErrorOffset	LEOParserGetLastErrorOffset
 */
 size_t		LEOParserGetLastErrorLineNum( void );
 
-/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the character offset in the script an error occurred on. If this returns SIZE_T_MAX, no offset is available. Character offset information is usually only available for errors that happen early on in parsing. If you can't get an offset, you may want to try calling <tt>LEOParserGetLastErrorLineNum</tt>, which will often still at least be able to give you the line number for an error.
+/*! You may call this after a call to <tt>LEOParserGetLastErrorMessage</tt> to determine the character offset in the script an error occurred on. If this returns SIZE_MAX, no offset is available. Character offset information is usually only available for errors that happen early on in parsing. If you can't get an offset, you may want to try calling <tt>LEOParserGetLastErrorLineNum</tt>, which will often still at least be able to give you the line number for an error.
 	@seealso //leo_ref/c/func/LEOParserGetLastErrorMessage	LEOParserGetLastErrorMessage
 	@seealso //leo_ref/c/func/LEOParserGetLastErrorLineNum	LEOParserGetLastErrorLineNum
 */
@@ -180,7 +180,7 @@ void	LEOParserGetHandlerNoteAtIndex( size_t inIndex, const char** outHandlerName
 
 
 /*! Register the global property names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The property array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
-void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction );
+void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, LEOInstructionID firstGlobalPropertyInstruction );
 
 
 /*! Register the syntax and the corresponding instructions for binary operators in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
@@ -193,7 +193,7 @@ void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* i
 	
 	All instructions that implement a binary operator must pop exactly two values from the end of the stack and push
 	a single result back. (or pop one off the stack and clean up/initialize the last one using kLEOInvalidateReferences) */
-void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, size_t firstOperatorInstruction );
+void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, LEOInstructionID firstOperatorInstruction );
 
 
 /*! Register the syntax and the corresponding instructions for unary operators in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
@@ -206,12 +206,12 @@ void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, siz
 	
 	All instructions that implement a unary operator must pop exactly one value from the end of the stack and push
 	a single result back. (or clean up/initialize it using kLEOInvalidateReferences) */
-void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction );
+void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperatorEntry* inEntries, LEOInstructionID firstUnaryOperatorInstruction );
 
 
 /*! Register the built-in function names and their corresponding instructions in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel. You must have registered all instructions referenced here using the same call to <tt>LEOAddInstructionsToInstructionArray</tt>, and you must pass in the index of the first instruction as returned by that call in <tt>firstBuiltInFunctionInstruction</tt>. If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
 
-void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstBuiltInFunctionInstruction );
+void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, LEOInstructionID firstBuiltInFunctionInstruction );
 
 
 /*! Register the syntax and the corresponding instructions for host-specific commands in <tt>inEntries</tt> with the Forge parser. The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
@@ -221,7 +221,7 @@ void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* 
 	the first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>.
 	
 	If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
-void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, LEOInstructionID firstHostCommandInstruction );
 
 /*! Register the syntax and the corresponding instructions for host-specific functions in <tt>inEntries</tt> with the Forge parser (anything that can be a term in an expression, really, it doesn't have to be a function in the traditional sense.). The array passed in is copied into Forge's internal tables, and its end detected by an entry with identifier type ELastIdentifier_Sentinel.
 
@@ -230,7 +230,7 @@ void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntrie
 	first instruction as returned by that call in <tt>firstGlobalPropertyInstruction</tt>.
 	
 	If you want to specify an invalid instruction (e.g. to indicate a read-only or write-only property), you <i>must</i> use <tt>INVALID_INSTR2</tt>, as <tt>INVALID_INSTR</tt> is 0 and would thus be undistinguishable from your first instruction. */
-void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction );
+void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, LEOInstructionID firstHostCommandInstruction );
 
 
 /*!

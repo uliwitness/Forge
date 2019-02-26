@@ -48,8 +48,8 @@ extern "C" void LEOInitializeNodeTransformationsIfNeeded( void )
 
 
 char							gLEOLastErrorString[1024] = { 0 };
-size_t							gLEOLastErrorOffset = SIZE_T_MAX;
-size_t							gLEOLastErrorLineNum = SIZE_T_MAX;
+size_t							gLEOLastErrorOffset = SIZE_MAX;
+size_t							gLEOLastErrorLineNum = SIZE_MAX;
 std::vector<CMessageEntry>		gMessages;
 std::vector<CHandlerNotesEntry>	gHandlerNotes;
 
@@ -60,8 +60,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -123,8 +123,8 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 	
 	CParseTree	*	parseTree = NULL;
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -427,8 +427,8 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	LEOInitializeNodeTransformationsIfNeeded();
 	
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -476,11 +476,11 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 }
 
 
-extern "C" void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, size_t firstOperatorInstruction )
+extern "C" void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inEntries, LEOInstructionID firstOperatorInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -503,11 +503,11 @@ extern "C" void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inE
 }
 
 
-extern "C" void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperatorEntry* inEntries, size_t firstUnaryOperatorInstruction )
+extern "C" void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperatorEntry* inEntries, LEOInstructionID firstUnaryOperatorInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -530,11 +530,11 @@ extern "C" void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperator
 }
 
 
-extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, size_t firstGlobalPropertyInstruction )
+extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunctionEntry* inEntries, LEOInstructionID firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -557,11 +557,11 @@ extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunc
 }
 
 
-extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, size_t firstGlobalPropertyInstruction )
+extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPropertyEntry* inEntries, LEOInstructionID firstGlobalPropertyInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -584,11 +584,11 @@ extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPrope
 }
 
 
-extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostCommandInstruction )
+extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntry* inEntries, LEOInstructionID firstHostCommandInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -611,11 +611,11 @@ extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntr
 }
 
 
-extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, size_t firstHostFunctionInstruction )
+extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEntry* inEntries, LEOInstructionID firstHostFunctionInstruction )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -641,8 +641,8 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 extern "C" void	LEOAddStringConstants( struct TStringConstantEntry* inEntries )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -668,8 +668,8 @@ extern "C" void	LEOAddStringConstants( struct TStringConstantEntry* inEntries )
 extern "C" void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -695,8 +695,8 @@ extern "C" void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries )
 extern "C" void	LEOAddBuiltInVariables( struct TBuiltInVariableEntry* inEntries )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{
@@ -722,8 +722,8 @@ extern "C" void	LEOAddBuiltInVariables( struct TBuiltInVariableEntry* inEntries 
 extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 {
 	gLEOLastErrorString[0] = 0;
-	gLEOLastErrorOffset = SIZE_T_MAX;
-	gLEOLastErrorLineNum = SIZE_T_MAX;
+	gLEOLastErrorOffset = SIZE_MAX;
+	gLEOLastErrorLineNum = SIZE_MAX;
 	
 	try
 	{

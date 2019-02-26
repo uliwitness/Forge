@@ -72,10 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\Leonie\common;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -92,6 +93,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -214,7 +217,7 @@
     <ClInclude Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.h" />
     <ClInclude Include="..\Leonie\generic\UTF32CaseTables.h" />
     <ClInclude Include="..\Leonie\generic\UTF8UTF32Utilities.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="..\Leonie\windows\LEORemoteDebugger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CAddCommandNode.cpp" />
@@ -275,14 +278,9 @@
     <ClCompile Include="..\Leonie\generic\LEOPropertyInstructions.c" />
     <ClCompile Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.cpp" />
     <ClCompile Include="..\Leonie\generic\UTF8UTF32Utilities.c" />
+    <ClCompile Include="..\Leonie\windows\LEORemoteDebugger.c" />
     <ClCompile Include="..\LEOPropertyInstructionsGeneric.c" />
     <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

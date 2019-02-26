@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstdarg>
 #include "UTF8UTF32Utilities.h"
 #include "CForgeExceptions.h"
 
