@@ -204,6 +204,12 @@
     <ClInclude Include="..\Leonie\windows\LEORemoteDebugger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Leonie\windows\AnsiFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Leonie\windows\AnsiStrings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CAddCommandNode.cpp">
@@ -387,6 +393,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Leonie\windows\LEORemoteDebugger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Leonie\windows\AnsiFiles.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Leonie\windows\AnsiStrings.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

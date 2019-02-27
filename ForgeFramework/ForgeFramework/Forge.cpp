@@ -22,7 +22,7 @@ extern "C" {
 #include "CWhileLoopNode.h"
 #include "CIfNode.h"
 #include "CDownloadCommandNode.h"
-
+#include "AnsiStrings.h"
 
 #include <iostream>
 
@@ -85,7 +85,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 		#if 0
@@ -97,7 +97,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString));
 		#if 0
 		parseTree->DebugPrint( std::cout, 0 );
 		#endif
@@ -107,7 +107,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateFromUTF8Characters( const char* inCod
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString));
 		if( parseTree )
 			delete parseTree;
 		parseTree = NULL;
@@ -141,7 +141,7 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString));
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 		if( parseTree )
@@ -150,14 +150,14 @@ extern "C" LEOParseTree*	LEOParseTreeCreateForCommandOrExpressionFromUTF8Charact
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString));
 		if( parseTree )
 			delete parseTree;
 		parseTree = NULL;
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString));
 		if( parseTree )
 			delete parseTree;
 		parseTree = NULL;
@@ -453,7 +453,7 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString));
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 		
@@ -463,7 +463,7 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString));
 		
 		#if 0
 		((CParseTree*)inTree)->DebugPrint( std::cout, 0 );
@@ -471,7 +471,7 @@ extern "C" void		LEOScriptCompileAndAddParseTree( LEOScript* inScript, LEOContex
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString));
 	}
 }
 
@@ -488,17 +488,17 @@ extern "C" void	LEOAddOperatorsAndOffsetInstructions( struct TOperatorEntry* inE
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -515,17 +515,17 @@ extern "C" void	LEOAddUnaryOperatorsAndOffsetInstructions( struct TUnaryOperator
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -542,17 +542,17 @@ extern "C" void	LEOAddBuiltInFunctionsAndOffsetInstructions( struct TBuiltInFunc
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -569,17 +569,17 @@ extern "C" void	LEOAddGlobalPropertiesAndOffsetInstructions( struct TGlobalPrope
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString));
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString));
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString));
 	}
 }
 
@@ -596,17 +596,17 @@ extern "C" void	LEOAddHostCommandsAndOffsetInstructions( struct THostCommandEntr
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -623,17 +623,17 @@ extern "C" void	LEOAddHostFunctionsAndOffsetInstructions( struct THostCommandEnt
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -650,17 +650,17 @@ extern "C" void	LEOAddStringConstants( struct TStringConstantEntry* inEntries )
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -677,17 +677,17 @@ extern "C" void	LEOAddNumberConstants( struct TNumberConstantEntry* inEntries )
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -704,17 +704,17 @@ extern "C" void	LEOAddBuiltInVariables( struct TBuiltInVariableEntry* inEntries 
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 
@@ -731,17 +731,17 @@ extern "C" void	LEOLoadNativeHeadersFromFile( const char* filepath )
 	}
 	catch( CForgeParseError& ferr )
 	{
-		strcpy( gLEOLastErrorString, ferr.what() );
+		strlcpy( gLEOLastErrorString, ferr.what(), sizeof(gLEOLastErrorString) );
 		gLEOLastErrorLineNum = ferr.GetLineNum();
 		gLEOLastErrorOffset = ferr.GetOffset();
 	}
 	catch( std::exception& err )
 	{
-		strcpy( gLEOLastErrorString, err.what() );
+		strlcpy( gLEOLastErrorString, err.what(), sizeof(gLEOLastErrorString) );
 	}
 	catch( ... )
 	{
-		strcpy( gLEOLastErrorString, "Unknown error." );
+		strlcpy( gLEOLastErrorString, "Unknown error.", sizeof(gLEOLastErrorString) );
 	}
 }
 

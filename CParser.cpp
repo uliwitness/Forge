@@ -47,6 +47,7 @@ extern "C" {
 #include "LEOInstructions.h"
 #include "LEOPropertyInstructions.h"
 #include "LEOObjCCallInstructions.h"
+#include "AnsiStrings.h"
 }
 
 #include <iostream>
@@ -970,11 +971,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		
 		const char* oldFileName = mFileName;
 		char innerFileName[1024] = {};
-#if WIN32
-		strncpy_s(innerFileName, fileName.c_str(), sizeof(innerFileName));
-#else
 		strlcpy(innerFileName, fileName.c_str(), sizeof(innerFileName));
-#endif
 		
 		std::vector<char>	fileText;
 		if( mIncludeHandler( innerFileName, oldFileName, fileText ) )

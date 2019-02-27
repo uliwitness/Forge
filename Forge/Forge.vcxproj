@@ -217,6 +217,8 @@
     <ClInclude Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.h" />
     <ClInclude Include="..\Leonie\generic\UTF32CaseTables.h" />
     <ClInclude Include="..\Leonie\generic\UTF8UTF32Utilities.h" />
+    <ClInclude Include="..\Leonie\windows\AnsiFiles.h" />
+    <ClInclude Include="..\Leonie\windows\AnsiStrings.h" />
     <ClInclude Include="..\Leonie\windows\LEORemoteDebugger.h" />
   </ItemGroup>
   <ItemGroup>
@@ -278,6 +280,8 @@
     <ClCompile Include="..\Leonie\generic\LEOPropertyInstructions.c" />
     <ClCompile Include="..\Leonie\generic\LEOWebPageInstructionsGeneric.cpp" />
     <ClCompile Include="..\Leonie\generic\UTF8UTF32Utilities.c" />
+    <ClCompile Include="..\Leonie\windows\AnsiFiles.c" />
+    <ClCompile Include="..\Leonie\windows\AnsiStrings.c" />
     <ClCompile Include="..\Leonie\windows\LEORemoteDebugger.c" />
     <ClCompile Include="..\LEOPropertyInstructionsGeneric.c" />
     <ClCompile Include="..\main.cpp" />

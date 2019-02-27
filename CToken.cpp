@@ -522,7 +522,6 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	
 	std::string	CToken::GetDescription() const
 	{
-		char		numstr[256];
 		std::string	str( gTokenTypeStrings[mType] );
 		if( mSubType == ELastIdentifier_Sentinel )
 		{
@@ -536,12 +535,12 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			str.append( gIdentifierStrings[mSubType] );
 			str.append( "'" );
 		}
-		sprintf( numstr,", %lu", (unsigned long) mLineNum );
-		str.append( numstr );
-		sprintf( numstr,", %lu", (unsigned long) mOffset );
-		str.append( numstr );
-		sprintf( numstr,", %lld", mNumberValue );
-		str.append( numstr );
+		str.append(", ");
+		str.append(std::to_string(mLineNum));
+		str.append(", ");
+		str.append(std::to_string(mOffset));
+		str.append(", ");
+		str.append(std::to_string(mNumberValue));
 		
 		return str;
 	}
@@ -550,9 +549,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 	{
 		if( mType == ENumberToken )
 		{
-			char		numstr[256];
-			sprintf( numstr,"%lld", mNumberValue );
-			return std::string(numstr);
+			return std::to_string(mNumberValue);
 		}
 		else if( mType == EStringToken )
 		{

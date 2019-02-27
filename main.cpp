@@ -23,14 +23,7 @@ extern "C" {
 #include "LEOMsgInstructionsGeneric.h"
 
 #include <fstream>
-#if WIN32
-#include <filesystem>
-using namespace std;
-#else
-#include <unistd.h>
-#include "fake_filesystem.hpp"	// until <filesystem> ships for Xcode's clang.
-using namespace fake;
-#endif
+#include "AnsiFiles.h"
 
 
 using namespace Carlson;
@@ -95,21 +88,11 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 static bool GetFileContents( const std::string& fname, std::vector<char>& outFileContents )
 {
 	// Open script to run:
-#if WIN32
-	FILE*	theFile = NULL;
-	errno_t err = fopen_s(&theFile, fname.c_str(), "r");
-	if (err != 0) theFile = NULL;
-#else
-	FILE*	theFile = fopen( fname.c_str(), "r" );
-#endif
+	FILE*	theFile = LEOFOpen( fname.c_str(), "r" );
 	if( !theFile )
 	{
-#if WIN32
-		printf("ERROR: Can't open file \"%s\".\n", fname.c_str());
-#else
 		char theWD[1024];
 		printf("ERROR: Can't open file \"%s/%s\".\n", getcwd(theWD, sizeof(theWD)), fname.c_str());
-#endif
 		return false;
 	}
 	
