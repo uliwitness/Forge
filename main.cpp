@@ -124,70 +124,78 @@ int main( int argc, char * const argv[] )
 	ForgeToolOptions toolOptions;
 	toolOptions.argc = argc;
 	toolOptions.argv = argv;
+
+#if WIN32
+#define PARAM_INDICATOR '/'
+#define PARAM_PREFIX "/"
+#else
+#define PARAM_INDICATOR '-'
+#define PARAM_PREFIX "--"
+#endif
 	
 	bool		fnameIsFolder = false;
 	for( int x = 1; x < argc; )
 	{
-		if( argv[x][0] == '-' )
+		if( argv[x][0] == PARAM_INDICATOR)
 		{
-			if( strcmp( argv[x], "--debug" ) == 0 )
+			if( strcmp( argv[x], PARAM_PREFIX "debug" ) == 0 )
 			{
 				toolOptions.debuggerOn = true;
 				if( (argc -1) < (x +1) )	// No parameter after debug option?
 				{
-					std::cerr << "Error: Expected host name after --debug option." << std::endl;
+					std::cerr << "Error: Expected host name after " PARAM_PREFIX "debug option." << std::endl;
 					return 6;
 				}
 				toolOptions.debuggerHost = argv[x+1];
 				x++;
 			}
-			else if( strcmp( argv[x], "--dontrun" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "dontrun" ) == 0 )
 			{
 				toolOptions.runCode = false;
 			}
-			else if( strcmp( argv[x], "--printinstructions" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printinstructions" ) == 0 )
 			{
 				toolOptions.printInstructions = true;
 			}
-			else if( strcmp( argv[x], "--printtokens" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printtokens" ) == 0 )
 			{
 				toolOptions.printTokens = true;
 			}
-			else if( strcmp( argv[x], "--printparsetree" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printparsetree" ) == 0 )
 			{
 				toolOptions.printParseTree = true;
 			}
-			else if( strcmp( argv[x], "--printoptimizedparsetree" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printoptimizedparsetree" ) == 0 )
 			{
 				toolOptions.printOptimizedParseTree = true;
 			}
-			else if( strcmp( argv[x], "--printindented" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printindented" ) == 0 )
 			{
 				toolOptions.printIndented = true;
 			}
-			else if( strcmp( argv[x], "--verbose" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "verbose" ) == 0 )
 			{
 				toolOptions.verbose = true;
 			}
-			else if( strcmp( argv[x], "--printresult" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "printresult" ) == 0 )
 			{
 				toolOptions.printresult = true;
 			}
-			else if( strcmp( argv[x], "--message" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "message" ) == 0 )
 			{
 				if( (argc -1) < (x +1) )	// No parameter after message option?
 				{
-					std::cerr << "Error: Expected handler name after --message option." << std::endl;
+					std::cerr << "Error: Expected handler name after " PARAM_PREFIX "message option." << std::endl;
 					return 7;
 				}
 				toolOptions.messageName = argv[x+1];
 				x++;
 			}
-			else if( strcmp( argv[x], "--dont-optimize" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "dont-optimize" ) == 0 )
 				toolOptions.doOptimize = false;
-			else if( strcmp( argv[x], "--folder" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "folder" ) == 0 )
 				fnameIsFolder = true;
-			else if( strcmp( argv[x], "--webpage" ) == 0 )
+			else if( strcmp( argv[x], PARAM_PREFIX "webpage" ) == 0 )
 				toolOptions.webPageEmbedMode = true;
 			else
 			{
