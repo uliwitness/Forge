@@ -1038,15 +1038,16 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		std::stringstream errMsg;
 		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping \"" << tokenItty->GetShortDescription() << "\".";
 		
+		size_t lineNum = tokenItty != tokens.end() ? tokenItty->mLineNum : tokens.back().mLineNum;
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Just skip it, whatever it may be.
-		while( !tokenItty->IsIdentifier( ENewlineOperator ) && tokenItty != tokens.end() )	// Now skip until the end of the line.
+		while( tokenItty != tokens.end() && !tokenItty->IsIdentifier( ENewlineOperator ) )	// Now skip until the end of the line.
 		{
 			errMsg << " " << tokenItty->GetShortDescription();
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
 		errMsg << "." << std::endl;
 		
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
+		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, lineNum ) );
 	}
 }
 

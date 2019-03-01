@@ -142,7 +142,7 @@ void	CCodeBlock::GeneratePushIntInstruction( int inNumber, LEOUnit inUnit )
 }
 
 
-void	CCodeBlock::GeneratePushIntInstruction( int64_t inNumber, LEOUnit inUnit )
+void	CCodeBlock::GeneratePushInt64Instruction( int64_t inNumber, LEOUnit inUnit )
 {
 	if( inNumber < INT32_MIN || inNumber > INT32_MAX )
 	{

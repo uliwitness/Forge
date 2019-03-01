@@ -165,7 +165,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						newX = currStartOffs;
 						++currLineNum;
 					}
-					else if( isdigit( currCh ) )
+					else if(currCh <= 127 && isdigit( currCh ) )
 					{
 						currType = ENumberToken;
 						currStartOffs = x;
@@ -179,7 +179,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					{
 						char		opstr[2] = { 0, 0 };
 						opstr[0] = currCh;
-						TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+						TIdentifierSubtype subtype = (currCh <= 127 && isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 						if( subtype != ELastIdentifier_Sentinel )
 						{
 							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
@@ -255,7 +255,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					break;
 				
 				case ENumberToken:
-					if( isdigit(currCh) )
+					if( currCh <= 127 && isdigit(currCh) )
 						currText.append( str +x, newX -x );
 					else
 					{
@@ -319,7 +319,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						{
 							char		opstr[2] = { 0, 0 };
 							opstr[0] = currCh;
-							TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+							TIdentifierSubtype subtype = (currCh <= 127 && isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 							if( subtype != ELastIdentifier_Sentinel )
 							{
 								tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
@@ -342,7 +342,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					bool	endThisToken = (currCh == ' ' || currCh == '\t' || currCh == '\n' || currCh == '\r');
 					char	opstr[2] = { 0, 0 };
 					opstr[0] = currCh;
-					TIdentifierSubtype subtype = (isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
+					TIdentifierSubtype subtype = (currCh <= 127 && isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '(' && nextCh == '*') || (currCh == '?' && nextCh == '>') || currCh == 0x00AC;
 					if( endThisToken )
 					{

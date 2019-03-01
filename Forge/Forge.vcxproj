@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\ForgeFramework\ForgeFramework;$(ProjectDir)\..\;$(ProjectDir)\..\Leonie\windows;$(ProjectDir)\..\Leonie\common;$(ProjectDir)\..\Leonie\generic;$(ProjectDir)\..\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\Forge\ForgeFramework\ForgeFramework;D:\Programming\Forge;D:\Programming\Forge\Leonie\windows;D:\Programming\Forge\Leonie\common;D:\Programming\Forge\Leonie\generic;D:\Programming\Forge\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\ForgeFramework\ForgeFramework;$(ProjectDir)\..\;$(ProjectDir)\..\Leonie\windows;$(ProjectDir)\..\Leonie\common;$(ProjectDir)\..\Leonie\generic;$(ProjectDir)\..\tinymarkdown\tinymarkdown;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -94,6 +94,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,6 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

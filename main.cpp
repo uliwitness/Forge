@@ -88,7 +88,7 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 static bool GetFileContents( const std::string& fname, std::vector<char>& outFileContents )
 {
 	// Open script to run:
-	FILE*	theFile = LEOFOpen( fname.c_str(), "r" );
+	FILE*	theFile = LEOFOpen( fname.c_str(), "rb" );
 	if( !theFile )
 	{
 		char theWD[1024];
@@ -108,7 +108,8 @@ static bool GetFileContents( const std::string& fname, std::vector<char>& outFil
 	if( readbytes != len )
 	{
 		fclose( theFile );
-		printf("ERROR: Couldn't read from file \"%s\" (%ld bytes read).\n",fname.c_str(),readbytes);
+		char theWD[1024];
+		printf("ERROR: Couldn't read from file \"%s/%s\" (%ld bytes read).\n", getcwd(theWD, sizeof(theWD)), fname.c_str(),readbytes);
 		return false;
 	}
 	outFileContents[len] = 0;	// Terminate string.
