@@ -321,6 +321,10 @@ extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, co
 	
 	for( size_t x = 0; x < codeLen; x++ )
 	{
+		if( code[x] == '\r' && x < (codeLen -1) && code[x + 1] == '\n' ) // Skip a CR if it's part of a Windows CR+LF
+		{
+			continue;
+		}
 		if( code[x] == '\n' || code[x] == '\r' )
 		{
 			if( startOfLine )	// the previous line was empty?
