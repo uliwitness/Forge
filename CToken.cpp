@@ -106,6 +106,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		std::string			currText;
 		std::deque<CToken>	tokenList;
 		size_t				currLineNum = 1;
+		size_t				lastCROffset = SIZE_MAX;
 		int					currNestingDepth = 0;	// Nesting depth for nestable quotes.
 		
 		while( x < len )
@@ -154,6 +155,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 						else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
 						{
+							lastCROffset = newX;
 							size_t			nextNextNewX = nextNewX;
 							uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
 							if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
@@ -304,6 +306,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							}
 							else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
 							{
+								lastCROffset = newX;
 								size_t			nextNextNewX = nextNewX;
 								uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
 								if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
@@ -370,6 +373,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							}
 							else if( nextCh == '\r' )	// Classic Mac or Windows line ending:
 							{
+								lastCROffset = newX;
 								size_t			nextNextNewX = nextNewX;
 								uint32_t		nextNextCh = (nextNextNewX < len) ? UTF8StringParseUTF32CharacterAtOffset( str, len, &nextNewX ) : '\0';
 								if( nextNextCh == '\n' )	// Win, not Mac? Swallow that character, too:
@@ -459,8 +463,15 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					break;
 			}
 			
-			if( currCh == '\n' || currCh == '\r' )
-				currLineNum++;
+			if( currCh == '\r' )
+			{
+				++currLineNum;
+				lastCROffset = x;
+			}
+			else if( currCh == '\n' && (x == 0 || lastCROffset != (x - 1)) )
+			{
+				++currLineNum;
+			}
 			
 			x = newX;
 		}
