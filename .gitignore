@@ -1,4 +1,5 @@
 /build/
+/Forge/Debug/
 *.o
 *.lo
 *.la
@@ -26,3 +27,4 @@ xcuserdata
 *.xcworkspace
 .idea
 *.xcuserdata
+.vs

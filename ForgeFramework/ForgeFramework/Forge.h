@@ -119,7 +119,7 @@ LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseTree* inTree
 								is added for the caller's convenience. Treating a script as a C-string is not recommended,
 								as scripts may contain user-entered NUL characters. The returned text block is created using
 								malloc() and it is the caller's responsibility to call free() on it when done.
-	@param	outLength			The number of actual text (exclusing the terminating NUL character) in outText.
+	@param	outLength			The number of actual text (excluding the terminating NUL character) in outText.
 	@param	ioCursorPosition	On input, the current offset of the text insertion mark in the script. On output, this will
 								have been adjusted for any added/removed characters, so it stays in the same place as far
 								as the user is concerned. You can pass NULL here if you don't need it.
@@ -138,6 +138,10 @@ void				LEODisplayInfoTableGetHandlerInfoAtIndex( LEODisplayInfoTable* inTable, 
 /*! Free the memory occupied by this display info table.
 	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
 void				LEOCleanUpDisplayInfoTable( LEODisplayInfoTable* inTable );
+
+/*! Print a summary of the contents of the display info table to help in debugging.
+	@seealso //leo_ref/c/func/LEODisplayInfoTableCreateForParseTree	LEODisplayInfoTableCreateForParseTree */
+void				LEODebugPrintDisplayInfoTable(LEODisplayInfoTable* inTable);
 
 
 /*! Take a parse tree created by <tt>LEOParseTreeCreateFromUTF8Characters</tt> or <tt>LEOParseTreeCreateForCommandOrExpressionFromUTF8Characters</tt> and compile it into Leonie bytecode. The given script, <tt>inScript</tt> will be filled with the command and function handlers, strings etc. defined in the script. Handler IDs will be generated in the given context group. Provide the same file ID in <tt>inFileID</tt> that you generated using <tt>LEOFileIDForFileName</tt> when you created the parse tree.

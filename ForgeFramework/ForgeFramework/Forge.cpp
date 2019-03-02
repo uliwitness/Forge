@@ -311,7 +311,7 @@ static int	GetIndentChangeForLine( LEODisplayInfoTable* inTable, size_t inLineNu
 }
 
 
-extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char*	code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition, size_t *ioCursorEndPosition )
+extern "C" void	LEODisplayInfoTableApplyToText( LEODisplayInfoTable* inTable, const char* code, size_t codeLen, char** outText, size_t *outLength, size_t *ioCursorPosition, size_t *ioCursorEndPosition )
 {
 	std::string		currText;
 	size_t			lineNum = 1;
@@ -400,6 +400,29 @@ extern "C" void		LEOCleanUpDisplayInfoTable( LEODisplayInfoTable* inTable )
 	delete (std::vector<CLineNumEntry>*)inTable;
 }
 
+
+extern "C" void		LEODebugPrintDisplayInfoTable(LEODisplayInfoTable* inTable)
+{
+	size_t			x = 0;
+	for( CLineNumEntry& currEntry : *(std::vector<CLineNumEntry>*)inTable )
+	{
+		if (currEntry.mHandlerName.length() > 0)
+		{
+			std::cout << x << ". " << (currEntry.mIsCommand ? "[C] " : "[F] ") << currEntry.mHandlerName.c_str()
+				<< (currEntry.mIsHandlerEnd ? " end" : "")
+				<< " line: " << currEntry.mLineNum
+				<< " indentChange: " << ((currEntry.mIndentChange > 0) ? "+" : "") << currEntry.mIndentChange << std::endl;
+			x++;
+		}
+		else
+		{
+			std::cout << "\t" << currEntry.mHandlerName.c_str() << " line: " << currEntry.mLineNum
+				<< " indentChange: " << ((currEntry.mIndentChange > 0) ? "+" : "") << currEntry.mIndentChange
+				<< (currEntry.mIsCommand ? " [C]" : " ")
+				<< (currEntry.mIsHandlerEnd ? " end" : "") << std::endl;
+		}
+	}
+}
 
 
 extern "C" const char*	LEOParserGetLastErrorMessage()

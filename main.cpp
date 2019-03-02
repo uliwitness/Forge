@@ -382,6 +382,11 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 				if( !isEnd )
 					std::cout << (isCommand ? "[C] " : "[F] ") << currName << " (Line " << currLine << ")" << std::endl;
 			}
+
+			std::cout << std::endl;
+
+			LEODebugPrintDisplayInfoTable( lit );
+
 			LEOCleanUpDisplayInfoTable( lit );
 		}
 		
