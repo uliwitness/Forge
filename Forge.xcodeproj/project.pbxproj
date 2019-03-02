@@ -25,6 +25,8 @@
 		3DC0F1670BF5D4F700C641C2 /* CFunctionCallNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC0F1650BF5D4F700C641C2 /* CFunctionCallNode.cpp */; };
 		3DC80A9E0BFF8D8B002CA7FF /* CWhileLoopNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */; };
 		3DCEC4460AD9998400092ABF /* testfile4.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DCEC4450AD9998400092ABF /* testfile4.hc */; };
+		5506AEBE222A0F6C009C38B0 /* AnsiStrings.c in Sources */ = {isa = PBXBuildFile; fileRef = 5506AEBA222A0F6B009C38B0 /* AnsiStrings.c */; };
+		5506AEBF222A0F6C009C38B0 /* AnsiFiles.c in Sources */ = {isa = PBXBuildFile; fileRef = 5506AEBB222A0F6C009C38B0 /* AnsiFiles.c */; };
 		551906041EED586B005AD911 /* testfile18.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 551906031EED585F005AD911 /* testfile18.hc */; };
 		551E0E091CD2C294008B80E1 /* LEOStringUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */; };
 		5523FE9413426059009D8EF1 /* testfile8.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 558A8D1512BD10C800F514F4 /* testfile8.hc */; };
@@ -163,6 +165,10 @@
 		3DC80A9C0BFF8D8B002CA7FF /* CWhileLoopNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CWhileLoopNode.cpp; sourceTree = "<group>"; };
 		3DCEC4450AD9998400092ABF /* testfile4.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile4.hc; sourceTree = "<group>"; };
 		3DF446040A9A644900516045 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = /System/Library/Frameworks/AddressBook.framework; sourceTree = "<absolute>"; };
+		5506AEBA222A0F6B009C38B0 /* AnsiStrings.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = AnsiStrings.c; path = Leonie/macosx/AnsiStrings.c; sourceTree = "<group>"; };
+		5506AEBB222A0F6C009C38B0 /* AnsiFiles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = AnsiFiles.c; path = Leonie/macosx/AnsiFiles.c; sourceTree = "<group>"; };
+		5506AEBC222A0F6C009C38B0 /* AnsiFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnsiFiles.h; path = Leonie/macosx/AnsiFiles.h; sourceTree = "<group>"; };
+		5506AEBD222A0F6C009C38B0 /* AnsiStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnsiStrings.h; path = Leonie/macosx/AnsiStrings.h; sourceTree = "<group>"; };
 		551906031EED585F005AD911 /* testfile18.hc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile18.hc; sourceTree = "<group>"; };
 		551E0E081CD2C294008B80E1 /* LEOStringUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOStringUtilities.c; path = Leonie/common/LEOStringUtilities.c; sourceTree = "<group>"; };
 		551E0E0A1CD2C29C008B80E1 /* LEOStringUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LEOStringUtilities.h; path = Leonie/common/LEOStringUtilities.h; sourceTree = "<group>"; };
@@ -312,6 +318,10 @@
 		08FB7794FE84155DC02AAC07 /* HyperC */ = {
 			isa = PBXGroup;
 			children = (
+				5506AEBB222A0F6C009C38B0 /* AnsiFiles.c */,
+				5506AEBC222A0F6C009C38B0 /* AnsiFiles.h */,
+				5506AEBA222A0F6B009C38B0 /* AnsiStrings.c */,
+				5506AEBD222A0F6C009C38B0 /* AnsiStrings.h */,
 				3D1F6C410A81496B00BF477D /* USAGE.txt */,
 				5559CEFE1EB6DD3F00815DD9 /* Test Scripts */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -589,6 +599,7 @@
 				3D7298350A7BC89C0065F0AC /* CToken.cpp in Sources */,
 				3D7298590A7BC9990065F0AC /* CParser.cpp in Sources */,
 				3DAE6D2A0BF2992200946F2F /* CCommandNode.cpp in Sources */,
+				5506AEBE222A0F6C009C38B0 /* AnsiStrings.c in Sources */,
 				3DAE6D420BF3ADDA00946F2F /* CValueNode.cpp in Sources */,
 				55A793EF1EAFFCD2005C40D0 /* LEOFileInstructionsGeneric.cpp in Sources */,
 				3DAE6D4A0BF3B58A00946F2F /* CNode.cpp in Sources */,
@@ -622,6 +633,7 @@
 				55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */,
 				55A5855E12F369E1009550CD /* LEORemoteDebugger.c in Sources */,
 				55993B7E1347EBB3001624A2 /* CMakeChunkRefNode.cpp in Sources */,
+				5506AEBF222A0F6C009C38B0 /* AnsiFiles.c in Sources */,
 				55993B821348F3AD001624A2 /* CMakeChunkConstNode.cpp in Sources */,
 				55E805FC13662198006F1287 /* LEOInstructions.c in Sources */,
 				55E805FF1366237C006F1287 /* CGlobalPropertyNode.cpp in Sources */,

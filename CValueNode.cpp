@@ -28,7 +28,7 @@ void	CValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 	
 void	CIntValueNode::GenerateCode( CCodeBlock* inCodeBlock )
 {
-	inCodeBlock->GeneratePushIntInstruction( mIntValue, mUnit );
+	inCodeBlock->GeneratePushInt64Instruction( mIntValue, mUnit );
 }
 
 
@@ -100,7 +100,7 @@ void	CArrayValueNode::GenerateCode( Carlson::CCodeBlock *inCodeBlock )
 	int64_t x = 0;
 	for( CValueNode * currValue : mArray )
 	{
-		inCodeBlock->GeneratePushIntInstruction( ++x, kLEOUnitGroupNone );
+		inCodeBlock->GeneratePushInt64Instruction( ++x, kLEOUnitGroupNone );
 		currValue->GenerateCode( inCodeBlock );
 	}
 	
