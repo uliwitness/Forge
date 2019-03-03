@@ -55,7 +55,11 @@ void	CPutCommandNode::GenerateCode( CCodeBlock* inCodeBlock )
 	}
 	else
 	{
+		if( !destValue )
+			throw CForgeParseError("Expected a destination for this assignment statement.", GetLineNum());
 		destValue->GenerateCode( inCodeBlock );
+		if( !srcValue )
+			throw CForgeParseError("Expected a value to assign to the given property.", GetLineNum());
 		srcValue->GenerateCode( inCodeBlock );
 		
 		inCodeBlock->GeneratePutValueIntoValueInstruction();
