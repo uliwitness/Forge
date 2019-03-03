@@ -231,7 +231,7 @@ extern "C" LEODisplayInfoTable*	LEODisplayInfoTableCreateForParseTree( LEOParseT
 		CWhileLoopNode*	loop = dynamic_cast<CWhileLoopNode*>(currNode);
 		if( loop )
 		{
-			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 1, "", false) );
+			if( loop->GetLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetLineNum(), 0, "", false) );
 			if( loop->GetCommandsLineNum() > 0 && loop->GetCommandsLineNum() != loop->GetEndRepeatLineNum() )
 			{
 				if( loop->GetCommandsLineNum() > 0 ) lineIndentTable->push_back( CLineNumEntry(loop->GetCommandsLineNum(), 1, "", false) );

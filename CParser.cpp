@@ -2583,7 +2583,7 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	getItemNode->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, currLineNum) );
 	whileLoop->AddCommand( getItemNode );
 	
-	whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
+	whileLoop->SetCommandsLineNum( tokenItty->IsIdentifier(ENewlineOperator) ? (tokenItty->mLineNum + 1) : tokenItty->mLineNum );
 	while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 	{
 		ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
@@ -2741,13 +2741,14 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		theAssignCommand->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, counterVarName, counterVarName, conditionLineNum) );
 		whileLoop->AddCommand( theAssignCommand );
 		
+		whileLoop->SetCommandsLineNum( tokenItty->IsIdentifier(ENewlineOperator) ? (tokenItty->mLineNum + 1) : tokenItty->mLineNum );
+
 		do
 		{
 			// If there is no command to repeat, we don't want to parse the
 			//	"end" statement as a handler call named "end", so we need to
 			//	make sure we eliminate that case beforehand.
 			
-			whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 			while( tokenItty != tokens.end() && tokenItty->IsIdentifier( ENewlineOperator) )
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			
@@ -2808,8 +2809,9 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
+
+		whileLoop->SetCommandsLineNum( tokenItty->IsIdentifier(ENewlineOperator) ? (tokenItty->mLineNum + 1) : tokenItty->mLineNum );
 		
-		whileLoop->SetCommandsLineNum( tokenItty->mLineNum );
 		while( !tokenItty->IsIdentifier( EEndIdentifier ) )
 		{
 			ParseOneLine( userHandlerName, parseTree, whileLoop, tokenItty, tokens );
@@ -3216,7 +3218,7 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 {
 	bool	hadWebContentToken = false;
 	
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
+	while( tokenItty != tokens.end() && tokenItty->IsIdentifier(ENewlineOperator) )
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 	CLineMarkerNode*	lineMarker = new CLineMarkerNode( &parseTree, tokenItty->mLineNum, mFileName );
