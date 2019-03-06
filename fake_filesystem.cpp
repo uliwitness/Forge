@@ -10,12 +10,14 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <vector>
+#include <iostream>
 
 
-using namespace fake::filesystem;
+namespace fake {
+namespace filesystem {
 
 
-bool	fake::filesystem::exists( const path& inPath )
+bool	exists( const path& inPath )
 {
 	struct stat sb;
 
@@ -23,9 +25,9 @@ bool	fake::filesystem::exists( const path& inPath )
 }
 
 
-std::ostream& fake::filesystem::operator << ( std::ostream& inOutputStream, const path& inPath )
+std::ostream& operator << ( std::ostream& inOutputStream, const path& inPath )
 {
-	return inOutputStream << inPath.string();
+	return inOutputStream << inPath.string().c_str();
 }
 
 
@@ -37,7 +39,7 @@ path path::filename() const
 	size_t pos = mPath.rfind("/", searchStart);
     if( pos != std::string::npos )
         return path(mPath.substr(pos +1));
-	return "";
+	return path("");
 }
 
 
@@ -51,7 +53,7 @@ path path::parent_path() const
 	{
         return path(mPath.substr(0,pos));
 	}
-	return "";
+	return path("");
 }
 
 
@@ -119,7 +121,7 @@ directory_iterator directory_iterator::operator ++ ()
 {
 	if( !mDir || mDir->get_dir() == nullptr )
 	{
-		mEntry.mPath = "";
+		mEntry.mPath = path("");
 		return *this;
 	}
 	
@@ -128,12 +130,12 @@ directory_iterator directory_iterator::operator ++ ()
 	{
 		dp = readdir( mDir->get_dir() );
 		if( dp )
-			mEntry.mPath = mPath / dp->d_name;
+			mEntry.mPath = mPath / path(dp->d_name);
 	}
 	while( dp && (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) );
 
 	if( dp == nullptr )
-		mEntry.mPath = "";
+		mEntry.mPath = path("");
 	
 	return *this;
 }
@@ -150,7 +152,7 @@ bool	directory_iterator::operator != ( const directory_iterator& inOther ) const
 }
 
 
-bool fake::filesystem::create_directory( const path& p )
+bool create_directory( const path& p )
 {
 	int result = mkdir( p.string().c_str(), 0777 );
 	
@@ -158,7 +160,7 @@ bool fake::filesystem::create_directory( const path& p )
 }
 
 
-bool fake::filesystem::create_directories( const path& p )
+bool create_directories( const path& p )
 {
 	std::vector<path>	pathsToCreate;
 	path				currPath = p;
@@ -175,3 +177,6 @@ bool fake::filesystem::create_directories( const path& p )
 	return true;
 }
 
+} // namespace fake
+	
+} // namespace filesystem
