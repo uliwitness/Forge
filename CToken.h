@@ -57,9 +57,10 @@ namespace Carlson
 		size_t					mLineNum;		// Line where this token is in the text.
 		std::string				mStringValue;	// String representation of this token.
 		long long				mNumberValue;	// Number representation of this token.
+		std::string				mComment;		// Comment that preceded this token (i.e. docs).
 		
 	public:
-		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string& str, long long n = 0 )
+		CToken( TTokenType type, TIdentifierSubtype subtype, size_t offs, size_t lineN, const std::string& str, const std::string& comment, long long n = 0 )
 			: mStringValue(str)
 		{
 			mType = type;
@@ -67,6 +68,7 @@ namespace Carlson
 			mOffset = offs;
 			mNumberValue = n;
 			mLineNum = lineN;
+			mComment = comment;
 		}
 		
 		void			ExpectIdentifier( const std::string& inFileName, TIdentifierSubtype subType, TIdentifierSubtype precedingIdent = ELastIdentifier_Sentinel );
@@ -89,6 +91,7 @@ namespace Carlson
 		const std::string	GetOriginalIdentifierText() const;	// Original string as entered by user.
 		const std::string	GetOriginalWebPageContentText() const;	// Original string as entered by user.
 		size_t				GetOffset() const { return mOffset; };
+		const std::string	GetComment() const { return mComment; }
 	};
 	
 	class CTokenizer
@@ -96,6 +99,7 @@ namespace Carlson
 	public:
 		static std::deque<CToken>	TokenListFromText( const char* str, size_t len, bool webPageEmbedMode = false );
 		static bool					NextTokensAreIdentifiers( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, int /*TIdentifierSubtype*/ inFirstType, ... );
+		static void					StartCommentToken( const char* str, size_t len, size_t x, TTokenType newType, size_t &newX, TTokenType& currType, std::string& currText, std::string& collectedCommentText );
 
 		static void	GoNextToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		static void	GoPreviousToken( const char* fname, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

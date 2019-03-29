@@ -70,6 +70,7 @@ struct ForgeToolOptions
 	bool			verbose = false;
 	bool			doOptimize = true;
 	bool			printresult = false;
+	bool			printdocs = false;
 	bool			webPageEmbedMode = false;
 	const char*		debuggerHost = NULL;
 	const char*		messageName = nullptr;
@@ -180,6 +181,10 @@ int main( int argc, char * const argv[] )
 			else if( strcmp( argv[x], PARAM_PREFIX "printresult" ) == 0 )
 			{
 				toolOptions.printresult = true;
+			}
+			else if( strcmp( argv[x], PARAM_PREFIX "printdocs" ) == 0 )
+			{
+				toolOptions.printdocs = true;
 			}
 			else if( strcmp( argv[x], PARAM_PREFIX "message" ) == 0 )
 			{
@@ -388,6 +393,25 @@ int	ProcessOneScriptFile( const std::string& inFilePathString, ForgeToolOptions&
 			LEODebugPrintDisplayInfoTable( lit );
 
 			LEOCleanUpDisplayInfoTable( lit );
+		}
+		
+		if( toolOptions.printdocs )
+		{
+			for( const CHandlerNotesEntry& note : parser.GetHandlerNotes() )
+			{
+				size_t indent = note.mHandlerName.size() + 2;
+				std::cout << note.mHandlerName << ": ";
+				size_t pos = note.mNotes.find("\n");
+				std::cout << note.mNotes.substr(0, pos) << std::endl;
+				std::string leftoverNote(note.mNotes.substr(pos +1));
+				while( leftoverNote.size() > 0 )
+				{
+					pos = leftoverNote.find("\n");
+					std::cout << std::string(indent, ' ') << leftoverNote.substr(0, pos) << std::endl;
+					leftoverNote = leftoverNote.substr(pos +1);
+				}
+				std::cout << std::endl;
+			}
 		}
 		
 		uint16_t 			fileID = LEOFileIDForFileName(inFilePathString.c_str());

@@ -144,7 +144,6 @@ namespace Carlson
 		const char*					mSupportFolderPath;			//!< Path to folder with support files.
 		std::vector<CMessageEntry>	mMessages;					//!< Errors and warnings.
 		std::vector<CHandlerNotesEntry>	mHandlerNotes;			//!< List of documentation comments found in the script.
-		std::string					mCurrentNotes;				//!< The most recent "notes" text (documentation "comment") we encountered, so a handler definition can snarf it up and associate it with its handler name. Only valid while parsing.
 		CParserIncludeHandler		mIncludeHandler;			//!< Lambda that is called (if present) to retrieve a file included using the "use" statement in web page mode.
 		std::vector<CIncludeFileEntry>	mIncludeFiles;			//!< List file names included using the "use" statement so debugger can register them as well.
 		
@@ -164,8 +163,8 @@ namespace Carlson
 		
 		void	ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
 		void	ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText );
-		CFunctionDefinitionNode*	StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );	// Called by ParseFunctionDefinition.
-		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree );
+		CFunctionDefinitionNode*	StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, const std::string& documentation, CParseTree& parseTree );	// Called by ParseFunctionDefinition.
+		void	ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, const std::string& documentation, CParseTree& parseTree );
 		CValueNode	*	ParseFunctionCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
 		void	ParseHandlerCall( CParseTree& parseTree, CCodeBlockNodeBase* currFunction, bool isMessagePassing, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );

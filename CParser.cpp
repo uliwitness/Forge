@@ -836,14 +836,6 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 			throw;	// Re-throw, don't really know how to postpone this error until runtime.
 		}
 	}
-
-	if( mCurrentNotes.size() != 0 )
-	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: No handler to associate with note \""
-								<< mCurrentNotes << "\".";
-		mMessages.push_back( CMessageEntry( "", mFileName, tokenItty->mLineNum) );
-	}
 	
 	sLastErrorFunction = NULL;
 }
@@ -993,26 +985,21 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{
+		std::string documentation(tokenItty->GetComment());
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "function" 
-		ParseFunctionDefinition( false, tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( false, tokenItty, tokens, documentation, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EOnIdentifier ) || tokenItty->IsIdentifier( EWhenIdentifier ) )
 	{
+		std::string documentation(tokenItty->GetComment());
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "on"/"when"
-		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
+		ParseFunctionDefinition( true, tokenItty, tokens, documentation, parseTree );
 	}
 	else if( tokenItty->IsIdentifier( EToIdentifier ) )
 	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to" 
-		ParseFunctionDefinition( true, tokenItty, tokens, parseTree );
-	}
-	else if( tokenItty->IsIdentifier( ENotesIdentifier ) || tokenItty->IsIdentifier( ENoteIdentifier ) )
-	{
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "notes"
-		if( tokenItty->IsIdentifier(EColonOperator) )
-			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip ":" after "notes".
-		
-		ParseDocumentation( tokenItty, tokens, parseTree, scriptText );
+		std::string documentation(tokenItty->GetComment());
+		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to"
+		ParseFunctionDefinition( true, tokenItty, tokens, documentation, parseTree );
 	}
 	else if( CTokenizer::NextTokensAreIdentifiers( mFileName, tokenItty, tokens, EHashSignOperator, EExclamationMarkOperator, ELastIdentifier_Sentinel ) )	// Ignore the shebang if this is run as a Unix script.
 	{
@@ -1027,7 +1014,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 		CFunctionDefinitionNode	* startupFunction = parseTree.GetFunctionDefinition( implicitWebStartupFunctionName );
 		if( startupFunction == NULL )
 		{
-			startupFunction = StartParsingFunctionDefinition( implicitWebStartupFunctionName, implicitWebStartupFunctionName, true, tokenItty->mLineNum, tokenItty, tokens, parseTree );
+			startupFunction = StartParsingFunctionDefinition( implicitWebStartupFunctionName, implicitWebStartupFunctionName, true, tokenItty->mLineNum, tokenItty, tokens, "", parseTree );
 			//startupFunction->SetAllVarsAreGlobals( true );
 		}
 		
@@ -1052,58 +1039,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 }
 
 
-void	CParser::ParseDocumentation( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree, const char* scriptText )
-{
-	if( mCurrentNotes.size() != 0 )
-	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: No handler to associate with note \""
-								<< mCurrentNotes << "\".";
-		mMessages.push_back( CMessageEntry( "", mFileName, tokenItty->mLineNum) );
-	}
-	
-	while( tokenItty->IsIdentifier(ENewlineOperator) )
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-	
-	size_t	startOffs = 0,
-			endOffs = 0;
-	if( tokenItty != tokens.end() )
-		startOffs = startOffs = tokenItty->mOffset;
-	
-	while( true )
-	{
-		if( tokenItty == tokens.end() )
-		{
-			break;
-		}
-		endOffs = tokenItty->mOffset;
-		
-		// If first word could be a handler start, end the comment here:
-		if( tokenItty->IsIdentifier( EOnIdentifier) || tokenItty->IsIdentifier( EFunctionIdentifier) || tokenItty->IsIdentifier( EWhenIdentifier) || tokenItty->IsIdentifier( EToIdentifier) )
-		{
-			break;
-		}
-		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip first word.
-		
-		// Snarf up the rest of the line:
-		while( tokenItty != tokens.end() && !tokenItty->IsIdentifier(ENewlineOperator) )
-		{
-			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		}
-		// Eat up the end-of-line marker and any empty lines (e.g. paragraph breaks)
-		while( tokenItty != tokens.end() && tokenItty->IsIdentifier(ENewlineOperator) )
-		{
-			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
-		}
-	}
-	
-	// Remember documentation commentary text so next handler definition can snarf it up:
-	if( startOffs < endOffs )
-		mCurrentNotes = std::string( scriptText +startOffs, endOffs - startOffs );
-}
-
-
-CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::string& handlerName, const std::string& userHandlerName, bool isCommand, size_t fcnLineNum, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, const std::string& documentation, CParseTree& parseTree )
 {
 	if( sLastErrorFunction )	// Last function had an error and never ended?
 	{
@@ -1117,17 +1053,12 @@ CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::str
 		mFirstHandlerIsFunction = !isCommand;
 	}
 	
+	mHandlerNotes.push_back( CHandlerNotesEntry(userHandlerName, documentation) );
+	
 	CFunctionDefinitionNode*		currFunctionNode = NULL;
 	currFunctionNode = new CFunctionDefinitionNode( &parseTree, isCommand, handlerName, userHandlerName, fcnLineNum, mFileName );
 	parseTree.AddFunctionDefinitionNode( currFunctionNode );
 
-	if( mCurrentNotes.size() > 0 )	// Have documentation preceding this handler?
-	{
-		mHandlerNotes.push_back( CHandlerNotesEntry(userHandlerName,mCurrentNotes) );
-		
-		mCurrentNotes.erase();	// If we get another "notes:" section and this is not empty, we know we had notes that weren't matched to a handler.
-	}
-	
 	// Make built-in system variables so they get declared below like other local vars:
 	currFunctionNode->AddLocalVar( "result", "result", TVariantTypeEmptyString, false, false, false, false );
 	
@@ -1135,7 +1066,7 @@ CFunctionDefinitionNode*	CParser::StartParsingFunctionDefinition( const std::str
 }
 
 
-void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, CParseTree& parseTree )
+void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, const std::string& documentation, CParseTree& parseTree )
 {
 	std::string								handlerName( tokenItty->GetOriginalIdentifierText() );
 	std::string								userHandlerName( tokenItty->GetOriginalIdentifierText() );
@@ -1143,7 +1074,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 
-	CFunctionDefinitionNode* currFunctionNode = StartParsingFunctionDefinition( handlerName, userHandlerName, isCommand, fcnLineNum, tokenItty, tokens, parseTree );
+	CFunctionDefinitionNode* currFunctionNode = StartParsingFunctionDefinition( handlerName, userHandlerName, isCommand, fcnLineNum, tokenItty, tokens, documentation, parseTree );
 
 	int		currParamIdx = 0;
 	

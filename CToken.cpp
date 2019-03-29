@@ -25,7 +25,7 @@ namespace Carlson
 {
 #pragma mark Constant tokens
 
-	const CToken&	CToken::KNewlineToken = CToken( EIdentifierToken, ENewlineOperator, 0, 0, std::string("") );	
+	const CToken&	CToken::KNewlineToken = CToken( EIdentifierToken, ENewlineOperator, 0, 0, std::string(""), std::string("") );
 
 #pragma mark Token type strings
 
@@ -98,6 +98,21 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		return ELastIdentifier_Sentinel;
 	}
 	
+	void CTokenizer::StartCommentToken( const char* str, size_t len, size_t x, TTokenType newType, size_t &newX, TTokenType& currType, std::string& currText, std::string& collectedCommentText )
+	{
+		if( newType == EMultilineCommentPseudoToken )
+		{
+			collectedCommentText.erase(); // Prevent multi-line comments from getting glued together.
+		}
+		currType = newType;
+		currText.erase();
+		newX += 1; // Skip second dash/asterisk.
+		
+		// Skip leading whitespace:
+		while( newX < len && (str[newX] == ' ' || str[newX] == '\t') )
+			++newX;
+	}
+	
 	std::deque<CToken>	CTokenizer::TokenListFromText( const char* str, size_t len, bool webPageEmbedMode )
 	{
 		size_t				x = 0,
@@ -108,6 +123,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		size_t				currLineNum = 1;
 		size_t				lastCROffset = SIZE_MAX;
 		int					currNestingDepth = 0;	// Nesting depth for nestable quotes.
+		std::string			collectedCommentText;
 		
 		while( x < len )
 		{
@@ -127,27 +143,32 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					}
 					if( currCh == '\"' )
 					{
+						collectedCommentText.clear();
 						currType = EStringToken;
 						currStartOffs = newX;
 					}
 					else if( currCh == '?' && nextCh == '>' )
 					{
+						collectedCommentText.clear();
 						currType = EWebPageContentToken;
 						newX++;
 						currStartOffs = newX;
 					}
 					else if( currCh == 0x201C )	// “
 					{
+						collectedCommentText.clear();
 						currType = ECurlyStringPseudoToken;
 						currStartOffs = newX;
 					}
 					else if( currCh == 0x00AB )	// «
 					{
+						collectedCommentText.clear();
 						currType = EGuillemotsStringPseudoToken;
 						currStartOffs = newX;
 					}
 					else if( currCh == 0x00AC )	// ¬ Line continuation character? Just swallow the line break.
 					{
+						collectedCommentText.clear();
 						currStartOffs = newX;
 						if( nextCh == '\n' )	// Unix line ending:
 						{
@@ -169,14 +190,19 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					}
 					else if(currCh <= 127 && isdigit( currCh ) )
 					{
+						collectedCommentText.clear();
 						currType = ENumberToken;
 						currStartOffs = x;
 						currText.append( str +x, newX -x );
 					}
 					else if( currCh == '-' && nextCh == '-' )
-						currType = ECommentPseudoToken;
+					{
+						StartCommentToken( str, len, x, ECommentPseudoToken, newX, currType, currText, collectedCommentText );
+					}
 					else if( currCh == '(' && nextCh == '*' )
-						currType = EMultilineCommentPseudoToken;
+					{
+						StartCommentToken( str, len, x, EMultilineCommentPseudoToken, newX, currType, currText, collectedCommentText );
+					}
 					else
 					{
 						char		opstr[2] = { 0, 0 };
@@ -184,7 +210,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						TIdentifierSubtype subtype = (currCh <= 127 && isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 						if( subtype != ELastIdentifier_Sentinel )
 						{
-							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
+							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr), (subtype != ENewlineOperator) ? collectedCommentText : "" ) );
+							
+							if( subtype != ENewlineOperator )
+								collectedCommentText.erase();
 							currText.clear();
 							currType = EInvalidToken;
 							currStartOffs = x;
@@ -214,7 +243,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 								{
 									if( currText.length() > 0 )
 									{
-										tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+										tokenList.push_back( CToken( EWebPageContentToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, "" ) );
 									}
 
 									newX = nextNewX;
@@ -239,20 +268,31 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 				case ECommentPseudoToken:
 					if( currCh == '\n' || currCh == '\r' )
 					{
-						tokenList.push_back( CToken( EIdentifierToken, ENewlineOperator, x, currLineNum, std::string("\n") ) );
+						tokenList.push_back( CToken( EIdentifierToken, ENewlineOperator, x, currLineNum, std::string("\n"), "" ) );
+						currText.append("\n");
+						collectedCommentText.append(currText);
 						currText.clear();
 						currType = EInvalidToken;
 						currStartOffs = newX;
+					}
+					else
+					{
+						currText.append(1, currCh);
 					}
 					break;
 				
 				case EMultilineCommentPseudoToken:
 					if( currCh == '*' && nextCh == ')' )
 					{
+						collectedCommentText.append(currText);
 						currText.clear();
 						currType = EInvalidToken;
 						newX++;
 						currStartOffs = newX;
+					}
+					else
+					{
+						currText.append(1, currCh);
 					}
 					break;
 				
@@ -263,7 +303,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					{
 						char*		endPtr = NULL;
 						long long	num = strtoll( currText.c_str(), &endPtr, 10 );
-						tokenList.push_back( CToken( ENumberToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, num ) );
+						tokenList.push_back( CToken( ENumberToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, collectedCommentText, num ) );
+						collectedCommentText.erase();
 						currText.clear();
 						currType = EInvalidToken;
 						
@@ -275,11 +316,11 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 						else if( currCh == '-' && nextCh == '-' )
 						{
-							currType = ECommentPseudoToken;
+							StartCommentToken( str, len, x, ECommentPseudoToken, newX, currType, currText, collectedCommentText );
 						}
 						else if( currCh == '(' && nextCh == '*' )
 						{
-							currType = EMultilineCommentPseudoToken;
+							StartCommentToken( str, len, x, EMultilineCommentPseudoToken, newX, currType, currText, collectedCommentText );
 						}
 						else if( currCh == '?' && nextCh == '>' )
 						{
@@ -325,7 +366,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							TIdentifierSubtype subtype = (currCh <= 127 && isalnum(currCh)) ? ELastIdentifier_Sentinel : CToken::IdentifierTypeFromText(opstr);	// Don't interrupt a token on a short identifier like "a".
 							if( subtype != ELastIdentifier_Sentinel )
 							{
-								tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
+								tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr), collectedCommentText ) );
+								collectedCommentText.erase();
 								currText.clear();
 								currType = EInvalidToken;
 								currStartOffs = x;
@@ -349,14 +391,17 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 					endThisToken = endThisToken || (subtype != ELastIdentifier_Sentinel) || (currCh == '-' && nextCh == '-') || (currCh == '(' && nextCh == '*') || (currCh == '?' && nextCh == '>') || currCh == 0x00AC;
 					if( endThisToken )
 					{
-						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText ) );
+						tokenList.push_back( CToken( EIdentifierToken, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, collectedCommentText ) );
+						collectedCommentText.erase();
 						currType = EInvalidToken;
 						
 						if( currCh == '-' && nextCh == '-' )	// Comment!
-							currType = ECommentPseudoToken;
+						{
+							StartCommentToken( str, len, x, ECommentPseudoToken, newX, currType, currText, collectedCommentText );
+						}
 						else if( currCh == '(' && nextCh == '*' )
 						{
-							currType = EMultilineCommentPseudoToken;
+							StartCommentToken( str, len, x, EMultilineCommentPseudoToken, newX, currType, currText, collectedCommentText );
 						}
 						else if( currCh == '?' && nextCh == '>' )	// Back to webpage content.
 						{
@@ -386,7 +431,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 							++currLineNum;
 						}
 						else if( subtype != ELastIdentifier_Sentinel )
-							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr) ) );
+							tokenList.push_back( CToken( EIdentifierToken, subtype, x, currLineNum, std::string(opstr), collectedCommentText ) );
 						
 						currText.clear();
 						currStartOffs = x;
@@ -399,7 +444,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 				case EStringToken:
 					if( currCh == '\"' )
 					{
-						tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+						tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, collectedCommentText ) );
 						currText.clear();
 						currStartOffs = x;
 						currType = EInvalidToken;
@@ -423,7 +468,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 						else	// Final closing quote? End string.
 						{
-							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, collectedCommentText ) );
 							currText.clear();
 							currStartOffs = x;
 							currType = EInvalidToken;
@@ -448,7 +493,7 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 						}
 						else	// Final closing quote? End string.
 						{
-							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText ) );
+							tokenList.push_back( CToken( EStringToken, ELastIdentifier_Sentinel, currStartOffs, currLineNum, currText, collectedCommentText ) );
 							currText.clear();
 							currStartOffs = x;
 							currType = EInvalidToken;
@@ -482,7 +527,8 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 			char*	endPtr = NULL;
 			if( currType == ENumberToken )
 				num = strtol( currText.c_str(), &endPtr, 10 );
-			tokenList.push_back( CToken( currType, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, num ) );
+			tokenList.push_back( CToken( currType, CToken::IdentifierTypeFromText( ToLowerString( currText ).c_str() ), currStartOffs, currLineNum, currText, collectedCommentText, num ) );
+			collectedCommentText.erase();
 		}
 		
 		return tokenList;
@@ -542,9 +588,14 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		}
 		else
 		{
-			str.append( ", '" );
-			str.append( gIdentifierStrings[mSubType] );
-			str.append( "'" );
+			if( mSubType == ENewlineOperator )
+				str.append(", <newline>");
+			else
+			{
+				str.append( ", '" );
+				str.append( gIdentifierStrings[mSubType] );
+				str.append( "'" );
+			}
 		}
 		str.append(", ");
 		str.append(std::to_string(mLineNum));
@@ -552,7 +603,10 @@ TIdentifierSubtype	gIdentifierSynonyms[ELastIdentifier_Sentinel +1] =
 		str.append(std::to_string(mOffset));
 		str.append(", ");
 		str.append(std::to_string(mNumberValue));
-		
+		str.append(", \"");
+		str.append(mComment);
+		str.append("\"");
+
 		return str;
 	}
 	
