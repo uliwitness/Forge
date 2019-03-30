@@ -175,7 +175,7 @@ size_t		LEOParserGetLastErrorOffset( void );
 	next handler in the script. That way, if you have an error in a mouseDown handler, your mouseUp handler will
 	still execute. This function gets an error from this list of non-fatal errors, so the host can e.g. show them
 	as annotations on lines in the script editor, or in a project-wide "things to fix" window. */
-void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset );
+void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset, TMessageType *outType );
 
 
 /*! Scripts may contain notes (=documentation comments) above every handler definition. Use this function

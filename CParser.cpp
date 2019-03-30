@@ -60,12 +60,11 @@ using namespace Carlson;
 
 
 #if WIN32
-#define strcasecmp _stricmp
-#define _USE_MATH_DEFINES
-#include <math.h>
-#else
-#include <cmath>
+#define _USE_MATH_DEFINES // Gets us M_PI
 #endif
+
+#include <math.h>
+#include "AnsiStrings.h"
 
 
 #define DEBUG_HOST_ENTITIES			0
@@ -832,7 +831,7 @@ void	CParser::Parse( const char* fname, std::deque<CToken>& tokens, CParseTree& 
 		catch( const CForgeParseError& err )
 		{
 			sLastErrorFunction = NULL;
-			mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+			mMessages.push_back( CMessageEntry( EMessageTypeError, err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 			throw;	// Re-throw, don't really know how to postpone this error until runtime.
 		}
 	}
@@ -923,23 +922,12 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	if( tokenItty == tokens.end() )
 		printf("End of tokens.\n");
 	else if( tokenItty->IsIdentifier( ENewlineOperator ) )
-	{
-		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": note: Skipping newline.";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip the newline.
-	}
 	else if( tokenItty->IsIdentifier( EUseIdentifier ) && mIncludeHandler )
 	{
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "use".
 		if( tokenItty == tokens.end() )
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected file name after 'use' statement.";
-			
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
+			ThrowDeferrableError( "Expected file name after 'use' statement.", tokenItty, tokens );
 		std::string	fileName;
 		if( tokenItty->mType == EStringToken )
 		{
@@ -950,14 +938,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			fileName = tokenItty->GetOriginalIdentifierText();
 		}
 		else
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected file name after 'use' statement, found "
-									<< tokenItty->GetShortDescription() << ".";
-			
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
+			ThrowDeferrableError( "Expected file name after 'use' statement, found " + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -974,14 +955,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			mFileName = oldFileName;	// Restore mFileName so we correctly report errors in continued parsing of this file.
 		}
 		else
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can't find file \""
-			<< innerFileName << "\" to use.";
-			
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
+			ThrowDeferrableError( std::string("Can't find file \"") + innerFileName + "\" to use.", tokenItty, tokens );
 	}
 	else if( tokenItty->IsIdentifier( EFunctionIdentifier ) )
 	{
@@ -1023,7 +997,7 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 	else
 	{
 		std::stringstream errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": warning: Skipping \"" << tokenItty->GetShortDescription() << "\".";
+		errMsg << "Skipping \"" << tokenItty->GetShortDescription();
 		
 		size_t lineNum = tokenItty != tokens.end() ? tokenItty->mLineNum : tokens.back().mLineNum;
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Just skip it, whatever it may be.
@@ -1032,9 +1006,9 @@ void	CParser::ParseTopLevelConstruct( std::deque<CToken>::iterator& tokenItty, s
 			errMsg << " " << tokenItty->GetShortDescription();
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
-		errMsg << "." << std::endl;
+		errMsg << "\".";
 		
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, lineNum ) );
+		mMessages.push_back( CMessageEntry( EMessageTypeWarning, errMsg.str(), mFileName, lineNum ) );
 	}
 }
 
@@ -1097,12 +1071,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 		{
 			if( tokenItty->IsIdentifier( ENewlineOperator ) )
 				break;
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma or end of line here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( "Expected comma or end of line here, found " + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -1131,7 +1100,7 @@ void	CParser::ParseFunctionDefinition( bool isCommand, std::deque<CToken>::itera
 	catch( const CForgeParseError& err )
 	{
 		sLastErrorFunction = currFunctionNode;
-		mMessages.push_back( CMessageEntry( err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
+		mMessages.push_back( CMessageEntry( EMessageTypeError, err.what(), mFileName, err.GetLineNum(), err.GetOffset() ) );
 		
 		printf( "Deferring error to runtime: %s\n", err.what() );
 		
@@ -1183,12 +1152,7 @@ void	CParser::ParsePassStatement( CParseTree& parseTree, CCodeBlockNodeBase* cur
 	
 	CFunctionDefinitionNode* theFunction = dynamic_cast<CFunctionDefinitionNode*>( currFunction->GetContainingFunction() );
 	if( !theFunction )
-	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Can only pass messages in command or function handlers.";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-	}
+		ThrowDeferrableError( "Can only pass messages in command or function handlers.", tokenItty, tokens );
 	
 	if( theFunction->IsCommand() )
 		ParseHandlerCall( parseTree, currFunction, true, tokenItty, tokens );
@@ -1336,13 +1300,7 @@ void	CParser::ParsePutStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 			}
 			
 			if( printInstrID == INVALID_INSTR )
-			{
-				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"into\", \"before\" or \"after\" here, found "
-										<< tokenItty->GetShortDescription() << ".";
-				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-			}
+				ThrowDeferrableError( "expected \"into\", \"before\" or \"after\" here, found " + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 		}
 		
 		currFunction->AddCommand( resultNode );
@@ -1372,13 +1330,7 @@ void	CParser::ParseSetStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 		
 		// to:
 		if( !tokenItty->IsIdentifier( EToIdentifier ) )
-		{
-			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"to\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
+			ThrowDeferrableError( "Expected \"to\" here, found " + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "to".
 
 		// what:
@@ -1455,13 +1407,7 @@ void	CParser::ParseHostCommand( CParseTree& parseTree, CCodeBlockNodeBase* currF
 	if( theNode )
 		currFunction->AddCommand( theNode );
 	else if( tokenItty != tokens.end() && tokenItty->IsIdentifier(EEndIdentifier) )
-	{
-		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected handler call here, found \""
-							<< tokenItty->GetShortDescription() << "\".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-	}
+		ThrowDeferrableError( "Expected handler call here, found \"" + tokenItty->GetShortDescription() + "\".", tokenItty, tokens );
 	else
 		ParseHandlerCall( parseTree, currFunction, false, tokenItty, tokens );
 }
@@ -1527,20 +1473,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									hostCommand = NULL;
 									theNode = NULL;
 									abortThisCommand = true;
-									std::stringstream		errMsg;
+									std::string		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
-																<< tokenItty->GetShortDescription() << "\".";
+										errMsg = "Expected term here, found \"" + tokenItty->GetShortDescription() + "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
+										errMsg = "Expected term here.";
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									ThrowDeferrableError( errMsg, tokenItty, tokens );
 								}
 								else
 								{
@@ -1582,20 +1525,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									hostCommand = NULL;
 									theNode = NULL;
 									abortThisCommand = true;
-									std::stringstream		errMsg;
+									std::string		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here, found \""
-																<< tokenItty->GetShortDescription() << "\".";
+										errMsg = "Expected term here, found \"" + tokenItty->GetShortDescription() + "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected term here.";
+										errMsg = "Expected term here.";
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									ThrowDeferrableError( errMsg, tokenItty, tokens );
 								}
 								else
 								{
@@ -1634,20 +1574,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									hostCommand = NULL;
 									theNode = NULL;
 									abortThisCommand = true;
-									std::stringstream		errMsg;
+									std::string		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
-																<< tokenItty->GetShortDescription() << "\".";
+										errMsg = "Expected expression here, found \"" + tokenItty->GetShortDescription() + "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
+										errMsg = "Expected expression here.";
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									ThrowDeferrableError( errMsg, tokenItty, tokens );
 								}
 								else
 								{
@@ -1738,18 +1675,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand = NULL;
 										theNode = NULL;
 										
-										std::stringstream		errMsg;
+										std::string		errMsg;
 										if( tokenItty != tokens.end() )
-											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
-																<< tokenItty->GetShortDescription() << "\".";
+										{
+											errMsg = std::string("Expected \"") + gIdentifierStrings[par->mIdentifierType] + "\" here, found \"" + tokenItty->GetShortDescription() + "\".";
+										}
 										else
 										{
 											--tokenItty;
-											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+											errMsg = std::string("Expected \"") + gIdentifierStrings[par->mIdentifierType] + "\" here.";
 										}
-										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+										ThrowDeferrableError( errMsg, tokenItty, tokens );
 									}
 								}
 								break;
@@ -1804,20 +1740,17 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 										hostCommand = NULL;
 										theNode = NULL;
 										abortThisCommand = true;
-										std::stringstream		errMsg;
+										std::string		errMsg;
 										if( tokenItty != tokens.end() )
 										{
-											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\", found \""
-																<< tokenItty->GetShortDescription() << "\".";
+											errMsg = std::string("Expected ") + valType + " after \"" + gIdentifierStrings[par->mIdentifierType] + "\", found \"" + tokenItty->GetShortDescription() + "\".";
 										}
 										else
 										{
 											CTokenizer::GoPreviousToken(mFileName, tokenItty, tokens);
-											errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << valType << " after \"" << gIdentifierStrings[par->mIdentifierType] << "\".";
+											errMsg = std::string("Expected ") + valType + " after \"" + gIdentifierStrings[par->mIdentifierType] + "\".";
 										}
-										mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-										HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-										throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+										ThrowDeferrableError( errMsg, tokenItty, tokens );
 									}
 									else
 									{
@@ -1850,18 +1783,15 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
+										errMsg << "Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here, found \""
 															<< tokenItty->GetShortDescription() << "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
+										errMsg << "Expected \"" << gIdentifierStrings[par->mIdentifierType] << "\" here.";
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-//									currMode = currCmd->mTerminalMode;	// Otherwise backtracking code below tries again & errors out.
+									ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 								}
 								identifiersToBacktrack = -1;
 								break;
@@ -1937,17 +1867,14 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 									std::stringstream		errMsg;
 									if( tokenItty != tokens.end() )
 									{
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here, found \""
-																<< tokenItty->GetShortDescription() << "\".";
+										errMsg << "Expected expression here, found \"" << tokenItty->GetShortDescription() << "\".";
 									}
 									else
 									{
 										--tokenItty;
-										errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected expression here.";
+										errMsg << "Expected expression here.";
 									}
-									mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-									HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-									throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+									ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 								}
 								
 								hostCommand->AddParam( term );
@@ -1996,11 +1923,8 @@ CValueNode*	CParser::ParseHostEntityWithTable( CParseTree& parseTree, CCodeBlock
 					else
 					{
 						std::stringstream		errMsg;
-						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Unexpected  \""
-							<< tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
-						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						HE_PRINT("\t\tTHROWING: %s\n",errMsg.str().c_str());
-						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+						errMsg << " Unexpected  \"" << tokenItty->GetShortDescription() << "\" following \"" << gIdentifierStrings[currCmd->mType] << "\".";
+						ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 					}
 				}
 				else
@@ -2096,10 +2020,8 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 	if( !tokenItty->IsIdentifier( EIntoIdentifier ) && !tokenItty->IsIdentifier( EToIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"into\" here, found "
-								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected \"into\" here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2131,20 +2053,16 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		if( !tokenItty->IsIdentifier(EEachIdentifier) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"each chunk\" after \"for\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected \"each chunk\" after \"for\" here, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
 		if( !tokenItty->IsIdentifier(EChunkIdentifier) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"chunk\" after \"for each\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected \"chunk\" after \"for each\" here, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2201,10 +2119,8 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		if( !tokenItty->IsIdentifier(EDoneIdentifier) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"done\" after \"when\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected \"done\" after \"when\" here, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2256,10 +2172,8 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		{
 			std::stringstream		errMsg;
 			
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end download\" here, found "
-									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected \"end download\" here, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2267,10 +2181,9 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		{
 			std::stringstream		errMsg;
 			
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"download\" after \"end\" here, found "
+			errMsg << "Expected \"download\" after \"end\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -2285,10 +2198,9 @@ void	CParser::ParseDownloadStatement( const std::string& userHandlerName, CParse
 		else if( !haveCompletionBlock && !haveProgressBlock )
 			expectations = "\"for each chunk\", \"when done\" or end of line";
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected " << expectations << " here, found "
+		errMsg << "Expected " << expectations << " here, found "
 								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 }
 
@@ -2309,10 +2221,8 @@ void	CParser::ParseAddStatement( CParseTree& parseTree, CCodeBlockNodeBase* curr
 	{
 		delete theWhatNode;
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" here, found "
-								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected \"to\" here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2341,10 +2251,9 @@ void	CParser::ParseSubtractStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	if( !tokenItty->IsIdentifier( EFromIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" here, found "
+		errMsg << "Expected \"from\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2372,10 +2281,8 @@ void	CParser::ParseMultiplyStatement( CParseTree& parseTree, CCodeBlockNodeBase*
 	if( !tokenItty->IsIdentifier( EWithIdentifier ) && !tokenItty->IsIdentifier( EByIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"with\" or \"by\" here, found "
-								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected \"with\" or \"by\" here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2403,10 +2310,9 @@ void	CParser::ParseDivideStatement( CParseTree& parseTree, CCodeBlockNodeBase* c
 	if( !tokenItty->IsIdentifier( EByIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"by\" here, found "
+		errMsg << "Expected \"by\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2435,10 +2341,9 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 		if( chunkTypeConstant == TChunkTypeInvalid )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected chunk type identifier here, found "
+			errMsg << "Expected chunk type identifier here, found "
 									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip chunk type.
@@ -2455,10 +2360,9 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	if( !tokenItty->IsIdentifier( EOfIdentifier ) && !tokenItty->IsIdentifier( EInIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" or \"in\" here, found "
+		errMsg << "Expected \"of\" or \"in\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	
@@ -2530,10 +2434,9 @@ void	CParser::ParseRepeatForEachStatement( const std::string& userHandlerName, C
 	if( !tokenItty->IsIdentifier(ERepeatIdentifier) )	// end repeat
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end repeat\" here, found "
+		errMsg << "Expected \"end repeat\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	whileLoop->SetEndRepeatLineNum( tokenItty->mLineNum );
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2613,10 +2516,8 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 			 && !tokenItty->IsIdentifier( EIsIdentifier ) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"from\" or \"=\" here, found "
-								<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected \"from\" or \"=\" here, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -2640,10 +2541,9 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		if( !tokenItty->IsIdentifier( EToIdentifier ) && !tokenItty->IsIdentifier( EThroughIdentifier ) )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"to\" or \"through\" here, found "
+			errMsg << "Expected \"to\" or \"through\" here, found "
 								<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		
@@ -2738,6 +2638,8 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 		// while( tempName < countExpression )
 		COperatorNode*	theComparison = new COperatorNode( &parseTree, LESS_THAN_OPERATOR_INSTR, conditionLineNum );
 		theComparison->AddParam( new CLocalVariableRefValueNode(&parseTree, currFunction, tempName, tempName, conditionLineNum) );
+		if( !countExpression )
+			ThrowDeferrableError( "Expected an expression with the number of repetitions here.", tokenItty, tokens );
 		theComparison->AddParam( countExpression );
 		whileLoop->SetCondition( theComparison );
 
@@ -2761,6 +2663,24 @@ void	CParser::ParseRepeatStatement( const std::string& userHandlerName, CParseTr
 	}
 }
 
+	
+void CParser::ThrowDeferrableError( const std::string& errMsg, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
+{
+	size_t lineNum = SIZE_MAX, offset = SIZE_MAX;
+	if( tokenItty != tokens.end() )
+	{
+		lineNum = tokenItty->mLineNum;
+		offset = tokenItty->mOffset;
+	}
+	else if( tokenItty == tokens.end() && tokens.size() > 0 )
+	{
+		lineNum = tokens.back().mLineNum;
+		offset = tokens.back().mOffset;
+	}
+	mMessages.push_back( CMessageEntry( EMessageTypeError, errMsg, mFileName, tokenItty->mLineNum ) );
+	throw CForgeParseError( errMsg, tokenItty->mLineNum, tokenItty->mOffset );
+}
+	
 
 void	CParser::ParseIfStatement( const std::string& userHandlerName, CParseTree& parseTree, CCodeBlockNodeBase* currFunction,
 										std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens )
@@ -2844,13 +2764,7 @@ void	CParser::ParseIfStatement( const std::string& userHandlerName, CParseTree& 
 		{
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 			if( !tokenItty->IsIdentifier(EIfIdentifier) )
-			{
-				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end if\" here, found "
-										<< tokenItty->GetShortDescription() << ".";
-				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-			}
+				ThrowDeferrableError( "Expected \"end if\" here, found " + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 			ifNode->SetEndIfLineNum( tokenItty->mLineNum );
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 		}
@@ -2998,20 +2912,10 @@ CValueNode*	CParser::ParseContainer( bool asPointer, bool initWithName, CParseTr
 				return container;
 			}
 			else
-			{
-				std::stringstream errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an expression and \"of\" and an object after \"entry\".";
-				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-			}
+				ThrowDeferrableError( "Expected an expression and \"of\" and an object after \"entry\".", tokenItty, tokens );
 		}
 		else if( propNameTerm )
-		{
-			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an expression and \"of\" after \"entry\".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
-		}
+			ThrowDeferrableError( "Expected an expression and \"of\" after \"entry\".", tokenItty, tokens );
 		else
 			CTokenizer::GoPreviousToken( mFileName, tokenItty, tokens );	// Backtrack over what should have been "of".
 	}
@@ -3183,11 +3087,8 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 		}
 		else
 		{
-			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"exit repeat\" or \"exit " << userHandlerName << "\", found "
-					<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( "Expected \"exit repeat\" or \"exit " + userHandlerName + "\", found "
+								 + tokenItty->GetShortDescription() + ".", tokenItty, tokens );
 		}
 	}
 	else if( tokenItty->IsIdentifier(ENextIdentifier) )
@@ -3202,10 +3103,9 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 		else
 		{
 			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"next repeat\", found "
+			errMsg << "Expected \"next repeat\", found "
 					<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 	}
 	else if( tokenItty->IsIdentifier(ERepeatIdentifier) )
@@ -3240,10 +3140,8 @@ void	CParser::ParseOneLine( const std::string& userHandlerName, CParseTree& pars
 		if( !tokenItty->IsIdentifier(ENewlineOperator) && !hadWebContentToken && tokenItty->mType != EWebPageContentToken )
 		{
 			std::stringstream errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected end of line, found "
-					<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected end of line, found " << tokenItty->GetShortDescription() << ".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 			
 		while( tokenItty->IsIdentifier(ENewlineOperator) )
@@ -3303,10 +3201,9 @@ void	CParser::ParseFunctionBody( std::string& userHandlerName,
 		if( strcasecmp(tokenItty->GetIdentifierText().c_str(), userHandlerName.c_str()) != 0 )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"end " << userHandlerName << "\" here, found "
+			errMsg << "Expected \"end " << userHandlerName << "\" here, found "
 									<< tokenItty->GetShortDescription() << ".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		if( outEndLineNum ) *outEndLineNum = tokenItty->mLineNum;
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
@@ -3337,10 +3234,8 @@ void	CParser::ParseParamList( TIdentifierSubtype identifierToEndOn,
 			if( tokenItty->IsIdentifier( identifierToEndOn ) )
 				break;	// Exit loop.
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected comma here, found \""
-									<< tokenItty->GetShortDescription() << "\".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected comma here, found \"" << tokenItty->GetShortDescription() << "\".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 	}
@@ -3467,9 +3362,8 @@ CValueNode*	CParser::ParseExpression( CParseTree& parseTree, CCodeBlockNodeBase*
 		if( !currArg )
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":0: error: Expected term here, found end of script.";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, 0 ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected term here, found end of script.";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 		}
 		terms.push_back( currArg );
 		currArg = NULL;
@@ -3707,12 +3601,11 @@ CValueNode*	CParser::ParseChunkExpression( TChunkType typeConstant, CParseTree& 
 	if( !tokenItty->IsIdentifier( EOfIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected ";
+		errMsg << "Expected ";
 		if( !hadTo )
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -3764,12 +3657,11 @@ CValueNode*	CParser::ParseConstantChunkExpression( TChunkType typeConstant, CPar
 	if( !tokenItty->IsIdentifier( EOfIdentifier ) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected ";
+		errMsg << "Expected ";
 		if( !hadTo )
 			errMsg << "\"to\" or ";
 		errMsg << "\"of\" here, found " << tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -3833,10 +3725,8 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 		delete methodCall;
 		
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a method name here, found "
-								<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected an identifier as a method name here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	
 	int						numParams = 0;
@@ -3862,10 +3752,8 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 			if( tokenItty->mType != EIdentifierToken )
 			{
 				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected an identifier as a parameter label here, found "
-										<< tokenItty->GetShortDescription() << ".";
-				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+				errMsg << "Expected an identifier as a parameter label here, found " << tokenItty->GetShortDescription() << ".";
+				ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 			}
 			
 			methodName << tokenItty->GetOriginalIdentifierText() << ":";
@@ -3874,10 +3762,8 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 			if( !tokenItty->IsIdentifier( EColonOperator ) )
 			{
 				std::stringstream		errMsg;
-				errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected colon after parameter label here, found "
-										<< tokenItty->GetShortDescription() << ".";
-				mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-				throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+				errMsg << "Expected colon after parameter label here, found " << tokenItty->GetShortDescription() << ".";
+				ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 			}
 			
 			CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip colon after label.
@@ -3895,10 +3781,9 @@ CValueNode*	CParser::ParseObjCMethodCall( CParseTree& parseTree, CCodeBlockNodeB
 	if( foundTypes == sObjCMethodTable.end() )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Couldn't find definition of Objective C method "
+		errMsg << "Couldn't find definition of Objective C method "
 								<< methodName.str() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	
 	// Fill out the info we accumulated parsing the parameters:
@@ -3953,10 +3838,9 @@ CValueNode*	CParser::ParseNativeFunctionCallStartingAtParams( std::string& metho
 //	if( !tokenItty->IsIdentifier(ECloseBracketOperator) )
 //	{
 //		std::stringstream		errMsg;
-//		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket after parameter list, found "
+//		errMsg << "Expected closing bracket after parameter list, found "
 //					<< tokenItty->GetShortDescription() << ".";
-//		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-//		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+//		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 //	}
 //	
 //	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip close bracket (ECloseSquareBracketOperator).
@@ -4077,10 +3961,8 @@ CValueNode* CParser::ParseNumberOfExpression( CParseTree& parseTree, CCodeBlockN
 	if( !tokenItty->IsIdentifier(EOfIdentifier) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
-		<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected \"of\" here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -4108,10 +3990,8 @@ CValueNode* CParser::ParseNumberOfExpression( CParseTree& parseTree, CCodeBlockN
 	if( !tokenItty->IsIdentifier(EOfIdentifier) )
 	{
 		std::stringstream		errMsg;
-		errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
-		<< tokenItty->GetShortDescription() << ".";
-		mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-		throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+		errMsg << "Expected \"of\" here, found " << tokenItty->GetShortDescription() << ".";
+		ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 	}
 	CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 	
@@ -4240,10 +4120,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( !tokenItty->IsIdentifier(EOfIdentifier) )
 				{
 					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"of\" here, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+					errMsg << "Expected \"of\" here, found " << tokenItty->GetShortDescription() << ".";
+					ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 				}
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "of".
 				
@@ -4262,10 +4140,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					if( !tokenItty->IsIdentifier(EHandlerIdentifier) )
 					{
 						std::stringstream		errMsg;
-						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
-												<< tokenItty->GetShortDescription() << ".";
-						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+						errMsg << "Expected \"function handler\" or \"message handler\" here, found " << tokenItty->GetShortDescription() << ".";
+						ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 					}
 					CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
 				}
@@ -4275,10 +4151,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					if( !tokenItty->IsIdentifier(EHandlerIdentifier) )
 					{
 						std::stringstream		errMsg;
-						errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected \"function handler\" or \"message handler\" here, found "
-												<< tokenItty->GetShortDescription() << ".";
-						mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-						throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+						errMsg << "Expected \"function handler\" or \"message handler\" here, found " << tokenItty->GetShortDescription() << ".";
+						ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 					}
 					CTokenizer::GoNextToken( mFileName, tokenItty, tokens );	// Skip "handler".
 				}
@@ -4304,10 +4178,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 				if( !tokenItty->IsIdentifier(ECloseBracketOperator) )
 				{
 					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected closing bracket here, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+					errMsg << "Expected closing bracket here, found " << tokenItty->GetShortDescription() << ".";
+					ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 				}
 				CTokenizer::GoNextToken( mFileName, tokenItty, tokens );
 				break;
@@ -4447,10 +4319,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 					delete fcall;
 					
 					std::stringstream		errMsg;
-					errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: expected \"(\" after function name, found "
-											<< tokenItty->GetShortDescription() << ".";
-					mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-					throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+					errMsg << "expected \"(\" after function name, found " << tokenItty->GetShortDescription() << ".";
+					ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 				}
 				
 				if( hadOpenBracket )
@@ -4622,10 +4492,8 @@ CValueNode*	CParser::ParseTerm( CParseTree& parseTree, CCodeBlockNodeBase* currF
 		default:
 		{
 			std::stringstream		errMsg;
-			errMsg << mFileName << ":" << tokenItty->mLineNum << ": error: Expected a term here, found \""
-									<< tokenItty->GetShortDescription() << "\".";
-			mMessages.push_back( CMessageEntry( errMsg.str(), mFileName, tokenItty->mLineNum ) );
-			throw CForgeParseError( errMsg.str(), tokenItty->mLineNum, tokenItty->mOffset );
+			errMsg << "Expected a term here, found \"" << tokenItty->GetShortDescription() << "\".";
+			ThrowDeferrableError( errMsg.str(), tokenItty, tokens );
 			break;
 		}
 	}

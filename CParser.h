@@ -84,14 +84,15 @@ namespace Carlson
 	class CMessageEntry
 	{
 	public:
+		TMessageType	mType;
 		std::string		mMessage;
 		std::string		mFileName;
 		size_t			mLineNum;
 		size_t			mOffset;
 		long			mErrorCode;
 		
-		CMessageEntry( std::string inMessage, std::string inFileName, size_t inLineNum, size_t inOffset = SIZE_MAX, long inErrorCode = 0 )
-			: mMessage(inMessage), mFileName(inFileName), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
+		CMessageEntry( TMessageType inType, std::string inMessage, std::string inFileName, size_t inLineNum, size_t inOffset = SIZE_MAX, long inErrorCode = 0 )
+			: mType(inType), mMessage(inMessage), mFileName(inFileName), mLineNum(inLineNum), mOffset(inOffset), mErrorCode(inErrorCode) {};
 	};
 	
 	
@@ -269,6 +270,8 @@ namespace Carlson
 		
 		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators );
 		
+		[[noreturn]] void ThrowDeferrableError( const std::string& errMsg, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+
 		std::string	GetFirstHandlerName()								{ return mFirstHandlerName; };
 		const char*	GetSupportFolderPath()								{ return mSupportFolderPath; };
 		void		SetSupportFolderPath( const char* spfp )			{ mSupportFolderPath = spfp; };

@@ -377,6 +377,15 @@ typedef enum
 } TIdentifierSubtype;
 
 
+/*! Deferred error messages can have these types: */
+typedef enum {
+	EMessageTypeInvalid,
+	EMessageTypeNote,
+	EMessageTypeWarning,
+	EMessageTypeError
+} TMessageType;
+
+
 /*! The THostParameterType enum is used by THostCommandEntry to indicate which
 	part of a command is to be parsed in what way. */
 typedef enum {

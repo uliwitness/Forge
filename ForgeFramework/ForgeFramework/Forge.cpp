@@ -779,7 +779,7 @@ extern "C" void	LEOSetFirstNativeCallCallback( LEOFirstNativeCallCallbackPtr inC
 }
 
 
-extern "C" void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset )
+extern "C" void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const char** outErrMsg, size_t *outLineNum, size_t *outOffset, TMessageType *outType )
 {
 	if( inIndex >= gMessages.size() )
 	{
@@ -790,6 +790,7 @@ extern "C" void	LEOParserGetNonFatalErrorMessageAtIndex( size_t inIndex, const c
 	*outErrMsg = gMessages[inIndex].mMessage.c_str();
 	*outLineNum = gMessages[inIndex].mLineNum;
 	*outOffset = gMessages[inIndex].mOffset;
+	*outType = gMessages[inIndex].mType;
 }
 
 
