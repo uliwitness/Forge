@@ -18,6 +18,12 @@ namespace Carlson
 
 void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 {
+	if( !mCondition )
+	{
+		inBlock->GenerateParseErrorInstruction("Expected a condition after a repeat statement.", mFileName, mLineNum, SIZE_MAX);
+		return;
+	}
+	
 	int32_t	lineMarkerInstructionOffset = (int32_t) inBlock->GetNextInstructionOffset();
 	inBlock->GenerateLineMarkerInstruction( (int32_t) mLineNum, LEOFileIDForFileName(mFileName.c_str()) );	// Make sure debugger indicates condition as current line on every iteration.
 	
@@ -43,6 +49,9 @@ void	CWhileLoopNode::GenerateCode( CCodeBlock* inBlock )
 
 void	CWhileLoopNode::Simplify()
 {
+	if( !mCondition )
+		return;
+	
 	CValueNode	*	originalNode = mCondition;
 	originalNode->Simplify();	// Give subnodes a chance to apply transformations first. Might expose simpler sub-nodes we can then simplify.
 	CNode* newNode = CNodeTransformationBase::Apply( originalNode );	// Returns either originalNode, or a totally new object, in which case we delete the old one.
@@ -58,7 +67,8 @@ void	CWhileLoopNode::Simplify()
 
 void	CWhileLoopNode::Visit( std::function<void(CNode*)> visitorBlock )
 {
-	mCondition->Visit(visitorBlock);
+	if( mCondition )
+		mCondition->Visit(visitorBlock);
 	
 	CCodeBlockNode::Visit(visitorBlock);
 }

@@ -97,7 +97,7 @@ void			LEODebugPrintParseTree( LEOParseTree* inTree );
 
 
 /*! Extract information from the parse tree that is of interest for displaying the script in an editor.
-	This includes information on which line cause indentation to change as well as a list of handlers
+	This includes information on which lines cause indentation to change as well as a list of handlers
 	and what line in the script they start at for quick navigation.
 	@seealso //leo_ref/c/func/LEOCleanUpDisplayInfoTable	LEOCleanUpDisplayInfoTable
 	@seealso //leo_ref/c/func/LEODisplayInfoTableApplyToText	LEODisplayInfoTableApplyToText
