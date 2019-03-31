@@ -155,7 +155,20 @@ namespace Carlson
 		static std::map<std::string,std::string>		sSynonymToTypeTable;	//!< Populated from frameworkheaders.hhc file.
 		static std::map<std::string,std::string>		sConstantToValueTable;	//!< Populated from frameworkheaders.hhc file.
 		static LEOFirstNativeCallCallbackPtr			sFirstNativeCallCallback;
+
+		template<typename T>
+		void ThrowDeferableErrorAddToStream(std::stringstream& stream, T v) {
+			stream << v;
+		}
 		
+		template<typename T, typename... Args>
+		void ThrowDeferableErrorAddToStream(std::stringstream& stream, T first, Args... args) {
+			stream << first;
+			ThrowDeferableErrorAddToStream(stream, args...);
+		}
+		
+		[[noreturn]] void ThrowDeferrableErrorThrow( const std::string& errMsg, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+
 	public:
 		CParser();
 		
@@ -270,7 +283,12 @@ namespace Carlson
 		
 		CValueNode*	CollapseExpressionStack( CParseTree& parseTree, std::deque<CValueNode*> &terms, std::deque<LEOInstructionID> &operators );
 		
-		[[noreturn]] void ThrowDeferrableError( const std::string& errMsg, std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens );
+		template<typename... Args>
+		[[noreturn]] void ThrowDeferrableError( std::deque<CToken>::iterator& tokenItty, std::deque<CToken>& tokens, Args... args ) {
+			std::stringstream stream;
+			ThrowDeferableErrorAddToStream(stream, args...);
+			ThrowDeferrableErrorThrow(stream.str(), tokenItty, tokens);
+		}
 
 		std::string	GetFirstHandlerName()								{ return mFirstHandlerName; };
 		const char*	GetSupportFolderPath()								{ return mSupportFolderPath; };
