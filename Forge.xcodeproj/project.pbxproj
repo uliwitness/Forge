@@ -35,6 +35,71 @@
 		5523FE991342606B009D8EF1 /* testfile12.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55BF65DC12D936C000C2FDC3 /* testfile12.hc */; };
 		5523FE9A13426074009D8EF1 /* testfile10.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 55FCEC0012C8DD0E00D76F6B /* testfile10.hc */; };
 		5538246617274659007785D8 /* LEOObjCCallInstructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 5538246417274659007785D8 /* LEOObjCCallInstructions.c */; };
+		554625A224776CE600A8763B /* catch_matchers_string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546250D24776CDE00A8763B /* catch_matchers_string.cpp */; };
+		554625A324776CE600A8763B /* catch_generators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546251124776CDF00A8763B /* catch_generators.cpp */; };
+		554625A424776CE600A8763B /* catch_interfaces_reporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546251424776CDF00A8763B /* catch_interfaces_reporter.cpp */; };
+		554625A524776CE600A8763B /* catch_matchers_floating.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546251724776CDF00A8763B /* catch_matchers_floating.cpp */; };
+		554625A624776CE600A8763B /* catch_approx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546251924776CDF00A8763B /* catch_approx.cpp */; };
+		554625A724776CE600A8763B /* catch_tostring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546251F24776CDF00A8763B /* catch_tostring.cpp */; };
+		554625A824776CE600A8763B /* catch_test_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252024776CDF00A8763B /* catch_test_registry.cpp */; };
+		554625A924776CE600A8763B /* catch_uncaught_exceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252124776CDF00A8763B /* catch_uncaught_exceptions.cpp */; };
+		554625AA24776CE600A8763B /* catch_result_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252224776CDF00A8763B /* catch_result_type.cpp */; };
+		554625AB24776CE600A8763B /* catch_output_redirect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252524776CDF00A8763B /* catch_output_redirect.cpp */; };
+		554625AC24776CE600A8763B /* catch_string_manip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252A24776CDF00A8763B /* catch_string_manip.cpp */; };
+		554625AD24776CE600A8763B /* catch_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546252F24776CDF00A8763B /* catch_list.cpp */; };
+		554625AE24776CE600A8763B /* catch_test_case_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546253024776CDF00A8763B /* catch_test_case_info.cpp */; };
+		554625AF24776CE600A8763B /* catch_startup_exception_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546253324776CDF00A8763B /* catch_startup_exception_registry.cpp */; };
+		554625B024776CE600A8763B /* catch_tag_alias_autoregistrar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546253A24776CE000A8763B /* catch_tag_alias_autoregistrar.cpp */; };
+		554625B124776CE600A8763B /* catch_interfaces_exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546253B24776CE000A8763B /* catch_interfaces_exception.cpp */; };
+		554625B224776CE600A8763B /* catch_random_number_generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546253F24776CE000A8763B /* catch_random_number_generator.cpp */; };
+		554625B324776CE600A8763B /* catch_test_spec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254024776CE000A8763B /* catch_test_spec.cpp */; };
+		554625B424776CE600A8763B /* catch_console_colour.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254324776CE000A8763B /* catch_console_colour.cpp */; };
+		554625B524776CE600A8763B /* catch_interfaces_capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254424776CE000A8763B /* catch_interfaces_capture.cpp */; };
+		554625B624776CE600A8763B /* catch_debug_console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254524776CE000A8763B /* catch_debug_console.cpp */; };
+		554625B724776CE600A8763B /* catch_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254624776CE000A8763B /* catch_config.cpp */; };
+		554625B824776CE600A8763B /* catch_interfaces_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254D24776CE000A8763B /* catch_interfaces_config.cpp */; };
+		554625B924776CE600A8763B /* catch_section_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546254F24776CE000A8763B /* catch_section_info.cpp */; };
+		554625BA24776CE600A8763B /* catch_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255224776CE000A8763B /* catch_timer.cpp */; };
+		554625BB24776CE600A8763B /* catch_benchmark.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255324776CE000A8763B /* catch_benchmark.cpp */; };
+		554625BC24776CE600A8763B /* catch_matchers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255524776CE000A8763B /* catch_matchers.cpp */; };
+		554625BD24776CE600A8763B /* catch_leak_detector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255824776CE100A8763B /* catch_leak_detector.cpp */; };
+		554625BE24776CE600A8763B /* catch_registry_hub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255A24776CE100A8763B /* catch_registry_hub.cpp */; };
+		554625BF24776CE600A8763B /* catch_interfaces_testcase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546255D24776CE100A8763B /* catch_interfaces_testcase.cpp */; };
+		554625C024776CE600A8763B /* catch_wildcard_pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256024776CE100A8763B /* catch_wildcard_pattern.cpp */; };
+		554625C124776CE600A8763B /* catch_totals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256324776CE100A8763B /* catch_totals.cpp */; };
+		554625C224776CE600A8763B /* catch_matchers_generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256624776CE100A8763B /* catch_matchers_generic.cpp */; };
+		554625C324776CE600A8763B /* catch_fatal_condition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256824776CE100A8763B /* catch_fatal_condition.cpp */; };
+		554625C424776CE600A8763B /* catch_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256A24776CE200A8763B /* catch_stream.cpp */; };
+		554625C524776CE600A8763B /* catch_interfaces_runner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256C24776CE200A8763B /* catch_interfaces_runner.cpp */; };
+		554625C624776CE600A8763B /* catch_stringref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546256D24776CE200A8763B /* catch_stringref.cpp */; };
+		554625C724776CE600A8763B /* catch_run_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257024776CE200A8763B /* catch_run_context.cpp */; };
+		554625C824776CE600A8763B /* catch_version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257124776CE200A8763B /* catch_version.cpp */; };
+		554625C924776CE600A8763B /* catch_interfaces_registry_hub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257324776CE200A8763B /* catch_interfaces_registry_hub.cpp */; };
+		554625CA24776CE600A8763B /* catch_test_spec_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257624776CE300A8763B /* catch_test_spec_parser.cpp */; };
+		554625CB24776CE600A8763B /* catch_assertionresult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257824776CE300A8763B /* catch_assertionresult.cpp */; };
+		554625CC24776CE600A8763B /* catch_decomposer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257C24776CE300A8763B /* catch_decomposer.cpp */; };
+		554625CD24776CE600A8763B /* catch_exception_translator_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546257E24776CE300A8763B /* catch_exception_translator_registry.cpp */; };
+		554625CE24776CE600A8763B /* catch_polyfills.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258224776CE300A8763B /* catch_polyfills.cpp */; };
+		554625CF24776CE600A8763B /* catch_debugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258424776CE400A8763B /* catch_debugger.cpp */; };
+		554625D024776CE600A8763B /* catch_test_case_registry_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258524776CE400A8763B /* catch_test_case_registry_impl.cpp */; };
+		554625D124776CE600A8763B /* catch_singletons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258624776CE400A8763B /* catch_singletons.cpp */; };
+		554625D224776CE600A8763B /* catch_capture_matchers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258724776CE400A8763B /* catch_capture_matchers.cpp */; };
+		554625D324776CE600A8763B /* catch_commandline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258A24776CE400A8763B /* catch_commandline.cpp */; };
+		554625D424776CE600A8763B /* catch_assertionhandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546258D24776CE400A8763B /* catch_assertionhandler.cpp */; };
+		554625D524776CE600A8763B /* catch_session.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259024776CE500A8763B /* catch_session.cpp */; };
+		554625D624776CE600A8763B /* catch_message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259224776CE500A8763B /* catch_message.cpp */; };
+		554625D724776CE600A8763B /* catch_test_case_tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259524776CE500A8763B /* catch_test_case_tracker.cpp */; };
+		554625D824776CE600A8763B /* catch_enforce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259624776CE500A8763B /* catch_enforce.cpp */; };
+		554625D924776CE600A8763B /* catch_tag_alias_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259724776CE500A8763B /* catch_tag_alias_registry.cpp */; };
+		554625DA24776CE600A8763B /* catch_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259824776CE500A8763B /* catch_common.cpp */; };
+		554625DB24776CE600A8763B /* catch_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259924776CE500A8763B /* catch_context.cpp */; };
+		554625DC24776CE600A8763B /* catch_tag_alias.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259A24776CE500A8763B /* catch_tag_alias.cpp */; };
+		554625DD24776CE600A8763B /* catch_section.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259B24776CE500A8763B /* catch_section.cpp */; };
+		554625DE24776CE600A8763B /* catch_xmlwriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259C24776CE500A8763B /* catch_xmlwriter.cpp */; };
+		554625DF24776CE600A8763B /* catch_reporter_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5546259F24776CE600A8763B /* catch_reporter_registry.cpp */; };
+		554625E024776CE600A8763B /* catch_errno_guard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 554625A024776CE600A8763B /* catch_errno_guard.cpp */; };
+		554625E124776DD100A8763B /* LEOContextGroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF5127DD30B00CF0F16 /* LEOContextGroup.c */; };
+		554625E224776DE200A8763B /* LEOInterpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEB127DD30B00CF0F16 /* LEOInterpreter.cpp */; };
 		554DC30D1863670C00B514E3 /* testfile13.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 554DC30C186366F100B514E3 /* testfile13.hc */; };
 		554DC317186390FE00B514E3 /* CForgeExceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 554DC315186390FE00B514E3 /* CForgeExceptions.cpp */; };
 		5559CEFD1EB654E000815DD9 /* testfile16.hc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5559CEFC1EB6548A00815DD9 /* testfile16.hc */; };
@@ -72,7 +137,7 @@
 		55BF655A12D91AEE00C2FDC3 /* CGetArrayItemNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BF655812D91AEE00C2FDC3 /* CGetArrayItemNode.cpp */; };
 		55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BDD127DCEF400CF0F16 /* CCodeBlock.cpp */; };
 		55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BE9127DD30B00CF0F16 /* LEOValue.c */; };
-		55C72BF8127DD30B00CF0F16 /* LEOInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */; };
+		55C72BF8127DD30B00CF0F16 /* LEOInterpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEB127DD30B00CF0F16 /* LEOInterpreter.cpp */; };
 		55C72BFA127DD30B00CF0F16 /* LEOScript.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BEF127DD30B00CF0F16 /* LEOScript.c */; };
 		55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF1127DD30B00CF0F16 /* LEODebugger.c */; };
 		55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */ = {isa = PBXBuildFile; fileRef = 55C72BF3127DD30B00CF0F16 /* LEOChunks.c */; };
@@ -186,6 +251,155 @@
 		55256831127CD571000D8325 /* UTF32CaseTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UTF32CaseTables.h; path = Leonie/generic/UTF32CaseTables.h; sourceTree = "<group>"; };
 		5538246417274659007785D8 /* LEOObjCCallInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOObjCCallInstructions.c; path = Leonie/generic/LEOObjCCallInstructions.c; sourceTree = "<group>"; };
 		5538246517274659007785D8 /* LEOObjCCallInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOObjCCallInstructions.h; path = Leonie/generic/LEOObjCCallInstructions.h; sourceTree = "<group>"; };
+		5546250D24776CDE00A8763B /* catch_matchers_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_matchers_string.cpp; path = Leonie/Catch2/include/internal/catch_matchers_string.cpp; sourceTree = SOURCE_ROOT; };
+		5546250E24776CDE00A8763B /* catch_tag_alias_autoregistrar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_tag_alias_autoregistrar.h; path = Leonie/Catch2/include/internal/catch_tag_alias_autoregistrar.h; sourceTree = SOURCE_ROOT; };
+		5546250F24776CDE00A8763B /* catch_random_number_generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_random_number_generator.h; path = Leonie/Catch2/include/internal/catch_random_number_generator.h; sourceTree = SOURCE_ROOT; };
+		5546251024776CDF00A8763B /* catch_fatal_condition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_fatal_condition.h; path = Leonie/Catch2/include/internal/catch_fatal_condition.h; sourceTree = SOURCE_ROOT; };
+		5546251124776CDF00A8763B /* catch_generators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_generators.cpp; path = Leonie/Catch2/include/internal/catch_generators.cpp; sourceTree = SOURCE_ROOT; };
+		5546251224776CDF00A8763B /* catch_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_message.h; path = Leonie/Catch2/include/internal/catch_message.h; sourceTree = SOURCE_ROOT; };
+		5546251324776CDF00A8763B /* catch_to_string.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_to_string.hpp; path = Leonie/Catch2/include/internal/catch_to_string.hpp; sourceTree = SOURCE_ROOT; };
+		5546251424776CDF00A8763B /* catch_interfaces_reporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_reporter.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_reporter.cpp; sourceTree = SOURCE_ROOT; };
+		5546251524776CDF00A8763B /* catch_reporter_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_reporter_registry.h; path = Leonie/Catch2/include/internal/catch_reporter_registry.h; sourceTree = SOURCE_ROOT; };
+		5546251624776CDF00A8763B /* catch_type_traits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_type_traits.hpp; path = Leonie/Catch2/include/internal/catch_type_traits.hpp; sourceTree = SOURCE_ROOT; };
+		5546251724776CDF00A8763B /* catch_matchers_floating.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_matchers_floating.cpp; path = Leonie/Catch2/include/internal/catch_matchers_floating.cpp; sourceTree = SOURCE_ROOT; };
+		5546251824776CDF00A8763B /* catch_option.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_option.hpp; path = Leonie/Catch2/include/internal/catch_option.hpp; sourceTree = SOURCE_ROOT; };
+		5546251924776CDF00A8763B /* catch_approx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_approx.cpp; path = Leonie/Catch2/include/internal/catch_approx.cpp; sourceTree = SOURCE_ROOT; };
+		5546251A24776CDF00A8763B /* catch_session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_session.h; path = Leonie/Catch2/include/internal/catch_session.h; sourceTree = SOURCE_ROOT; };
+		5546251B24776CDF00A8763B /* catch_startup_exception_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_startup_exception_registry.h; path = Leonie/Catch2/include/internal/catch_startup_exception_registry.h; sourceTree = SOURCE_ROOT; };
+		5546251C24776CDF00A8763B /* catch_clara.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_clara.h; path = Leonie/Catch2/include/internal/catch_clara.h; sourceTree = SOURCE_ROOT; };
+		5546251D24776CDF00A8763B /* catch_impl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_impl.hpp; path = Leonie/Catch2/include/internal/catch_impl.hpp; sourceTree = SOURCE_ROOT; };
+		5546251E24776CDF00A8763B /* catch_capture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_capture.hpp; path = Leonie/Catch2/include/internal/catch_capture.hpp; sourceTree = SOURCE_ROOT; };
+		5546251F24776CDF00A8763B /* catch_tostring.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_tostring.cpp; path = Leonie/Catch2/include/internal/catch_tostring.cpp; sourceTree = SOURCE_ROOT; };
+		5546252024776CDF00A8763B /* catch_test_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_registry.cpp; path = Leonie/Catch2/include/internal/catch_test_registry.cpp; sourceTree = SOURCE_ROOT; };
+		5546252124776CDF00A8763B /* catch_uncaught_exceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_uncaught_exceptions.cpp; path = Leonie/Catch2/include/internal/catch_uncaught_exceptions.cpp; sourceTree = SOURCE_ROOT; };
+		5546252224776CDF00A8763B /* catch_result_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_result_type.cpp; path = Leonie/Catch2/include/internal/catch_result_type.cpp; sourceTree = SOURCE_ROOT; };
+		5546252324776CDF00A8763B /* catch_interfaces_exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_exception.h; path = Leonie/Catch2/include/internal/catch_interfaces_exception.h; sourceTree = SOURCE_ROOT; };
+		5546252424776CDF00A8763B /* catch_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_list.h; path = Leonie/Catch2/include/internal/catch_list.h; sourceTree = SOURCE_ROOT; };
+		5546252524776CDF00A8763B /* catch_output_redirect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_output_redirect.cpp; path = Leonie/Catch2/include/internal/catch_output_redirect.cpp; sourceTree = SOURCE_ROOT; };
+		5546252624776CDF00A8763B /* catch_capture_matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_capture_matchers.h; path = Leonie/Catch2/include/internal/catch_capture_matchers.h; sourceTree = SOURCE_ROOT; };
+		5546252724776CDF00A8763B /* catch_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_platform.h; path = Leonie/Catch2/include/internal/catch_platform.h; sourceTree = SOURCE_ROOT; };
+		5546252824776CDF00A8763B /* catch_interfaces_runner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_runner.h; path = Leonie/Catch2/include/internal/catch_interfaces_runner.h; sourceTree = SOURCE_ROOT; };
+		5546252924776CDF00A8763B /* catch_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_context.h; path = Leonie/Catch2/include/internal/catch_context.h; sourceTree = SOURCE_ROOT; };
+		5546252A24776CDF00A8763B /* catch_string_manip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_string_manip.cpp; path = Leonie/Catch2/include/internal/catch_string_manip.cpp; sourceTree = SOURCE_ROOT; };
+		5546252B24776CDF00A8763B /* catch_debug_console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_debug_console.h; path = Leonie/Catch2/include/internal/catch_debug_console.h; sourceTree = SOURCE_ROOT; };
+		5546252C24776CDF00A8763B /* catch_interfaces_generatortracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_generatortracker.h; path = Leonie/Catch2/include/internal/catch_interfaces_generatortracker.h; sourceTree = SOURCE_ROOT; };
+		5546252D24776CDF00A8763B /* catch_assertionhandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_assertionhandler.h; path = Leonie/Catch2/include/internal/catch_assertionhandler.h; sourceTree = SOURCE_ROOT; };
+		5546252E24776CDF00A8763B /* catch_external_interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_external_interfaces.h; path = Leonie/Catch2/include/internal/catch_external_interfaces.h; sourceTree = SOURCE_ROOT; };
+		5546252F24776CDF00A8763B /* catch_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_list.cpp; path = Leonie/Catch2/include/internal/catch_list.cpp; sourceTree = SOURCE_ROOT; };
+		5546253024776CDF00A8763B /* catch_test_case_info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_case_info.cpp; path = Leonie/Catch2/include/internal/catch_test_case_info.cpp; sourceTree = SOURCE_ROOT; };
+		5546253124776CDF00A8763B /* catch_assertioninfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_assertioninfo.h; path = Leonie/Catch2/include/internal/catch_assertioninfo.h; sourceTree = SOURCE_ROOT; };
+		5546253224776CDF00A8763B /* catch_interfaces_capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_capture.h; path = Leonie/Catch2/include/internal/catch_interfaces_capture.h; sourceTree = SOURCE_ROOT; };
+		5546253324776CDF00A8763B /* catch_startup_exception_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_startup_exception_registry.cpp; path = Leonie/Catch2/include/internal/catch_startup_exception_registry.cpp; sourceTree = SOURCE_ROOT; };
+		5546253424776CDF00A8763B /* catch_interfaces_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_config.h; path = Leonie/Catch2/include/internal/catch_interfaces_config.h; sourceTree = SOURCE_ROOT; };
+		5546253524776CDF00A8763B /* catch_wildcard_pattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_wildcard_pattern.h; path = Leonie/Catch2/include/internal/catch_wildcard_pattern.h; sourceTree = SOURCE_ROOT; };
+		5546253624776CDF00A8763B /* catch_enforce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_enforce.h; path = Leonie/Catch2/include/internal/catch_enforce.h; sourceTree = SOURCE_ROOT; };
+		5546253724776CDF00A8763B /* catch_preprocessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_preprocessor.hpp; path = Leonie/Catch2/include/internal/catch_preprocessor.hpp; sourceTree = SOURCE_ROOT; };
+		5546253824776CDF00A8763B /* catch_section.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_section.h; path = Leonie/Catch2/include/internal/catch_section.h; sourceTree = SOURCE_ROOT; };
+		5546253924776CE000A8763B /* catch_objc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_objc.hpp; path = Leonie/Catch2/include/internal/catch_objc.hpp; sourceTree = SOURCE_ROOT; };
+		5546253A24776CE000A8763B /* catch_tag_alias_autoregistrar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_tag_alias_autoregistrar.cpp; path = Leonie/Catch2/include/internal/catch_tag_alias_autoregistrar.cpp; sourceTree = SOURCE_ROOT; };
+		5546253B24776CE000A8763B /* catch_interfaces_exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_exception.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_exception.cpp; sourceTree = SOURCE_ROOT; };
+		5546253C24776CE000A8763B /* catch_commandline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_commandline.h; path = Leonie/Catch2/include/internal/catch_commandline.h; sourceTree = SOURCE_ROOT; };
+		5546253D24776CE000A8763B /* catch_xmlwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_xmlwriter.h; path = Leonie/Catch2/include/internal/catch_xmlwriter.h; sourceTree = SOURCE_ROOT; };
+		5546253E24776CE000A8763B /* catch_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_config.hpp; path = Leonie/Catch2/include/internal/catch_config.hpp; sourceTree = SOURCE_ROOT; };
+		5546253F24776CE000A8763B /* catch_random_number_generator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_random_number_generator.cpp; path = Leonie/Catch2/include/internal/catch_random_number_generator.cpp; sourceTree = SOURCE_ROOT; };
+		5546254024776CE000A8763B /* catch_test_spec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_spec.cpp; path = Leonie/Catch2/include/internal/catch_test_spec.cpp; sourceTree = SOURCE_ROOT; };
+		5546254124776CE000A8763B /* catch_test_case_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_case_info.h; path = Leonie/Catch2/include/internal/catch_test_case_info.h; sourceTree = SOURCE_ROOT; };
+		5546254224776CE000A8763B /* catch_decomposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_decomposer.h; path = Leonie/Catch2/include/internal/catch_decomposer.h; sourceTree = SOURCE_ROOT; };
+		5546254324776CE000A8763B /* catch_console_colour.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_console_colour.cpp; path = Leonie/Catch2/include/internal/catch_console_colour.cpp; sourceTree = SOURCE_ROOT; };
+		5546254424776CE000A8763B /* catch_interfaces_capture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_capture.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_capture.cpp; sourceTree = SOURCE_ROOT; };
+		5546254524776CE000A8763B /* catch_debug_console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_debug_console.cpp; path = Leonie/Catch2/include/internal/catch_debug_console.cpp; sourceTree = SOURCE_ROOT; };
+		5546254624776CE000A8763B /* catch_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_config.cpp; path = Leonie/Catch2/include/internal/catch_config.cpp; sourceTree = SOURCE_ROOT; };
+		5546254724776CE000A8763B /* catch_matchers_generic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_matchers_generic.hpp; path = Leonie/Catch2/include/internal/catch_matchers_generic.hpp; sourceTree = SOURCE_ROOT; };
+		5546254824776CE000A8763B /* catch_tag_alias_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_tag_alias_registry.h; path = Leonie/Catch2/include/internal/catch_tag_alias_registry.h; sourceTree = SOURCE_ROOT; };
+		5546254924776CE000A8763B /* catch_output_redirect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_output_redirect.h; path = Leonie/Catch2/include/internal/catch_output_redirect.h; sourceTree = SOURCE_ROOT; };
+		5546254A24776CE000A8763B /* catch_errno_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_errno_guard.h; path = Leonie/Catch2/include/internal/catch_errno_guard.h; sourceTree = SOURCE_ROOT; };
+		5546254B24776CE000A8763B /* catch_result_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_result_type.h; path = Leonie/Catch2/include/internal/catch_result_type.h; sourceTree = SOURCE_ROOT; };
+		5546254C24776CE000A8763B /* catch_user_interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_user_interfaces.h; path = Leonie/Catch2/include/internal/catch_user_interfaces.h; sourceTree = SOURCE_ROOT; };
+		5546254D24776CE000A8763B /* catch_interfaces_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_config.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_config.cpp; sourceTree = SOURCE_ROOT; };
+		5546254E24776CE000A8763B /* catch_default_main.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_default_main.hpp; path = Leonie/Catch2/include/internal/catch_default_main.hpp; sourceTree = SOURCE_ROOT; };
+		5546254F24776CE000A8763B /* catch_section_info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_section_info.cpp; path = Leonie/Catch2/include/internal/catch_section_info.cpp; sourceTree = SOURCE_ROOT; };
+		5546255024776CE000A8763B /* catch_singletons.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_singletons.hpp; path = Leonie/Catch2/include/internal/catch_singletons.hpp; sourceTree = SOURCE_ROOT; };
+		5546255124776CE000A8763B /* catch_stringref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_stringref.h; path = Leonie/Catch2/include/internal/catch_stringref.h; sourceTree = SOURCE_ROOT; };
+		5546255224776CE000A8763B /* catch_timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_timer.cpp; path = Leonie/Catch2/include/internal/catch_timer.cpp; sourceTree = SOURCE_ROOT; };
+		5546255324776CE000A8763B /* catch_benchmark.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_benchmark.cpp; path = Leonie/Catch2/include/internal/catch_benchmark.cpp; sourceTree = SOURCE_ROOT; };
+		5546255424776CE000A8763B /* catch_interfaces_tag_alias_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_tag_alias_registry.h; path = Leonie/Catch2/include/internal/catch_interfaces_tag_alias_registry.h; sourceTree = SOURCE_ROOT; };
+		5546255524776CE000A8763B /* catch_matchers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_matchers.cpp; path = Leonie/Catch2/include/internal/catch_matchers.cpp; sourceTree = SOURCE_ROOT; };
+		5546255624776CE000A8763B /* catch_test_case_tracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_case_tracker.h; path = Leonie/Catch2/include/internal/catch_test_case_tracker.h; sourceTree = SOURCE_ROOT; };
+		5546255724776CE000A8763B /* catch_benchmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_benchmark.h; path = Leonie/Catch2/include/internal/catch_benchmark.h; sourceTree = SOURCE_ROOT; };
+		5546255824776CE100A8763B /* catch_leak_detector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_leak_detector.cpp; path = Leonie/Catch2/include/internal/catch_leak_detector.cpp; sourceTree = SOURCE_ROOT; };
+		5546255924776CE100A8763B /* catch_reenable_warnings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_reenable_warnings.h; path = Leonie/Catch2/include/internal/catch_reenable_warnings.h; sourceTree = SOURCE_ROOT; };
+		5546255A24776CE100A8763B /* catch_registry_hub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_registry_hub.cpp; path = Leonie/Catch2/include/internal/catch_registry_hub.cpp; sourceTree = SOURCE_ROOT; };
+		5546255B24776CE100A8763B /* catch_interfaces_reporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_reporter.h; path = Leonie/Catch2/include/internal/catch_interfaces_reporter.h; sourceTree = SOURCE_ROOT; };
+		5546255C24776CE100A8763B /* catch_reporter_registrars.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_reporter_registrars.hpp; path = Leonie/Catch2/include/internal/catch_reporter_registrars.hpp; sourceTree = SOURCE_ROOT; };
+		5546255D24776CE100A8763B /* catch_interfaces_testcase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_testcase.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_testcase.cpp; sourceTree = SOURCE_ROOT; };
+		5546255E24776CE100A8763B /* catch_leak_detector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_leak_detector.h; path = Leonie/Catch2/include/internal/catch_leak_detector.h; sourceTree = SOURCE_ROOT; };
+		5546255F24776CE100A8763B /* catch_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_timer.h; path = Leonie/Catch2/include/internal/catch_timer.h; sourceTree = SOURCE_ROOT; };
+		5546256024776CE100A8763B /* catch_wildcard_pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_wildcard_pattern.cpp; path = Leonie/Catch2/include/internal/catch_wildcard_pattern.cpp; sourceTree = SOURCE_ROOT; };
+		5546256124776CE100A8763B /* catch_test_spec_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_spec_parser.h; path = Leonie/Catch2/include/internal/catch_test_spec_parser.h; sourceTree = SOURCE_ROOT; };
+		5546256224776CE100A8763B /* catch_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_stream.h; path = Leonie/Catch2/include/internal/catch_stream.h; sourceTree = SOURCE_ROOT; };
+		5546256324776CE100A8763B /* catch_totals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_totals.cpp; path = Leonie/Catch2/include/internal/catch_totals.cpp; sourceTree = SOURCE_ROOT; };
+		5546256424776CE100A8763B /* catch_polyfills.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_polyfills.hpp; path = Leonie/Catch2/include/internal/catch_polyfills.hpp; sourceTree = SOURCE_ROOT; };
+		5546256524776CE100A8763B /* catch_test_case_registry_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_case_registry_impl.h; path = Leonie/Catch2/include/internal/catch_test_case_registry_impl.h; sourceTree = SOURCE_ROOT; };
+		5546256624776CE100A8763B /* catch_matchers_generic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_matchers_generic.cpp; path = Leonie/Catch2/include/internal/catch_matchers_generic.cpp; sourceTree = SOURCE_ROOT; };
+		5546256724776CE100A8763B /* catch_matchers_vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_matchers_vector.h; path = Leonie/Catch2/include/internal/catch_matchers_vector.h; sourceTree = SOURCE_ROOT; };
+		5546256824776CE100A8763B /* catch_fatal_condition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_fatal_condition.cpp; path = Leonie/Catch2/include/internal/catch_fatal_condition.cpp; sourceTree = SOURCE_ROOT; };
+		5546256924776CE100A8763B /* catch_exception_translator_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_exception_translator_registry.h; path = Leonie/Catch2/include/internal/catch_exception_translator_registry.h; sourceTree = SOURCE_ROOT; };
+		5546256A24776CE200A8763B /* catch_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_stream.cpp; path = Leonie/Catch2/include/internal/catch_stream.cpp; sourceTree = SOURCE_ROOT; };
+		5546256B24776CE200A8763B /* catch_section_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_section_info.h; path = Leonie/Catch2/include/internal/catch_section_info.h; sourceTree = SOURCE_ROOT; };
+		5546256C24776CE200A8763B /* catch_interfaces_runner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_runner.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_runner.cpp; sourceTree = SOURCE_ROOT; };
+		5546256D24776CE200A8763B /* catch_stringref.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_stringref.cpp; path = Leonie/Catch2/include/internal/catch_stringref.cpp; sourceTree = SOURCE_ROOT; };
+		5546256E24776CE200A8763B /* catch_compiler_capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_compiler_capabilities.h; path = Leonie/Catch2/include/internal/catch_compiler_capabilities.h; sourceTree = SOURCE_ROOT; };
+		5546256F24776CE200A8763B /* catch_console_colour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_console_colour.h; path = Leonie/Catch2/include/internal/catch_console_colour.h; sourceTree = SOURCE_ROOT; };
+		5546257024776CE200A8763B /* catch_run_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_run_context.cpp; path = Leonie/Catch2/include/internal/catch_run_context.cpp; sourceTree = SOURCE_ROOT; };
+		5546257124776CE200A8763B /* catch_version.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_version.cpp; path = Leonie/Catch2/include/internal/catch_version.cpp; sourceTree = SOURCE_ROOT; };
+		5546257224776CE200A8763B /* catch_matchers_floating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_matchers_floating.h; path = Leonie/Catch2/include/internal/catch_matchers_floating.h; sourceTree = SOURCE_ROOT; };
+		5546257324776CE200A8763B /* catch_interfaces_registry_hub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_interfaces_registry_hub.cpp; path = Leonie/Catch2/include/internal/catch_interfaces_registry_hub.cpp; sourceTree = SOURCE_ROOT; };
+		5546257424776CE200A8763B /* catch_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_common.h; path = Leonie/Catch2/include/internal/catch_common.h; sourceTree = SOURCE_ROOT; };
+		5546257524776CE200A8763B /* catch_windows_h_proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_windows_h_proxy.h; path = Leonie/Catch2/include/internal/catch_windows_h_proxy.h; sourceTree = SOURCE_ROOT; };
+		5546257624776CE300A8763B /* catch_test_spec_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_spec_parser.cpp; path = Leonie/Catch2/include/internal/catch_test_spec_parser.cpp; sourceTree = SOURCE_ROOT; };
+		5546257724776CE300A8763B /* catch_uncaught_exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_uncaught_exceptions.h; path = Leonie/Catch2/include/internal/catch_uncaught_exceptions.h; sourceTree = SOURCE_ROOT; };
+		5546257824776CE300A8763B /* catch_assertionresult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_assertionresult.cpp; path = Leonie/Catch2/include/internal/catch_assertionresult.cpp; sourceTree = SOURCE_ROOT; };
+		5546257924776CE300A8763B /* catch_assertionresult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_assertionresult.h; path = Leonie/Catch2/include/internal/catch_assertionresult.h; sourceTree = SOURCE_ROOT; };
+		5546257A24776CE300A8763B /* catch_interfaces_registry_hub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_registry_hub.h; path = Leonie/Catch2/include/internal/catch_interfaces_registry_hub.h; sourceTree = SOURCE_ROOT; };
+		5546257B24776CE300A8763B /* catch_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_version.h; path = Leonie/Catch2/include/internal/catch_version.h; sourceTree = SOURCE_ROOT; };
+		5546257C24776CE300A8763B /* catch_decomposer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_decomposer.cpp; path = Leonie/Catch2/include/internal/catch_decomposer.cpp; sourceTree = SOURCE_ROOT; };
+		5546257D24776CE300A8763B /* catch_tostring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_tostring.h; path = Leonie/Catch2/include/internal/catch_tostring.h; sourceTree = SOURCE_ROOT; };
+		5546257E24776CE300A8763B /* catch_exception_translator_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_exception_translator_registry.cpp; path = Leonie/Catch2/include/internal/catch_exception_translator_registry.cpp; sourceTree = SOURCE_ROOT; };
+		5546257F24776CE300A8763B /* catch_matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_matchers.h; path = Leonie/Catch2/include/internal/catch_matchers.h; sourceTree = SOURCE_ROOT; };
+		5546258024776CE300A8763B /* catch_meta.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_meta.hpp; path = Leonie/Catch2/include/internal/catch_meta.hpp; sourceTree = SOURCE_ROOT; };
+		5546258124776CE300A8763B /* catch_suppress_warnings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_suppress_warnings.h; path = Leonie/Catch2/include/internal/catch_suppress_warnings.h; sourceTree = SOURCE_ROOT; };
+		5546258224776CE300A8763B /* catch_polyfills.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_polyfills.cpp; path = Leonie/Catch2/include/internal/catch_polyfills.cpp; sourceTree = SOURCE_ROOT; };
+		5546258324776CE400A8763B /* catch_interfaces_testcase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_interfaces_testcase.h; path = Leonie/Catch2/include/internal/catch_interfaces_testcase.h; sourceTree = SOURCE_ROOT; };
+		5546258424776CE400A8763B /* catch_debugger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_debugger.cpp; path = Leonie/Catch2/include/internal/catch_debugger.cpp; sourceTree = SOURCE_ROOT; };
+		5546258524776CE400A8763B /* catch_test_case_registry_impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_case_registry_impl.cpp; path = Leonie/Catch2/include/internal/catch_test_case_registry_impl.cpp; sourceTree = SOURCE_ROOT; };
+		5546258624776CE400A8763B /* catch_singletons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_singletons.cpp; path = Leonie/Catch2/include/internal/catch_singletons.cpp; sourceTree = SOURCE_ROOT; };
+		5546258724776CE400A8763B /* catch_capture_matchers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_capture_matchers.cpp; path = Leonie/Catch2/include/internal/catch_capture_matchers.cpp; sourceTree = SOURCE_ROOT; };
+		5546258824776CE400A8763B /* catch_test_registry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_registry.h; path = Leonie/Catch2/include/internal/catch_test_registry.h; sourceTree = SOURCE_ROOT; };
+		5546258924776CE400A8763B /* catch_matchers_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_matchers_string.h; path = Leonie/Catch2/include/internal/catch_matchers_string.h; sourceTree = SOURCE_ROOT; };
+		5546258A24776CE400A8763B /* catch_commandline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_commandline.cpp; path = Leonie/Catch2/include/internal/catch_commandline.cpp; sourceTree = SOURCE_ROOT; };
+		5546258B24776CE400A8763B /* catch_tag_alias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_tag_alias.h; path = Leonie/Catch2/include/internal/catch_tag_alias.h; sourceTree = SOURCE_ROOT; };
+		5546258C24776CE400A8763B /* catch_debugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_debugger.h; path = Leonie/Catch2/include/internal/catch_debugger.h; sourceTree = SOURCE_ROOT; };
+		5546258D24776CE400A8763B /* catch_assertionhandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_assertionhandler.cpp; path = Leonie/Catch2/include/internal/catch_assertionhandler.cpp; sourceTree = SOURCE_ROOT; };
+		5546258E24776CE400A8763B /* catch_approx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_approx.h; path = Leonie/Catch2/include/internal/catch_approx.h; sourceTree = SOURCE_ROOT; };
+		5546258F24776CE400A8763B /* catch_totals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_totals.h; path = Leonie/Catch2/include/internal/catch_totals.h; sourceTree = SOURCE_ROOT; };
+		5546259024776CE500A8763B /* catch_session.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_session.cpp; path = Leonie/Catch2/include/internal/catch_session.cpp; sourceTree = SOURCE_ROOT; };
+		5546259124776CE500A8763B /* catch_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_text.h; path = Leonie/Catch2/include/internal/catch_text.h; sourceTree = SOURCE_ROOT; };
+		5546259224776CE500A8763B /* catch_message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_message.cpp; path = Leonie/Catch2/include/internal/catch_message.cpp; sourceTree = SOURCE_ROOT; };
+		5546259324776CE500A8763B /* catch_run_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_run_context.h; path = Leonie/Catch2/include/internal/catch_run_context.h; sourceTree = SOURCE_ROOT; };
+		5546259424776CE500A8763B /* catch_test_spec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_test_spec.h; path = Leonie/Catch2/include/internal/catch_test_spec.h; sourceTree = SOURCE_ROOT; };
+		5546259524776CE500A8763B /* catch_test_case_tracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_test_case_tracker.cpp; path = Leonie/Catch2/include/internal/catch_test_case_tracker.cpp; sourceTree = SOURCE_ROOT; };
+		5546259624776CE500A8763B /* catch_enforce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_enforce.cpp; path = Leonie/Catch2/include/internal/catch_enforce.cpp; sourceTree = SOURCE_ROOT; };
+		5546259724776CE500A8763B /* catch_tag_alias_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_tag_alias_registry.cpp; path = Leonie/Catch2/include/internal/catch_tag_alias_registry.cpp; sourceTree = SOURCE_ROOT; };
+		5546259824776CE500A8763B /* catch_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_common.cpp; path = Leonie/Catch2/include/internal/catch_common.cpp; sourceTree = SOURCE_ROOT; };
+		5546259924776CE500A8763B /* catch_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_context.cpp; path = Leonie/Catch2/include/internal/catch_context.cpp; sourceTree = SOURCE_ROOT; };
+		5546259A24776CE500A8763B /* catch_tag_alias.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_tag_alias.cpp; path = Leonie/Catch2/include/internal/catch_tag_alias.cpp; sourceTree = SOURCE_ROOT; };
+		5546259B24776CE500A8763B /* catch_section.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_section.cpp; path = Leonie/Catch2/include/internal/catch_section.cpp; sourceTree = SOURCE_ROOT; };
+		5546259C24776CE500A8763B /* catch_xmlwriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_xmlwriter.cpp; path = Leonie/Catch2/include/internal/catch_xmlwriter.cpp; sourceTree = SOURCE_ROOT; };
+		5546259D24776CE600A8763B /* catch_objc_arc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_objc_arc.hpp; path = Leonie/Catch2/include/internal/catch_objc_arc.hpp; sourceTree = SOURCE_ROOT; };
+		5546259E24776CE600A8763B /* catch_string_manip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = catch_string_manip.h; path = Leonie/Catch2/include/internal/catch_string_manip.h; sourceTree = SOURCE_ROOT; };
+		5546259F24776CE600A8763B /* catch_reporter_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_reporter_registry.cpp; path = Leonie/Catch2/include/internal/catch_reporter_registry.cpp; sourceTree = SOURCE_ROOT; };
+		554625A024776CE600A8763B /* catch_errno_guard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = catch_errno_guard.cpp; path = Leonie/Catch2/include/internal/catch_errno_guard.cpp; sourceTree = SOURCE_ROOT; };
+		554625A124776CE600A8763B /* catch_generators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch_generators.hpp; path = Leonie/Catch2/include/internal/catch_generators.hpp; sourceTree = SOURCE_ROOT; };
 		554DC30C186366F100B514E3 /* testfile13.hc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testfile13.hc; sourceTree = "<group>"; };
 		554DC315186390FE00B514E3 /* CForgeExceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CForgeExceptions.cpp; sourceTree = "<group>"; };
 		554DC316186390FE00B514E3 /* CForgeExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CForgeExceptions.h; sourceTree = "<group>"; };
@@ -258,7 +472,7 @@
 		55C72BE8127DD30B00CF0F16 /* LEOValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOValue.h; path = Leonie/common/LEOValue.h; sourceTree = SOURCE_ROOT; };
 		55C72BE9127DD30B00CF0F16 /* LEOValue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOValue.c; path = Leonie/common/LEOValue.c; sourceTree = SOURCE_ROOT; };
 		55C72BEA127DD30B00CF0F16 /* LEOInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOInterpreter.h; path = Leonie/common/LEOInterpreter.h; sourceTree = SOURCE_ROOT; };
-		55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInterpreter.c; path = Leonie/common/LEOInterpreter.c; sourceTree = SOURCE_ROOT; };
+		55C72BEB127DD30B00CF0F16 /* LEOInterpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LEOInterpreter.cpp; path = Leonie/common/LEOInterpreter.cpp; sourceTree = SOURCE_ROOT; };
 		55C72BEC127DD30B00CF0F16 /* LEOInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOInstructions.h; path = Leonie/common/LEOInstructions.h; sourceTree = SOURCE_ROOT; };
 		55C72BED127DD30B00CF0F16 /* LEOInstructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LEOInstructions.c; path = Leonie/common/LEOInstructions.c; sourceTree = SOURCE_ROOT; };
 		55C72BEE127DD30B00CF0F16 /* LEOScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LEOScript.h; path = Leonie/common/LEOScript.h; sourceTree = SOURCE_ROOT; };
@@ -425,6 +639,162 @@
 			name = "Code Blocks";
 			sourceTree = "<group>";
 		};
+		5546250B24776C8F00A8763B /* Catch2 */ = {
+			isa = PBXGroup;
+			children = (
+				5546251924776CDF00A8763B /* catch_approx.cpp */,
+				5546258E24776CE400A8763B /* catch_approx.h */,
+				5546258D24776CE400A8763B /* catch_assertionhandler.cpp */,
+				5546252D24776CDF00A8763B /* catch_assertionhandler.h */,
+				5546253124776CDF00A8763B /* catch_assertioninfo.h */,
+				5546257824776CE300A8763B /* catch_assertionresult.cpp */,
+				5546257924776CE300A8763B /* catch_assertionresult.h */,
+				5546255324776CE000A8763B /* catch_benchmark.cpp */,
+				5546255724776CE000A8763B /* catch_benchmark.h */,
+				5546258724776CE400A8763B /* catch_capture_matchers.cpp */,
+				5546252624776CDF00A8763B /* catch_capture_matchers.h */,
+				5546251E24776CDF00A8763B /* catch_capture.hpp */,
+				5546251C24776CDF00A8763B /* catch_clara.h */,
+				5546258A24776CE400A8763B /* catch_commandline.cpp */,
+				5546253C24776CE000A8763B /* catch_commandline.h */,
+				5546259824776CE500A8763B /* catch_common.cpp */,
+				5546257424776CE200A8763B /* catch_common.h */,
+				5546256E24776CE200A8763B /* catch_compiler_capabilities.h */,
+				5546254624776CE000A8763B /* catch_config.cpp */,
+				5546253E24776CE000A8763B /* catch_config.hpp */,
+				5546254324776CE000A8763B /* catch_console_colour.cpp */,
+				5546256F24776CE200A8763B /* catch_console_colour.h */,
+				5546259924776CE500A8763B /* catch_context.cpp */,
+				5546252924776CDF00A8763B /* catch_context.h */,
+				5546254524776CE000A8763B /* catch_debug_console.cpp */,
+				5546252B24776CDF00A8763B /* catch_debug_console.h */,
+				5546258424776CE400A8763B /* catch_debugger.cpp */,
+				5546258C24776CE400A8763B /* catch_debugger.h */,
+				5546257C24776CE300A8763B /* catch_decomposer.cpp */,
+				5546254224776CE000A8763B /* catch_decomposer.h */,
+				5546254E24776CE000A8763B /* catch_default_main.hpp */,
+				5546259624776CE500A8763B /* catch_enforce.cpp */,
+				5546253624776CDF00A8763B /* catch_enforce.h */,
+				554625A024776CE600A8763B /* catch_errno_guard.cpp */,
+				5546254A24776CE000A8763B /* catch_errno_guard.h */,
+				5546257E24776CE300A8763B /* catch_exception_translator_registry.cpp */,
+				5546256924776CE100A8763B /* catch_exception_translator_registry.h */,
+				5546252E24776CDF00A8763B /* catch_external_interfaces.h */,
+				5546256824776CE100A8763B /* catch_fatal_condition.cpp */,
+				5546251024776CDF00A8763B /* catch_fatal_condition.h */,
+				5546251124776CDF00A8763B /* catch_generators.cpp */,
+				554625A124776CE600A8763B /* catch_generators.hpp */,
+				5546251D24776CDF00A8763B /* catch_impl.hpp */,
+				5546254424776CE000A8763B /* catch_interfaces_capture.cpp */,
+				5546253224776CDF00A8763B /* catch_interfaces_capture.h */,
+				5546254D24776CE000A8763B /* catch_interfaces_config.cpp */,
+				5546253424776CDF00A8763B /* catch_interfaces_config.h */,
+				5546253B24776CE000A8763B /* catch_interfaces_exception.cpp */,
+				5546252324776CDF00A8763B /* catch_interfaces_exception.h */,
+				5546252C24776CDF00A8763B /* catch_interfaces_generatortracker.h */,
+				5546257324776CE200A8763B /* catch_interfaces_registry_hub.cpp */,
+				5546257A24776CE300A8763B /* catch_interfaces_registry_hub.h */,
+				5546251424776CDF00A8763B /* catch_interfaces_reporter.cpp */,
+				5546255B24776CE100A8763B /* catch_interfaces_reporter.h */,
+				5546256C24776CE200A8763B /* catch_interfaces_runner.cpp */,
+				5546252824776CDF00A8763B /* catch_interfaces_runner.h */,
+				5546255424776CE000A8763B /* catch_interfaces_tag_alias_registry.h */,
+				5546255D24776CE100A8763B /* catch_interfaces_testcase.cpp */,
+				5546258324776CE400A8763B /* catch_interfaces_testcase.h */,
+				5546255824776CE100A8763B /* catch_leak_detector.cpp */,
+				5546255E24776CE100A8763B /* catch_leak_detector.h */,
+				5546252F24776CDF00A8763B /* catch_list.cpp */,
+				5546252424776CDF00A8763B /* catch_list.h */,
+				5546251724776CDF00A8763B /* catch_matchers_floating.cpp */,
+				5546257224776CE200A8763B /* catch_matchers_floating.h */,
+				5546256624776CE100A8763B /* catch_matchers_generic.cpp */,
+				5546254724776CE000A8763B /* catch_matchers_generic.hpp */,
+				5546250D24776CDE00A8763B /* catch_matchers_string.cpp */,
+				5546258924776CE400A8763B /* catch_matchers_string.h */,
+				5546256724776CE100A8763B /* catch_matchers_vector.h */,
+				5546255524776CE000A8763B /* catch_matchers.cpp */,
+				5546257F24776CE300A8763B /* catch_matchers.h */,
+				5546259224776CE500A8763B /* catch_message.cpp */,
+				5546251224776CDF00A8763B /* catch_message.h */,
+				5546258024776CE300A8763B /* catch_meta.hpp */,
+				5546259D24776CE600A8763B /* catch_objc_arc.hpp */,
+				5546253924776CE000A8763B /* catch_objc.hpp */,
+				5546251824776CDF00A8763B /* catch_option.hpp */,
+				5546252524776CDF00A8763B /* catch_output_redirect.cpp */,
+				5546254924776CE000A8763B /* catch_output_redirect.h */,
+				5546252724776CDF00A8763B /* catch_platform.h */,
+				5546258224776CE300A8763B /* catch_polyfills.cpp */,
+				5546256424776CE100A8763B /* catch_polyfills.hpp */,
+				5546253724776CDF00A8763B /* catch_preprocessor.hpp */,
+				5546253F24776CE000A8763B /* catch_random_number_generator.cpp */,
+				5546250F24776CDE00A8763B /* catch_random_number_generator.h */,
+				5546255924776CE100A8763B /* catch_reenable_warnings.h */,
+				5546255A24776CE100A8763B /* catch_registry_hub.cpp */,
+				5546255C24776CE100A8763B /* catch_reporter_registrars.hpp */,
+				5546259F24776CE600A8763B /* catch_reporter_registry.cpp */,
+				5546251524776CDF00A8763B /* catch_reporter_registry.h */,
+				5546252224776CDF00A8763B /* catch_result_type.cpp */,
+				5546254B24776CE000A8763B /* catch_result_type.h */,
+				5546257024776CE200A8763B /* catch_run_context.cpp */,
+				5546259324776CE500A8763B /* catch_run_context.h */,
+				5546254F24776CE000A8763B /* catch_section_info.cpp */,
+				5546256B24776CE200A8763B /* catch_section_info.h */,
+				5546259B24776CE500A8763B /* catch_section.cpp */,
+				5546253824776CDF00A8763B /* catch_section.h */,
+				5546259024776CE500A8763B /* catch_session.cpp */,
+				5546251A24776CDF00A8763B /* catch_session.h */,
+				5546258624776CE400A8763B /* catch_singletons.cpp */,
+				5546255024776CE000A8763B /* catch_singletons.hpp */,
+				5546253324776CDF00A8763B /* catch_startup_exception_registry.cpp */,
+				5546251B24776CDF00A8763B /* catch_startup_exception_registry.h */,
+				5546256A24776CE200A8763B /* catch_stream.cpp */,
+				5546256224776CE100A8763B /* catch_stream.h */,
+				5546252A24776CDF00A8763B /* catch_string_manip.cpp */,
+				5546259E24776CE600A8763B /* catch_string_manip.h */,
+				5546256D24776CE200A8763B /* catch_stringref.cpp */,
+				5546255124776CE000A8763B /* catch_stringref.h */,
+				5546258124776CE300A8763B /* catch_suppress_warnings.h */,
+				5546253A24776CE000A8763B /* catch_tag_alias_autoregistrar.cpp */,
+				5546250E24776CDE00A8763B /* catch_tag_alias_autoregistrar.h */,
+				5546259724776CE500A8763B /* catch_tag_alias_registry.cpp */,
+				5546254824776CE000A8763B /* catch_tag_alias_registry.h */,
+				5546259A24776CE500A8763B /* catch_tag_alias.cpp */,
+				5546258B24776CE400A8763B /* catch_tag_alias.h */,
+				5546253024776CDF00A8763B /* catch_test_case_info.cpp */,
+				5546254124776CE000A8763B /* catch_test_case_info.h */,
+				5546258524776CE400A8763B /* catch_test_case_registry_impl.cpp */,
+				5546256524776CE100A8763B /* catch_test_case_registry_impl.h */,
+				5546259524776CE500A8763B /* catch_test_case_tracker.cpp */,
+				5546255624776CE000A8763B /* catch_test_case_tracker.h */,
+				5546252024776CDF00A8763B /* catch_test_registry.cpp */,
+				5546258824776CE400A8763B /* catch_test_registry.h */,
+				5546257624776CE300A8763B /* catch_test_spec_parser.cpp */,
+				5546256124776CE100A8763B /* catch_test_spec_parser.h */,
+				5546254024776CE000A8763B /* catch_test_spec.cpp */,
+				5546259424776CE500A8763B /* catch_test_spec.h */,
+				5546259124776CE500A8763B /* catch_text.h */,
+				5546255224776CE000A8763B /* catch_timer.cpp */,
+				5546255F24776CE100A8763B /* catch_timer.h */,
+				5546251324776CDF00A8763B /* catch_to_string.hpp */,
+				5546251F24776CDF00A8763B /* catch_tostring.cpp */,
+				5546257D24776CE300A8763B /* catch_tostring.h */,
+				5546256324776CE100A8763B /* catch_totals.cpp */,
+				5546258F24776CE400A8763B /* catch_totals.h */,
+				5546251624776CDF00A8763B /* catch_type_traits.hpp */,
+				5546252124776CDF00A8763B /* catch_uncaught_exceptions.cpp */,
+				5546257724776CE300A8763B /* catch_uncaught_exceptions.h */,
+				5546254C24776CE000A8763B /* catch_user_interfaces.h */,
+				5546257124776CE200A8763B /* catch_version.cpp */,
+				5546257B24776CE300A8763B /* catch_version.h */,
+				5546256024776CE100A8763B /* catch_wildcard_pattern.cpp */,
+				5546253524776CDF00A8763B /* catch_wildcard_pattern.h */,
+				5546257524776CE200A8763B /* catch_windows_h_proxy.h */,
+				5546259C24776CE500A8763B /* catch_xmlwriter.cpp */,
+				5546253D24776CE000A8763B /* catch_xmlwriter.h */,
+			);
+			name = Catch2;
+			sourceTree = "<group>";
+		};
 		5559CEFE1EB6DD3F00815DD9 /* Test Scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -534,7 +904,7 @@
 				55EED4222476E1AC00E48E88 /* LEOValue.cpp */,
 				559CCA141EDB168200E6D0CD /* LEOUserData.h */,
 				55C72BEA127DD30B00CF0F16 /* LEOInterpreter.h */,
-				55C72BEB127DD30B00CF0F16 /* LEOInterpreter.c */,
+				55C72BEB127DD30B00CF0F16 /* LEOInterpreter.cpp */,
 				55C72BEC127DD30B00CF0F16 /* LEOInstructions.h */,
 				55C72BED127DD30B00CF0F16 /* LEOInstructions.c */,
 				55C72BEE127DD30B00CF0F16 /* LEOScript.h */,
@@ -575,6 +945,7 @@
 				55EED4122476DDD000E48E88 /* main.cpp */,
 				55EED4172476DE1300E48E88 /* catch_with_main.hpp */,
 				55EED4182476DE1E00E48E88 /* catch.hpp */,
+				5546250B24776C8F00A8763B /* Catch2 */,
 			);
 			path = CppTestRunner;
 			sourceTree = "<group>";
@@ -656,8 +1027,73 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				554625C824776CE600A8763B /* catch_version.cpp in Sources */,
+				554625D624776CE600A8763B /* catch_message.cpp in Sources */,
+				554625B524776CE600A8763B /* catch_interfaces_capture.cpp in Sources */,
+				554625D024776CE600A8763B /* catch_test_case_registry_impl.cpp in Sources */,
+				554625B724776CE600A8763B /* catch_config.cpp in Sources */,
+				554625D524776CE600A8763B /* catch_session.cpp in Sources */,
+				554625B224776CE600A8763B /* catch_random_number_generator.cpp in Sources */,
+				554625B424776CE600A8763B /* catch_console_colour.cpp in Sources */,
+				554625AF24776CE600A8763B /* catch_startup_exception_registry.cpp in Sources */,
+				554625C224776CE600A8763B /* catch_matchers_generic.cpp in Sources */,
+				554625CC24776CE600A8763B /* catch_decomposer.cpp in Sources */,
+				554625B624776CE600A8763B /* catch_debug_console.cpp in Sources */,
+				554625E124776DD100A8763B /* LEOContextGroup.c in Sources */,
+				554625D724776CE600A8763B /* catch_test_case_tracker.cpp in Sources */,
+				554625A624776CE600A8763B /* catch_approx.cpp in Sources */,
+				554625AD24776CE600A8763B /* catch_list.cpp in Sources */,
+				554625B324776CE600A8763B /* catch_test_spec.cpp in Sources */,
+				554625C024776CE600A8763B /* catch_wildcard_pattern.cpp in Sources */,
+				554625BE24776CE600A8763B /* catch_registry_hub.cpp in Sources */,
+				554625BA24776CE600A8763B /* catch_timer.cpp in Sources */,
+				554625C424776CE600A8763B /* catch_stream.cpp in Sources */,
+				554625A824776CE600A8763B /* catch_test_registry.cpp in Sources */,
+				554625A924776CE600A8763B /* catch_uncaught_exceptions.cpp in Sources */,
+				554625BD24776CE600A8763B /* catch_leak_detector.cpp in Sources */,
+				554625C724776CE600A8763B /* catch_run_context.cpp in Sources */,
+				554625D924776CE600A8763B /* catch_tag_alias_registry.cpp in Sources */,
+				554625CE24776CE600A8763B /* catch_polyfills.cpp in Sources */,
+				554625A524776CE600A8763B /* catch_matchers_floating.cpp in Sources */,
+				554625BF24776CE600A8763B /* catch_interfaces_testcase.cpp in Sources */,
+				554625C524776CE600A8763B /* catch_interfaces_runner.cpp in Sources */,
+				554625DC24776CE600A8763B /* catch_tag_alias.cpp in Sources */,
+				554625C324776CE600A8763B /* catch_fatal_condition.cpp in Sources */,
+				554625CB24776CE600A8763B /* catch_assertionresult.cpp in Sources */,
 				55EED4252476E1E000E48E88 /* LEOValue.cpp in Sources */,
+				554625A324776CE600A8763B /* catch_generators.cpp in Sources */,
+				554625BC24776CE600A8763B /* catch_matchers.cpp in Sources */,
+				554625CD24776CE600A8763B /* catch_exception_translator_registry.cpp in Sources */,
+				554625C124776CE600A8763B /* catch_totals.cpp in Sources */,
+				554625CA24776CE600A8763B /* catch_test_spec_parser.cpp in Sources */,
+				554625DB24776CE600A8763B /* catch_context.cpp in Sources */,
+				554625DE24776CE600A8763B /* catch_xmlwriter.cpp in Sources */,
+				554625DD24776CE600A8763B /* catch_section.cpp in Sources */,
+				554625D224776CE600A8763B /* catch_capture_matchers.cpp in Sources */,
+				554625AB24776CE600A8763B /* catch_output_redirect.cpp in Sources */,
+				554625E224776DE200A8763B /* LEOInterpreter.cpp in Sources */,
+				554625D424776CE600A8763B /* catch_assertionhandler.cpp in Sources */,
+				554625D324776CE600A8763B /* catch_commandline.cpp in Sources */,
+				554625B924776CE600A8763B /* catch_section_info.cpp in Sources */,
+				554625B124776CE600A8763B /* catch_interfaces_exception.cpp in Sources */,
 				55EED4132476DDD000E48E88 /* main.cpp in Sources */,
+				554625B024776CE600A8763B /* catch_tag_alias_autoregistrar.cpp in Sources */,
+				554625AA24776CE600A8763B /* catch_result_type.cpp in Sources */,
+				554625D124776CE600A8763B /* catch_singletons.cpp in Sources */,
+				554625A424776CE600A8763B /* catch_interfaces_reporter.cpp in Sources */,
+				554625A224776CE600A8763B /* catch_matchers_string.cpp in Sources */,
+				554625AE24776CE600A8763B /* catch_test_case_info.cpp in Sources */,
+				554625D824776CE600A8763B /* catch_enforce.cpp in Sources */,
+				554625C924776CE600A8763B /* catch_interfaces_registry_hub.cpp in Sources */,
+				554625E024776CE600A8763B /* catch_errno_guard.cpp in Sources */,
+				554625DA24776CE600A8763B /* catch_common.cpp in Sources */,
+				554625DF24776CE600A8763B /* catch_reporter_registry.cpp in Sources */,
+				554625CF24776CE600A8763B /* catch_debugger.cpp in Sources */,
+				554625C624776CE600A8763B /* catch_stringref.cpp in Sources */,
+				554625B824776CE600A8763B /* catch_interfaces_config.cpp in Sources */,
+				554625BB24776CE600A8763B /* catch_benchmark.cpp in Sources */,
+				554625A724776CE600A8763B /* catch_tostring.cpp in Sources */,
+				554625AC24776CE600A8763B /* catch_string_manip.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,7 +1119,7 @@
 				55B24F600C189906001C7796 /* CVariableEntry.cpp in Sources */,
 				55C72BDE127DCEF400CF0F16 /* CCodeBlock.cpp in Sources */,
 				55C72BF7127DD30B00CF0F16 /* LEOValue.c in Sources */,
-				55C72BF8127DD30B00CF0F16 /* LEOInterpreter.c in Sources */,
+				55C72BF8127DD30B00CF0F16 /* LEOInterpreter.cpp in Sources */,
 				55C72BFA127DD30B00CF0F16 /* LEOScript.c in Sources */,
 				55C72BFB127DD30B00CF0F16 /* LEODebugger.c in Sources */,
 				55C72BFC127DD30B00CF0F16 /* LEOChunks.c in Sources */,
@@ -875,6 +1311,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Leonie/Catch2/include/";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -906,6 +1343,7 @@
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Leonie/Catch2/include/";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

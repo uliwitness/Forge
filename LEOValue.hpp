@@ -321,8 +321,12 @@ public:
 		mFloat = inNumber;
 		mUnit = inUnit;
 	}
+	
+    virtual void		InitCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext * __nonnull inContext );
+    virtual void		InitSimpleCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext * __nonnull inContext );
+    virtual void		PutValueIntoValue( LEOValue& dest, struct LEOContext * __nonnull inContext );
 
-    virtual bool        CanGetAsNumber( struct LEOContext * __nonnull inContext );
+	virtual bool        CanGetAsNumber( struct LEOContext * __nonnull inContext );
 
     virtual bool        GetValueIsUnset( struct LEOContext * __nonnull inContext ) { return false; }
 
@@ -368,6 +372,8 @@ protected:
 	LEOObjectID		refObjectID = kLEOObjectIDINVALID;	//! If we have a reference to us, this is our index in the LEOContextGroup's reference table, so we can clear it on destruction.
 	
 	friend class CppVariantBase;
+	friend class CppVariantInteger;
+	friend class CppVariantNumber;
 };
 
 

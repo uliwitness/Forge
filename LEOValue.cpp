@@ -8,11 +8,8 @@
 
 #include "LEOValue.hpp"
 extern "C" {
-// TODO: Hack, we can't include LEOInstructions.h here, so copy the declarations we need for now:
-void	LEOContextStopWithError( LEOContext* inContext, size_t errLine, size_t errOffset, uint16_t fileID, const char* inErrorFmt, ... );
-typedef struct LEOInstruction LEOInstruction;
-void		LEOInstructionsFindLineForInstruction( LEOInstruction* instr, size_t *lineNo, uint16_t *fileID );
-// End Hack
+#include "LEOInstructions.h"
+#include "LEOContextGroup.h"
 }
 
 
@@ -45,18 +42,18 @@ CppVariantBase*	CppVariantBase::FollowReferencesAndReturnValue( struct LEOContex
 }
 
 
-void	CppVariantBase::GetAsRangeOfString( LEOChunkType inType,
-											size_t inRangeStart, size_t inRangeEnd,
-											string& outBuf, struct LEOContext* inContext )
-{
-	outBuf = GetAsString( inContext );
-	size_t	outChunkStart = 0,
-			outChunkEnd = 0,
-			outDelChunkStart = 0,
-			outDelChunkEnd = 0;
-	LEOGetChunkRanges( outBuf.c_str(), inType, inRangeStart, inRangeEnd, &outChunkStart, &outChunkEnd, &outDelChunkStart, &outDelChunkEnd, inContext->itemDelimiter );
-	outBuf = outBuf.substr( inRangeStart, inRangeEnd - inRangeStart );
-}
+//void	CppVariantBase::GetAsRangeOfString( LEOChunkType inType,
+//											size_t inRangeStart, size_t inRangeEnd,
+//											string& outBuf, struct LEOContext* inContext )
+//{
+//	outBuf = GetAsString( inContext );
+//	size_t	outChunkStart = 0,
+//			outChunkEnd = 0,
+//			outDelChunkStart = 0,
+//			outDelChunkEnd = 0;
+//	LEOGetChunkRanges( outBuf.c_str(), inType, inRangeStart, inRangeEnd, &outChunkStart, &outChunkEnd, &outDelChunkStart, &outDelChunkEnd, inContext->itemDelimiter );
+//	outBuf = outBuf.substr( inRangeStart, inRangeEnd - inRangeStart );
+//}
 
 
 void	CppVariantBase::DetermineChunkRangeOfSubstring( size_t *ioBytesStart, size_t *ioBytesEnd,
@@ -81,22 +78,47 @@ bool	CppVariantInteger::GetAsBoolean( struct LEOContext* inContext )
 }
 
 
-void	CppVariantInteger::SetAsString( const string inBuf, struct LEOContext* inContext )
+//void	CppVariantInteger::SetAsString( const string inBuf, struct LEOContext* inContext )
+//{
+//	const char* str = inBuf.c_str();
+//	const char* desiredEndPtr = str +strlen(str);
+//	char* endPtr = NULL;
+//	LEOInteger n = strtoll( str, &endPtr, 10 );
+//
+//	if( endPtr == desiredEndPtr )
+//		mInteger = n;
+//	else
+//	{
+//		size_t lineNo = SIZE_T_MAX;
+//		uint16_t fileID = 0;
+//		LEOInstructionsFindLineForInstruction( inContext->currentInstruction, &lineNo, &fileID );
+//		LEOContextStopWithError( inContext, lineNo, SIZE_T_MAX, fileID, "Expected integer here." );
+//	}
+//}
+
+
+void    CppVariantInteger::InitCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext )
 {
-	const char* str = inBuf.c_str();
-	const char* desiredEndPtr = str +strlen(str);
-	char* endPtr = NULL;
-	LEOInteger n = strtoll( str, &endPtr, 10 );
-	
-	if( endPtr == desiredEndPtr )
-		mInteger = n;
-	else
-	{
-		size_t lineNo = SIZE_T_MAX;
-		uint16_t fileID = 0;
-		LEOInstructionsFindLineForInstruction( inContext->currentInstruction, &lineNo, &fileID );
-		LEOContextStopWithError( inContext, lineNo, SIZE_T_MAX, fileID, "Expected integer here." );
-	}
+    ((CppVariantBase*)dest.mBuf)->~CppVariantBase();
+    new (dest.mBuf) CppVariantInteger( mInteger, mUnit );
+    
+    if( keepReferences == kLEOInvalidateReferences )
+        dest.refObjectID = kLEOObjectIDINVALID;
+}
+
+
+void    CppVariantInteger::InitSimpleCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext )
+{
+	((CppVariantBase*)dest.mBuf)->~CppVariantBase(); new (dest.mBuf) CppVariantInteger( mInteger, mUnit );
+    
+    if( keepReferences == kLEOInvalidateReferences )
+        dest.refObjectID = kLEOObjectIDINVALID;
+}
+
+
+void    CppVariantInteger::PutValueIntoValue( LEOValue& dest, struct LEOContext* inContext )
+{
+    dest->SetAsInteger( mInteger, mUnit, inContext );
 }
 
 
@@ -112,15 +134,38 @@ bool	CppVariantNumber::GetAsBoolean( struct LEOContext* inContext )
 }
 
 
+void    CppVariantNumber::InitCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext )
+{
+    ((CppVariantBase*)dest.mBuf)->~CppVariantBase();
+    new (dest.mBuf) CppVariantNumber( mFloat, mUnit );
+    
+    if( keepReferences == kLEOInvalidateReferences )
+        dest.refObjectID = kLEOObjectIDINVALID;
+}
+
+
+void    CppVariantNumber::InitSimpleCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext )
+{
+	((CppVariantBase*)dest.mBuf)->~CppVariantBase(); new (dest.mBuf) CppVariantNumber( mFloat, mUnit );
+    
+    if( keepReferences == kLEOInvalidateReferences )
+        dest.refObjectID = kLEOObjectIDINVALID;
+}
+
+
+void    CppVariantNumber::PutValueIntoValue( LEOValue& dest, struct LEOContext* inContext )
+{
+    dest->SetAsNumber( mFloat, mUnit, inContext );
+}
+
+
 #pragma mark - CppVariantReference
 
 
-CppVariantBase*	CppVariantReference::FollowReferencesAndReturnValue( struct LEOContext* inContext )
+CppVariantBase* __nullable	CppVariantReference::FollowReferencesAndReturnValue( struct LEOContext* inContext )
 {
-	CppVariantBase*	theValue = LEOContextGroupGetPointerForObjectIDAndSeed( inContext->group, mObjectID, mObjectSeed );
-	if( self->base.isa == inType )
-		return self;
-	else if( theValue == NULL )
+	CppVariantBase*	theValue = static_cast<CppVariantBase*>( LEOContextGroupGetPointerForObjectIDAndSeed( inContext->group, mObjectID, mObjectSeed ));
+	if( theValue == NULL )
 	{
 		size_t		lineNo = SIZE_T_MAX;
 		uint16_t	fileID = 0;
@@ -131,29 +176,4 @@ CppVariantBase*	CppVariantReference::FollowReferencesAndReturnValue( struct LEOC
 	}
 	else
 		return theValue->FollowReferencesAndReturnValue( inContext );
-}
-
-
-#pragma mark - CppVariantBase
-
-
-void    CppVariantBase::InitCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext )
-{
-    ((CppVariantBase*)dest.mBuf)->~CppVariantBase();
-    new (dest.mBuf) CppVariantInteger( mInteger, mUnit );
-    
-    if( keepReferences == kLEOInvalidateReferences )
-        dest.refObjectID = kLEOObjectIDINVALID;
-}
-
-
-void    CppVariantBase::InitSimpleCopy( LEOValue& dest, LEOKeepReferencesFlag keepReferences, struct LEOContext* inContext ) { ((CppVariantBase*)dest.mBuf)->~CppVariantBase(); new (dest.mBuf) CppVariantInteger( mInteger, mUnit );
-    
-    if( keepReferences == kLEOInvalidateReferences )
-        dest.refObjectID = kLEOObjectIDINVALID; }
-
-
-void    CppVariantBase::PutValueIntoValue( LEOValue& dest, struct LEOContext* inContext )
-{
-    dest.SetAsInteger( mInteger, mUnit );
 }
